@@ -1,0 +1,17 @@
+{
+  "name": "discord-config",
+  "version": "0.0.0",
+  "license": "UNLICENSED",
+  "main": "./dist/index.js",
+  "scripts": {
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "tsconfig": "*",
+    "typescript": "^4.5.3"
+  },
+  "dependencies": {
+    "discord.js": "^13.6.0"
+  }
+}
