@@ -5,6 +5,7 @@ packages=(
   packages/types
   packages/discord-config
   apps/discord
+  apps/cli
 )
 
 for i in "${packages[@]}"
