@@ -2,6 +2,7 @@ import { EnvVars } from "types";
 import DEV_CONFIG from "./config";
 import STAGE_CONFIG from "./config.stage";
 import PROD_CONFIG from "./config.prod";
+import { OverwriteResolvable } from "discord.js";
 
 export const NODE_ENV =
   (process.env.NODE_ENV as "development" | "stage" | "production") ||
@@ -45,14 +46,14 @@ export const {
   BIG_BROTHER_BOT_CLIENT_ID,
   BIG_BROTHER_BOT_ROLE_ID,
   BOT_CLIENT_IDS,
-  BUG_REPORTS_CHANNEL_ID,
+  FEEDBACK_CHANNEL_ID,
   COMMANDS_CHANNEL_ID,
   COMMUNITY_CATEGORY_ID,
   DEGEN_ROLE_ID,
   DISTRICT_CAPACITY,
   EVERYONE_ROLE_ID,
   FAQ_CHANNEL_ID,
-  GENERAL_CHANNEL_ID,
+  WAITING_ROOM_CHANNEL_ID,
   GEN_POP_CHANNEL_ID,
   GUILD_ID,
   HALL_OF_PRIVACY_CHANNEL_ID,
@@ -91,3 +92,31 @@ export const {
 } = config;
 
 export const WORLD_NAME = `Beautopia\u24b8`;
+
+export const READ_ONLY: OverwriteResolvable[] = [
+  {
+    id: EVERYONE_ROLE_ID,
+    deny: [
+      "VIEW_CHANNEL",
+      "SEND_MESSAGES",
+      "CREATE_PUBLIC_THREADS",
+      "CREATE_PRIVATE_THREADS",
+    ],
+  },
+  {
+    id: DEGEN_ROLE_ID,
+    allow: ["VIEW_CHANNEL"],
+  },
+  {
+    id: VERIFIED_ROLE_ID,
+    allow: ["VIEW_CHANNEL"],
+  },
+  {
+    id: PRISONER_ROLE_ID,
+    deny: ["VIEW_CHANNEL"],
+  },
+  {
+    id: BIG_BROTHER_BOT_ROLE_ID,
+    allow: ["VIEW_CHANNEL", "SEND_MESSAGES"],
+  },
+];

@@ -190,7 +190,7 @@ const structure: Category[] = [
         permissionOverwrites: [
           {
             id: MART_CLERK_BOT_ROLE_ID,
-            allow: "VIEW_CHANNEL",
+            allow: ["VIEW_CHANNEL"],
           },
         ],
       },
@@ -201,7 +201,7 @@ const structure: Category[] = [
         permissionOverwrites: [
           {
             id: TOSSER_BOT_ROLE_ID,
-            allow: "VIEW_CHANNEL",
+            allow: ["VIEW_CHANNEL"],
           },
         ],
       },
@@ -212,7 +212,7 @@ const structure: Category[] = [
         permissionOverwrites: [
           {
             id: BANKER_BOT_ROLE_ID,
-            allow: "VIEW_CHANNEL",
+            allow: ["VIEW_CHANNEL"],
           },
         ],
       },
@@ -223,7 +223,7 @@ const structure: Category[] = [
         permissionOverwrites: [
           {
             id: SENSEI_BOT_ROLE_ID,
-            allow: "VIEW_CHANNEL",
+            allow: ["VIEW_CHANNEL"],
           },
         ],
       },
@@ -234,7 +234,7 @@ const structure: Category[] = [
         permissionOverwrites: [
           {
             id: ARMORY_CLERK_BOT_ROLE_ID,
-            allow: "VIEW_CHANNEL",
+            allow: ["VIEW_CHANNEL"],
           },
         ],
       },
@@ -245,7 +245,7 @@ const structure: Category[] = [
         permissionOverwrites: [
           {
             id: SENSEI_BOT_ROLE_ID,
-            allow: "VIEW_CHANNEL",
+            allow: ["VIEW_CHANNEL"],
           },
         ],
       },
