@@ -199,6 +199,17 @@ const structure: Category[] = [
         ],
       },
       {
+        id: "ARMORY",
+        name: "\u23e3\uff5cthe-armory",
+        lockPermissions: true,
+        permissionOverwrites: [
+          {
+            id: Config.roleId("ARMORY_CLERK_BOT"),
+            allow: ["VIEW_CHANNEL"],
+          },
+        ],
+      },
+      {
         id: "TOSS_HOUSE",
         name: "\u2609\uff5cteds-toss-house",
         lockPermissions: true,
@@ -227,17 +238,6 @@ const structure: Category[] = [
         permissionOverwrites: [
           {
             id: Config.roleId("SENSEI_BOT"),
-            allow: ["VIEW_CHANNEL"],
-          },
-        ],
-      },
-      {
-        id: "ARMORY",
-        name: "\u23e3\uff5cthe-armory",
-        lockPermissions: true,
-        permissionOverwrites: [
-          {
-            id: Config.roleId("ARMORY_CLERK_BOT"),
             allow: ["VIEW_CHANNEL"],
           },
         ],

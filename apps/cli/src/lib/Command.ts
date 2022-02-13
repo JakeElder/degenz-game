@@ -1,5 +1,6 @@
 import { Command as OclifCommand } from "@oclif/core";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
+import delay from "delay";
 import { json } from "../utils";
 
 export default abstract class Command extends OclifCommand {
@@ -19,14 +20,23 @@ export default abstract class Command extends OclifCommand {
     });
   }
 
-  async patch(route: string, data: any, token: string) {
+  async patch(
+    route: string,
+    data: any,
+    token: string
+  ): Promise<AxiosResponse<any, any>> {
     const res = await axios({
       method: "PATCH",
       data,
       url: `https://discord.com/api/v9${route}`,
-      headers: { Authorization: `Bot ${token}` },
+      headers: { Authorization: `Bot ${token}`, Accept: "application/json" },
       validateStatus: () => true,
     });
+
+    if (res.status === 429) {
+      await delay((res.data.retry_after + 2) * 1000);
+      return this.patch(route, data, token);
+    }
 
     if (res.status < 200 || res.status >= 300) {
       this.debug(json(res));

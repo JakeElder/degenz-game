@@ -69,8 +69,7 @@ export default class SetPermissions extends Command {
                     }
                   },
                 };
-              }),
-              { concurrent: true }
+              })
             );
           },
         };
