@@ -8,7 +8,7 @@ export default class DeleteChannels extends Command {
   static description = "Delete categories and channels";
 
   static flags = {
-    "server-id": Flags.string({
+    id: Flags.string({
       description: "The id of the server",
       required: true,
     }),
@@ -21,10 +21,7 @@ export default class DeleteChannels extends Command {
   async run(): Promise<void> {
     const { flags } = await this.parse(DeleteChannels);
 
-    const res = await this.get(
-      Routes.guildChannels(flags["server-id"]),
-      flags.token
-    );
+    const res = await this.get(Routes.guildChannels(flags.id), flags.token);
 
     const cnfrm = await CliUx.ux.prompt(
       `Deleting ${res.data.length} channels. Are you sure? Y/n`

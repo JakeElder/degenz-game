@@ -1,6 +1,3 @@
-import { Bot, BotId } from "types";
-import ADMIN from "./admin";
+import Admin from "./admin";
 
-const bots: Partial<Record<BotId, Bot>> = { ADMIN };
-
-export default bots;
+export default [Admin];

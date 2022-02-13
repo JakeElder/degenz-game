@@ -3,6 +3,7 @@ import { bots } from "manifest";
 
 export default class AdminBot extends DiscordBot {
   constructor() {
-    super(bots.ADMIN!);
+    const admin = bots.find((bot) => bot.id === "ADMIN");
+    super(admin!);
   }
 }

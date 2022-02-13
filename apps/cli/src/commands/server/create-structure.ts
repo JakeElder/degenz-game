@@ -24,8 +24,8 @@ export default class CreateStructure extends Command {
   async run(): Promise<void> {
     const { flags } = await this.parse(CreateStructure);
 
-    const CATEGORY_IDS: Record<CategoryId, string> = {};
-    const CHANNEL_IDS: Record<ChannelId, string> = {};
+    const CATEGORY_IDS: Partial<Record<CategoryId, string>> = {};
+    const CHANNEL_IDS: Partial<Record<ChannelId, string>> = {};
 
     const listr = new Listr(
       structure.map((category) => {
