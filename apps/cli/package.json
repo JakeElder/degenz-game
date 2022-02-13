@@ -66,7 +66,6 @@
       "@oclif/plugin-plugins",
       "@oclif/plugin-autocomplete"
     ],
-    "topicSeparator": " ",
     "topics": {
       "server": {
         "description": "Operations relating to the server"

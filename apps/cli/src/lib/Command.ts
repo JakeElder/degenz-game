@@ -38,7 +38,7 @@ export default abstract class Command extends OclifCommand {
 
   async put(route: string, data: any, token: string) {
     const res = await axios({
-      method: "POST",
+      method: "PUT",
       data,
       url: `https://discord.com/api/v9${route}`,
       headers: { Authorization: `Bot ${token}` },

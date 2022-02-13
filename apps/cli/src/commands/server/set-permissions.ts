@@ -25,7 +25,7 @@ export default class SetPermissions extends Command {
         return {
           title: `Category: ${category.name}`,
           task: async () => {
-            const categoryId = Config.get(`${category.id}_ID` as any) as string;
+            const categoryId = Config.categoryId(category.id);
             await this.patch(
               Routes.channel(categoryId),
               {
@@ -41,9 +41,7 @@ export default class SetPermissions extends Command {
                 return {
                   title: channel.name,
                   task: async () => {
-                    const channelId = Config.get(
-                      `${channel.id}_ID` as any
-                    ) as string;
+                    const channelId = Config.channelId(channel.id);
 
                     await this.patch(
                       Routes.channel(channelId),

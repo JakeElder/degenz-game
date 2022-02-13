@@ -5,6 +5,7 @@ import { Command } from "../../lib";
 import { structure } from "manifest";
 import _ from "discord.js";
 import { json, resolvableToOverwrite } from "../../utils";
+import { CategoryId, ChannelId } from "types";
 
 export default class CreateStructure extends Command {
   static description = "Create categories and channels";
@@ -23,8 +24,8 @@ export default class CreateStructure extends Command {
   async run(): Promise<void> {
     const { flags } = await this.parse(CreateStructure);
 
-    const categories: Record<string, string> = {};
-    const channels: Record<string, string> = {};
+    const CATEGORY_IDS: Record<CategoryId, string> = {};
+    const CHANNEL_IDS: Record<ChannelId, string> = {};
 
     const listr = new Listr(
       structure.map((category) => {
@@ -43,7 +44,7 @@ export default class CreateStructure extends Command {
               flags.token
             );
 
-            categories[`${category.id}_ID`] = res.data.id;
+            CATEGORY_IDS[category.id] = res.data.id;
 
             return new Listr(
               category.channels.map((channel) => {
@@ -64,7 +65,7 @@ export default class CreateStructure extends Command {
                       flags.token
                     );
 
-                    channels[`${channel.id}_ID`] = r.data.id;
+                    CHANNEL_IDS[channel.id] = res.data.id;
 
                     if (channel.lockPermissions) {
                       await Promise.all(
@@ -90,6 +91,6 @@ export default class CreateStructure extends Command {
 
     await listr.run();
 
-    this.log(json({ categories, channels }));
+    this.log(json({ CATEGORY_IDS, CHANNEL_IDS }));
   }
 }

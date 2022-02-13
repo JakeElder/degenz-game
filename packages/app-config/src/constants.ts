@@ -3,7 +3,7 @@ import Config from ".";
 
 export const READ_ONLY: OverwriteResolvable[] = [
   {
-    id: Config.get("EVERYONE_ROLE_ID"),
+    id: Config.roleId("EVERYONE"),
     deny: [
       "VIEW_CHANNEL",
       "SEND_MESSAGES",
@@ -12,19 +12,19 @@ export const READ_ONLY: OverwriteResolvable[] = [
     ],
   },
   {
-    id: Config.get("DEGEN_ROLE_ID"),
+    id: Config.roleId("DEGEN"),
     allow: ["VIEW_CHANNEL"],
   },
   {
-    id: Config.get("VERIFIED_ROLE_ID"),
+    id: Config.roleId("VERIFIED"),
     allow: ["VIEW_CHANNEL"],
   },
   {
-    id: Config.get("PRISONER_ROLE_ID"),
+    id: Config.roleId("PRISONER"),
     deny: ["VIEW_CHANNEL"],
   },
   {
-    id: Config.get("BIG_BROTHER_BOT_ROLE_ID"),
+    id: Config.roleId("BIG_BROTHER_BOT"),
     allow: ["VIEW_CHANNEL", "SEND_MESSAGES"],
   },
 ];
