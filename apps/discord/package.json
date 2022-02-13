@@ -17,12 +17,12 @@
     "watch": [
       "dist",
       "../../packages/types/dist",
-      "../../packages/discord-config/dist"
+      "../../packages/manifest/dist"
     ]
   },
   "dependencies": {
     "@types/source-map-support": "^0.5.4",
-    "discord-config": "*",
+    "manifest": "*",
     "discord.js": "^13.6.0",
     "node-cleanup": "^2.1.2",
     "pretty-error": "^4.0.0"

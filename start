@@ -3,7 +3,9 @@
 packages=(
   .
   packages/types
-  packages/discord-config
+  packages/app-config
+  packages/manifest
+  packages/lib
   apps/discord
   apps/cli
 )

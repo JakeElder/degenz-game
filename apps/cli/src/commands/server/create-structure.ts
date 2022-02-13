@@ -2,7 +2,7 @@ import { Flags } from "@oclif/core";
 import { Routes, ChannelType } from "discord-api-types/v9";
 import Listr from "listr";
 import { Command } from "../../lib";
-import { structure } from "discord-config";
+import { structure } from "manifest";
 import _ from "discord.js";
 import { json, resolvableToOverwrite } from "../../utils";
 

@@ -33,7 +33,8 @@
     "axios": "^0.25.0",
     "delay": "^5.0.0",
     "discord-api-types": "^0.27.0",
-    "discord-config": "*",
+    "manifest": "*",
+    "app-config": "*",
     "discord.js": "^13.6.0",
     "listr-verbose-renderer": "^0.6.0",
     "prettyjson": "^1.2.5"

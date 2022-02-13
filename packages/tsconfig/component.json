@@ -1,14 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Discord",
-  "extends": "tsconfig/base.json",
+  "display": "Component",
+  "extends": "./base.json",
   "compilerOptions": {
     "target": "ESNext",
     "module": "CommonJS",
     "declaration": true,
-    "outDir": "./dist",
     "sourceMap": true
-  },
-  "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "dist"]
+  }
 }

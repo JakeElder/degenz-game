@@ -1,5 +1,5 @@
 {
-  "name": "discord-config",
+  "name": "manifest",
   "version": "0.0.0",
   "license": "UNLICENSED",
   "main": "./dist/index.js",
@@ -14,6 +14,8 @@
   },
   "dependencies": {
     "discord.js": "^13.6.0",
+    "lib": "*",
+    "app-config": "*",
     "listr": "^0.14.3"
   }
 }

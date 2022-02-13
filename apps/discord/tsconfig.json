@@ -1,15 +1,12 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Discord",
-  "extends": "tsconfig/base.json",
+  "extends": "tsconfig/component.json",
   "compilerOptions": {
-    "target": "ESNext",
     "module": "ESNext",
     "rootDir": "./src",
     "outDir": "./dist",
-    "sourceMap": true,
+    "declaration": false,
     "jsx": "react"
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
