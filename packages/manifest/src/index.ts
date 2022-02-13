@@ -1,6 +1,7 @@
 import { Category, Role } from "types";
 import Config from "app-config";
 import { READ_ONLY } from "app-config/dist/constants";
+import bots from "./bots";
 
 const roles: Role[] = [
   { id: "ADMIN" },
@@ -337,4 +338,4 @@ const structure: Category[] = [
   },
 ];
 
-export { structure, roles };
+export { structure, roles, bots };

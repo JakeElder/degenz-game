@@ -2,19 +2,24 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { Bot } from "types";
 import Config from "app-config";
 import { Formatter } from "lib";
+import { Intents } from "discord.js";
 
 const { format } = Formatter;
+const { FLAGS } = Intents;
 
 const admin: Bot = {
-  id: "admin",
+  id: "ADMIN",
   name: "Degenz Admin",
+  clientOptions: {
+    intents: [FLAGS.GUILDS, FLAGS.GUILD_MEMBERS, FLAGS.GUILD_MESSAGES],
+  },
   commands: [],
 };
 
 // Admin command
 admin.commands.push({
   id: "admin",
-  permissions: [{ id: Config.get("ADMIN_ROLE_ID"), type: 1, permission: true }],
+  permissions: [{ id: Config.roleId("ADMIN"), type: 1, permission: true }],
   data: new SlashCommandBuilder()
     .setName("admin")
     .setDescription(`Find out about ${format("WORLD_NAME")} and it's citizens`)

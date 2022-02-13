@@ -2,11 +2,10 @@
   "name": "discord",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "dev": "concurrently --raw \"yarn watch\" \"wait-on dist/main.js && yarn start:dev\"",
+    "dev": "rm -rf dist && concurrently --raw \"yarn watch\" \"wait-on dist/main.js && yarn start:dev\"",
     "build": "tsc",
-    "watch": "tsc --watch > /dev/null",
+    "watch": "tsc --watch",
     "start": "node dist/main",
     "start:dev": "nodemon --exec \"node -r source-map-support/register dist/main\"",
     "lint": "eslint",
@@ -17,15 +16,19 @@
     "watch": [
       "dist",
       "../../packages/types/dist",
-      "../../packages/manifest/dist"
+      "../../packages/manifest/dist",
+      "../../packages/lib/dist",
+      "../../packages/config/dist"
     ]
   },
   "dependencies": {
     "@types/source-map-support": "^0.5.4",
-    "manifest": "*",
     "discord.js": "^13.6.0",
+    "lib": "*",
+    "manifest": "*",
     "node-cleanup": "^2.1.2",
-    "pretty-error": "^4.0.0"
+    "pretty-error": "^4.0.0",
+    "types": "*"
   },
   "devDependencies": {
     "@types/node": "^17.0.12",
