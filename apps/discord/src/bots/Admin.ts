@@ -1,4 +1,4 @@
-import { DiscordBot } from "lib";
+import DiscordBot from "../DiscordBot";
 import { bots } from "manifest";
 
 export default class AdminBot extends DiscordBot {

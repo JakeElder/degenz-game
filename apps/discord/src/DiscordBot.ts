@@ -7,6 +7,7 @@ import {
 } from "discord.js";
 import { Bot } from "types";
 import Config from "app-config";
+import Events from "./Events";
 
 // const pe = new PrettyError();
 
@@ -42,9 +43,7 @@ export default abstract class DiscordBot {
   private connect() {
     this.client.once("ready", async () => {
       this.guild = await this.client.guilds.fetch(Config.general("GUILD_ID"));
-      console.log("ready", this.guild);
-      // this.emit("READY");
-      // this.log("Ready");
+      Events.emit("BOT_READY", { bot: this.manifest });
     });
     this.client.login(Config.botToken(this.manifest.id));
     return this.readyPromise;
