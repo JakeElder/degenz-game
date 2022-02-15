@@ -34,6 +34,7 @@ async function main() {
   runner.add(new bots.TosserBot(runner));
   runner.add(new bots.MartClerkBot(runner));
   runner.add(new bots.PrisonerBot(runner));
+  runner.add(new bots.WardenBot(runner));
 }
 
 main();
