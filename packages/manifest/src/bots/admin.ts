@@ -1,10 +1,9 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { Bot } from "types";
 import Config from "app-config";
-import { Formatter } from "lib";
+import { Format } from "lib";
 import { Intents } from "discord.js";
 
-const { format } = Formatter;
 const { FLAGS } = Intents;
 
 const admin: Bot = {
@@ -22,7 +21,7 @@ admin.commands.push({
   permissions: [{ id: Config.roleId("ADMIN"), type: 1, permission: true }],
   data: new SlashCommandBuilder()
     .setName("admin")
-    .setDescription(`Find out about ${format("WORLD_NAME")} and it's citizens`)
+    .setDescription(`Find out about ${Format.worldName()} and it's citizens`)
     .addSubcommand((subcommand) =>
       subcommand
         .setName("initiate")
@@ -119,13 +118,13 @@ admin.commands.push({
     .addSubcommand((subcommand) =>
       subcommand
         .setName("issue")
-        .setDescription(`Issue ${format("currency", { bold: false })}`)
+        .setDescription(`Issue ${Format.currency({ bold: false })}`)
         .addNumberOption((option) =>
           option
             .setName("amount")
             .setRequired(true)
             .setDescription(
-              `The amount of ${format("currency", {
+              `The amount of ${Format.currency({
                 long: false,
                 bold: false,
               })} send`

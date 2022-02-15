@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { Bot } from "types";
 import { Intents } from "discord.js";
 import Config from "app-config";
+import { Format } from "lib";
 
 const { FLAGS } = Intents;
 
@@ -58,6 +59,55 @@ admin.commands.push({
   data: new SlashCommandBuilder()
     .setName("help")
     .setDescription(`Get help on the current channel.`)
+    .toJSON(),
+});
+
+// `inventory` command
+admin.commands.push({
+  id: "INVENTORY",
+  permissions: [
+    { id: Config.roleId("DEGEN"), type: 1, permission: true },
+    { id: Config.roleId("ADMIN"), type: 1, permission: true },
+  ],
+  data: new SlashCommandBuilder()
+    .setName("inventory")
+    .setDescription(`See your own, or another citizens inventory.`)
+    .addUserOption((option) =>
+      option.setName("name").setDescription("The citizen to retrieve info for.")
+    )
+    .toJSON(),
+});
+
+// `leaderboard` command
+admin.commands.push({
+  id: "LEADERBOARD",
+  permissions: [
+    { id: Config.roleId("DEGEN"), type: 1, permission: true },
+    { id: Config.roleId("ADMIN"), type: 1, permission: true },
+  ],
+  data: new SlashCommandBuilder()
+    .setName("leaderboard")
+    .addNumberOption((option) =>
+      option
+        .setName("top")
+        .setChoices([
+          ["10", 10],
+          ["30", 30],
+          ["50", 50],
+        ])
+        .setDescription(`The amount of leaders to show.`)
+    )
+    .addBooleanOption((option) =>
+      option
+        .setName("post")
+        .setDescription("Whether to publish in the current room.")
+    )
+    .setDescription(
+      `See who has the most ${Format.currency({
+        copyright: false,
+        bold: false,
+      })}.`
+    )
     .toJSON(),
 });
 

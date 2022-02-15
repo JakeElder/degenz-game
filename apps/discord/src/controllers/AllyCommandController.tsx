@@ -12,6 +12,7 @@ import { CommandController } from "../CommandController";
 import {
   eatItem,
   getCellByChannelId,
+  getLeaders,
   getMartItems,
   getUser,
   getUserByApartment,
@@ -20,7 +21,11 @@ import { groupBy } from "lodash";
 import Runner from "../Runner";
 import { Achievement } from "../legacy/types";
 import OnboardController from "./OnboardController";
-import { makeUserStatsEmbed } from "../legacy/utils";
+import {
+  makeInventoryEmbed,
+  makeLeaderboardEmbed,
+  makeUserStatsEmbed,
+} from "../legacy/utils";
 import ChannelHelpOutput from "../legacy/channel-help";
 import Utils from "../Utils";
 
@@ -86,11 +91,11 @@ export default class AllyCommandController extends CommandController {
     const isApartment = apartmentUser !== null;
     const isCell = cell !== null;
 
-    let t: React.ComponentProps<typeof ChannelHelpOutput>["type"] = isCell
-      ? "CELL"
-      : isApartment
-      ? "APARTMENT"
-      : "WORLD";
+    let t: React.ComponentProps<typeof ChannelHelpOutput>["type"] = (() => {
+      if (isCell) return "CELL";
+      if (isApartment) return "APARTMENT";
+      return "WORLD";
+    })();
 
     await i.reply({
       content: r(
@@ -153,6 +158,44 @@ export default class AllyCommandController extends CommandController {
     //   data: {
     //     member: i.member as GuildMember,
     //     checkee: ownStats ? null : member,
+    //   },
+    // });
+  }
+
+  async leaderboard(i: CommandInteraction, runner: Runner) {
+    const show = i.options.getBoolean("post");
+    const num = i.options.getNumber("top");
+
+    const leaders = await getLeaders(num || 30);
+
+    const m = makeLeaderboardEmbed(leaders);
+    await i.reply({ embeds: [m], ephemeral: !show });
+  }
+
+  async inventory(i: CommandInteraction, runner: Runner) {
+    let member = i.options.getMember("name") as null | GuildMember;
+    // let ownInventory = false;
+
+    if (!member) {
+      // ownInventory = true;
+      member = i.member as GuildMember;
+    }
+
+    const user = await getUser(member.id);
+
+    if (user === null) {
+      await i.reply({ content: "Citizen not found", ephemeral: true });
+      return;
+    }
+
+    const e = makeInventoryEmbed(await getMartItems(), user, member);
+    await i.reply({ embeds: [e], ephemeral: true });
+
+    // this.emit("WORLD_EVENT", {
+    //   event: "INVENTORY_CHECKED",
+    //   data: {
+    //     member: i.member as GuildMember,
+    //     checkee: ownInventory ? null : member,
     //   },
     // });
   }

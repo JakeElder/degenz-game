@@ -1,2 +1,2 @@
-import Formatter from "./Formatter";
-export { Formatter };
+import Format from "./Formatter";
+export { Format };

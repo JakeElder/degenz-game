@@ -30,13 +30,14 @@
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^2.0.1",
     "@types/prettyjson": "^0.0.30",
+    "app-config": "*",
     "axios": "^0.25.0",
     "delay": "^5.0.0",
     "discord-api-types": "^0.27.0",
-    "manifest": "*",
-    "app-config": "*",
     "discord.js": "^13.6.0",
+    "lib": "*",
     "listr-verbose-renderer": "^0.6.0",
+    "manifest": "*",
     "prettyjson": "^1.2.5"
   },
   "devDependencies": {
