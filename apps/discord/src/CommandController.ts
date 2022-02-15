@@ -1,8 +1,12 @@
-import { CommandInteraction } from "discord.js";
+import { pascalCase } from "change-case";
+import { CommandInteraction, SelectMenuInteraction } from "discord.js";
 import DiscordBot from "./DiscordBot";
 import Events from "./Events";
+import Runner from "./Runner";
 
 export abstract class CommandController {
+  constructor(protected runner: Runner) {}
+
   async execute(i: CommandInteraction, bot: DiscordBot) {
     const command = bot.manifest.commands.find(
       (c) => c.data.name === i.commandName
@@ -30,8 +34,8 @@ export abstract class CommandController {
     if (handler) {
       try {
         await (
-          handler as (i: CommandInteraction, bot: DiscordBot) => Promise<void>
-        ).call(this, i, bot);
+          handler as (i: CommandInteraction, runner: Runner) => Promise<void>
+        ).call(this, i, this.runner);
       } catch (e) {
         this.error(i);
         throw e;
@@ -55,5 +59,12 @@ export abstract class CommandController {
     return i.deferred || i.replied
       ? i.editReply({ content })
       : i.reply({ content, ephemeral: true });
+  }
+
+  async handleSelect(i: SelectMenuInteraction) {
+    const handler = (this as any)[`handle${pascalCase(i.customId)}`];
+    await (
+      handler as (i: SelectMenuInteraction, runner: Runner) => Promise<void>
+    ).call(this, i, this.runner);
   }
 }

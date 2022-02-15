@@ -8,8 +8,9 @@ import AdminBot from "../bots/AdminBot";
 import UserController from "./UserController";
 import { CommandController } from "../CommandController";
 import WaitingRoomController from "./WaitingRoomController";
+import Runner from "../Runner";
 
-export default class AdminCommandController extends CommandController {
+export default class AllyCommandController extends CommandController {
   async respond(
     i: CommandInteraction,
     content: string,
@@ -28,7 +29,9 @@ export default class AdminCommandController extends CommandController {
       : i.reply({ content, ephemeral: true });
   }
 
-  async admin_initiate(i: CommandInteraction, bot: AdminBot) {
+  async admin_initiate(i: CommandInteraction, runner: Runner) {
+    const admin = runner.get("ADMIN");
+
     await i.deferReply({ ephemeral: true });
 
     const onboard = i.options.getBoolean("onboard");
@@ -39,17 +42,18 @@ export default class AdminCommandController extends CommandController {
       member.id,
       onboard === null || onboard ? true : false,
       district,
-      bot
+      admin
     );
 
     return this.respond(i, result.code, result.success ? "SUCCESS" : "FAIL");
   }
 
-  async admin_eject(i: CommandInteraction, bot: AdminBot) {
+  async admin_eject(i: CommandInteraction, runner: Runner) {
+    const admin = runner.get("ADMIN");
     await i.deferReply({ ephemeral: true });
 
     const member = i.options.getMember("member", true) as GuildMember;
-    const result = await UserController.eject(member.id, bot);
+    const result = await UserController.eject(member.id, admin);
 
     return this.respond(i, result.code, result.success ? "SUCCESS" : "FAIL");
   }
@@ -96,29 +100,32 @@ export default class AdminCommandController extends CommandController {
     });
   }
 
-  async admin_imprison(i: CommandInteraction, bot: AdminBot) {
+  async admin_imprison(i: CommandInteraction, runner: Runner) {
+    const admin = runner.get("ADMIN");
     const member = i.options.getMember("member", true) as GuildMember;
 
     const [_, res] = await Promise.all([
       i.deferReply({ ephemeral: true }),
-      UserController.imprison(member.id, bot),
+      UserController.imprison(member.id, admin),
     ]);
 
     await this.respond(i, res.code, res.success ? "SUCCESS" : "FAIL");
   }
 
-  async admin_release(i: CommandInteraction, bot: AdminBot) {
+  async admin_release(i: CommandInteraction, runner: Runner) {
+    const admin = runner.get("ADMIN");
     const member = i.options.getMember("member", true) as GuildMember;
 
     const [_, res] = await Promise.all([
       i.deferReply({ ephemeral: true }),
-      UserController.release(member.id, bot),
+      UserController.release(member.id, admin),
     ]);
 
     await this.respond(i, res.code, res.success ? "SUCCESS" : "FAIL");
   }
 
-  async admin_clear(i: CommandInteraction, bot: AdminBot) {
+  async admin_clear(i: CommandInteraction, runner: Runner) {
+    const admin = runner.get("ADMIN");
     let channel = i.options.getChannel("channel");
     const number = i.options.getNumber("number");
 
@@ -126,7 +133,7 @@ export default class AdminCommandController extends CommandController {
       channel = i.channel as GuildBasedChannel;
     }
 
-    const c = await bot.getTextChannel(channel.id);
+    const c = await admin.getTextChannel(channel.id);
 
     try {
       await c.bulkDelete(number || 100);
@@ -148,7 +155,8 @@ export default class AdminCommandController extends CommandController {
     }
   }
 
-  async admin_open(i: CommandInteraction, bot: AdminBot) {
+  async admin_open(i: CommandInteraction, runner: Runner) {
+    const admin = runner.get("ADMIN");
     const district = i.options.getNumber(
       "district",
       true
@@ -158,7 +166,7 @@ export default class AdminCommandController extends CommandController {
       await setDistrict(district);
       const tenancies = await getTenanciesInDistrict(district);
       if (tenancies < Config.general("DISTRICT_CAPACITY")) {
-        await WaitingRoomController.setStatus(true, bot);
+        await WaitingRoomController.setStatus(true, admin);
       }
       await this.respond(i, `DISTRICT_${district}_OPENED`, "SUCCESS");
     } catch (e) {
@@ -166,11 +174,12 @@ export default class AdminCommandController extends CommandController {
     }
   }
 
-  async admin_close(i: CommandInteraction, bot: AdminBot) {
+  async admin_close(i: CommandInteraction, runner: Runner) {
+    const admin = runner.get("ADMIN");
     try {
       await Promise.all([
         setDistrict(null),
-        WaitingRoomController.setStatus(false, bot),
+        WaitingRoomController.setStatus(false, admin),
       ]);
 
       await this.respond(i, "ENTRY_DISABLED", "SUCCESS");

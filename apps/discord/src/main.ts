@@ -24,11 +24,12 @@ const runner = new Runner();
 
 async function main() {
   await connect(Config.env("MONGO_URI"));
-  const admin = new bots.AdminBot();
+  const admin = new bots.AdminBot(runner);
   Utils.su(admin);
 
   runner.add(admin);
-  runner.add(new bots.BigBrotherBot());
+  runner.add(new bots.BigBrotherBot(runner));
+  runner.add(new bots.AllyBot(runner));
 }
 
 main();

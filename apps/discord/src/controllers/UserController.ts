@@ -15,6 +15,7 @@ import {
   getUser,
   updateCellChannelId,
 } from "../legacy/db";
+import { User } from "../legacy/types";
 import { Tenancy } from "../legacy/types";
 import WaitingRoomController from "./WaitingRoomController";
 
@@ -239,5 +240,11 @@ export default class UserController {
     await deleteCell(cell.userId);
 
     return { success: true, code: "USER_RELEASED" };
+  }
+
+  static async openWorld(user: User, admin: AdminBot) {
+    const member = await admin.getMember(user.id);
+    await member.roles.add(Config.roleId("DEGEN"));
+    await member.roles.remove(Config.roleId("VERIFIED"));
   }
 }

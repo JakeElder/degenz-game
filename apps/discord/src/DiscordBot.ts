@@ -23,8 +23,13 @@ export default abstract class DiscordBot {
 
   bindClientEvents() {
     this.client.on("interactionCreate", async (i) => {
-      if (!i.isCommand()) return;
-      this.controller.execute(i, this);
+      if (i.isSelectMenu()) {
+        this.controller.handleSelect(i);
+      }
+
+      if (i.isCommand()) {
+        this.controller.execute(i, this);
+      }
     });
   }
 

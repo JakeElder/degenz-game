@@ -38,8 +38,20 @@ export default class Runner {
     });
 
     Events.on("APARTMENT_ALLOCATED", async (data) => {
-      OnboardController.partOne(data.user, this.bots["BIG_BROTHER"]!);
+      OnboardController.partOne(
+        data.user,
+        this.bots["BIG_BROTHER"]!,
+        this.bots["ALLY"]!
+      );
     });
+  }
+
+  get(id: BotId) {
+    const bot = this.bots[id];
+    if (!bot) {
+      throw new Error(`Bot not found ${id}`);
+    }
+    return bot;
   }
 
   add(bot: DiscordBot) {

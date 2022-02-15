@@ -1,11 +1,11 @@
 import { bots } from "manifest";
-import AllyCommandController from "../controllers/AdminCommandController";
+import AllyCommandController from "../controllers/AllyCommandController";
 import DiscordBot from "../DiscordBot";
 import Runner from "../Runner";
 
 export default class AdminBot extends DiscordBot {
   constructor(runner: Runner) {
-    const bot = bots.find((bot) => bot.id === "ADMIN");
+    const bot = bots.find((bot) => bot.id === "ALLY");
     super(bot!, new AllyCommandController(runner));
   }
 }
