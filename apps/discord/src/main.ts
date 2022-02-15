@@ -1,29 +1,34 @@
 import cleanup from "node-cleanup";
 import PrettyError from "pretty-error";
+import Config from "app-config";
 import Runner from "./Runner";
-import EventHandler from "./EventHandler";
-import * as bots from "./bots/index";
+import * as bots from "./bots";
+import { connect, disconnect } from "./legacy/db";
+import Utils from "./Utils";
 
 const pe = new PrettyError();
 
-function handleUncaught(e: Error) {
-  // rollbar.error(e);
-  console.error(pe.render(e));
-}
-
-process.on("uncaughtException", handleUncaught);
-process.on("unhandledRejection", handleUncaught);
+["uncaughtException", "unhandledRejection"].forEach((e) =>
+  process.on(e, (e) => {
+    console.error(pe.render(e));
+  })
+);
 
 cleanup(() => {
-  runner.destroy();
   console.log("Running cleanup");
+  runner.destroy();
+  disconnect();
 });
 
 const runner = new Runner();
 
 async function main() {
-  const eventHandler = new EventHandler();
-  runner.add(new bots.Admin());
+  await connect(Config.env("MONGO_URI"));
+  const admin = new bots.AdminBot();
+  Utils.su(admin);
+
+  runner.add(admin);
+  runner.add(new bots.BigBrotherBot());
 }
 
 main();

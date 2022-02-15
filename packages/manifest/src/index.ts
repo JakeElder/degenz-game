@@ -115,6 +115,12 @@ const structure: Category[] = [
     ],
     channels: [
       {
+        id: "GENERAL",
+        name: "\u20aa\uff5cgeneral",
+        lockPermissions: true,
+        permissionOverwrites: [],
+      },
+      {
         id: "WAITING_ROOM",
         name: "\u22c8\uff5cwaiting-room",
         lockPermissions: true,

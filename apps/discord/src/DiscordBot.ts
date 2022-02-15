@@ -1,32 +1,20 @@
-import {
-  Client,
-  CommandInteraction,
-  Guild,
-  GuildMember,
-  TextChannel,
-} from "discord.js";
+import { Client, Guild, GuildMember, TextChannel } from "discord.js";
 import { Bot } from "types";
 import Config from "app-config";
 import Events from "./Events";
-
-// const pe = new PrettyError();
-
-// export type DiscordBotEvents = {
-//   READY: () => void;
-//   WORLD_EVENT: (data: WorldEventMessage) => void;
-// };
+import { CommandController } from "./CommandController";
 
 export default abstract class DiscordBot {
-  protected readyPromise!: Promise<void>;
+  protected readyPromise: Promise<void>;
+  private readyResolver!: (value: void | PromiseLike<void>) => void;
   client: Client;
   guild!: Guild;
 
-  constructor(public manifest: Bot) {
+  constructor(public manifest: Bot, public controller: CommandController) {
     this.client = new Client(this.manifest.clientOptions);
 
     this.readyPromise = new Promise((resolve) => {
-      resolve();
-      // this.on("READY", resolve);
+      this.readyResolver = resolve;
     });
 
     this.bindClientEvents();
@@ -36,40 +24,21 @@ export default abstract class DiscordBot {
   bindClientEvents() {
     this.client.on("interactionCreate", async (i) => {
       if (!i.isCommand()) return;
-      this.handleCommand(i);
+      this.controller.execute(i, this);
     });
   }
 
   private connect() {
     this.client.once("ready", async () => {
       this.guild = await this.client.guilds.fetch(Config.general("GUILD_ID"));
+      this.readyResolver();
       Events.emit("BOT_READY", { bot: this.manifest });
     });
     this.client.login(Config.botToken(this.manifest.id));
     return this.readyPromise;
   }
 
-  async handleCommand(i: CommandInteraction) {
-    // if (!command) {
-    //   this.error("COMMAND_NOT_FOUND");
-    //   return;
-    // }
-
-    try {
-      // await command.execute.call(this, i);
-    } catch (e) {
-      // rollbar.error(e as Error);
-      // console.error(pe.render(e as Error));
-      // if (i.deferred || i.replied) {
-      //   await i.editReply({ content: "Error" });
-      // } else {
-      //   await i.reply({ content: "Error", ephemeral: true });
-      // }
-    }
-  }
-
   destroy() {
-    // this.log("Shutting down");
     this.client.destroy();
   }
 
@@ -81,7 +50,7 @@ export default abstract class DiscordBot {
     return member;
   }
 
-  protected async getTextChannel(id: TextChannel["id"]): Promise<TextChannel> {
+  async getTextChannel(id: TextChannel["id"]): Promise<TextChannel> {
     let channel = this.guild.channels.cache.get(id) as any;
     if (channel) return channel as TextChannel;
     channel = await this.guild.channels.fetch(id);

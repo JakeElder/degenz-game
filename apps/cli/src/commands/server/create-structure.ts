@@ -65,7 +65,7 @@ export default class CreateStructure extends Command {
                       flags.token
                     );
 
-                    CHANNEL_IDS[channel.id] = res.data.id;
+                    CHANNEL_IDS[channel.id] = r.data.id;
 
                     if (channel.lockPermissions) {
                       await Promise.all(

@@ -1,3 +1,4 @@
-import Admin from "./admin";
+import AdminBot from "./admin";
+import BigBrotherBot from "./big-brother";
 
-export default [Admin];
+export default [AdminBot, BigBrotherBot];

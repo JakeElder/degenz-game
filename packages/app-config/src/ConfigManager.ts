@@ -32,7 +32,7 @@ const BOT_TOKENS: Record<BotId, string> = {
 
 const ENV = {
   MIXPANEL_PROJECT_TOKEN: env.MIXPANEL_PROJECT_TOKEN,
-  MONGO_URI: env.MIXPANEL_PROJECT_TOKEN,
+  MONGO_URI: env.MONGO_URI,
   ROLLBAR_TOKEN: env.ROLLBAR_TOKEN,
 };
 
@@ -52,4 +52,14 @@ export default class ConfigManager {
   static roleId = (k: RoleId) => config.ROLE_IDS[k];
   static clientId = (k: BotId) => config.CLIENT_IDS[k];
   static botToken = (k: BotId) => BOT_TOKENS[k];
+
+  static clientIds = () => config.CLIENT_IDS;
+
+  static reverseClientId = (id: string) => {
+    for (const [key, value] of Object.entries(config.CLIENT_IDS)) {
+      if (value === id) {
+        return key;
+      }
+    }
+  };
 }

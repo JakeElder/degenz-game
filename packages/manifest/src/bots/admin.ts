@@ -18,7 +18,7 @@ const admin: Bot = {
 
 // Admin command
 admin.commands.push({
-  id: "admin",
+  id: "ADMIN",
   permissions: [{ id: Config.roleId("ADMIN"), type: 1, permission: true }],
   data: new SlashCommandBuilder()
     .setName("admin")
@@ -59,17 +59,6 @@ admin.commands.push({
             .setName("member")
             .setRequired(true)
             .setDescription("The user to eject")
-        )
-    )
-    .addSubcommand((subcommand) =>
-      subcommand
-        .setName("generate-invite")
-        .setDescription(`Generate an invite code`)
-        .addStringOption((option) =>
-          option
-            .setName("tag")
-            .setRequired(true)
-            .setDescription("A tag to identify the invite")
         )
     )
     .addSubcommand((subcommand) =>
