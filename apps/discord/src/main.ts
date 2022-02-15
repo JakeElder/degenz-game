@@ -31,6 +31,7 @@ async function main() {
   runner.add(new bots.BigBrotherBot(runner));
   runner.add(new bots.AllyBot(runner));
   runner.add(new bots.TosserBot(runner));
+  runner.add(new bots.MartClerkBot(runner));
 }
 
 main();
