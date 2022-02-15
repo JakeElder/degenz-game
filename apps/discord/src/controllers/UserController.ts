@@ -18,6 +18,8 @@ import {
 import { User } from "../legacy/types";
 import { Tenancy } from "../legacy/types";
 import WaitingRoomController from "./WaitingRoomController";
+import { PrisonerBot } from "../bots";
+import { userMention } from "@discordjs/builders";
 
 export default class UserController {
   static async init(
@@ -147,7 +149,11 @@ export default class UserController {
     return { success: true, code: "USER_EJECTED" };
   }
 
-  static async imprison(memberId: GuildMember["id"], bot: AdminBot) {
+  static async imprison(
+    memberId: GuildMember["id"],
+    bot: AdminBot,
+    prisoner: PrisonerBot
+  ) {
     const member = await bot.getMember(memberId);
     const user = await getUser(member.id);
 
@@ -204,9 +210,45 @@ export default class UserController {
 
     Utils.delay(1000);
 
-    // this.emit("MEMBER_IMPRISIONED", { member, cell, user });
+    UserController.onboardPrisoner(user, prisoner);
 
     return { success: true, code: "USER_IMPRISONED" };
+  }
+
+  static async onboardPrisoner(user: User, prisoner: PrisonerBot) {
+    const cell = await getCell(user.id);
+    const channel = await prisoner.getTextChannel(cell!.cellId!);
+    await channel.send({
+      embeds: [
+        {
+          image: {
+            url: "https://s10.gifyu.com/images/Clue-Defense-Degenzd5deb9c10509fc47.gif",
+          },
+        },
+      ],
+    });
+
+    await Utils.delay(1500);
+
+    await channel.send(
+      `Tough break ${userMention(
+        user.id
+      )}. I see they've thrown you in here too.`
+    );
+
+    await Utils.delay(1500);
+
+    await channel.send(
+      `Don't worry too much, I've heard the Warden can be bought off pretty cheap.`
+    );
+
+    await Utils.delay(1500);
+
+    await channel.send(
+      ` Try to offer him a bribe with the \`/bribe\` command. If you need help, try the \`/help\` command or ask someone in <#${Config.channelId(
+        "GEN_POP"
+      )}>`
+    );
   }
 
   static async release(memberId: GuildMember["id"], bot: AdminBot) {

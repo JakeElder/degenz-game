@@ -4,7 +4,6 @@ import { bots } from "manifest";
 import { Tenancy } from "../legacy/types";
 import Events from "../Events";
 import { getTenanciesInDistrict, issueTokens, setDistrict } from "../legacy/db";
-import AdminBot from "../bots/AdminBot";
 import UserController from "./UserController";
 import { CommandController } from "../CommandController";
 import WaitingRoomController from "./WaitingRoomController";
@@ -106,7 +105,7 @@ export default class AllyCommandController extends CommandController {
 
     const [_, res] = await Promise.all([
       i.deferReply({ ephemeral: true }),
-      UserController.imprison(member.id, admin),
+      UserController.imprison(member.id, admin, runner.get("PRISONER")),
     ]);
 
     await this.respond(i, res.code, res.success ? "SUCCESS" : "FAIL");
