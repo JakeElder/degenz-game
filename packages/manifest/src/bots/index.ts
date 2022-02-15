@@ -1,5 +1,6 @@
-import AdminBot from "./admin";
-import BigBrotherBot from "./big-brother";
-import AllyBot from "./ally";
+import admin from "./admin";
+import ally from "./ally";
+import bigBrother from "./big-brother";
+import tosser from "./tosser";
 
-export default [AdminBot, BigBrotherBot, AllyBot];
+export default [admin, ally, bigBrother, tosser];

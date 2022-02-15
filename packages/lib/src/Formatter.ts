@@ -3,7 +3,9 @@ export default class Formatter {
     return;
   }
 
-  static currency(...args: any[]) {}
+  static currency(...args: any[]) {
+    return "GoodBoyTokens";
+  }
 
   static token(...args: any[]) {
     return "$GBT";
