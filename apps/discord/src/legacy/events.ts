@@ -1,7 +1,6 @@
 import { GuildMember, TextChannel } from "discord.js";
 import EE from "events";
 import TypedEmitter from "typed-emitter";
-import { Invite } from "./types";
 
 ////////////////////////////////////////////////////////////////////////////////
 // Banker Beatrice
@@ -63,7 +62,6 @@ export type ReleaseEvent = {
 
 export type EnterEvent = {
   citizen: GuildMember;
-  inviteId: Invite["id"] | null;
 };
 
 export type BigBrotherOnboardComplete = {

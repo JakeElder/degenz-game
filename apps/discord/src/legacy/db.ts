@@ -3,7 +3,6 @@ import { Db, MongoClient, Long } from "mongodb";
 import { v4 as uuid } from "uuid";
 import {
   User,
-  Invite,
   MartItem,
   UserItemType,
   Achievement,
@@ -28,7 +27,6 @@ export async function disconnect() {
 function playerToUser(player: PlayerModel): User {
   const user: User = {
     id: player.Player.DiscordId.toString(),
-    inviteId: player.inviteId,
     strength: player.strength,
     achievements: player.achievements,
     items: player.items,
@@ -229,49 +227,13 @@ export async function sellItem(itemId: MartItem["id"], memberId: User["id"]) {
   return { success: true };
 }
 
-type ValidInviteCheck = { valid: true };
-type InvalidInviteCheck = {
-  valid: false;
-  code: "INVITE_NOT_FOUND" | "INVITE_REDEEMED";
-  data: { user?: User };
-};
-type InviteCheck = ValidInviteCheck | InvalidInviteCheck;
-
-export async function checkInviteId(id: Invite["id"]): Promise<InviteCheck> {
-  const invites = db.collection<Invite>("invites");
-  const invite = await invites.findOne({ id });
-
-  if (invite === null) {
-    return {
-      valid: false,
-      code: "INVITE_NOT_FOUND",
-      data: {},
-    };
-  }
-
-  const players = db.collection<PlayerModel>("players");
-  const player = await players.findOne({ inviteId: id });
-
-  if (player !== null) {
-    return {
-      valid: false,
-      code: "INVITE_REDEEMED",
-      data: { user: playerToUser(player) },
-    };
-  }
-
-  return { valid: true };
-}
-
 export async function addUser({
   member,
-  inviteId,
   apartmentId,
   district,
   tokens = 0,
 }: {
   member: GuildMember;
-  inviteId?: User["id"];
   apartmentId: Tenancy["id"];
   district: Tenancy["district"];
   tokens?: User["tokens"];
@@ -291,7 +253,6 @@ export async function addUser({
 
   await users.insertOne({
     name: member.displayName,
-    inviteId: inviteId || null,
     strength: 100,
     items: [],
     achievements: [],
@@ -306,13 +267,6 @@ export async function addUser({
   });
 
   return getUser(member.id);
-}
-
-export async function addInvite(tag: Invite["tag"]) {
-  const id = uuid();
-  const invites = db.collection<Invite>("invites");
-  await invites.insertOne({ id, tag });
-  return invites.findOne({ id });
 }
 
 export async function deleteUser(member: GuildMember) {

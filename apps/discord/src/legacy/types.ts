@@ -1,14 +1,6 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
-import {
-  Channel,
-  CommandInteraction,
-  GuildMember,
-  Role,
-  TextChannel,
-} from "discord.js";
+import { GuildMember, TextChannel } from "discord.js";
 import ObjectId from "bson-objectid";
 import { Long } from "mongodb";
-import DiscordBot from "../DiscordBot";
 
 type DiscordId = Long;
 
@@ -66,7 +58,6 @@ export enum Achievement {
 export type UserModel = {
   id: string;
   name: string;
-  inviteId: Invite["id"] | null;
   strength: number;
   items: UserItem[];
   achievements: Achievement[];
@@ -105,11 +96,6 @@ export type MartItem = {
   stock: number;
 };
 
-export type Invite = {
-  id: string;
-  tag: string;
-};
-
 export type Cell = {
   _id?: ObjectId;
   number: number;
@@ -117,29 +103,3 @@ export type Cell = {
   cellId: TextChannel["id"] | null;
   entryRoleIds: string[];
 };
-
-export type BotId =
-  | "bigBrother"
-  | "admin"
-  | "martClerk"
-  | "ally"
-  | "tosser"
-  | "banker"
-  | "warden"
-  | "prisoner";
-
-export type ExecuteFn<T extends DiscordBot = DiscordBot> = (
-  this: T,
-  i: CommandInteraction
-) => Promise<void>;
-
-export type CommandModule = {
-  limits: {
-    roles: Role["id"][];
-    channels: Channel["id"][];
-  };
-  command: SlashCommandBuilder;
-  execute: ExecuteFn;
-};
-
-export type CommandManifest = Record<string, CommandModule>;

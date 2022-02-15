@@ -562,17 +562,10 @@ export const ReturnLog = ({ member }: ReleaseEvent) => (
   </Log>
 );
 
-export const EnterLog = ({ citizen, inviteId }: EnterEvent) => {
-  if (!inviteId) {
-    return (
-      <Log event="ENTER" level="neutral">
-        <User id={citizen.id} /> entered the game.
-      </Log>
-    );
-  }
+export const EnterLog = ({ citizen }: EnterEvent) => {
   return (
     <Log event="ENTER" level="neutral">
-      <User id={citizen.id} /> entered the game. Invite code: `{inviteId}`
+      <User id={citizen.id} /> entered the game.
     </Log>
   );
 };
