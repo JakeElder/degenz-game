@@ -4,7 +4,7 @@ import { Intents } from "discord.js";
 
 const { FLAGS } = Intents;
 
-const admin: Bot = {
+const bigBrother: Bot = {
   id: "BIG_BROTHER",
   name: "Big Brother",
   clientOptions: {
@@ -15,7 +15,7 @@ const admin: Bot = {
 };
 
 // `obey` command
-admin.commands.push({
+bigBrother.commands.push({
   id: "OBEY",
   permissions: [],
   data: new SlashCommandBuilder()
@@ -24,4 +24,4 @@ admin.commands.push({
     .toJSON(),
 });
 
-export default admin;
+export default bigBrother;

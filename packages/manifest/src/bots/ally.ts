@@ -6,7 +6,7 @@ import { Format } from "lib";
 
 const { FLAGS } = Intents;
 
-const admin: Bot = {
+const ally: Bot = {
   id: "ALLY",
   name: "Ivan 6000",
   clientOptions: { intents: [FLAGS.GUILDS] },
@@ -14,7 +14,7 @@ const admin: Bot = {
 };
 
 // `eat` command
-admin.commands.push({
+ally.commands.push({
   id: "EAT",
   permissions: [
     { id: Config.roleId("DEGEN"), type: 1, permission: true },
@@ -27,7 +27,7 @@ admin.commands.push({
 });
 
 // `redpill` command
-admin.commands.push({
+ally.commands.push({
   id: "RED_PILL",
   permissions: [],
   data: new SlashCommandBuilder()
@@ -37,7 +37,7 @@ admin.commands.push({
 });
 
 // `stats` command
-admin.commands.push({
+ally.commands.push({
   id: "STATS",
   permissions: [
     { id: Config.roleId("DEGEN"), type: 1, permission: true },
@@ -53,7 +53,7 @@ admin.commands.push({
 });
 
 // `help` command
-admin.commands.push({
+ally.commands.push({
   id: "HELP",
   permissions: [],
   data: new SlashCommandBuilder()
@@ -63,7 +63,7 @@ admin.commands.push({
 });
 
 // `inventory` command
-admin.commands.push({
+ally.commands.push({
   id: "INVENTORY",
   permissions: [
     { id: Config.roleId("DEGEN"), type: 1, permission: true },
@@ -79,7 +79,7 @@ admin.commands.push({
 });
 
 // `leaderboard` command
-admin.commands.push({
+ally.commands.push({
   id: "LEADERBOARD",
   permissions: [
     { id: Config.roleId("DEGEN"), type: 1, permission: true },
@@ -111,4 +111,4 @@ admin.commands.push({
     .toJSON(),
 });
 
-export default admin;
+export default ally;

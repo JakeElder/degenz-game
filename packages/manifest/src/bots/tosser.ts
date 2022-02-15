@@ -6,7 +6,7 @@ import { Format } from "lib";
 
 const { FLAGS } = Intents;
 
-const admin: Bot = {
+const tosser: Bot = {
   id: "TOSSER",
   name: "Tosser Ted",
   clientOptions: { intents: [FLAGS.GUILDS] },
@@ -14,7 +14,7 @@ const admin: Bot = {
 };
 
 // `toss` command
-admin.commands.push({
+tosser.commands.push({
   id: "TOSS",
   permissions: [
     { id: Config.roleId("DEGEN"), type: 1, permission: true },
@@ -42,4 +42,4 @@ admin.commands.push({
     .toJSON(),
 });
 
-export default admin;
+export default tosser;

@@ -24,6 +24,7 @@ const runner = new Runner();
 
 async function main() {
   await connect(Config.env("MONGO_URI"));
+
   const admin = new bots.AdminBot(runner);
   Utils.su(admin);
 
@@ -32,6 +33,7 @@ async function main() {
   runner.add(new bots.AllyBot(runner));
   runner.add(new bots.TosserBot(runner));
   runner.add(new bots.MartClerkBot(runner));
+  runner.add(new bots.PrisonerBot(runner));
 }
 
 main();
