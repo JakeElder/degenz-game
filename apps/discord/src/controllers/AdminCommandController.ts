@@ -1,13 +1,17 @@
 import { CommandInteraction, GuildBasedChannel, GuildMember } from "discord.js";
 import Config from "app-config";
 import { bots } from "manifest";
-import { Tenancy } from "../legacy/types";
 import Events from "../Events";
-import { getTenanciesInDistrict, issueTokens, setDistrict } from "../legacy/db";
+import {
+  getTenanciesInDistrict,
+  issueTokens,
+  setOpenDistrict,
+} from "../legacy/db";
 import UserController from "./UserController";
 import { CommandController } from "../CommandController";
 import WaitingRoomController from "./WaitingRoomController";
 import Runner from "../Runner";
+import { DistrictId } from "types";
 
 export default class AllyCommandController extends CommandController {
   async respond(
@@ -34,7 +38,7 @@ export default class AllyCommandController extends CommandController {
     await i.deferReply({ ephemeral: true });
 
     const onboard = i.options.getBoolean("onboard");
-    const district = i.options.getNumber("district") as Tenancy["district"];
+    const district = i.options.getString("district") as DistrictId;
     const member = i.options.getMember("member", true) as GuildMember;
 
     const result = await UserController.init(
@@ -156,13 +160,10 @@ export default class AllyCommandController extends CommandController {
 
   async admin_open(i: CommandInteraction, runner: Runner) {
     const admin = runner.get("ADMIN");
-    const district = i.options.getNumber(
-      "district",
-      true
-    ) as Tenancy["district"];
+    const district = i.options.getString("district", true) as DistrictId;
 
     try {
-      await setDistrict(district);
+      await setOpenDistrict(district);
       const tenancies = await getTenanciesInDistrict(district);
       if (tenancies < Config.general("DISTRICT_CAPACITY")) {
         await WaitingRoomController.setStatus(true, admin);
@@ -177,7 +178,7 @@ export default class AllyCommandController extends CommandController {
     const admin = runner.get("ADMIN");
     try {
       await Promise.all([
-        setDistrict(null),
+        setOpenDistrict(null),
         WaitingRoomController.setStatus(false, admin),
       ]);
 

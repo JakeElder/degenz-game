@@ -8,6 +8,7 @@ export type EnvVars = Record<
   | "ARMORY_CLERK_BOT_TOKEN"
   | "BANKER_BOT_TOKEN"
   | "BIG_BROTHER_BOT_TOKEN"
+  | "DB_CONN_STRING"
   | "MART_CLERK_BOT_TOKEN"
   | "MIXPANEL_PROJECT_TOKEN"
   | "MONGO_URI"
@@ -53,12 +54,7 @@ export type CategoryId =
   | "ADMIN"
   | "COMMUNITY"
   | "BEAUTOPIA"
-  | "THE_PROJECTS_D1"
-  | "THE_PROJECTS_D2"
-  | "THE_PROJECTS_D3"
-  | "THE_PROJECTS_D4"
-  | "THE_PROJECTS_D5"
-  | "THE_PROJECTS_D6"
+  | `THE_${DistrictId}`
   | "PRISON";
 
 export type Category = {
@@ -106,3 +102,41 @@ export type Bot = {
   commands: Command[];
   clientOptions: ClientOptions;
 };
+
+export enum TenancyType {
+  AUTHORITY = "AUTHORITY",
+  GUEST = "GUEST",
+}
+
+export enum DistrictId {
+  PROJECTS_D1 = "PROJECTS_D1",
+  PROJECTS_D2 = "PROJECTS_D2",
+  PROJECTS_D3 = "PROJECTS_D3",
+  PROJECTS_D4 = "PROJECTS_D4",
+  PROJECTS_D5 = "PROJECTS_D5",
+  PROJECTS_D6 = "PROJECTS_D6",
+}
+
+export enum ShelterId {
+  SHELTER_D1 = "SHELTER_D1",
+  SHELTER_D2 = "SHELTER_D2",
+  SHELTER_D3 = "SHELTER_D3",
+  SHELTER_D4 = "SHELTER_D4",
+  SHELTER_D5 = "SHELTER_D5",
+  SHELTER_D6 = "SHELTER_D6",
+  SHELTER_D7 = "SHELTER_D7",
+  SHELTER_D8 = "SHELTER_D8",
+  SHELTER_D9 = "SHELTER_D9",
+  SHELTER_D10 = "SHELTER_D10",
+}
+
+export enum AppStateKey {
+  OPEN_DISTRICT = "OPEN_DISTRICT",
+}
+
+export enum Achievement {
+  HELP_REQUESTED = "HELP_REQUESTED",
+  STATS_CHECKED = "STATS_CHECKED",
+  JOINED_THE_DEGENZ = "JOINED_THE_DEGENZ",
+  SUPER_OBEDIENT = "SUPER_OBEDIENT",
+}

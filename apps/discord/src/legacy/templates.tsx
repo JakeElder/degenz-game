@@ -19,11 +19,6 @@ import {
 } from "./events";
 import { currency } from "./utils";
 import { TossGame } from "./types";
-import {
-  BalanceCheckedEvent,
-  MartItemPurchasedEvent,
-  TokenTransferEvent,
-} from "./world-events";
 
 ////////////////////////////////////////////////////////////////////////////////
 // General
@@ -49,7 +44,7 @@ export const Channel = ({ id }: { id: DiscordChannel["id"] }) => (
 
 export const Balance = ({ tokens }: { tokens: number }) => (
   <>
-    {emoji.get("moneybag")} {tokens}
+    {emoji.get("moneybag")} `{tokens}`
   </>
 );
 
@@ -166,25 +161,25 @@ export const TransferSuccessfulReply = ({
   </>
 );
 
-export const BalanceResultPublic = (p: BalanceCheckedEvent) => {
-  return (
-    <>
-      `{p.event}` **{p.data.member.displayName}** checked their balance and has{" "}
-      **{p.data.balance}
-      {currency({ long: false, bold: false })}**.
-    </>
-  );
-};
+// export const BalanceResultPublic = (p: BalanceCheckedEvent) => {
+//   return (
+//     <>
+//       `{p.event}` **{p.data.member.displayName}** checked their balance and has{" "}
+//       **{p.data.balance}
+//       {currency({ long: false, bold: false })}**.
+//     </>
+//   );
+// };
 
-export const TransferResultPublic = (p: TokenTransferEvent) => {
-  return (
-    <>
-      `{p.event}` **{p.data.member.displayName}** transferred **{p.data.amount}{" "}
-      {currency({ long: false, bold: false })}** to **
-      {p.data.recipient.displayName}**.
-    </>
-  );
-};
+// export const TransferResultPublic = (p: TokenTransferEvent) => {
+//   return (
+//     <>
+//       `{p.event}` **{p.data.member.displayName}** transferred **{p.data.amount}{" "}
+//       {currency({ long: false, bold: false })}** to **
+//       {p.data.recipient.displayName}**.
+//     </>
+//   );
+// };
 
 ////////////////////////////////////////////////////////////////////////////////
 // Hugh Donie
@@ -242,13 +237,13 @@ export const FailedBribeReply = ({
 // Merris
 ////////////////////////////////////////////////////////////////////////////////
 
-export const MartItemPurchaseResult = (p: MartItemPurchasedEvent) => {
-  return (
-    <>
-      `{p.event}` **{p.data.member.displayName}** bought **{p.data.item.name}**.
-    </>
-  );
-};
+// export const MartItemPurchaseResult = (p: MartItemPurchasedEvent) => {
+//   return (
+//     <>
+//       `{p.event}` **{p.data.member.displayName}** bought **{p.data.item.name}**.
+//     </>
+//   );
+// };
 
 ////////////////////////////////////////////////////////////////////////////////
 // Ivan 6000

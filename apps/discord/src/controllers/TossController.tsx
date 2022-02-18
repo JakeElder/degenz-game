@@ -53,12 +53,12 @@ export default class TossController {
         challenger: {
           user: challengerUser,
           member: challengerMember,
-          balanceAvailable: challengerUser!.tokens >= amount,
+          balanceAvailable: challengerUser!.gbt >= amount,
         },
         challengee: {
           user: challengeeUser,
           member: challengeeMember,
-          balanceAvailable: isTed ? true : challengeeUser!.tokens >= amount,
+          balanceAvailable: isTed ? true : challengeeUser!.gbt >= amount,
         },
       };
     })();
@@ -132,9 +132,9 @@ export default class TossController {
       };
     }
 
-    g.challenger.user = await getUser(g.challenger.user!.id);
+    g.challenger.user = await getUser(g.challenger.user!.discordId);
 
-    if (g.challenger.user!.tokens < g.amount) {
+    if (g.challenger.user!.gbt < g.amount) {
       g.challenger.balanceAvailable = false;
       i.followUp({
         content: `You don't have ${g.amount} to bet.`,
@@ -152,11 +152,11 @@ export default class TossController {
       g.winner = g.result === g.choice ? "CHALLENGER" : "CHALLENGEE";
 
       await transactBalance(
-        g.challenger.user!.id,
+        g.challenger.user!.discordId,
         g.winner === "CHALLENGER" ? g.amount - g.rake : -g.amount
       );
 
-      g.challenger.user = await getUser(g.challenger.user!.id);
+      g.challenger.user = await getUser(g.challenger.user!.discordId);
       await i.followUp({
         embeds: [
           TossController.makeTossResultEmbed({ g, player: "CHALLENGER" }),
@@ -171,7 +171,7 @@ export default class TossController {
     // Handle bets agains other players
 
     const apt = await admin.getTextChannel(
-      g.challengee.user!.tenancies![0].propertyId
+      g.challengee.user!.primaryTenancy.discordChannelId
     );
     await apt.permissionOverwrites.create(Config.roleId("TOSSER_BOT"), {
       VIEW_CHANNEL: true,
@@ -180,7 +180,7 @@ export default class TossController {
     });
 
     const tedApt = (await i.client.channels.fetch(
-      g.challengee.user!.tenancies![0].propertyId
+      g.challengee.user!.primaryTenancy.discordChannelId
     )) as TextChannel;
 
     const [challengeMessage] = await Promise.all([
@@ -273,13 +273,13 @@ export default class TossController {
     }
 
     [g.challengee.user, g.challenger.user] = await Promise.all([
-      getUser(g.challengee.user!.id),
-      getUser(g.challenger.user!.id),
+      getUser(g.challengee.user!.discordId),
+      getUser(g.challenger.user!.discordId),
     ]);
 
     // Handle insufficient balance
-    g.challenger.balanceAvailable = g.challenger.user!.tokens >= g.amount;
-    g.challengee.balanceAvailable = g.challengee.user!.tokens >= g.amount;
+    g.challenger.balanceAvailable = g.challenger.user!.gbt >= g.amount;
+    g.challengee.balanceAvailable = g.challengee.user!.gbt >= g.amount;
 
     if (!g.challenger.balanceAvailable || !g.challengee.balanceAvailable) {
       await i.reply(
@@ -300,18 +300,18 @@ export default class TossController {
     // Update balances
     await Promise.all([
       transactBalance(
-        g.challenger.user!.id,
+        g.challenger.user!.discordId,
         g.winner === "CHALLENGER" ? g.amount - g.rake : -g.amount
       ),
       transactBalance(
-        g.challengee.user!.id,
+        g.challengee.user!.discordId,
         g.winner === "CHALLENGEE" ? g.amount - g.rake : -g.amount
       ),
     ]);
 
     [g.challengee.user, g.challenger.user] = await Promise.all([
-      getUser(g.challengee.user!.id),
-      getUser(g.challenger.user!.id),
+      getUser(g.challengee.user!.discordId),
+      getUser(g.challenger.user!.discordId),
     ]);
 
     Promise.all([
@@ -379,7 +379,7 @@ export default class TossController {
       .setImage(gifs[result][win ? "win" : "lose"]);
 
     const net = win ? g.amount - g.rake : -g.amount;
-    const before = p.user!.tokens - net;
+    const before = p.user!.gbt - net;
 
     if (win) {
       embed.addField("Return", `${g.amount + net}`, true);
@@ -387,7 +387,7 @@ export default class TossController {
 
     embed.addField(
       `New ${Format.currency({ plural: false })} Balance`,
-      `\`${before}\` => \u{1f4b0} \`${p.user!.tokens}\` (${
+      `\`${before}\` => \u{1f4b0} \`${p.user!.gbt}\` (${
         win ? `+${g.amount - g.rake}` : `-${g.amount}`
       }) `
     );

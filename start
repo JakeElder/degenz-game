@@ -6,6 +6,7 @@ packages=(
   packages/app-config
   packages/manifest
   packages/lib
+  packages/db
   apps/discord
   apps/cli
 )

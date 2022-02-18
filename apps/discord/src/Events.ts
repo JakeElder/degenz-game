@@ -2,7 +2,7 @@ import { CommandInteraction, GuildBasedChannel } from "discord.js";
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
 import { Bot } from "types";
-import { User } from "./legacy/types";
+import { User } from "db";
 
 export type Events = {
   BOT_READY: (e: { bot: Bot }) => void;

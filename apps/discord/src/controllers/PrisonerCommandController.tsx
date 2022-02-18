@@ -8,6 +8,7 @@ import {
 } from "../legacy/templates";
 import Runner from "../Runner";
 import Utils from "../Utils";
+import UserController from "./UserController";
 
 const { r } = Utils;
 
@@ -30,5 +31,10 @@ export default class PrisonerCommandController extends CommandController {
         ephemeral: true,
       });
     }
+
+    await Utils.delay(2000);
+
+    const admin = runner.get("ADMIN");
+    await UserController.release(user.discordId, admin);
   }
 }

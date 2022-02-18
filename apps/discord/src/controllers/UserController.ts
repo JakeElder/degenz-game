@@ -1,46 +1,43 @@
 import { GuildMember } from "discord.js";
 import Config from "app-config";
 import { paramCase } from "change-case";
+import { userMention } from "@discordjs/builders";
+import { DistrictId } from "types";
+import { User } from "db";
 import Events from "../Events";
 import AdminBot from "../bots/AdminBot";
 import Utils from "../Utils";
 import {
   addUser,
-  createCell,
-  deleteCell,
   deleteUser,
-  getCell,
-  getDistrict,
+  getAvailableCellNumber,
+  getOpenDistrict,
   getTenanciesInDistrict,
   getUser,
-  updateCellChannelId,
 } from "../legacy/db";
-import { User } from "../legacy/types";
-import { Tenancy } from "../legacy/types";
 import WaitingRoomController from "./WaitingRoomController";
 import { PrisonerBot } from "../bots";
-import { userMention } from "@discordjs/builders";
 
 export default class UserController {
   static async init(
     memberId: GuildMember["id"],
     onboard: boolean = true,
-    district: Tenancy["district"] | null = null,
+    district: DistrictId | null,
     bot: AdminBot
   ) {
     let [member, user] = await Promise.all([
       bot.getMember(memberId),
-      getUser(memberId),
+      User.findOne({ where: { discordId: memberId } }),
     ]);
 
     let publicDistrict = false;
 
     if (!district) {
       publicDistrict = true;
-      district = await getDistrict();
+      district = await getOpenDistrict();
     }
 
-    if (user !== null) {
+    if (typeof user !== "undefined") {
       return { success: false, code: "ALREADY_INITIATED" };
     }
 
@@ -54,20 +51,13 @@ export default class UserController {
       return { success: false, code: "DISTRICT_FULL" };
     }
 
-    const districtId = [
-      Config.categoryId("THE_PROJECTS_D1"),
-      Config.categoryId("THE_PROJECTS_D2"),
-      Config.categoryId("THE_PROJECTS_D3"),
-      Config.categoryId("THE_PROJECTS_D4"),
-      Config.categoryId("THE_PROJECTS_D5"),
-      Config.categoryId("THE_PROJECTS_D6"),
-    ][district - 1];
+    const parent = Config.categoryId(`THE_${district}`);
 
     const apartment = await bot.guild.channels.create(
       `\u2302\uFF5C${paramCase(member.displayName)}s-apartment`,
       {
         type: "GUILD_TEXT",
-        parent: districtId,
+        parent,
         permissionOverwrites: [
           {
             id: Config.roleId("EVERYONE"),
@@ -88,7 +78,7 @@ export default class UserController {
     user = await addUser({
       member,
       apartmentId: apartment.id,
-      district,
+      districtId: district,
       tokens: onboard ? 0 : 100,
     });
 
@@ -120,7 +110,8 @@ export default class UserController {
 
     // Remove apartment
     try {
-      const apartment = await bot.getTextChannel(user.tenancies![0].propertyId);
+      const tenancy = user.primaryTenancy;
+      const apartment = await bot.getTextChannel(tenancy.discordChannelId);
       await apartment.delete();
     } catch (e) {
       // this.error(e);
@@ -137,8 +128,9 @@ export default class UserController {
     await deleteUser(member);
 
     (async () => {
-      const district = await getDistrict();
-      if (district === user.tenancies![0].district) {
+      const district = await getOpenDistrict();
+      const newTenancy = user.primaryTenancy;
+      if (district === newTenancy.district) {
         const tenancies = await getTenanciesInDistrict(district);
         if (tenancies < Config.general("DISTRICT_CAPACITY")) {
           WaitingRoomController.setStatus(true, bot);
@@ -151,10 +143,10 @@ export default class UserController {
 
   static async imprison(
     memberId: GuildMember["id"],
-    bot: AdminBot,
+    admin: AdminBot,
     prisoner: PrisonerBot
   ) {
-    const member = await bot.getMember(memberId);
+    const member = await admin.getMember(memberId);
     const user = await getUser(member.id);
 
     if (user === null) {
@@ -169,9 +161,9 @@ export default class UserController {
           i !== Config.roleId("SERVER_BOOSTER")
       );
 
-    const { number } = (await createCell(member.id, entryRoleIds))!;
+    const number = await getAvailableCellNumber();
 
-    const cell = await bot.guild.channels.create(
+    const cell = await admin.guild.channels.create(
       `\u25A8\uFF5Ccell-${number.toString().padStart(2, "0")}`,
       {
         type: "GUILD_TEXT",
@@ -197,12 +189,18 @@ export default class UserController {
       }
     );
 
-    await updateCellChannelId(member.id, cell.id);
-
-    const apartment = await bot.getTextChannel(user.tenancies![0].propertyId);
+    const primaryTenancy = user.primaryTenancy;
+    const apartment = await admin.getTextChannel(
+      primaryTenancy.discordChannelId
+    );
 
     await Promise.all([
-      apartment.permissionOverwrites.delete(user.id),
+      user.imprison({
+        cellDiscordChannelId: cell.id,
+        cellNumber: number,
+        entryRoleIds,
+      }),
+      apartment.permissionOverwrites.delete(user.discordId),
       member.roles.remove(entryRoleIds),
     ]);
 
@@ -216,8 +214,7 @@ export default class UserController {
   }
 
   static async onboardPrisoner(user: User, prisoner: PrisonerBot) {
-    const cell = await getCell(user.id);
-    const channel = await prisoner.getTextChannel(cell!.cellId!);
+    const channel = await prisoner.getTextChannel(user.cellDiscordChannelId);
     await channel.send({
       embeds: [
         {
@@ -230,10 +227,9 @@ export default class UserController {
 
     await Utils.delay(1500);
 
+    const member = userMention(user.discordId);
     await channel.send(
-      `Tough break ${userMention(
-        user.id
-      )}. I see they've thrown you in here too.`
+      `Tough break ${member}. I see they've thrown you in here too.`
     );
 
     await Utils.delay(1500);
@@ -251,41 +247,41 @@ export default class UserController {
     );
   }
 
-  static async release(memberId: GuildMember["id"], bot: AdminBot) {
-    const member = await bot.getMember(memberId);
-    const cell = await getCell(memberId);
+  static async release(memberId: GuildMember["id"], admin: AdminBot) {
+    const member = await admin.getMember(memberId);
     const user = await getUser(member.id);
 
-    if (user === null) {
-      return { success: false, code: "USER_NOT_FOUND" };
+    if (!user.imprisoned) {
+      return { success: false, code: "NOT_IMPRISONED" };
     }
 
-    if (cell === null) {
-      return { success: false, code: "CELL_NOT_FOUND" };
-    }
+    const community = await admin.getTextChannel(
+      Config.categoryId("COMMUNITY")
+    );
 
-    const community = await bot.getTextChannel(Config.categoryId("COMMUNITY"));
-    const apartment = await bot.getTextChannel(user.tenancies![0].propertyId);
+    const apartment = await admin.getTextChannel(
+      user.primaryTenancy.discordChannelId
+    );
 
     await Promise.all([
       apartment.permissionOverwrites.create(member.id, { VIEW_CHANNEL: true }),
-      community.permissionOverwrites.create(user.id, {
-        VIEW_CHANNEL: null,
-      }),
-      member.roles.add(cell.entryRoleIds),
+      community.permissionOverwrites.create(member.id, { VIEW_CHANNEL: null }),
+      member.roles.add(user.imprisonment.entryRoleIds),
     ]);
 
     await member.roles.remove(Config.roleId("PRISONER"));
 
-    const cellChannel = await bot.getTextChannel(cell.cellId!);
+    const cellChannel = await admin.getTextChannel(
+      user.imprisonment.cellDiscordChannelId
+    );
     await cellChannel.delete();
-    await deleteCell(cell.userId);
+    await user.imprisonment.softRemove();
 
     return { success: true, code: "USER_RELEASED" };
   }
 
   static async openWorld(user: User, admin: AdminBot) {
-    const member = await admin.getMember(user.id);
+    const member = await admin.getMember(user.discordId);
     await member.roles.add(Config.roleId("DEGEN"));
     await member.roles.remove(Config.roleId("VERIFIED"));
   }

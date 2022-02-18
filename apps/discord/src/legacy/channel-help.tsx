@@ -1,8 +1,8 @@
 import { GuildMember, TextBasedChannel } from "discord.js";
 import React from "react";
 import Config from "app-config";
+import { Imprisonment, User as UserType } from "db";
 import { Channel, User } from "./templates";
-import { Cell, User as UserType } from "./types";
 import { currency } from "./utils";
 
 const Info = ({
@@ -59,19 +59,19 @@ export const ChannelHelpOutput = ({
   channel,
   member,
   type = "WORLD",
-  cell,
+  cellNumber,
   apartmentUser,
 }: {
   channel: TextBasedChannel;
   member: GuildMember;
   type?: "WORLD" | "APARTMENT" | "CELL";
-  cell?: Cell | null;
+  cellNumber?: Imprisonment["cellNumber"] | null;
   apartmentUser?: UserType | null;
 }) => {
   if (type === "APARTMENT") {
     return (
       <Info
-        channelName={`${apartmentUser!.name}'s Apartment`}
+        channelName={`${apartmentUser!.displayName}'s Apartment`}
         commands={[
           <>**`/eat`** - Eat food from your inventory.</>,
           <>**`/stats`** - Check your own or someone elses stats.</>,
@@ -94,7 +94,7 @@ export const ChannelHelpOutput = ({
   if (type === "CELL") {
     return (
       <Info
-        channelName={`Cell ${cell!.number.toString().padStart(2, "0")}`}
+        channelName={`Cell ${cellNumber!.toString().padStart(2, "0")}`}
         commands={[
           <>**`/bribe`** - Eat food from your inventory.</>,
           <>**`/escape`** - Check your own or someone elses stats.</>,

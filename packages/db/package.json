@@ -1,0 +1,23 @@
+{
+  "name": "db",
+  "version": "0.0.0",
+  "license": "UNLICENSED",
+  "main": "./dist/index.js",
+  "scripts": {
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.18",
+    "tsconfig": "*",
+    "typescript": "^4.5.3"
+  },
+  "dependencies": {
+    "discord.js": "^13.6.0",
+    "pg": "^8.7.3",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.2.41",
+    "typeorm-naming-strategies": "^2.0.0",
+    "types": "*"
+  }
+}

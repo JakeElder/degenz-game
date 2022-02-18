@@ -1,7 +1,8 @@
 import { MessageEmbed } from "discord.js";
+import { User } from "db";
+import { Achievement } from "types";
 import { AdminBot } from "../bots";
 import { addAchievement, transactBalance } from "../legacy/db";
-import { Achievement, User } from "../legacy/types";
 import { currency } from "../legacy/utils";
 
 export default class AchievementController {
@@ -13,16 +14,18 @@ export default class AchievementController {
   };
 
   static async award(user: User, achievement: Achievement, admin: AdminBot) {
-    if (user.achievements.includes(achievement)) {
+    if (user.hasAchievement(achievement)) {
       return;
     }
 
-    const apartment = await admin.getTextChannel(user.tenancies![0].propertyId);
-    const member = await admin.getMember(user.id);
+    const apartment = await admin.getTextChannel(
+      user.primaryTenancy.discordChannelId
+    );
+    const member = await admin.getMember(user.discordId);
 
     await Promise.all([
-      transactBalance(user.id, 10),
-      addAchievement(user.id, achievement),
+      transactBalance(user.discordId, 10),
+      addAchievement(user.discordId, achievement),
     ]);
 
     let embed = new MessageEmbed()

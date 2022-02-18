@@ -18,7 +18,8 @@
       "../../packages/types/dist",
       "../../packages/manifest/dist",
       "../../packages/lib/dist",
-      "../../packages/app-config/dist"
+      "../../packages/app-config/dist",
+      "../../packages/db/dist"
     ]
   },
   "dependencies": {
@@ -27,6 +28,7 @@
     "app-config": "*",
     "bson-objectid": "^2.0.2",
     "change-case": "^4.1.2",
+    "db": "*",
     "delay": "^5.0.0",
     "discord.js": "^13.6.0",
     "lib": "*",
@@ -40,6 +42,7 @@
     "react-dom": "^17.0.2",
     "table": "^6.8.0",
     "turndown": "^7.1.1",
+    "typeorm": "^0.2.41",
     "types": "*",
     "uuid": "^8.3.2"
   },

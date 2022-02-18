@@ -9,7 +9,7 @@ import { Format } from "lib";
 import { CommandController } from "../CommandController";
 import { getMartItems, sellItem } from "../legacy/db";
 import Runner from "../Runner";
-import { MartItemPurchasedEvent } from "../legacy/world-events";
+import { MartItem } from "db";
 
 export default class MartClerkCommandController extends CommandController {
   async stock(i: CommandInteraction, runner: Runner) {
@@ -54,13 +54,13 @@ export default class MartClerkCommandController extends CommandController {
         .addOptions([
           ...items.map((i) => {
             return {
-              label: `${i.name}`,
+              label: `${i.description}`,
               description: `[${i.stock}] @ [${i.price} ${Format.currency({
                 bold: false,
                 long: false,
                 copyright: false,
               })}] ${i.description}`,
-              value: i.id,
+              value: i.symbol,
             };
           }),
         ])
@@ -76,31 +76,29 @@ export default class MartClerkCommandController extends CommandController {
   }
 
   async handleItemSelect(i: SelectMenuInteraction) {
-    const items = await getMartItems();
+    const item = await MartItem.findOne({ where: { symbol: i.values[0] } });
 
-    const pi = items.find((item) => i.values[0] === item.id);
-
-    if (!pi) {
+    if (!item) {
       i.update({ content: "Error", components: [] });
       return;
     }
 
-    if (pi.stock === 0) {
-      i.update({
-        content: `You want a **${pi.name}**? It's out of stock.\nChoose something else or scram.`,
-      });
-    }
-
-    const res = await sellItem(pi.id, i.user.id);
+    const res = await sellItem(item, i.user.id);
 
     if (res.success) {
       await i.update({
-        content: `Ok. 1 **${pi.name}** added to your inventory.`,
+        content: `Ok. 1 **${item.name}** added to your inventory.`,
         components: [],
       });
       return;
+    } else {
+      if (res.code === "INSUFFICIENT_BALANCE") {
+        i.update({
+          content: `You want a **${item.name}**? It's out of stock.\nChoose something else or scram.`,
+        });
+        return;
+      }
+      await i.update({ content: "Error", components: [] });
     }
-
-    await i.update({ content: "Error", components: [] });
   }
 }

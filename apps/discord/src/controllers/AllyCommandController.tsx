@@ -11,15 +11,15 @@ import Config from "app-config";
 import { CommandController } from "../CommandController";
 import {
   eatItem,
-  getCellByChannelId,
+  getImprisonmentByCellChannelId,
   getLeaders,
   getMartItems,
   getUser,
   getUserByApartment,
 } from "../legacy/db";
+import { Achievement as AchievementEnum } from "types";
 import { groupBy } from "lodash";
 import Runner from "../Runner";
-import { Achievement } from "../legacy/types";
 import OnboardController from "./OnboardController";
 import {
   makeInventoryEmbed,
@@ -36,7 +36,7 @@ export default class AllyCommandController extends CommandController {
     const items = await getMartItems();
     const user = (await getUser(i.user.id))!;
 
-    const groups = groupBy(user.items, "itemId");
+    const groups = groupBy(user.martItemOwnerships, "item.symbol");
 
     const row = new MessageActionRow().addComponents(
       new MessageSelectMenu()
@@ -44,7 +44,7 @@ export default class AllyCommandController extends CommandController {
         .setPlaceholder("Choose from your inventory")
         .addOptions(
           Object.keys(groups).map((g) => {
-            const i = items.find((i) => i.id === g)!;
+            const i = items.find((i) => i.symbol === g)!;
             return {
               label: `${i.name}`,
               description: `[${groups[g].length}] available [effect] +${i.strengthIncrease} stength`,
@@ -65,7 +65,7 @@ export default class AllyCommandController extends CommandController {
     const member = i.member as GuildMember;
 
     if (member.roles.cache.has(Config.roleId("DEGEN"))) {
-      await i.reply("What.. Again?");
+      await i.reply({ content: "What.. Again?", ephemeral: true });
       return;
     }
 
@@ -82,14 +82,14 @@ export default class AllyCommandController extends CommandController {
     const ally = runner.get("ALLY");
     const channel = i.channel as TextBasedChannel;
 
-    const [member, apartmentUser, cell] = await Promise.all([
+    const [member, apartmentUser, imprisonment] = await Promise.all([
       ally.getMember(i.user.id),
       getUserByApartment(channel.id),
-      getCellByChannelId(channel.id),
+      getImprisonmentByCellChannelId(channel.id),
     ]);
 
-    const isApartment = apartmentUser !== null;
-    const isCell = cell !== null;
+    const isApartment = typeof apartmentUser !== "undefined";
+    const isCell = typeof imprisonment !== "undefined";
 
     let t: React.ComponentProps<typeof ChannelHelpOutput>["type"] = (() => {
       if (isCell) return "CELL";
@@ -103,7 +103,7 @@ export default class AllyCommandController extends CommandController {
           channel={i.channel as TextBasedChannel}
           member={member}
           type={t}
-          cell={cell}
+          cellNumber={isCell ? imprisonment.cellNumber : undefined}
           apartmentUser={apartmentUser}
         />
       ),
@@ -112,7 +112,7 @@ export default class AllyCommandController extends CommandController {
 
     const user = await getUser(member.id);
 
-    if (!user!.achievements.includes(Achievement.HELP_REQUESTED)) {
+    if (!user.hasAchievement(AchievementEnum.HELP_REQUESTED)) {
       await OnboardController.partFive(
         user!,
         runner.get("ADMIN"),
@@ -145,7 +145,7 @@ export default class AllyCommandController extends CommandController {
     const e = makeUserStatsEmbed(user, member);
     await i.reply({ embeds: [e], ephemeral: true });
 
-    if (!user.achievements.includes(Achievement.STATS_CHECKED)) {
+    if (!user.hasAchievement(AchievementEnum.STATS_CHECKED)) {
       await OnboardController.partFour(
         user!,
         runner.get("ADMIN"),
@@ -204,7 +204,7 @@ export default class AllyCommandController extends CommandController {
     const items = await getMartItems();
     const res = await eatItem(i.values[0], i.user.id);
 
-    const item = items.find((item) => item.id === i.values[0])!;
+    const item = items.find((item) => item.symbol === i.values[0])!;
 
     if (res.success) {
       await i.update({

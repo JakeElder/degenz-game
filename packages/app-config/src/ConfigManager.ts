@@ -13,8 +13,6 @@ const configs = {
   production: PROD_CONFIG,
 };
 
-const config = configs[NODE_ENV];
-
 const env = process.env as EnvVars;
 
 const BOT_TOKENS: Record<BotId, string> = {
@@ -33,30 +31,63 @@ const BOT_TOKENS: Record<BotId, string> = {
 const ENV = {
   MIXPANEL_PROJECT_TOKEN: env.MIXPANEL_PROJECT_TOKEN,
   MONGO_URI: env.MONGO_URI,
+  DB_CONN_STRING: env.DB_CONN_STRING,
   ROLLBAR_TOKEN: env.ROLLBAR_TOKEN,
 };
 
 export default class ConfigManager {
-  static general<T extends keyof typeof config.GENERAL>(
-    k: T
-  ): typeof config.GENERAL[T] {
-    return config.GENERAL[k];
+  static general<T extends keyof typeof configs["development"]["GENERAL"]>(
+    k: T,
+    { env }: { env: keyof typeof configs } = { env: NODE_ENV }
+  ): typeof configs["development"]["GENERAL"][T] {
+    return configs[env].GENERAL[k];
   }
 
   static env<T extends keyof typeof ENV>(k: T): typeof ENV[T] {
     return ENV[k];
   }
 
-  static categoryId = (k: CategoryId) => config.CATEGORY_IDS[k];
-  static channelId = (k: ChannelId) => config.CHANNEL_IDS[k];
-  static roleId = (k: RoleId) => config.ROLE_IDS[k];
-  static clientId = (k: BotId) => config.CLIENT_IDS[k];
-  static botToken = (k: BotId) => BOT_TOKENS[k];
+  static categoryId(
+    k: CategoryId,
+    { env }: { env: keyof typeof configs } = { env: NODE_ENV }
+  ) {
+    return configs[env].CATEGORY_IDS[k];
+  }
 
-  static clientIds = () => config.CLIENT_IDS;
+  static channelId(
+    k: ChannelId,
+    { env }: { env: keyof typeof configs } = { env: NODE_ENV }
+  ) {
+    return configs[env].CHANNEL_IDS[k];
+  }
 
-  static reverseClientId = (id: string) => {
-    for (const [key, value] of Object.entries(config.CLIENT_IDS)) {
+  static roleId(
+    k: RoleId,
+    { env }: { env: keyof typeof configs } = { env: NODE_ENV }
+  ) {
+    return configs[env].ROLE_IDS[k];
+  }
+
+  static clientId(
+    k: BotId,
+    { env }: { env: keyof typeof configs } = { env: NODE_ENV }
+  ) {
+    return configs[env].CLIENT_IDS[k];
+  }
+
+  static botToken(k: BotId) {
+    return BOT_TOKENS[k];
+  }
+
+  static clientIds({ env }: { env: keyof typeof configs } = { env: NODE_ENV }) {
+    return configs[env].CLIENT_IDS;
+  }
+
+  static reverseClientId = (
+    id: string,
+    { env }: { env: keyof typeof configs } = { env: NODE_ENV }
+  ) => {
+    for (const [key, value] of Object.entries(configs[env].CLIENT_IDS)) {
       if (value === id) {
         return key;
       }

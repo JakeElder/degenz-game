@@ -2,7 +2,7 @@ import { capitalCase } from "change-case";
 import { GuildMember, MessageButton, MessageEmbedOptions } from "discord.js";
 import emoji from "node-emoji";
 import { groupBy } from "lodash";
-import { MartItem, User } from "./types";
+import { User, MartItem } from "db";
 
 export function calculateTossRake(amount: number) {
   return Math.max(Math.ceil(amount * 0.02), 1);
@@ -63,8 +63,8 @@ export function makeUserStatsEmbed(user: User, member: GuildMember) {
 
   if (user.achievements.length) {
     longestAchievementLength = [...user.achievements].sort(
-      (a, b) => b.length - a.length
-    )[0].length;
+      (a, b) => b.symbol.length - a.symbol.length
+    )[0].symbol.length;
   } else {
     longestAchievementLength = 0;
   }
@@ -88,12 +88,12 @@ export function makeUserStatsEmbed(user: User, member: GuildMember) {
     },
     description: "`Level 1 Degen`",
     fields: [
-      { name: c, value: `\`\`\`${user.tokens.toLocaleString()}\`\`\`` },
+      { name: c, value: `\`\`\`${user.gbt.toLocaleString()}\`\`\`` },
       { name: "Strength", value: `\`\`\`${strengthBar}\`\`\`` },
       {
         name: "Achievements",
         value: `\`\`\`${user.achievements
-          .map((a) => `${TROPHY} ${a}`)
+          .map((a) => `${TROPHY} ${a.symbol}`)
           .join("\n")}\`\`\``,
       },
     ],
@@ -107,7 +107,7 @@ export function makeInventoryEmbed(
   user: User,
   member: GuildMember
 ) {
-  const groups = groupBy(user.items, "itemId");
+  const groups = groupBy(user.martItemOwnerships, "item.symbol");
 
   const longestItemName = [...items].sort(
     (a, b) => b.name.length - a.name.length
@@ -123,7 +123,7 @@ export function makeInventoryEmbed(
   const foods = [];
 
   for (let group of Object.keys(groups)) {
-    const name = items.find((i) => i.id === group)!.name;
+    const name = items.find((i) => i.symbol === group)!.name;
     const amount = groups[group].length.toLocaleString();
     foods.push(
       `${name.padEnd(`${longestItemName}   `.length)} | ${amount.padEnd(
@@ -176,12 +176,12 @@ export function makeInventoryEmbed(
 
 export function makeLeaderboardEmbed(users: User[]) {
   const longestNameLength = [...users].sort((a, b) => {
-    return b.name.length - a.name.length;
-  })[0].name.length;
+    return b.displayName.length - a.displayName.length;
+  })[0].displayName.length;
 
   const highestTokensLength = [...users]
-    .sort((a, b) => b.tokens - a.tokens)[0]
-    .tokens.toLocaleString().length;
+    .sort((a, b) => b.gbt - a.gbt)[0]
+    .gbt.toLocaleString().length;
 
   const TKN = currency({ long: false, bold: false });
 
@@ -217,7 +217,7 @@ export function makeLeaderboardEmbed(users: User[]) {
   const t = [
     `${header}`,
     ` ${"-".repeat(WIDTH - 2)} `,
-    ...users.map((l, idx) => format(idx + 1, l.name, l.tokens)),
+    ...users.map((l, idx) => format(idx + 1, l.displayName, l.gbt)),
   ];
 
   const m: MessageEmbedOptions = {

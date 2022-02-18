@@ -1,228 +1,121 @@
-import { GuildMember, TextChannel } from "discord.js";
-import { Db, MongoClient, Long } from "mongodb";
-import { v4 as uuid } from "uuid";
+import { GuildMember } from "discord.js";
 import {
-  User,
-  MartItem,
-  UserItemType,
   Achievement,
-  Cell,
+  AppState,
+  Imprisonment,
+  MartItem,
+  MartItemOwnership,
   Tenancy,
-  PlayerModel,
-} from "./types";
-
-let db: Db;
-let mongo: MongoClient;
-
-export async function connect(uri: string) {
-  mongo = new MongoClient(uri);
-  db = mongo.db();
-  await mongo.connect();
-}
-
-export async function disconnect() {
-  await mongo.close();
-}
-
-function playerToUser(player: PlayerModel): User {
-  const user: User = {
-    id: player.Player.DiscordId.toString(),
-    strength: player.strength,
-    achievements: player.achievements,
-    items: player.items,
-    name: player.Player.Name,
-    tokens: player.Player.Bank,
-  };
-
-  if (player.tenancies) {
-    user.tenancies = player.tenancies;
-  }
-
-  return user;
-}
+  User,
+} from "db";
+import { Achievement as AchievementEnum } from "types";
+import { DistrictId, TenancyType } from "types";
+import { In } from "typeorm";
 
 export async function getMartItems() {
-  const martItems = db.collection<MartItem>("mart-items");
-  const items = await martItems.find({}).sort({ price: -1 }).toArray();
-  return items;
+  return MartItem.find({ order: { price: -1 } });
 }
 
-export async function getLeaders(amount: number = 50) {
-  const col = db.collection<PlayerModel>("players");
-  const players = col
-    .find()
-    .sort({ "Player.Bank": -1 })
-    .limit(amount)
-    .toArray();
-  const users = (await players).map((p) => playerToUser(p));
-  return users;
+export async function getLeaders(take: number = 50) {
+  return User.find({ order: { gbt: -1 }, take });
 }
 
 export async function getUser(id: string) {
-  const players = db.collection<PlayerModel>("players");
-
-  const p = await players
-    .aggregate<PlayerModel & { tenancies: Tenancy[] }>([
-      { $match: { "Player.DiscordId": new Long(id) } },
-      {
-        $lookup: {
-          from: "tenancies",
-          localField: "Player.DiscordId",
-          foreignField: "userId",
-          as: "tenancies",
-        },
-      },
-    ])
-    .limit(1)
-    .toArray();
-
-  if (!p[0]) {
-    return null;
-  }
-
-  return playerToUser(p[0]);
+  return User.findOneOrFail({
+    where: { discordId: id },
+    relations: [
+      "tenancies",
+      "imprisonments",
+      "achievements",
+      "martItemOwnerships",
+    ],
+  });
 }
 
 export async function getUsers() {
-  const players = db.collection<PlayerModel>("players");
-
-  const p = players.aggregate<PlayerModel & { tenancies: Tenancy[] }>([
-    {
-      $lookup: {
-        from: "tenancies",
-        localField: "Player.DiscordId",
-        foreignField: "userId",
-        as: "tenancies",
-      },
-    },
-  ]);
-
-  const allPlayers = await p.toArray();
-
-  if (allPlayers === null) {
-    return null;
-  }
-
-  return allPlayers.map(playerToUser);
+  return User.find({
+    relations: [
+      "tenancies",
+      "imprisonments",
+      "achievements",
+      "martItemOwnerships",
+    ],
+  });
 }
 
-export async function getDistrict(): Promise<Tenancy["district"] | null> {
-  const game = db.collection("game");
-  const g = await game.findOne({});
-  return g!.openDistrict;
+export async function getOpenDistrict() {
+  return AppState.openDistrict();
 }
 
-export async function setDistrict(district: number | null) {
-  const game = db.collection("game");
-  const g = await game.updateOne({}, { $set: { openDistrict: district } });
-  return g;
+export async function setOpenDistrict(districtId: DistrictId | null) {
+  return AppState.openDistrict(districtId);
 }
 
-export async function getTenanciesInDistrict(number: Tenancy["district"]) {
-  const tenancies = db.collection<Tenancy>("tenancies");
-
-  const t = await tenancies.find({ district: number }).count();
-
-  return t;
+export async function getTenanciesInDistrict(districtId: DistrictId) {
+  return Tenancy.count({ where: { district: districtId } });
 }
 
 export async function getUserByApartment(id: string) {
-  const tenancies = db.collection<Tenancy>("tenancies");
-  const players = db.collection<PlayerModel>("players");
-
-  const t = await tenancies.findOne({ propertyId: id });
-
-  if (t === null) {
-    return null;
-  }
-
-  const player = await players.findOne({ "Player.DiscordId": t.userId });
-
-  if (player === null) {
-    return null;
-  }
-
-  return playerToUser(player);
+  const t = await Tenancy.findOne({
+    relations: ["user"],
+    where: { discordChannelId: id, type: TenancyType.AUTHORITY },
+  });
+  return t?.user;
 }
 
-export async function eatItem(itemId: MartItem["id"], memberId: User["id"]) {
-  const items = await getMartItems();
-  const pi = items.find((i) => i.id === itemId);
+export async function eatItem(
+  itemSymbol: MartItem["symbol"],
+  memberId: User["discordId"]
+) {
+  const item = await MartItem.findOne({ where: { symbol: itemSymbol } });
 
-  if (!pi) {
+  if (!item) {
     return { success: false, code: "ITEM_NOT_FOUND" };
   }
 
-  const players = db.collection<PlayerModel>("players");
+  const user = await User.findOne({ where: { discordId: memberId } });
 
-  try {
-    const player = (await players.findOne({
-      "Player.DiscordId": new Long(memberId),
-    }))!;
-    const user = playerToUser(player);
-
-    if (!user.items.find((i) => i.itemId === itemId)) {
-      return { success: false, code: "NOT_IN_INVENTORY" };
-    }
-
-    const idx = user.items.findIndex((i) => i.itemId === itemId);
-    user.items.splice(idx, 1);
-
-    await players.updateOne(
-      {
-        "Player.DiscordId": new Long(memberId),
-      },
-      {
-        $set: {
-          items: user.items,
-          strength: Math.max(
-            Math.min(100, user.strength + pi.strengthIncrease),
-            0
-          ),
-        },
-      }
-    );
-  } catch (e) {
-    console.log(e);
-    return { success: false, code: "DB_ERROR" };
+  if (!user) {
+    return { success: false, code: "USER_NOT_FOUND" };
   }
+
+  const ownership = await MartItemOwnership.findOne({
+    where: { item, user },
+  });
+
+  if (!ownership) {
+    return { success: false, code: "NOT_IN_INVENTORY" };
+  }
+
+  user.strength = Math.max(
+    Math.min(100, user.strength + item.strengthIncrease),
+    0
+  );
+
+  await Promise.all([ownership.softRemove(), user.save()]);
 
   return { success: true };
 }
 
-export async function sellItem(itemId: MartItem["id"], memberId: User["id"]) {
-  const items = await getMartItems();
-  const pi = items.find((i) => i.id === itemId);
-
-  if (!pi) {
-    return { success: false, code: "ITEM_NOT_FOUND" };
-  }
-
-  if (!pi.stock) {
+export async function sellItem(item: MartItem, memberId: User["discordId"]) {
+  if (item.stock === 0) {
     return { success: false, code: "ITEM_NO_STOCK" };
   }
 
-  const martItems = mongo.db().collection<MartItem>("mart-items");
-  const users = mongo.db().collection<PlayerModel>("players");
+  const user = await User.findOneOrFail({ where: { discordId: memberId } });
 
-  const player = (await users.findOne({
-    "Player.DiscordId": new Long(memberId),
-  }))!;
-  const user = playerToUser(player);
-
-  if (user.tokens < pi.price) {
+  if (user.gbt < item.price) {
     return { success: false, code: "INSUFFICIENT_BALANCE" };
   }
 
-  await martItems.updateOne({ id: pi.id }, { $inc: { stock: -1 } });
+  item.stock -= 1;
+  user!.gbt -= item.price;
 
-  await users.updateOne(
-    { "Player.DiscordId": new Long(memberId) },
-    {
-      $push: { items: { itemId: pi.id, type: UserItemType.MartItem } },
-      $inc: { "Player.Bank": -pi.price },
-    }
-  );
+  await Promise.all([
+    item.save(),
+    user!.save(),
+    MartItemOwnership.insert({ user, item }),
+  ]);
 
   return { success: true };
 }
@@ -230,112 +123,47 @@ export async function sellItem(itemId: MartItem["id"], memberId: User["id"]) {
 export async function addUser({
   member,
   apartmentId,
-  district,
+  districtId,
   tokens = 0,
 }: {
   member: GuildMember;
-  apartmentId: Tenancy["id"];
-  district: Tenancy["district"];
-  tokens?: User["tokens"];
+  apartmentId: string;
+  districtId: DistrictId;
+  tokens?: number;
 }) {
-  const users = db.collection<PlayerModel>("players");
-  const tenancies = db.collection<Tenancy>("tenancies");
-
-  await tenancies.insertOne({
-    id: uuid(),
-    userId: new Long(member.id),
-    dateCreated: new Date(),
-    district,
-    memberName: member.displayName,
-    propertyId: apartmentId,
-    tenancyType: "PRIMARY",
-  });
-
-  await users.insertOne({
-    name: member.displayName,
+  const user = User.create({
+    discordId: member.id,
+    displayName: member.displayName,
+    gbt: tokens,
     strength: 100,
-    items: [],
-    achievements: [],
-    Player: {
-      DiscordId: new Long(member.id),
-      Attacks: [],
-      Defenses: [],
-      Arsenal: [],
-      Bank: tokens,
-      Name: member.displayName,
-    },
+    tenancies: [
+      {
+        discordChannelId: apartmentId,
+        type: TenancyType.AUTHORITY,
+        district: districtId,
+      },
+    ],
   });
-
-  return getUser(member.id);
+  await user.save({ reload: true });
+  return user;
 }
 
 export async function deleteUser(member: GuildMember) {
-  const users = db.collection<PlayerModel>("players");
-  const tenancies = db.collection<Tenancy>("tenancies");
-
-  await tenancies.deleteOne({ userId: new Long(member.id) });
-  const r = await users.deleteOne({ "Player.DiscordId": new Long(member.id) });
-
-  return r.deletedCount === 1;
+  const user = await User.findOneOrFail({ where: { discordId: member.id } });
+  await user.remove();
 }
 
-export async function onboardFollowUp(userId: User["id"], amount: number) {
-  const users = db.collection<PlayerModel>("players");
-  return users.updateOne(
-    { "Player.DiscordId": new Long(userId) },
-    { $inc: { "Player.Bank": amount } }
-  );
-}
+export async function getAvailableCellNumber() {
+  const imprisonments = await Imprisonment.find();
 
-export async function createCell(userId: User["id"], entryRoleIds: string[]) {
-  // TODO: Check for existing
-  const cells = db.collection<Cell>("cells");
-  const allCells = await cells.find().sort({ number: 1 }).toArray();
-  const number = getAvailableCellNumber(allCells);
-  const res = await cells.insertOne({
-    number,
-    userId,
-    entryRoleIds,
-    cellId: null,
-  });
-  const cell = await cells.findOne({ _id: res.insertedId });
-  return cell;
-}
-
-export async function deleteCell(userId: Cell["userId"]) {
-  const cells = db.collection<Cell>("cells");
-  await cells.deleteOne({ userId });
-}
-
-export async function updateCellChannelId(
-  userId: Cell["userId"],
-  cellId: TextChannel["id"]
-) {
-  const cells = db.collection<Cell>("cells");
-  await cells.updateOne({ userId }, { $set: { cellId } });
-}
-
-export async function getCell(userId: User["id"]) {
-  const cells = db.collection<Cell>("cells");
-  const cell = await cells.findOne({ userId });
-  return cell;
-}
-
-export async function getCellByChannelId(cellId: Cell["cellId"]) {
-  const cells = db.collection<Cell>("cells");
-  const cell = await cells.findOne({ cellId });
-  return cell;
-}
-
-function getAvailableCellNumber(cells: Cell[]) {
-  if (cells.length === 0) {
+  if (imprisonments.length === 0) {
     return 1;
   }
 
   let num = 1;
 
-  for (let i = 0; i < cells.length; i++) {
-    if (cells[i].number === num) {
+  for (let i = 0; i < imprisonments.length; i++) {
+    if (imprisonments[i].cellNumber === num) {
       num++;
     } else {
       break;
@@ -345,53 +173,41 @@ function getAvailableCellNumber(cells: Cell[]) {
   return num;
 }
 
-export async function addAchievements(
-  userId: User["id"],
-  achievements: Achievement[]
-) {
-  const users = db.collection<PlayerModel>("players");
-  return users.updateOne(
-    { "Player.DiscordId": new Long(userId) },
-    { $push: { achievements: { $each: achievements } } }
-  );
-}
-
 export async function addAchievement(
-  userId: User["id"],
-  achievement: Achievement
+  memberId: string,
+  symbol: AchievementEnum
 ) {
-  const users = db.collection<PlayerModel>("players");
-  return users.updateOne(
-    { "Player.DiscordId": new Long(userId) },
-    { $push: { achievements: achievement } }
-  );
+  const user = await User.findOne({
+    where: { discordId: memberId },
+    relations: ["achievements"],
+  });
+  const achievement = await Achievement.findOne({ where: { symbol } });
+  user!.achievements.push(achievement!);
+  user!.save();
 }
 
-export async function transactBalance(userId: string, amount: number) {
-  const users = db.collection<PlayerModel>("players");
-  return users.updateOne(
-    { "Player.DiscordId": new Long(userId) },
-    { $inc: { "Player.Bank": amount } }
-  );
+export async function transactBalance(memberId: string, amount: number) {
+  const user = await User.findOne({ where: { discordId: memberId } });
+  user!.gbt += amount;
+  await user!.save();
 }
 
 export async function incStrength(amount: number) {
-  const users = db.collection<PlayerModel>("players");
-  const resA = await users.updateMany({}, { $inc: { strength: amount } });
-  const resB = await users.updateMany({}, { $max: { strength: 0 } });
-  if (resA.acknowledged & resB.acknowledged) {
-    return true;
-  }
-  return false;
+  await User.createQueryBuilder()
+    .update(User)
+    .set({ strength: () => `GREATEST(strength + ${amount}, 0)` })
+    .execute();
 }
 
 export async function issueTokens(amount: number) {
-  const users = db.collection<PlayerModel>("players");
-  const res = await users.updateMany({}, { $inc: { "Player.Bank": amount } });
-  if (res.acknowledged) {
-    return true;
-  }
-  return false;
+  await User.createQueryBuilder()
+    .update(User)
+    .set({ gbt: () => `gbt + ${amount}` })
+    .execute();
+}
+
+export async function getImprisonmentByCellChannelId(id: string) {
+  return Imprisonment.findOne({ where: { cellDiscordChannelId: id } });
 }
 
 export async function transferBalance(
@@ -399,21 +215,19 @@ export async function transferBalance(
   recipientId: string,
   amount: number
 ) {
-  const users = db.collection<PlayerModel>("players");
-  await users.bulkWrite([
-    {
-      updateOne: {
-        filter: { "Player.DiscordId": new Long(senderId) },
-        update: { $inc: { "Player.Bank": -amount } },
-      },
-    },
-    {
-      updateOne: {
-        filter: { "Player.DiscordId": new Long(recipientId) },
-        update: { $inc: { "Player.Bank": amount } },
-      },
-    },
-  ]);
-}
+  const users = await User.find({
+    where: { discordId: In([senderId, recipientId]) },
+  });
 
-export { db };
+  const sender = users.find((u) => u.discordId === senderId);
+  const recipient = users.find((u) => u.discordId === recipientId);
+
+  if (!sender || !recipient) {
+    throw new Error("Transfer users not established");
+  }
+
+  sender.gbt -= amount;
+  recipient.gbt += amount;
+
+  await Promise.all([sender.save(), recipient.save()]);
+}

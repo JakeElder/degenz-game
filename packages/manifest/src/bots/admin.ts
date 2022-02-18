@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { Bot } from "types";
+import { Bot, DistrictId } from "types";
 import Config from "app-config";
 import { Format } from "lib";
 import { Intents } from "discord.js";
@@ -32,16 +32,16 @@ admin.commands.push({
             .setRequired(true)
             .setDescription("The user to initiate")
         )
-        .addNumberOption((option) =>
+        .addStringOption((option) =>
           option
             .setName("district")
             .setChoices([
-              ["District 1", 1],
-              ["District 2", 2],
-              ["District 3", 3],
-              ["District 4", 4],
-              ["District 5", 5],
-              ["District 6", 6],
+              ["District 1", DistrictId.PROJECTS_D1],
+              ["District 2", DistrictId.PROJECTS_D2],
+              ["District 3", DistrictId.PROJECTS_D3],
+              ["District 4", DistrictId.PROJECTS_D4],
+              ["District 5", DistrictId.PROJECTS_D5],
+              ["District 6", DistrictId.PROJECTS_D6],
             ])
             .setDescription(`The district to assign an apartment`)
         )
@@ -135,19 +135,18 @@ admin.commands.push({
       subcommand
         .setName("open")
         .setDescription(`Open a district`)
-        .addNumberOption((option) =>
+        .addStringOption((option) =>
           option
             .setName("district")
             .setChoices([
-              ["District 1", 1],
-              ["District 2", 2],
-              ["District 3", 3],
-              ["District 4", 4],
-              ["District 5", 5],
-              ["District 6", 6],
+              ["District 1", DistrictId.PROJECTS_D1],
+              ["District 2", DistrictId.PROJECTS_D2],
+              ["District 3", DistrictId.PROJECTS_D3],
+              ["District 4", DistrictId.PROJECTS_D4],
+              ["District 5", DistrictId.PROJECTS_D5],
+              ["District 6", DistrictId.PROJECTS_D6],
             ])
-            .setRequired(true)
-            .setDescription(`The district to open`)
+            .setDescription(`The district to assign an apartment`)
         )
     )
     .addSubcommand((subcommand) =>

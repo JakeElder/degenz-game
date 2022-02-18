@@ -1,0 +1,191 @@
+import "reflect-metadata";
+import { Connection, createConnection } from "typeorm";
+import { SnakeNamingStrategy } from "typeorm-naming-strategies";
+import { Achievement } from "./entity/Achievement";
+import { AppState } from "./entity/AppState";
+import { Imprisonment } from "./entity/Imprisonment";
+import { MartItem } from "./entity/MartItem";
+import { MartItemOwnership } from "./entity/MartItemOwnership";
+import { Tenancy } from "./entity/Tenancy";
+import { User } from "./entity/User";
+
+let connection: Connection;
+
+export async function connect(url: string) {
+  connection = await createConnection({
+    type: "postgres",
+    url,
+    synchronize: true,
+    entities: [
+      Achievement,
+      AppState,
+      Imprisonment,
+      MartItem,
+      MartItemOwnership,
+      Tenancy,
+      User,
+    ],
+    namingStrategy: new SnakeNamingStrategy(),
+  });
+
+  // await connection.query("DROP TABLE user CASCADE");
+
+  // const t = await Tenancy.findOne({
+  //   relations: ["user"],
+  //   where: { discordChannelId: "a", type: TenancyType.AUTHORITY },
+  // });
+
+  // console.log(t);
+
+  // await Achievement.insert(
+  //   Object.keys(AchievementEnum).map((k) => {
+  //     return {
+  //       symbol: (AchievementEnum as any)[k as any],
+  //     };
+  //   })
+  // );
+
+  //   await MartItem.insert([
+  //     {
+  //       symbol: "PIZZA",
+  //       name: "Fat Pizza \u00a9",
+  //       description: "A slice of Fat Pizza",
+  //       price: 25,
+  //       stock: 0,
+  //       strengthIncrease: 10,
+  //     },
+  //     {
+  //       symbol: "NOODLES",
+  //       name: "Degenz Brand Ramen Noodles \u00a9",
+  //       description:
+  //         "Luxurious instant noodles, complete with a packet of RatSpice.",
+  //       price: 10,
+  //       stock: 0,
+  //       strengthIncrease: 4,
+  //     },
+  //     {
+  //       symbol: "GRILLED_RAT",
+  //       name: "Nuu Ping \u00a9",
+  //       description: "Succulent rat meat, barbecue grilled to perfection.",
+  //       price: 1,
+  //       stock: 40,
+  //       strengthIncrease: 1,
+  //     },
+  //   ]);
+
+  // await User.remove(await User.find());
+
+  // const user = User.create({
+  //   discordId: "xy",
+  //   displayName: "person",
+  //   gbt: 100,
+  //   tenancies: [
+  //     {
+  //       discordChannelId: "b",
+  //       type: TenancyType.AUTHORITY,
+  //       neighbourhood: Neighbourhood.PROJECTS_D1,
+  //     },
+  //   ],
+  //   imprisonments: [],
+  //   achievements: [],
+  // });
+  // await user.save({ reload: true });
+
+  // user.imprisonments.push(
+  //   Imprisonment.create({
+  //     cellNumber: 1,
+  //     discordChannelId: "a",
+  //     entryRoles: ["z", "s"],
+  //   })
+  // );
+  // const HR = await Achievement.findOne({
+  //   where: { symbol: AchievementEnum.HELP_REQUESTED },
+  // });
+
+  // user.achievements.push(HR!);
+
+  // await user.save();
+
+  // const user = await User.findOne({
+  //   where: { discordId: "xy" },
+  //   relations: ["imprisonments", "achievements", "martItemOwnerships"],
+  // });
+
+  // const pizza = await MartItem.findOne({ where: { symbol: "PIZZA" } });
+
+  // console.log(user);
+  // await MartItemOwnership.insert({ user, item: pizza });
+
+  // user!.reload();
+  // console.log(user);
+  // const HR = await Achievement.findOne({
+  //   where: { symbol: AchievementEnum.JOINED_THE_DEGENZ },
+  // });
+
+  // user!.achievements.push(HR!);
+
+  // await user!.save();
+  //   await user!.remove();
+
+  // const imprisonment = await Imprisonment.findOne(4);
+  // console.log(imprisonment);
+  // imprisonment!.softRemove();
+
+  // console.log(user!.martItemOwnerships);
+  // const item = await MartItem.findOne({ where: { symbol: "PIZZA" } });
+
+  // await MartItemOwnership.insert({ user, item });
+
+  // user!.martItems.push(pizza!);
+  // await user!.save();
+
+  // console.log(user);
+
+  // const ownershipCount = await MartItemOwnership.count({
+  //   where: { item, user },
+  // });
+
+  // console.log(ownershipCount);
+
+  // User.createQueryBuilder()
+  //   .update(User)
+  //   .set({ strength: () => "GREATEST(strength - 40, 0)" })
+  //   .execute()
+
+  return connection;
+
+  // await connection.synchronize();
+
+  // const user = connection.manager.create(User, {
+  //   discordId: "id",
+  //   displayName: "a",
+  //   gbt: 100.00004,
+  // });
+
+  // await user.save();
+
+  // const user = new User();
+  // user.discordId = "a";
+  // user.softRemove();
+  // await user.save();
+
+  // const allUsers = await User.find();
+  // const firstUser = await User.findOne(1);
+  // const timber = await User.findOne({ firstName: "Timber", lastName: "Saw" });
+}
+
+export async function disconnect() {
+  if (connection) {
+    await connection.close();
+  }
+}
+
+export {
+  Achievement,
+  AppState,
+  Imprisonment,
+  MartItem,
+  MartItemOwnership,
+  Tenancy,
+  User,
+};
