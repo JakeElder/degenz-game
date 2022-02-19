@@ -1,9 +1,9 @@
 import { MessageEmbed } from "discord.js";
 import { User } from "db";
 import { Achievement } from "types";
-import { AdminBot } from "../bots";
 import { addAchievement, transactBalance } from "../legacy/db";
 import { currency } from "../legacy/utils";
+import { Global } from "../Global";
 
 export default class AchievementController {
   static descriptions: Record<Achievement, string> = {
@@ -13,7 +13,9 @@ export default class AchievementController {
     SUPER_OBEDIENT: "You typed the `/obey` command twice. Such a good citizen.",
   };
 
-  static async award(user: User, achievement: Achievement, admin: AdminBot) {
+  static async award(user: User, achievement: Achievement) {
+    const admin = Global.bot("ADMIN");
+
     if (user.hasAchievement(achievement)) {
       return;
     }

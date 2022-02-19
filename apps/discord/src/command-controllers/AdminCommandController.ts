@@ -5,9 +5,9 @@ import Events from "../Events";
 import { issueTokens } from "../legacy/db";
 import UserController from "../controllers/UserController";
 import { CommandController } from "../CommandController";
-import Runner from "../Runner";
 import { DistrictId } from "types";
 import AppController from "../controllers/AppController";
+import { Global } from "../Global";
 
 export default class AllyCommandController extends CommandController {
   async respond(
@@ -28,9 +28,7 @@ export default class AllyCommandController extends CommandController {
       : i.reply({ content, ephemeral: true });
   }
 
-  async admin_initiate(i: CommandInteraction, runner: Runner) {
-    const admin = runner.get("ADMIN");
-
+  async admin_initiate(i: CommandInteraction) {
     await i.deferReply({ ephemeral: true });
 
     const onboard = i.options.getBoolean("onboard");
@@ -40,21 +38,17 @@ export default class AllyCommandController extends CommandController {
     const result = await UserController.init(
       member.id,
       onboard === null || onboard ? true : false,
-      district,
-      admin,
-      runner.get("BIG_BROTHER")
+      district
     );
 
     return this.respond(i, result.code, result.success ? "SUCCESS" : "FAIL");
   }
 
-  async admin_eject(i: CommandInteraction, runner: Runner) {
-    const admin = runner.get("ADMIN");
-    const bb = runner.get("BIG_BROTHER");
+  async admin_eject(i: CommandInteraction) {
     await i.deferReply({ ephemeral: true });
 
     const member = i.options.getMember("member", true) as GuildMember;
-    const result = await UserController.eject(member.id, admin, bb);
+    const result = await UserController.eject(member.id);
 
     return this.respond(i, result.code, result.success ? "SUCCESS" : "FAIL");
   }
@@ -101,32 +95,30 @@ export default class AllyCommandController extends CommandController {
     });
   }
 
-  async admin_imprison(i: CommandInteraction, runner: Runner) {
-    const admin = runner.get("ADMIN");
+  async admin_imprison(i: CommandInteraction) {
     const member = i.options.getMember("member", true) as GuildMember;
 
     const [_, res] = await Promise.all([
       i.deferReply({ ephemeral: true }),
-      UserController.imprison(member.id, admin, runner.get("PRISONER")),
+      UserController.imprison(member.id),
     ]);
 
     await this.respond(i, res.code, res.success ? "SUCCESS" : "FAIL");
   }
 
-  async admin_release(i: CommandInteraction, runner: Runner) {
-    const admin = runner.get("ADMIN");
+  async admin_release(i: CommandInteraction) {
     const member = i.options.getMember("member", true) as GuildMember;
 
     const [_, res] = await Promise.all([
       i.deferReply({ ephemeral: true }),
-      UserController.release(member.id, admin),
+      UserController.release(member.id),
     ]);
 
     await this.respond(i, res.code, res.success ? "SUCCESS" : "FAIL");
   }
 
-  async admin_clear(i: CommandInteraction, runner: Runner) {
-    const admin = runner.get("ADMIN");
+  async admin_clear(i: CommandInteraction) {
+    const admin = Global.bot("ADMIN");
     let channel = i.options.getChannel("channel");
     const number = i.options.getNumber("number");
 
@@ -156,15 +148,11 @@ export default class AllyCommandController extends CommandController {
     }
   }
 
-  async admin_open(i: CommandInteraction, runner: Runner) {
+  async admin_open(i: CommandInteraction) {
     const districtId = i.options.getString("district", true) as DistrictId;
 
     try {
-      await AppController.openDistrict(
-        districtId,
-        runner.get("BIG_BROTHER"),
-        runner.get("ADMIN")
-      );
+      await AppController.openDistrict(districtId);
       await this.respond(i, `${districtId}_OPENED`, "SUCCESS");
     } catch (e) {
       console.log(e);
@@ -172,25 +160,18 @@ export default class AllyCommandController extends CommandController {
     }
   }
 
-  async admin_close(i: CommandInteraction, runner: Runner) {
+  async admin_close(i: CommandInteraction) {
     const districtId = i.options.getString("district", true) as DistrictId;
     try {
-      await AppController.closeDistrict(
-        districtId,
-        runner.get("BIG_BROTHER"),
-        runner.get("ADMIN")
-      );
+      await AppController.closeDistrict(districtId);
       await this.respond(i, `${districtId}_CLOSED`, "SUCCESS");
     } catch (e) {
       await this.respond(i, "ENTRY_DISABLE_FAILED", "FAIL");
     }
   }
 
-  async admin_setEntryMessage(i: CommandInteraction, runner: Runner) {
-    await AppController.setEnterMessage(
-      runner.get("BIG_BROTHER"),
-      runner.get("ADMIN")
-    );
+  async admin_setEntryMessage(i: CommandInteraction) {
+    await AppController.setEnterMessage();
     await this.respond(i, "MESSAGE_SENT", "SUCCESS");
   }
 }

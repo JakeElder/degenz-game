@@ -4,7 +4,7 @@ import Config from "app-config";
 import { connect, disconnect } from "db";
 import Runner from "./Runner";
 import * as bots from "./bots";
-import Utils from "./Utils";
+import { Global } from "./Global";
 
 const pe = new PrettyError();
 
@@ -16,27 +16,27 @@ const pe = new PrettyError();
 
 cleanup(() => {
   console.log("Running cleanup");
-  runner.destroy();
+  if (runner) {
+    runner.destroy();
+  }
   disconnect();
 });
 
-const runner = new Runner();
+let runner: Runner;
 
 async function main() {
-  const db = await connect(Config.env("DB_CONN_STRING"));
-  Utils.db(db);
+  await connect(Config.env("DB_CONN_STRING"));
 
-  const admin = new bots.AdminBot(runner);
-  Utils.su(admin);
+  Global.bot("ADMIN", new bots.AdminBot());
+  Global.bot("ALLY", new bots.AllyBot());
+  Global.bot("BANKER", new bots.BankerBot());
+  Global.bot("BIG_BROTHER", new bots.BigBrotherBot());
+  Global.bot("MART_CLERK", new bots.MartClerkBot());
+  Global.bot("PRISONER", new bots.PrisonerBot());
+  Global.bot("TOSSER", new bots.TosserBot());
+  Global.bot("WARDEN", new bots.WardenBot());
 
-  runner.add(admin);
-  runner.add(new bots.AllyBot(runner));
-  runner.add(new bots.BankerBot(runner));
-  runner.add(new bots.BigBrotherBot(runner));
-  runner.add(new bots.MartClerkBot(runner));
-  runner.add(new bots.PrisonerBot(runner));
-  runner.add(new bots.TosserBot(runner));
-  runner.add(new bots.WardenBot(runner));
+  new Runner(Global.bots());
 }
 
 main();

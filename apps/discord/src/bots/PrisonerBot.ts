@@ -1,11 +1,10 @@
 import { bots } from "manifest";
 import PrisonerCommandController from "../command-controllers/PrisonerCommandController";
 import DiscordBot from "../DiscordBot";
-import Runner from "../Runner";
 
 export default class PrisonerBot extends DiscordBot {
-  constructor(runner: Runner) {
+  constructor() {
     const bot = bots.find((bot) => bot.id === "PRISONER");
-    super(bot!, new PrisonerCommandController(runner));
+    super(bot!, new PrisonerCommandController());
   }
 }

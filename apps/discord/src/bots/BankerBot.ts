@@ -1,11 +1,10 @@
 import { bots } from "manifest";
 import BankerCommandController from "../command-controllers/BankerCommandController";
 import DiscordBot from "../DiscordBot";
-import Runner from "../Runner";
 
 export default class BankerBot extends DiscordBot {
-  constructor(runner: Runner) {
+  constructor() {
     const bot = bots.find((bot) => bot.id === "BANKER");
-    super(bot!, new BankerCommandController(runner));
+    super(bot!, new BankerCommandController());
   }
 }

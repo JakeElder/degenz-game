@@ -19,7 +19,6 @@ import {
 } from "../legacy/db";
 import { Achievement as AchievementEnum } from "types";
 import { groupBy } from "lodash";
-import Runner from "../Runner";
 import OnboardController from "../controllers/OnboardController";
 import {
   makeInventoryEmbed,
@@ -28,11 +27,12 @@ import {
 } from "../legacy/utils";
 import ChannelHelpOutput from "../legacy/channel-help";
 import Utils from "../Utils";
+import { Global } from "../Global";
 
 const { r } = Utils;
 
 export default class AllyCommandController extends CommandController {
-  async eat(i: CommandInteraction, runner: Runner) {
+  async eat(i: CommandInteraction) {
     const items = await getMartItems();
     const user = (await getUser(i.user.id))!;
 
@@ -61,7 +61,7 @@ export default class AllyCommandController extends CommandController {
     });
   }
 
-  async redpill(i: CommandInteraction, runner: Runner) {
+  async redpill(i: CommandInteraction) {
     const member = i.member as GuildMember;
 
     if (member.roles.cache.has(Config.roleId("DEGEN"))) {
@@ -71,15 +71,11 @@ export default class AllyCommandController extends CommandController {
 
     i.reply("`REDPILL_TAKEN`");
     const user = await getUser(member.id);
-    await OnboardController.partThree(
-      user!,
-      runner.get("ADMIN"),
-      runner.get("ALLY")
-    );
+    await OnboardController.partThree(user);
   }
 
-  async help(i: CommandInteraction, runner: Runner) {
-    const ally = runner.get("ALLY");
+  async help(i: CommandInteraction) {
+    const ally = Global.bot("ALLY");
     const channel = i.channel as TextBasedChannel;
 
     const [member, apartmentUser, imprisonment] = await Promise.all([
@@ -113,11 +109,7 @@ export default class AllyCommandController extends CommandController {
     const user = await getUser(member.id);
 
     if (!user.hasAchievement(AchievementEnum.HELP_REQUESTED)) {
-      await OnboardController.partFive(
-        user!,
-        runner.get("ADMIN"),
-        runner.get("ALLY")
-      );
+      await OnboardController.partFive(user);
     }
 
     // this.emit("WORLD_EVENT", {
@@ -126,7 +118,7 @@ export default class AllyCommandController extends CommandController {
     // });
   }
 
-  async stats(i: CommandInteraction, runner: Runner) {
+  async stats(i: CommandInteraction) {
     let member = i.options.getMember("name") as null | GuildMember;
     // let ownStats = false;
 
@@ -146,11 +138,7 @@ export default class AllyCommandController extends CommandController {
     await i.reply({ embeds: [e], ephemeral: true });
 
     if (!user.hasAchievement(AchievementEnum.STATS_CHECKED)) {
-      await OnboardController.partFour(
-        user!,
-        runner.get("ADMIN"),
-        runner.get("ALLY")
-      );
+      await OnboardController.partFour(user);
     }
 
     // this.emit("WORLD_EVENT", {
@@ -162,7 +150,7 @@ export default class AllyCommandController extends CommandController {
     // });
   }
 
-  async leaderboard(i: CommandInteraction, runner: Runner) {
+  async leaderboard(i: CommandInteraction) {
     const show = i.options.getBoolean("post");
     const num = i.options.getNumber("top");
 
@@ -172,7 +160,7 @@ export default class AllyCommandController extends CommandController {
     await i.reply({ embeds: [m], ephemeral: !show });
   }
 
-  async inventory(i: CommandInteraction, runner: Runner) {
+  async inventory(i: CommandInteraction) {
     let member = i.options.getMember("name") as null | GuildMember;
     // let ownInventory = false;
 
@@ -200,7 +188,7 @@ export default class AllyCommandController extends CommandController {
     // });
   }
 
-  async handleFoodSelect(i: SelectMenuInteraction, runner: Runner) {
+  async handleFoodSelect(i: SelectMenuInteraction) {
     const items = await getMartItems();
     const res = await eatItem(i.values[0], i.user.id);
 

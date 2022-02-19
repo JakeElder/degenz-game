@@ -6,9 +6,7 @@ import OnboardController from "./controllers/OnboardController";
 import AppController from "./controllers/AppController";
 
 export default class Runner {
-  private bots: Partial<Record<BotId, DiscordBot>> = {};
-
-  constructor() {
+  constructor(private bots: DiscordBot[]) {
     this.bindEventHandlers();
   }
 
@@ -16,7 +14,7 @@ export default class Runner {
     Events.on("BOT_READY", (data) => {
       Logger.botReady(data);
       if (data.bot.id === "BIG_BROTHER") {
-        AppController.setEnterMessage(this.get("BIG_BROTHER"));
+        AppController.setEnterMessage();
       }
     });
 
@@ -30,7 +28,7 @@ export default class Runner {
 
     Events.on("SEND_MESSAGE_REQUEST", async (data) => {
       Logger.sendMessageRequest(data);
-      const bot = this.bots[data.bot.id];
+      const bot = this.get(data.bot.id);
 
       if (bot) {
         const channel = await bot.getTextChannel(data.channel.id);
@@ -42,28 +40,20 @@ export default class Runner {
     });
 
     Events.on("APARTMENT_ALLOCATED", async (data) => {
-      OnboardController.partOne(
-        data.user,
-        this.bots["BIG_BROTHER"]!,
-        this.bots["ALLY"]!
-      );
+      OnboardController.partOne(data.user);
     });
   }
 
   get(id: BotId) {
-    const bot = this.bots[id];
+    const bot = this.bots.find((b) => b.manifest.id === id);
     if (!bot) {
       throw new Error(`Bot not found ${id}`);
     }
     return bot;
   }
 
-  add(bot: DiscordBot) {
-    this.bots[bot.manifest.id] = bot;
-  }
-
   destroy() {
-    for (let b of Object.values(this.bots)) {
+    for (let b of this.bots) {
       b.destroy();
     }
   }

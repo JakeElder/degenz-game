@@ -5,7 +5,6 @@ import { userMention } from "@discordjs/builders";
 import { DistrictId } from "types";
 import { User } from "db";
 import Events from "../Events";
-import AdminBot from "../bots/AdminBot";
 import Utils from "../Utils";
 import {
   addUser,
@@ -14,17 +13,17 @@ import {
   getTenanciesInDistrict,
   getUser,
 } from "../legacy/db";
-import { BigBrotherBot, PrisonerBot } from "../bots";
 import AppController from "./AppController";
+import { Global } from "../Global";
 
 export default class UserController {
   static async init(
     memberId: GuildMember["id"],
     onboard: boolean = true,
-    district: DistrictId,
-    admin: AdminBot,
-    bb: BigBrotherBot
+    district: DistrictId
   ) {
+    const admin = Global.bot("ADMIN");
+
     let [member, user] = await Promise.all([
       admin.getMember(memberId),
       User.findOne({ where: { discordId: memberId } }),
@@ -85,11 +84,9 @@ export default class UserController {
     return { success: true, code: "USER_INITIATED", user };
   }
 
-  static async eject(
-    memberId: GuildMember["id"],
-    admin: AdminBot,
-    bb: BigBrotherBot
-  ) {
+  static async eject(memberId: GuildMember["id"]) {
+    const admin = Global.bot("ADMIN");
+
     const user = await getUser(memberId);
     const member = await admin.getMember(memberId);
 
@@ -117,16 +114,14 @@ export default class UserController {
     // Delete from db
     await deleteUser(member);
 
-    AppController.setEnterMessage(bb, admin);
+    AppController.setEnterMessage();
 
     return { success: true, code: "USER_EJECTED" };
   }
 
-  static async imprison(
-    memberId: GuildMember["id"],
-    admin: AdminBot,
-    prisoner: PrisonerBot
-  ) {
+  static async imprison(memberId: GuildMember["id"]) {
+    const admin = Global.bot("ADMIN");
+
     const member = await admin.getMember(memberId);
     const user = await getUser(member.id);
 
@@ -189,12 +184,14 @@ export default class UserController {
 
     Utils.delay(1000);
 
-    UserController.onboardPrisoner(user, prisoner);
+    UserController.onboardPrisoner(user);
 
     return { success: true, code: "USER_IMPRISONED" };
   }
 
-  static async onboardPrisoner(user: User, prisoner: PrisonerBot) {
+  static async onboardPrisoner(user: User) {
+    const prisoner = Global.bot("PRISONER");
+
     const channel = await prisoner.getTextChannel(user.cellDiscordChannelId);
     await channel.send({
       embeds: [
@@ -228,7 +225,9 @@ export default class UserController {
     );
   }
 
-  static async release(memberId: GuildMember["id"], admin: AdminBot) {
+  static async release(memberId: GuildMember["id"]) {
+    const admin = Global.bot("ADMIN");
+
     const member = await admin.getMember(memberId);
     const user = await getUser(member.id);
 
@@ -261,7 +260,9 @@ export default class UserController {
     return { success: true, code: "USER_RELEASED" };
   }
 
-  static async openWorld(user: User, admin: AdminBot) {
+  static async openWorld(user: User) {
+    const admin = Global.bot("ADMIN");
+
     const member = await admin.getMember(user.discordId);
     await member.roles.add(Config.roleId("DEGEN"));
     await member.roles.remove(Config.roleId("VERIFIED"));

@@ -6,14 +6,13 @@ import {
   FailedEscapeMessage,
   SuccessfulEscapeMessage,
 } from "../legacy/templates";
-import Runner from "../Runner";
 import Utils from "../Utils";
 import UserController from "../controllers/UserController";
 
 const { r } = Utils;
 
 export default class PrisonerCommandController extends CommandController {
-  async escape(i: CommandInteraction, runner: Runner) {
+  async escape(i: CommandInteraction) {
     const user = await getUser(i.user.id);
     if (user === null) return;
 
@@ -34,7 +33,6 @@ export default class PrisonerCommandController extends CommandController {
 
     await Utils.delay(2000);
 
-    const admin = runner.get("ADMIN");
-    await UserController.release(user.discordId, admin);
+    await UserController.release(user.discordId);
   }
 }

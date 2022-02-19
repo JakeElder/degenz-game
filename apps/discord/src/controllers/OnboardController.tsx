@@ -3,7 +3,6 @@ import Config from "app-config";
 import { MessageActionRow, MessageEmbed } from "discord.js";
 import { User } from "db";
 import { Achievement as AchievementEnum } from "types";
-import { BigBrotherBot, AllyBot, AdminBot } from "../bots";
 import { OnboardDialogAlly, OnboardDialogBB } from "../legacy/onboard-dialog";
 import Utils from "../Utils";
 import { makeButton } from "../legacy/utils";
@@ -11,11 +10,14 @@ import { transactBalance } from "../legacy/db";
 import AchievementController from "./AchievementController";
 import UserController from "./UserController";
 import { FirstActivityReply } from "../legacy/templates";
+import { Global } from "../Global";
 
 const { r } = Utils;
 
 export default class OnboardController {
-  static async partOne(user: User, bb: BigBrotherBot, ally: AllyBot) {
+  static async partOne(user: User) {
+    const bb = Global.bot("BIG_BROTHER");
+
     const apartment = await bb.getTextChannel(
       user.primaryTenancy.discordChannelId
     );
@@ -102,10 +104,11 @@ export default class OnboardController {
 
     await Utils.delay(1000);
 
-    await this.partTwo(user, ally);
+    await this.partTwo(user);
   }
 
-  static async partTwo(user: User, ally: AllyBot) {
+  static async partTwo(user: User) {
+    const ally = Global.bot("ALLY");
     const apartment = await ally.getTextChannel(
       user.primaryTenancy.discordChannelId
     );
@@ -180,14 +183,12 @@ export default class OnboardController {
     await apartment.send(r(<OnboardDialogAlly member={member} part={5} />));
   }
 
-  static async partThree(user: User, admin: AdminBot, ally: AllyBot) {
-    await AchievementController.award(
-      user!,
-      AchievementEnum.JOINED_THE_DEGENZ,
-      admin
-    );
+  static async partThree(user: User) {
+    const ally = Global.bot("ALLY");
 
-    await UserController.openWorld(user!, admin);
+    await AchievementController.award(user, AchievementEnum.JOINED_THE_DEGENZ);
+
+    await UserController.openWorld(user);
 
     await Utils.delay(3000);
 
@@ -205,7 +206,9 @@ export default class OnboardController {
     await apartment.send(r(<OnboardDialogAlly member={member} part={8} />));
   }
 
-  static async partFour(user: User, admin: AdminBot, ally: AllyBot) {
+  static async partFour(user: User) {
+    const ally = Global.bot("ALLY");
+
     const apartment = await ally.getTextChannel(
       user.primaryTenancy.discordChannelId
     );
@@ -214,11 +217,7 @@ export default class OnboardController {
     await apartment.send(r(<OnboardDialogAlly member={member} part={9} />));
     await Utils.delay(2000);
 
-    await AchievementController.award(
-      user!,
-      AchievementEnum.STATS_CHECKED,
-      admin
-    );
+    await AchievementController.award(user!, AchievementEnum.STATS_CHECKED);
 
     await Utils.delay(3000);
 
@@ -234,7 +233,9 @@ export default class OnboardController {
     await apartment.send(r(<OnboardDialogAlly member={member} part={13} />));
   }
 
-  static async partFive(user: User, admin: AdminBot, ally: AllyBot) {
+  static async partFive(user: User) {
+    const ally = Global.bot("ALLY");
+
     const apartment = await ally.getTextChannel(
       user.primaryTenancy.discordChannelId
     );
@@ -242,17 +243,13 @@ export default class OnboardController {
 
     await Utils.delay(2000);
 
-    await AchievementController.award(
-      user!,
-      AchievementEnum.HELP_REQUESTED,
-      admin
-    );
+    await AchievementController.award(user!, AchievementEnum.HELP_REQUESTED);
     await Utils.delay(2000);
 
     await apartment.send(r(<OnboardDialogAlly member={member} part={14} />));
     await Utils.delay(2000);
 
-    await OnboardController.sendNextPrompt(user, ally);
+    await OnboardController.sendNextPrompt(user);
     await Utils.delay(3000);
 
     await apartment.send(r(<OnboardDialogAlly member={member} part={15} />));
@@ -261,7 +258,9 @@ export default class OnboardController {
     await apartment.send(r(<OnboardDialogAlly member={member} part={16} />));
   }
 
-  static async sendNextPrompt(user: User, ally: AllyBot) {
+  static async sendNextPrompt(user: User) {
+    const ally = Global.bot("ALLY");
+
     const apartment = await ally.getTextChannel(
       user.primaryTenancy.discordChannelId
     );
@@ -310,7 +309,8 @@ export default class OnboardController {
   }
 
   static async switchOnboardNPCs(user: User) {
-    const admin = Utils.su();
+    const admin = Global.bot("ADMIN");
+
     const apartment = await admin.getTextChannel(
       user.primaryTenancy.discordChannelId
     );

@@ -1,5 +1,4 @@
 import Config from "app-config";
-import { AdminBot, BigBrotherBot } from "../bots";
 import {
   Message,
   MessageActionRow,
@@ -11,27 +10,22 @@ import { AppState, District, User } from "db";
 import { Format } from "lib";
 import { channelMention, userMention } from "@discordjs/builders";
 import UserController from "./UserController";
+import { Global } from "../Global";
 
 export default class AppController {
-  static async openDistrict(
-    district: DistrictId,
-    bb: BigBrotherBot,
-    admin: AdminBot
-  ) {
+  static async openDistrict(district: DistrictId) {
     await District.open(district);
-    await this.setEnterMessage(bb, admin);
+    await this.setEnterMessage();
   }
 
-  static async closeDistrict(
-    district: DistrictId,
-    bb: BigBrotherBot,
-    admin: AdminBot
-  ) {
+  static async closeDistrict(district: DistrictId) {
     await District.close(district);
-    await this.setEnterMessage(bb, admin);
+    await this.setEnterMessage();
   }
 
-  static async setEnterMessage(bb: BigBrotherBot, admin: AdminBot) {
+  static async setEnterMessage() {
+    const bb = Global.bot("BIG_BROTHER");
+
     const state = await AppState.findOneOrFail();
     const c = await bb.getTextChannel(Config.channelId("WAITING_ROOM"));
     const capacity = Config.general("DISTRICT_CAPACITY");
@@ -118,9 +112,7 @@ export default class AppController {
       const res = await UserController.init(
         i.user.id,
         true,
-        i.customId as DistrictId,
-        admin,
-        bb
+        i.customId as DistrictId
       );
 
       if (res.success) {
@@ -132,7 +124,7 @@ export default class AppController {
           )}, your new *private* apartment to receive further instructions.`,
           ephemeral: true,
         });
-        await AppController.setEnterMessage(bb, admin);
+        await AppController.setEnterMessage();
       }
     });
   }

@@ -2,10 +2,9 @@ import { camelCase, pascalCase } from "change-case";
 import { CommandInteraction, SelectMenuInteraction } from "discord.js";
 import DiscordBot from "./DiscordBot";
 import Events from "./Events";
-import Runner from "./Runner";
 
 export abstract class CommandController {
-  constructor(protected runner: Runner) {}
+  constructor() {}
 
   async execute(i: CommandInteraction, bot: DiscordBot) {
     const command = bot.manifest.commands.find(
@@ -33,9 +32,10 @@ export abstract class CommandController {
 
     if (handler) {
       try {
-        await (
-          handler as (i: CommandInteraction, runner: Runner) => Promise<void>
-        ).call(this, i, this.runner);
+        await (handler as (i: CommandInteraction) => Promise<void>).call(
+          this,
+          i
+        );
       } catch (e) {
         this.error(i);
         throw e;
@@ -63,8 +63,9 @@ export abstract class CommandController {
 
   async handleSelect(i: SelectMenuInteraction) {
     const handler = (this as any)[`handle${pascalCase(i.customId)}`];
-    await (
-      handler as (i: SelectMenuInteraction, runner: Runner) => Promise<void>
-    ).call(this, i, this.runner);
+    await (handler as (i: SelectMenuInteraction) => Promise<void>).call(
+      this,
+      i
+    );
   }
 }

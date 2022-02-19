@@ -2,7 +2,6 @@ import React from "react";
 import { CommandInteraction, GuildMember } from "discord.js";
 import { CommandController } from "../CommandController";
 import { getUser, transferBalance } from "../legacy/db";
-import Runner from "../Runner";
 import Utils from "../Utils";
 import {
   Balance,
@@ -14,7 +13,7 @@ import { userMention } from "@discordjs/builders";
 const { r } = Utils;
 
 export default class BankerCommandController extends CommandController {
-  async balance(i: CommandInteraction, runner: Runner) {
+  async balance(i: CommandInteraction) {
     const user = await getUser(i.user.id);
     if (user === null) return;
 
@@ -34,7 +33,7 @@ export default class BankerCommandController extends CommandController {
     // this.emit("WORLD_EVENT", e);
   }
 
-  async transfer(i: CommandInteraction, runner: Runner) {
+  async transfer(i: CommandInteraction) {
     // Get options
     const o = {
       amount: i.options.getInteger("amount", true),

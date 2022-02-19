@@ -8,11 +8,10 @@ import {
 import { Format } from "lib";
 import { CommandController } from "../CommandController";
 import { getMartItems, sellItem } from "../legacy/db";
-import Runner from "../Runner";
 import { MartItem } from "db";
 
 export default class MartClerkCommandController extends CommandController {
-  async stock(i: CommandInteraction, runner: Runner) {
+  async stock(i: CommandInteraction) {
     const items = await getMartItems();
 
     const t = table(
@@ -44,7 +43,7 @@ export default class MartClerkCommandController extends CommandController {
     // });
   }
 
-  async buy(i: CommandInteraction, runner: Runner) {
+  async buy(i: CommandInteraction) {
     const items = await getMartItems();
 
     const row = new MessageActionRow().addComponents(
