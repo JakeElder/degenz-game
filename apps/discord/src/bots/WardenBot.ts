@@ -1,5 +1,5 @@
 import { bots } from "manifest";
-import WardenCommandController from "../controllers/WardenCommandController";
+import WardenCommandController from "../command-controllers/WardenCommandController";
 import DiscordBot from "../DiscordBot";
 import Runner from "../Runner";
 

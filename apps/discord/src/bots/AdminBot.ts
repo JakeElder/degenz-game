@@ -1,5 +1,5 @@
 import { bots } from "manifest";
-import AdminCommandController from "../controllers/AdminCommandController";
+import AdminCommandController from "../command-controllers/AdminCommandController";
 import DiscordBot from "../DiscordBot";
 import Runner from "../Runner";
 

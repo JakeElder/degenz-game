@@ -1,5 +1,5 @@
 import { bots } from "manifest";
-import BankerCommandController from "../controllers/BankerCommandController";
+import BankerCommandController from "../command-controllers/BankerCommandController";
 import DiscordBot from "../DiscordBot";
 import Runner from "../Runner";
 

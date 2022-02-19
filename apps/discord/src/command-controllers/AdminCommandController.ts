@@ -3,11 +3,11 @@ import Config from "app-config";
 import { bots } from "manifest";
 import Events from "../Events";
 import { issueTokens } from "../legacy/db";
-import UserController from "./UserController";
+import UserController from "../controllers/UserController";
 import { CommandController } from "../CommandController";
 import Runner from "../Runner";
 import { DistrictId } from "types";
-import AppController from "./AppController";
+import AppController from "../controllers/AppController";
 
 export default class AllyCommandController extends CommandController {
   async respond(

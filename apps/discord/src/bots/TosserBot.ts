@@ -1,5 +1,5 @@
 import { bots } from "manifest";
-import TosserCommandController from "../controllers/TosserCommandController";
+import TosserCommandController from "../command-controllers/TosserCommandController";
 import DiscordBot from "../DiscordBot";
 import Runner from "../Runner";
 

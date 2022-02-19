@@ -1,5 +1,5 @@
 import { bots } from "manifest";
-import AllyCommandController from "../controllers/AllyCommandController";
+import AllyCommandController from "../command-controllers/AllyCommandController";
 import DiscordBot from "../DiscordBot";
 import Runner from "../Runner";
 

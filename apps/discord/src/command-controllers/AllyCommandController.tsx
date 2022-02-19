@@ -20,7 +20,7 @@ import {
 import { Achievement as AchievementEnum } from "types";
 import { groupBy } from "lodash";
 import Runner from "../Runner";
-import OnboardController from "./OnboardController";
+import OnboardController from "../controllers/OnboardController";
 import {
   makeInventoryEmbed,
   makeLeaderboardEmbed,

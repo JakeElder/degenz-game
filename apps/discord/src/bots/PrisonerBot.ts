@@ -1,5 +1,5 @@
 import { bots } from "manifest";
-import PrisonerCommandController from "../controllers/PrisonerCommandController";
+import PrisonerCommandController from "../command-controllers/PrisonerCommandController";
 import DiscordBot from "../DiscordBot";
 import Runner from "../Runner";
 

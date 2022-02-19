@@ -8,7 +8,7 @@ import {
 } from "../legacy/templates";
 import Runner from "../Runner";
 import Utils from "../Utils";
-import UserController from "./UserController";
+import UserController from "../controllers/UserController";
 
 const { r } = Utils;
 

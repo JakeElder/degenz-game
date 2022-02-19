@@ -1,5 +1,5 @@
 import { bots } from "manifest";
-import BigBrotherCommandController from "../controllers/BigBrotherCommandController";
+import BigBrotherCommandController from "../command-controllers/BigBrotherCommandController";
 import DiscordBot from "../DiscordBot";
 import Runner from "../Runner";
 

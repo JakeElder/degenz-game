@@ -82,8 +82,6 @@ export default class UserController {
 
     Events.emit("APARTMENT_ALLOCATED", { user, onboard });
 
-    AppController.setEnterMessage(bb, admin);
-
     return { success: true, code: "USER_INITIATED", user };
   }
 
