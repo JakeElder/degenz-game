@@ -8,6 +8,7 @@ import { District } from "./entity/District";
 import { Imprisonment } from "./entity/Imprisonment";
 import { MartItem } from "./entity/MartItem";
 import { MartItemOwnership } from "./entity/MartItemOwnership";
+import { NPC } from "./entity/NPC";
 import { Tenancy } from "./entity/Tenancy";
 import { User } from "./entity/User";
 
@@ -25,6 +26,7 @@ export async function connect(url: string) {
       Imprisonment,
       MartItem,
       MartItemOwnership,
+      NPC,
       Tenancy,
       User,
     ],
@@ -39,6 +41,18 @@ export async function connect(url: string) {
   // });
 
   // console.log(t);
+
+  // await NPC.insert([
+  //   { symbol: "ALLY", defaultEmojiId: "<:ivan:944574023319294012>" },
+  //   { symbol: "ARMORY_CLERK", defaultEmojiId: "<:private_willy:944574023264788480>" },
+  //   { symbol: "BANKER", defaultEmojiId: "<:banker_beatrice:944574023294156820>" },
+  //   { symbol: "BIG_BROTHER", defaultEmojiId: "<:big_brother:944574023331905556>" },
+  //   { symbol: "MART_CLERK", defaultEmojiId: "<:merris:944574022987968593>" },
+  //   { symbol: "PRISONER", defaultEmojiId: "<:hugh_donie:944574023185076244>" },
+  //   { symbol: "SENSEI", defaultEmojiId: "<:sensei:944574022945996801>" },
+  //   { symbol: "TOSSER", defaultEmojiId: "<:tosser_ted:944574022769848320>" },
+  //   { symbol: "WARDEN", defaultEmojiId: "<:walden:944574022899867679>" },
+  // ]);
 
   // const c = await Achievement.insert(
   //   Object.keys(AchievementEnum).map((k) => {
@@ -190,6 +204,7 @@ export {
   Imprisonment,
   MartItem,
   MartItemOwnership,
+  NPC,
   Tenancy,
   User,
 };
