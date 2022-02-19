@@ -35,6 +35,7 @@ admin.commands.push({
         .addStringOption((option) =>
           option
             .setName("district")
+            .setRequired(true)
             .setChoices([
               ["District 1", DistrictId.PROJECTS_D1],
               ["District 2", DistrictId.PROJECTS_D2],
@@ -137,6 +138,7 @@ admin.commands.push({
         .setDescription(`Open a district`)
         .addStringOption((option) =>
           option
+            .setRequired(true)
             .setName("district")
             .setDescription(`The district to open entries to`)
             .setChoices([
@@ -156,6 +158,7 @@ admin.commands.push({
         .addStringOption((option) =>
           option
             .setName("district")
+            .setRequired(true)
             .setChoices([
               ["District 1", DistrictId.PROJECTS_D1],
               ["District 2", DistrictId.PROJECTS_D2],

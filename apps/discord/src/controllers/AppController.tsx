@@ -9,10 +9,17 @@ import { DistrictId } from "types";
 import { AppState, District, User } from "db";
 import { Format } from "lib";
 import { channelMention, userMention } from "@discordjs/builders";
+import equal from "fast-deep-equal";
 import UserController from "./UserController";
 import { Global } from "../Global";
+import { getLeaders } from "../legacy/db";
+import { makeLeaderboardEmbed } from "../legacy/utils";
 
 export default class AppController {
+  static leaderboardCronInterval: NodeJS.Timer;
+  static leaderboardTableData: any = [];
+  static leaderboardMessage: Message;
+
   static async openDistrict(district: DistrictId) {
     await District.open(district);
     await this.setEnterMessage();
@@ -21,6 +28,44 @@ export default class AppController {
   static async closeDistrict(district: DistrictId) {
     await District.close(district);
     await this.setEnterMessage();
+  }
+
+  static async setLeaderboardMessage() {
+    const bb = Global.bot("BIG_BROTHER");
+
+    const state = await AppState.findOneOrFail();
+    const c = await bb.getTextChannel(Config.channelId("LEADERBOARD"));
+
+    try {
+      this.leaderboardMessage = await c.messages.fetch(
+        `${state.leaderboardMessageId}`
+      );
+    } catch (e) {
+      this.leaderboardMessage = await c.send({
+        embeds: [{ description: "-" }],
+      });
+      await AppState.setLeaderboardMessageId(this.leaderboardMessage.id);
+    }
+
+    this.leaderboardCronInterval = setInterval(
+      () => this.updateLeaderboard(),
+      1000
+    );
+  }
+
+  static async updateLeaderboard() {
+    const leaders = await getLeaders();
+    const tableData = [...leaders.map((l) => [l.displayName, l.gbt])];
+
+    if (equal(this.leaderboardTableData, tableData)) {
+      return;
+    }
+
+    await this.leaderboardMessage.edit({
+      embeds: [makeLeaderboardEmbed(leaders)],
+    });
+
+    this.leaderboardTableData = tableData;
   }
 
   static async setVerifyMessage() {

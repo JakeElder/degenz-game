@@ -17,6 +17,7 @@ export default class Runner {
       if (data.bot.id === "BIG_BROTHER") {
         AppController.setEnterMessage();
         AppController.setVerifyMessage();
+        AppController.setLeaderboardMessage();
       }
     });
 

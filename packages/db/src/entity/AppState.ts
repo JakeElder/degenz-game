@@ -19,11 +19,25 @@ export class AppState extends BaseEntity {
   @Column({ type: "text", nullable: true })
   verifyMessageId: Message["id"] | null;
 
+  @Column({ type: "text", nullable: true })
+  leaderboardMessageId: Message["id"] | null;
+
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  static async setLeaderboardMessageId(id: Message["id"]) {
+    const row = await this.findOneOrFail();
+    row.leaderboardMessageId = id;
+    await row.save();
+  }
+
+  static async getLeaderboardMessageId() {
+    const row = await this.findOneOrFail();
+    return row.leaderboardMessageId;
+  }
 
   static async setVerifyMessageId(id: Message["id"]) {
     const row = await this.findOneOrFail();
