@@ -124,7 +124,7 @@ const structure: Category[] = [
         id: "WAITING_ROOM",
         name: "\u22c8\uff5cwaiting-room",
         lockPermissions: true,
-        permissionOverwrites: [],
+        permissionOverwrites: READ_ONLY,
       },
       {
         id: "FEEDBACK",

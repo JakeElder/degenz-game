@@ -2,16 +2,12 @@ import { CommandInteraction, GuildBasedChannel, GuildMember } from "discord.js";
 import Config from "app-config";
 import { bots } from "manifest";
 import Events from "../Events";
-import {
-  getTenanciesInDistrict,
-  issueTokens,
-  setOpenDistrict,
-} from "../legacy/db";
+import { issueTokens } from "../legacy/db";
 import UserController from "./UserController";
 import { CommandController } from "../CommandController";
-import WaitingRoomController from "./WaitingRoomController";
 import Runner from "../Runner";
 import { DistrictId } from "types";
+import AppController from "./AppController";
 
 export default class AllyCommandController extends CommandController {
   async respond(
@@ -45,7 +41,8 @@ export default class AllyCommandController extends CommandController {
       member.id,
       onboard === null || onboard ? true : false,
       district,
-      admin
+      admin,
+      runner.get("BIG_BROTHER")
     );
 
     return this.respond(i, result.code, result.success ? "SUCCESS" : "FAIL");
@@ -53,10 +50,11 @@ export default class AllyCommandController extends CommandController {
 
   async admin_eject(i: CommandInteraction, runner: Runner) {
     const admin = runner.get("ADMIN");
+    const bb = runner.get("BIG_BROTHER");
     await i.deferReply({ ephemeral: true });
 
     const member = i.options.getMember("member", true) as GuildMember;
-    const result = await UserController.eject(member.id, admin);
+    const result = await UserController.eject(member.id, admin, bb);
 
     return this.respond(i, result.code, result.success ? "SUCCESS" : "FAIL");
   }
@@ -159,32 +157,40 @@ export default class AllyCommandController extends CommandController {
   }
 
   async admin_open(i: CommandInteraction, runner: Runner) {
-    const admin = runner.get("ADMIN");
-    const district = i.options.getString("district", true) as DistrictId;
+    const districtId = i.options.getString("district", true) as DistrictId;
 
     try {
-      await setOpenDistrict(district);
-      const tenancies = await getTenanciesInDistrict(district);
-      if (tenancies < Config.general("DISTRICT_CAPACITY")) {
-        await WaitingRoomController.setStatus(true, admin);
-      }
-      await this.respond(i, `DISTRICT_${district}_OPENED`, "SUCCESS");
+      await AppController.openDistrict(
+        districtId,
+        runner.get("BIG_BROTHER"),
+        runner.get("ADMIN")
+      );
+      await this.respond(i, `${districtId}_OPENED`, "SUCCESS");
     } catch (e) {
+      console.log(e);
       await this.respond(i, "DIDNT_SET_DISTRICT", "FAIL");
     }
   }
 
   async admin_close(i: CommandInteraction, runner: Runner) {
-    const admin = runner.get("ADMIN");
+    const districtId = i.options.getString("district", true) as DistrictId;
     try {
-      await Promise.all([
-        setOpenDistrict(null),
-        WaitingRoomController.setStatus(false, admin),
-      ]);
-
-      await this.respond(i, "ENTRY_DISABLED", "SUCCESS");
+      await AppController.closeDistrict(
+        districtId,
+        runner.get("BIG_BROTHER"),
+        runner.get("ADMIN")
+      );
+      await this.respond(i, `${districtId}_CLOSED`, "SUCCESS");
     } catch (e) {
       await this.respond(i, "ENTRY_DISABLE_FAILED", "FAIL");
     }
+  }
+
+  async admin_setEntryMessage(i: CommandInteraction, runner: Runner) {
+    await AppController.setEnterMessage(
+      runner.get("BIG_BROTHER"),
+      runner.get("ADMIN")
+    );
+    await this.respond(i, "MESSAGE_SENT", "SUCCESS");
   }
 }

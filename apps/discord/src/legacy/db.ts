@@ -1,15 +1,14 @@
 import { GuildMember } from "discord.js";
 import {
   Achievement,
-  AppState,
   Imprisonment,
   MartItem,
   MartItemOwnership,
   Tenancy,
   User,
+  District,
 } from "db";
-import { Achievement as AchievementEnum } from "types";
-import { DistrictId, TenancyType } from "types";
+import { DistrictId, TenancyType, Achievement as AchievementEnum } from "types";
 import { In } from "typeorm";
 
 export async function getMartItems() {
@@ -43,16 +42,11 @@ export async function getUsers() {
   });
 }
 
-export async function getOpenDistrict() {
-  return AppState.openDistrict();
-}
-
-export async function setOpenDistrict(districtId: DistrictId | null) {
-  return AppState.openDistrict(districtId);
-}
-
 export async function getTenanciesInDistrict(districtId: DistrictId) {
-  return Tenancy.count({ where: { district: districtId } });
+  const district = await District.findOneOrFail({
+    where: { symbol: districtId },
+  });
+  return Tenancy.count({ where: { district } });
 }
 
 export async function getUserByApartment(id: string) {
@@ -131,6 +125,10 @@ export async function addUser({
   districtId: DistrictId;
   tokens?: number;
 }) {
+  const district = await District.findOneOrFail({
+    where: { symbol: districtId },
+  });
+
   const user = User.create({
     discordId: member.id,
     displayName: member.displayName,
@@ -140,10 +138,11 @@ export async function addUser({
       {
         discordChannelId: apartmentId,
         type: TenancyType.AUTHORITY,
-        district: districtId,
+        district,
       },
     ],
   });
+
   await user.save({ reload: true });
   return user;
 }

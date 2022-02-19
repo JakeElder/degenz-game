@@ -6,14 +6,15 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { Achievement as AchievementEnum } from "types";
 
 @Entity()
 export class Achievement extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  symbol: string;
+  @Column({ type: "enum", enum: AchievementEnum, unique: true })
+  symbol: AchievementEnum;
 
   @CreateDateColumn()
   createdAt: Date;

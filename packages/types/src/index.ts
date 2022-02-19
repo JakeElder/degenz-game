@@ -130,10 +130,6 @@ export enum ShelterId {
   SHELTER_D10 = "SHELTER_D10",
 }
 
-export enum AppStateKey {
-  OPEN_DISTRICT = "OPEN_DISTRICT",
-}
-
 export enum Achievement {
   HELP_REQUESTED = "HELP_REQUESTED",
   STATS_CHECKED = "STATS_CHECKED",

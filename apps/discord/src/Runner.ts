@@ -3,6 +3,7 @@ import Events from "./Events";
 import Logger from "./Logger";
 import DiscordBot from "./DiscordBot";
 import OnboardController from "./controllers/OnboardController";
+import AppController from "./controllers/AppController";
 
 export default class Runner {
   private bots: Partial<Record<BotId, DiscordBot>> = {};
@@ -14,6 +15,9 @@ export default class Runner {
   private bindEventHandlers() {
     Events.on("BOT_READY", (data) => {
       Logger.botReady(data);
+      if (data.bot.id === "BIG_BROTHER") {
+        AppController.setEnterMessage(this.get("BIG_BROTHER"));
+      }
     });
 
     Events.on("COMMAND_NOT_FOUND", (data) => {

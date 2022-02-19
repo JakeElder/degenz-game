@@ -138,6 +138,7 @@ admin.commands.push({
         .addStringOption((option) =>
           option
             .setName("district")
+            .setDescription(`The district to open entries to`)
             .setChoices([
               ["District 1", DistrictId.PROJECTS_D1],
               ["District 2", DistrictId.PROJECTS_D2],
@@ -146,11 +147,30 @@ admin.commands.push({
               ["District 5", DistrictId.PROJECTS_D5],
               ["District 6", DistrictId.PROJECTS_D6],
             ])
-            .setDescription(`The district to assign an apartment`)
         )
     )
     .addSubcommand((subcommand) =>
-      subcommand.setName("close").setDescription(`Close entries`)
+      subcommand
+        .setName("close")
+        .setDescription(`Close a district`)
+        .addStringOption((option) =>
+          option
+            .setName("district")
+            .setChoices([
+              ["District 1", DistrictId.PROJECTS_D1],
+              ["District 2", DistrictId.PROJECTS_D2],
+              ["District 3", DistrictId.PROJECTS_D3],
+              ["District 4", DistrictId.PROJECTS_D4],
+              ["District 5", DistrictId.PROJECTS_D5],
+              ["District 6", DistrictId.PROJECTS_D6],
+            ])
+            .setDescription(`The district to close`)
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("set-entry-message")
+        .setDescription(`Set entry message`)
     )
     .toJSON(),
 });

@@ -11,31 +11,24 @@ import {
   addUser,
   deleteUser,
   getAvailableCellNumber,
-  getOpenDistrict,
   getTenanciesInDistrict,
   getUser,
 } from "../legacy/db";
-import WaitingRoomController from "./WaitingRoomController";
-import { PrisonerBot } from "../bots";
+import { BigBrotherBot, PrisonerBot } from "../bots";
+import AppController from "./AppController";
 
 export default class UserController {
   static async init(
     memberId: GuildMember["id"],
     onboard: boolean = true,
-    district: DistrictId | null,
-    bot: AdminBot
+    district: DistrictId,
+    admin: AdminBot,
+    bb: BigBrotherBot
   ) {
     let [member, user] = await Promise.all([
-      bot.getMember(memberId),
+      admin.getMember(memberId),
       User.findOne({ where: { discordId: memberId } }),
     ]);
-
-    let publicDistrict = false;
-
-    if (!district) {
-      publicDistrict = true;
-      district = await getOpenDistrict();
-    }
 
     if (typeof user !== "undefined") {
       return { success: false, code: "ALREADY_INITIATED" };
@@ -53,7 +46,7 @@ export default class UserController {
 
     const parent = Config.categoryId(`THE_${district}`);
 
-    const apartment = await bot.guild.channels.create(
+    const apartment = await admin.guild.channels.create(
       `\u2302\uFF5C${paramCase(member.displayName)}s-apartment`,
       {
         type: "GUILD_TEXT",
@@ -89,19 +82,18 @@ export default class UserController {
 
     Events.emit("APARTMENT_ALLOCATED", { user, onboard });
 
-    if (
-      publicDistrict &&
-      tenancies + 1 === Config.general("DISTRICT_CAPACITY")
-    ) {
-      WaitingRoomController.setStatus(false, bot);
-    }
+    AppController.setEnterMessage(bb, admin);
 
     return { success: true, code: "USER_INITIATED", user };
   }
 
-  static async eject(memberId: GuildMember["id"], bot: AdminBot) {
+  static async eject(
+    memberId: GuildMember["id"],
+    admin: AdminBot,
+    bb: BigBrotherBot
+  ) {
     const user = await getUser(memberId);
-    const member = await bot.getMember(memberId);
+    const member = await admin.getMember(memberId);
 
     // Check user exists in db
     if (user === null) {
@@ -111,7 +103,7 @@ export default class UserController {
     // Remove apartment
     try {
       const tenancy = user.primaryTenancy;
-      const apartment = await bot.getTextChannel(tenancy.discordChannelId);
+      const apartment = await admin.getTextChannel(tenancy.discordChannelId);
       await apartment.delete();
     } catch (e) {
       // this.error(e);
@@ -127,16 +119,7 @@ export default class UserController {
     // Delete from db
     await deleteUser(member);
 
-    (async () => {
-      const district = await getOpenDistrict();
-      const newTenancy = user.primaryTenancy;
-      if (district === newTenancy.district) {
-        const tenancies = await getTenanciesInDistrict(district);
-        if (tenancies < Config.general("DISTRICT_CAPACITY")) {
-          WaitingRoomController.setStatus(true, bot);
-        }
-      }
-    })();
+    AppController.setEnterMessage(bb, admin);
 
     return { success: true, code: "USER_EJECTED" };
   }

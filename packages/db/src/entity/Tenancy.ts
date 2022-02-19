@@ -8,8 +8,8 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from "typeorm";
-import { DistrictId, TenancyType } from "types";
-import { User } from "..";
+import { TenancyType } from "types";
+import { User, District } from "..";
 
 @Entity()
 export class Tenancy extends BaseEntity {
@@ -23,8 +23,8 @@ export class Tenancy extends BaseEntity {
   @Column({ type: "enum", enum: TenancyType })
   type: TenancyType;
 
-  @Column({ type: "enum", enum: DistrictId })
-  district: DistrictId;
+  @ManyToOne(() => District, (district) => district.tenancies)
+  district: District;
 
   @ManyToOne(() => User, (user) => user.tenancies, { onDelete: "CASCADE" })
   user: User;

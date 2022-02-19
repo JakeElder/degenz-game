@@ -1,4 +1,4 @@
-import { pascalCase } from "change-case";
+import { camelCase, pascalCase } from "change-case";
 import { CommandInteraction, SelectMenuInteraction } from "discord.js";
 import DiscordBot from "./DiscordBot";
 import Events from "./Events";
@@ -20,7 +20,7 @@ export abstract class CommandController {
 
     let option;
     try {
-      option = i.options.getSubcommand();
+      option = camelCase(i.options.getSubcommand());
     } catch (e) {}
 
     let handler;

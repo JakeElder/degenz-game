@@ -1,8 +1,10 @@
 import "reflect-metadata";
 import { Connection, createConnection } from "typeorm";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
+// import { Achievement as AchievementEnum } from "types";
 import { Achievement } from "./entity/Achievement";
 import { AppState } from "./entity/AppState";
+import { District } from "./entity/District";
 import { Imprisonment } from "./entity/Imprisonment";
 import { MartItem } from "./entity/MartItem";
 import { MartItemOwnership } from "./entity/MartItemOwnership";
@@ -19,6 +21,7 @@ export async function connect(url: string) {
     entities: [
       Achievement,
       AppState,
+      District,
       Imprisonment,
       MartItem,
       MartItemOwnership,
@@ -37,7 +40,7 @@ export async function connect(url: string) {
 
   // console.log(t);
 
-  // await Achievement.insert(
+  // const c = await Achievement.insert(
   //   Object.keys(AchievementEnum).map((k) => {
   //     return {
   //       symbol: (AchievementEnum as any)[k as any],
@@ -183,6 +186,7 @@ export async function disconnect() {
 export {
   Achievement,
   AppState,
+  District,
   Imprisonment,
   MartItem,
   MartItemOwnership,
