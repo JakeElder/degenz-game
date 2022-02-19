@@ -23,6 +23,37 @@ export default class AppController {
     await this.setEnterMessage();
   }
 
+  static async setVerifyMessage() {
+    const [bb, admin] = Global.bots("BIG_BROTHER", "ADMIN");
+    const c = await bb.getTextChannel(Config.channelId("VERIFICATION"));
+
+    let message: Message;
+
+    const state = await AppState.findOneOrFail();
+    const instruction =
+      "Welcome. `REACT` to this message to prove you're not a bot.";
+
+    try {
+      message = await c.messages.fetch(`${state.verifyMessageId}`);
+    } catch (e) {
+      message = await c.send(instruction);
+      AppState.setVerifyMessageId(message.id);
+    }
+
+    const collector = message.createReactionCollector();
+    collector.on("collect", async (_, user) => {
+      const member = await admin.getMember(user.id);
+      console.log(member.roles.cache);
+      if (
+        !member.roles.cache.some((r) =>
+          [Config.roleId("DEGEN"), Config.roleId("VERIFIED")].includes(r.id)
+        )
+      ) {
+        await member.roles.add(Config.roleId("VERIFIED"));
+      }
+    });
+  }
+
   static async setEnterMessage() {
     const bb = Global.bot("BIG_BROTHER");
 
@@ -30,7 +61,6 @@ export default class AppController {
     const c = await bb.getTextChannel(Config.channelId("WAITING_ROOM"));
     const capacity = Config.general("DISTRICT_CAPACITY");
 
-    let message: Message;
     const districts = await District.find({
       relations: ["tenancies"],
       order: { symbol: 1 },
@@ -80,6 +110,8 @@ export default class AppController {
         new MessageActionRow().addComponents(buttons.slice(3)),
       ],
     };
+
+    let message: Message;
 
     if (state.entryMessageId) {
       try {

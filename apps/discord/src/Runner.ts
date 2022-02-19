@@ -13,8 +13,10 @@ export default class Runner {
   private bindEventHandlers() {
     Events.on("BOT_READY", (data) => {
       Logger.botReady(data);
+
       if (data.bot.id === "BIG_BROTHER") {
         AppController.setEnterMessage();
+        AppController.setVerifyMessage();
       }
     });
 
