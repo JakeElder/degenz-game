@@ -1,7 +1,7 @@
 import { BotId } from "types";
 import Events from "./Events";
 import Logger from "./Logger";
-import HOPNotifier from "./HOPNotifier";
+import WorldNotifier from "./WorldNotifier";
 import DiscordBot from "./DiscordBot";
 import OnboardController from "./controllers/OnboardController";
 import AppController from "./controllers/AppController";
@@ -16,7 +16,6 @@ export default class Runner {
       Logger.botReady(e);
 
       if (e.data.bot.id === "BIG_BROTHER") {
-        HOPNotifier.init();
         AppController.setEnterMessage();
         AppController.setVerifyMessage();
         AppController.setLeaderboardMessage();
@@ -24,7 +23,7 @@ export default class Runner {
     });
 
     Events.on("BALANCE_CHECKED", (e) => {
-      HOPNotifier.balanceChecked(e);
+      WorldNotifier.balanceChecked(e);
     });
 
     Events.on("COMMAND_NOT_FOUND", (e) => {
