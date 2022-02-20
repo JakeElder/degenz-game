@@ -1,4 +1,4 @@
-import { BotId, CategoryId, ChannelId, RoleId } from "types";
+import { BotSymbol, CategorySymbol, ChannelSymbol, RoleSymbol } from "types";
 
 const GENERAL = {
   DISTRICT_CAPACITY: 50,
@@ -9,7 +9,7 @@ const GENERAL = {
   WORLD_NAME: "Beautopia",
 };
 
-const CATEGORY_IDS: Record<CategoryId, string> = {
+const CATEGORY_IDS: Record<CategorySymbol, string> = {
   ADMIN: "933890294431248454",
   BEAUTOPIA: "933888617632391199",
   COMMUNITY: "933888430293803068",
@@ -23,7 +23,7 @@ const CATEGORY_IDS: Record<CategoryId, string> = {
   THE_PROJECTS_D6: "940477775461113916",
 };
 
-const CHANNEL_IDS: Record<ChannelId, string> = {
+const CHANNEL_IDS: Record<ChannelSymbol, string> = {
   ADMIN_GENERAL: "933890335573176370",
   ADMIN_SANDBOX: "933919605322305558",
   ANNOUNCEMENTS: "935375691887829042",
@@ -45,7 +45,7 @@ const CHANNEL_IDS: Record<ChannelId, string> = {
   WAITING_ROOM: "933891067336597504",
 };
 
-const ROLE_IDS: Record<RoleId, string> = {
+const ROLE_IDS: Record<RoleSymbol, string> = {
   ADMIN: "933891976871440415",
   ADMIN_BOT: "934107780766384169",
   ALLY_BOT: "933917241148317748",
@@ -64,7 +64,7 @@ const ROLE_IDS: Record<RoleId, string> = {
   WARDEN_BOT: "935378735195111474",
 };
 
-const CLIENT_IDS: Record<BotId, string> = {
+const CLIENT_IDS: Record<BotSymbol, string> = {
   ADMIN: "934105673430626304",
   ALLY: "932479363952287815",
   ARMORY_CLERK: "932307514878488666",

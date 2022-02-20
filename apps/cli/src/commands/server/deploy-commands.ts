@@ -30,11 +30,11 @@ export default class DeployCommands extends Command {
 
             const res = await this.put(
               Routes.applicationGuildCommands(
-                Config.clientId(bot.id),
+                Config.clientId(bot.symbol),
                 flags["id"]
               ),
               data,
-              Config.botToken(bot.id)
+              Config.botToken(bot.symbol)
             );
 
             if (res.status === 200) {
@@ -45,12 +45,12 @@ export default class DeployCommands extends Command {
                   }
                   return this.put(
                     Routes.applicationCommandPermissions(
-                      Config.clientId(bot.id),
+                      Config.clientId(bot.symbol),
                       flags["id"],
                       res.data[idx].id
                     ),
                     { permissions: bot.commands[idx].permissions },
-                    Config.botToken(bot.id)
+                    Config.botToken(bot.symbol)
                   );
                 })
               );

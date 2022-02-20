@@ -4,7 +4,7 @@ import DiscordBot from "../DiscordBot";
 
 export default class BankerBot extends DiscordBot {
   constructor() {
-    const bot = bots.find((bot) => bot.id === "BANKER");
+    const bot = bots.find((bot) => bot.symbol === "BANKER");
     super(bot!, new BankerCommandController());
   }
 }

@@ -39,7 +39,7 @@ export default abstract class DiscordBot {
       this.readyResolver();
       Events.emit("BOT_READY", { bot: this.manifest });
     });
-    this.client.login(Config.botToken(this.manifest.id));
+    this.client.login(Config.botToken(this.manifest.symbol));
     return this.readyPromise;
   }
 

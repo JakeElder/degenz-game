@@ -1,29 +1,29 @@
-import { BotId } from "types";
+import { BotSymbol } from "types";
 import DiscordBot from "./DiscordBot";
 
 export class Global {
-  private static botManifest: Partial<Record<BotId, DiscordBot>> = {};
+  private static botManifest: Partial<Record<BotSymbol, DiscordBot>> = {};
 
-  static bot(id: BotId, bot?: DiscordBot) {
+  static bot(symbol: BotSymbol, bot?: DiscordBot) {
     if (bot) {
-      this.botManifest[id] = bot;
+      this.botManifest[symbol] = bot;
       return bot;
     }
 
-    const b = this.botManifest[id];
+    const b = this.botManifest[symbol];
 
     if (typeof b === "undefined") {
-      throw new Error(`${id} not set`);
+      throw new Error(`${symbol} not set`);
     }
 
     return b;
   }
 
-  static bots(...ids: BotId[]) {
-    if (!ids) {
+  static bots(...symbols: BotSymbol[]) {
+    if (!symbols) {
       return Object.values(this.botManifest);
     }
 
-    return ids.map((id) => this.bot(id));
+    return symbols.map((id) => this.bot(id));
   }
 }

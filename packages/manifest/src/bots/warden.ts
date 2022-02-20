@@ -6,7 +6,7 @@ import Config from "app-config";
 const { FLAGS } = Intents;
 
 const warden: Bot = {
-  id: "WARDEN",
+  symbol: "WARDEN",
   name: "Walden",
   clientOptions: { intents: [FLAGS.GUILDS] },
   commands: [],
@@ -14,7 +14,7 @@ const warden: Bot = {
 
 // `bribe` command
 warden.commands.push({
-  id: "BRIBE",
+  symbol: "BRIBE",
   permissions: [
     { id: Config.roleId("PRISONER"), type: 1, permission: true },
     { id: Config.roleId("ADMIN"), type: 1, permission: true },

@@ -4,7 +4,7 @@ import DiscordBot from "../DiscordBot";
 
 export default class PrisonerBot extends DiscordBot {
   constructor() {
-    const bot = bots.find((bot) => bot.id === "PRISONER");
+    const bot = bots.find((bot) => bot.symbol === "PRISONER");
     super(bot!, new PrisonerCommandController());
   }
 }

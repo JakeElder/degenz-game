@@ -5,7 +5,7 @@ import { Command } from "../../lib";
 import { structure } from "manifest";
 import _ from "discord.js";
 import { json, resolvableToOverwrite } from "../../utils";
-import { CategoryId, ChannelId } from "types";
+import { CategorySymbol, ChannelSymbol } from "types";
 
 export default class CreateStructure extends Command {
   static description = "Create categories and channels";
@@ -24,8 +24,8 @@ export default class CreateStructure extends Command {
   async run(): Promise<void> {
     const { flags } = await this.parse(CreateStructure);
 
-    const CATEGORY_IDS: Partial<Record<CategoryId, string>> = {};
-    const CHANNEL_IDS: Partial<Record<ChannelId, string>> = {};
+    const CATEGORY_IDS: Partial<Record<CategorySymbol, string>> = {};
+    const CHANNEL_IDS: Partial<Record<ChannelSymbol, string>> = {};
 
     const listr = new Listr(
       structure.map((category) => {
@@ -44,7 +44,7 @@ export default class CreateStructure extends Command {
               flags.token
             );
 
-            CATEGORY_IDS[category.id] = res.data.id;
+            CATEGORY_IDS[category.symbol] = res.data.id;
 
             return new Listr(
               category.channels.map((channel) => {
@@ -65,7 +65,7 @@ export default class CreateStructure extends Command {
                       flags.token
                     );
 
-                    CHANNEL_IDS[channel.id] = r.data.id;
+                    CHANNEL_IDS[channel.symbol] = r.data.id;
 
                     if (channel.lockPermissions) {
                       await Promise.all(

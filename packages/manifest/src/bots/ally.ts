@@ -7,7 +7,7 @@ import { Format } from "lib";
 const { FLAGS } = Intents;
 
 const ally: Bot = {
-  id: "ALLY",
+  symbol: "ALLY",
   name: "Ivan 6000",
   clientOptions: { intents: [FLAGS.GUILDS] },
   commands: [],
@@ -15,7 +15,7 @@ const ally: Bot = {
 
 // `eat` command
 ally.commands.push({
-  id: "EAT",
+  symbol: "EAT",
   permissions: [
     { id: Config.roleId("DEGEN"), type: 1, permission: true },
     { id: Config.roleId("ADMIN"), type: 1, permission: true },
@@ -28,7 +28,7 @@ ally.commands.push({
 
 // `redpill` command
 ally.commands.push({
-  id: "RED_PILL",
+  symbol: "RED_PILL",
   permissions: [],
   data: new SlashCommandBuilder()
     .setName("redpill")
@@ -38,7 +38,7 @@ ally.commands.push({
 
 // `stats` command
 ally.commands.push({
-  id: "STATS",
+  symbol: "STATS",
   permissions: [
     { id: Config.roleId("DEGEN"), type: 1, permission: true },
     { id: Config.roleId("ADMIN"), type: 1, permission: true },
@@ -54,7 +54,7 @@ ally.commands.push({
 
 // `help` command
 ally.commands.push({
-  id: "HELP",
+  symbol: "HELP",
   permissions: [],
   data: new SlashCommandBuilder()
     .setName("help")
@@ -64,7 +64,7 @@ ally.commands.push({
 
 // `inventory` command
 ally.commands.push({
-  id: "INVENTORY",
+  symbol: "INVENTORY",
   permissions: [
     { id: Config.roleId("DEGEN"), type: 1, permission: true },
     { id: Config.roleId("ADMIN"), type: 1, permission: true },
@@ -80,7 +80,7 @@ ally.commands.push({
 
 // `leaderboard` command
 ally.commands.push({
-  id: "LEADERBOARD",
+  symbol: "LEADERBOARD",
   permissions: [
     { id: Config.roleId("DEGEN"), type: 1, permission: true },
     { id: Config.roleId("ADMIN"), type: 1, permission: true },
@@ -103,10 +103,7 @@ ally.commands.push({
         .setDescription("Whether to publish in the current room.")
     )
     .setDescription(
-      `See who has the most ${Format.currency({
-        copyright: false,
-        bold: false,
-      })}.`
+      `See who has the most ${Format.currency(null, { bold: false })}.`
     )
     .toJSON(),
 });

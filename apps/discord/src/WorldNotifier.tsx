@@ -1,6 +1,6 @@
 import React from "react";
 import { NPC } from "db";
-import { BotId, ChannelId } from "types";
+import { BotSymbol, ChannelSymbol } from "types";
 import memoize from "memoizee";
 import Config from "app-config";
 import { Events } from "./Events";
@@ -14,14 +14,18 @@ type Event<T extends keyof Events> = Parameters<Events[T]>[0];
 
 export default class WorldNotifier {
   static getChannel = memoize(
-    async (botSymbol: BotId, channelSymbol: ChannelId) => {
+    async (botSymbol: BotSymbol, channelSymbol: ChannelSymbol) => {
       const bot = Global.bot(botSymbol);
       return bot.getTextChannel(Config.channelId(channelSymbol));
     },
     { promise: true, maxAge: 1000 * 60 * 10 }
   );
 
-  static async logToHOP(botSymbol: BotId, e: keyof Events, message: string) {
+  static async logToHOP(
+    botSymbol: BotSymbol,
+    e: keyof Events,
+    message: string
+  ) {
     const [npc, hop] = await Promise.all([
       NPC.findOneOrFail({ where: { symbol: botSymbol } }),
       this.getChannel("BIG_BROTHER", "HALL_OF_PRIVACY"),
@@ -30,8 +34,8 @@ export default class WorldNotifier {
   }
 
   static async logToChannel(
-    channelSymbol: ChannelId,
-    botSymbol: BotId,
+    channelSymbol: ChannelSymbol,
+    botSymbol: BotSymbol,
     e: keyof Events,
     message: string
   ) {

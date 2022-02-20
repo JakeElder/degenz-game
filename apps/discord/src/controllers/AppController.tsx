@@ -7,7 +7,7 @@ import {
   MessageButton,
   MessageOptions,
 } from "discord.js";
-import { DistrictId, OperationResult } from "types";
+import { DistrictSymbol, OperationResult } from "types";
 import { AppState, District, User } from "db";
 import { Format } from "lib";
 import { channelMention, userMention } from "@discordjs/builders";
@@ -24,13 +24,13 @@ export default class AppController {
   static leaderboardTableData: any = [];
   static leaderboardMessage: Message;
 
-  static async openDistrict(district: DistrictId) {
-    await District.open(district);
+  static async openDistrict(districtSymbol: DistrictSymbol) {
+    await District.open(districtSymbol);
     await this.setEnterMessage();
   }
 
-  static async closeDistrict(district: DistrictId) {
-    await District.close(district);
+  static async closeDistrict(districtSymbol: DistrictSymbol) {
+    await District.close(districtSymbol);
     await this.setEnterMessage();
   }
 
@@ -193,7 +193,7 @@ export default class AppController {
       const res = await UserController.init(
         i.user.id,
         true,
-        i.customId as DistrictId
+        i.customId as DistrictSymbol
       );
 
       if (res.success) {
@@ -228,12 +228,12 @@ export default class AppController {
       return { success: false, code: "BOT_NOT_FOUND" };
     }
 
-    const botData = bots.find((bot) => bot.id === botId);
+    const botData = bots.find((bot) => bot.symbol === botId);
     if (!botData) {
       return { success: false, code: "BOT_NOT_FOUND" };
     }
 
-    const bot = Global.bot(botData.id);
+    const bot = Global.bot(botData.symbol);
 
     try {
       const c = await bot.getTextChannel(channel.id);

@@ -8,7 +8,11 @@ import {
   User,
   District,
 } from "db";
-import { DistrictId, TenancyType, Achievement as AchievementEnum } from "types";
+import {
+  DistrictSymbol,
+  TenancyType,
+  Achievement as AchievementEnum,
+} from "types";
 import { In } from "typeorm";
 
 export async function getMartItems() {
@@ -42,9 +46,9 @@ export async function getUsers() {
   });
 }
 
-export async function getTenanciesInDistrict(districtId: DistrictId) {
+export async function getTenanciesInDistrict(districtSymbol: DistrictSymbol) {
   const district = await District.findOneOrFail({
-    where: { symbol: districtId },
+    where: { symbol: districtSymbol },
   });
   return Tenancy.count({ where: { district } });
 }
@@ -117,16 +121,16 @@ export async function sellItem(item: MartItem, memberId: User["discordId"]) {
 export async function addUser({
   member,
   apartmentId,
-  districtId,
+  districtSymbol,
   tokens = 0,
 }: {
   member: GuildMember;
   apartmentId: string;
-  districtId: DistrictId;
+  districtSymbol: DistrictSymbol;
   tokens?: number;
 }) {
   const district = await District.findOneOrFail({
-    where: { symbol: districtId },
+    where: { symbol: districtSymbol },
   });
 
   const user = User.create({

@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from "typeorm";
-import { DistrictId } from "types";
+import { DistrictSymbol } from "types";
 import { Tenancy } from "..";
 
 @Entity()
@@ -16,9 +16,9 @@ export class District extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: "enum", enum: DistrictId })
+  @Column({ type: "enum", enum: DistrictSymbol })
   @Index({ unique: true })
-  symbol: DistrictId;
+  symbol: DistrictSymbol;
 
   @Column({ default: false })
   open: boolean;
@@ -41,11 +41,11 @@ export class District extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  static async open(symbol: DistrictId) {
+  static async open(symbol: DistrictSymbol) {
     this.update({ symbol }, { open: true });
   }
 
-  static async close(symbol: DistrictId) {
+  static async close(symbol: DistrictSymbol) {
     this.update({ symbol }, { open: false });
   }
 }

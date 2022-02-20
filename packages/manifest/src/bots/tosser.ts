@@ -7,7 +7,7 @@ import { Format } from "lib";
 const { FLAGS } = Intents;
 
 const tosser: Bot = {
-  id: "TOSSER",
+  symbol: "TOSSER",
   name: "Tosser Ted",
   clientOptions: { intents: [FLAGS.GUILDS] },
   commands: [],
@@ -15,7 +15,7 @@ const tosser: Bot = {
 
 // `toss` command
 tosser.commands.push({
-  id: "TOSS",
+  symbol: "TOSS",
   permissions: [
     { id: Config.roleId("DEGEN"), type: 1, permission: true },
     { id: Config.roleId("ADMIN"), type: 1, permission: true },
@@ -23,14 +23,14 @@ tosser.commands.push({
   data: new SlashCommandBuilder()
     .setName("toss")
     .setDescription(
-      `Gamble your ${Format.currency({ bold: false })} on a coin flip.`
+      `Gamble your ${Format.currency(null, { bold: false })} on a coin flip.`
     )
     .addIntegerOption((option) =>
       option
         .setName("amount")
         .setRequired(true)
         .setDescription(
-          `The amount of ${Format.currency({ bold: false })} to bet.`
+          `The amount of ${Format.currency(null, { bold: false })} to bet.`
         )
     )
     .addUserOption((option) =>

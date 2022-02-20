@@ -6,7 +6,7 @@ import Config from "app-config";
 const { FLAGS } = Intents;
 
 const martClerk: Bot = {
-  id: "MART_CLERK",
+  symbol: "MART_CLERK",
   name: "Merris",
   clientOptions: { intents: [FLAGS.GUILDS] },
   commands: [],
@@ -14,7 +14,7 @@ const martClerk: Bot = {
 
 // `stock` command
 martClerk.commands.push({
-  id: "STOCK",
+  symbol: "STOCK",
   permissions: [
     { id: Config.roleId("DEGEN"), type: 1, permission: true },
     { id: Config.roleId("ADMIN"), type: 1, permission: true },
@@ -27,7 +27,7 @@ martClerk.commands.push({
 
 // `buy` command
 martClerk.commands.push({
-  id: "BUY",
+  symbol: "BUY",
   permissions: [
     { id: Config.roleId("DEGEN"), type: 1, permission: true },
     { id: Config.roleId("ADMIN"), type: 1, permission: true },

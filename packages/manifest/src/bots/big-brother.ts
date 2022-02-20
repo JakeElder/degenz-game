@@ -5,7 +5,7 @@ import { Intents } from "discord.js";
 const { FLAGS } = Intents;
 
 const bigBrother: Bot = {
-  id: "BIG_BROTHER",
+  symbol: "BIG_BROTHER",
   name: "Big Brother",
   clientOptions: {
     intents: [FLAGS.GUILD_MESSAGE_REACTIONS],
@@ -16,7 +16,7 @@ const bigBrother: Bot = {
 
 // `obey` command
 bigBrother.commands.push({
-  id: "OBEY",
+  symbol: "OBEY",
   permissions: [],
   data: new SlashCommandBuilder()
     .setName("obey")

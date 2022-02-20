@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { Bot, DistrictId } from "types";
+import { Bot, DistrictSymbol } from "types";
 import Config from "app-config";
 import { Format } from "lib";
 import { Intents } from "discord.js";
@@ -7,7 +7,7 @@ import { Intents } from "discord.js";
 const { FLAGS } = Intents;
 
 const admin: Bot = {
-  id: "ADMIN",
+  symbol: "ADMIN",
   name: "Degenz Admin",
   clientOptions: {
     intents: [FLAGS.GUILDS, FLAGS.GUILD_MEMBERS, FLAGS.GUILD_MESSAGES],
@@ -17,7 +17,7 @@ const admin: Bot = {
 
 // Admin command
 admin.commands.push({
-  id: "ADMIN",
+  symbol: "ADMIN",
   permissions: [{ id: Config.roleId("ADMIN"), type: 1, permission: true }],
   data: new SlashCommandBuilder()
     .setName("admin")
@@ -37,12 +37,12 @@ admin.commands.push({
             .setName("district")
             .setRequired(true)
             .setChoices([
-              ["District 1", DistrictId.PROJECTS_D1],
-              ["District 2", DistrictId.PROJECTS_D2],
-              ["District 3", DistrictId.PROJECTS_D3],
-              ["District 4", DistrictId.PROJECTS_D4],
-              ["District 5", DistrictId.PROJECTS_D5],
-              ["District 6", DistrictId.PROJECTS_D6],
+              ["District 1", DistrictSymbol.PROJECTS_D1],
+              ["District 2", DistrictSymbol.PROJECTS_D2],
+              ["District 3", DistrictSymbol.PROJECTS_D3],
+              ["District 4", DistrictSymbol.PROJECTS_D4],
+              ["District 5", DistrictSymbol.PROJECTS_D5],
+              ["District 6", DistrictSymbol.PROJECTS_D6],
             ])
             .setDescription(`The district to assign an apartment`)
         )
@@ -119,16 +119,13 @@ admin.commands.push({
     .addSubcommand((subcommand) =>
       subcommand
         .setName("issue")
-        .setDescription(`Issue ${Format.currency({ bold: false })}`)
+        .setDescription(`Issue ${Format.currency(null, { bold: false })}`)
         .addNumberOption((option) =>
           option
             .setName("amount")
             .setRequired(true)
             .setDescription(
-              `The amount of ${Format.currency({
-                long: false,
-                bold: false,
-              })} send`
+              `The amount of ${Format.currency(null, { bold: false })} send`
             )
         )
     )
@@ -142,12 +139,12 @@ admin.commands.push({
             .setName("district")
             .setDescription(`The district to open entries to`)
             .setChoices([
-              ["District 1", DistrictId.PROJECTS_D1],
-              ["District 2", DistrictId.PROJECTS_D2],
-              ["District 3", DistrictId.PROJECTS_D3],
-              ["District 4", DistrictId.PROJECTS_D4],
-              ["District 5", DistrictId.PROJECTS_D5],
-              ["District 6", DistrictId.PROJECTS_D6],
+              ["District 1", DistrictSymbol.PROJECTS_D1],
+              ["District 2", DistrictSymbol.PROJECTS_D2],
+              ["District 3", DistrictSymbol.PROJECTS_D3],
+              ["District 4", DistrictSymbol.PROJECTS_D4],
+              ["District 5", DistrictSymbol.PROJECTS_D5],
+              ["District 6", DistrictSymbol.PROJECTS_D6],
             ])
         )
     )
@@ -160,12 +157,12 @@ admin.commands.push({
             .setName("district")
             .setRequired(true)
             .setChoices([
-              ["District 1", DistrictId.PROJECTS_D1],
-              ["District 2", DistrictId.PROJECTS_D2],
-              ["District 3", DistrictId.PROJECTS_D3],
-              ["District 4", DistrictId.PROJECTS_D4],
-              ["District 5", DistrictId.PROJECTS_D5],
-              ["District 6", DistrictId.PROJECTS_D6],
+              ["District 1", DistrictSymbol.PROJECTS_D1],
+              ["District 2", DistrictSymbol.PROJECTS_D2],
+              ["District 3", DistrictSymbol.PROJECTS_D3],
+              ["District 4", DistrictSymbol.PROJECTS_D4],
+              ["District 5", DistrictSymbol.PROJECTS_D5],
+              ["District 6", DistrictSymbol.PROJECTS_D6],
             ])
             .setDescription(`The district to close`)
         )

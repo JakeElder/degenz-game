@@ -5,7 +5,7 @@ import Events from "../Events";
 import { issueTokens } from "../legacy/db";
 import UserController from "../controllers/UserController";
 import { CommandController } from "../CommandController";
-import { DistrictId } from "types";
+import { DistrictSymbol } from "types";
 import AppController from "../controllers/AppController";
 import { Global } from "../Global";
 
@@ -32,13 +32,13 @@ export default class AllyCommandController extends CommandController {
     await i.deferReply({ ephemeral: true });
 
     const onboard = i.options.getBoolean("onboard");
-    const district = i.options.getString("district") as DistrictId;
+    const districtSymbol = i.options.getString("district") as DistrictSymbol;
     const member = i.options.getMember("member", true) as GuildMember;
 
     const result = await UserController.init(
       member.id,
       onboard === null || onboard ? true : false,
-      district
+      districtSymbol
     );
 
     return this.respond(i, result.code, result.success ? "SUCCESS" : "FAIL");
@@ -130,11 +130,14 @@ export default class AllyCommandController extends CommandController {
   }
 
   async admin_open(i: CommandInteraction) {
-    const districtId = i.options.getString("district", true) as DistrictId;
+    const districtSymbol = i.options.getString(
+      "district",
+      true
+    ) as DistrictSymbol;
 
     try {
-      await AppController.openDistrict(districtId);
-      await this.respond(i, `${districtId}_OPENED`, "SUCCESS");
+      await AppController.openDistrict(districtSymbol);
+      await this.respond(i, `${districtSymbol}_OPENED`, "SUCCESS");
     } catch (e) {
       console.log(e);
       await this.respond(i, "DIDNT_SET_DISTRICT", "FAIL");
@@ -142,10 +145,13 @@ export default class AllyCommandController extends CommandController {
   }
 
   async admin_close(i: CommandInteraction) {
-    const districtId = i.options.getString("district", true) as DistrictId;
+    const districtSymbol = i.options.getString(
+      "district",
+      true
+    ) as DistrictSymbol;
     try {
-      await AppController.closeDistrict(districtId);
-      await this.respond(i, `${districtId}_CLOSED`, "SUCCESS");
+      await AppController.closeDistrict(districtSymbol);
+      await this.respond(i, `${districtSymbol}_CLOSED`, "SUCCESS");
     } catch (e) {
       await this.respond(i, "ENTRY_DISABLE_FAILED", "FAIL");
     }

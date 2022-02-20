@@ -6,7 +6,7 @@ import Config from "app-config";
 const { FLAGS } = Intents;
 
 const prisoner: Bot = {
-  id: "PRISONER",
+  symbol: "PRISONER",
   name: "Hugh Donie",
   clientOptions: { intents: [FLAGS.GUILDS] },
   commands: [],
@@ -14,7 +14,7 @@ const prisoner: Bot = {
 
 // `escape` command
 prisoner.commands.push({
-  id: "ESCAPE",
+  symbol: "ESCAPE",
   permissions: [
     { id: Config.roleId("PRISONER"), type: 1, permission: true },
     { id: Config.roleId("ADMIN"), type: 1, permission: true },

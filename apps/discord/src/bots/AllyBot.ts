@@ -4,7 +4,7 @@ import DiscordBot from "../DiscordBot";
 
 export default class AdminBot extends DiscordBot {
   constructor() {
-    const bot = bots.find((bot) => bot.id === "ALLY");
+    const bot = bots.find((bot) => bot.symbol === "ALLY");
     super(bot!, new AllyCommandController());
   }
 }

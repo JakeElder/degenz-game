@@ -1,7 +1,13 @@
 import DEV_CONFIG from "./config";
 import STAGE_CONFIG from "./config.stage";
 import PROD_CONFIG from "./config.prod";
-import { BotId, CategoryId, ChannelId, EnvVars, RoleId } from "types";
+import {
+  BotSymbol,
+  CategorySymbol,
+  ChannelSymbol,
+  EnvVars,
+  RoleSymbol,
+} from "types";
 
 export const NODE_ENV =
   (process.env.NODE_ENV as "development" | "stage" | "production") ||
@@ -15,7 +21,7 @@ const configs = {
 
 const env = process.env as EnvVars;
 
-const BOT_TOKENS: Record<BotId, string> = {
+const BOT_TOKENS: Record<BotSymbol, string> = {
   WARDEN: env.WARDEN_BOT_TOKEN,
   TOSSER: env.TOSSER_BOT_TOKEN,
   SENSEI: env.SENSEI_BOT_TOKEN,
@@ -48,34 +54,34 @@ export default class ConfigManager {
   }
 
   static categoryId(
-    k: CategoryId,
+    k: CategorySymbol,
     { env }: { env: keyof typeof configs } = { env: NODE_ENV }
   ) {
     return configs[env].CATEGORY_IDS[k];
   }
 
   static channelId(
-    k: ChannelId,
+    k: ChannelSymbol,
     { env }: { env: keyof typeof configs } = { env: NODE_ENV }
   ) {
     return configs[env].CHANNEL_IDS[k];
   }
 
   static roleId(
-    k: RoleId,
+    k: RoleSymbol,
     { env }: { env: keyof typeof configs } = { env: NODE_ENV }
   ) {
     return configs[env].ROLE_IDS[k];
   }
 
   static clientId(
-    k: BotId,
+    k: BotSymbol,
     { env }: { env: keyof typeof configs } = { env: NODE_ENV }
   ) {
     return configs[env].CLIENT_IDS[k];
   }
 
-  static botToken(k: BotId) {
+  static botToken(k: BotSymbol) {
     return BOT_TOKENS[k];
   }
 

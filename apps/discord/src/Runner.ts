@@ -1,4 +1,4 @@
-import { BotId } from "types";
+import { BotSymbol } from "types";
 import Events from "./Events";
 import Logger from "./Logger";
 import WorldNotifier from "./WorldNotifier";
@@ -15,7 +15,7 @@ export default class Runner {
     Events.on("BOT_READY", (e) => {
       Logger.botReady(e);
 
-      if (e.data.bot.id === "BIG_BROTHER") {
+      if (e.data.bot.symbol === "BIG_BROTHER") {
         AppController.setEnterMessage();
         AppController.setVerifyMessage();
         AppController.setLeaderboardMessage();
@@ -43,10 +43,10 @@ export default class Runner {
     });
   }
 
-  get(id: BotId) {
-    const bot = this.bots.find((b) => b.manifest.id === id);
+  get(symbol: BotSymbol) {
+    const bot = this.bots.find((b) => b.manifest.symbol === symbol);
     if (!bot) {
-      throw new Error(`Bot not found ${id}`);
+      throw new Error(`Bot not found ${symbol}`);
     }
     return bot;
   }

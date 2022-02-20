@@ -25,9 +25,9 @@ export default class SetPermissions extends Command {
         return {
           title: `Category: ${category.name}`,
           task: async () => {
-            const categoryId = Config.categoryId(category.id);
+            const categorySymbol = Config.categoryId(category.symbol);
             await this.patch(
-              Routes.channel(categoryId),
+              Routes.channel(categorySymbol),
               {
                 permission_overwrites: category.permissionOverwrites.map(
                   resolvableToOverwrite
@@ -41,10 +41,10 @@ export default class SetPermissions extends Command {
                 return {
                   title: channel.name,
                   task: async () => {
-                    const channelId = Config.channelId(channel.id);
+                    const channelSymbol = Config.channelId(channel.symbol);
 
                     await this.patch(
-                      Routes.channel(channelId),
+                      Routes.channel(channelSymbol),
                       {
                         permission_overwrites: (channel.lockPermissions
                           ? category
@@ -60,7 +60,7 @@ export default class SetPermissions extends Command {
                           const { id, type, deny, allow } =
                             resolvableToOverwrite(o);
                           return this.put(
-                            Routes.channelPermission(channelId, id),
+                            Routes.channelPermission(channelSymbol, id),
                             { type, deny, allow },
                             flags.token
                           );

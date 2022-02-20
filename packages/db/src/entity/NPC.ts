@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
   Index,
 } from "typeorm";
-import { BotId } from "types";
+import { BotSymbol } from "types";
 
 @Entity()
 export class NPC extends BaseEntity {
@@ -16,7 +16,7 @@ export class NPC extends BaseEntity {
 
   @Column()
   @Index({ unique: true })
-  symbol: BotId;
+  symbol: BotSymbol;
 
   @Column()
   defaultEmojiId: string;

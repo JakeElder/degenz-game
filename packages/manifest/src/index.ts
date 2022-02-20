@@ -4,26 +4,26 @@ import { READ_ONLY } from "app-config/dist/constants";
 import bots from "./bots";
 
 const roles: Role[] = [
-  { id: "ADMIN" },
-  { id: "PRISONER" },
-  { id: "DEGEN" },
-  { id: "VERIFIED" },
-  { id: "ADMIN_BOT", app: true },
-  { id: "BIG_BROTHER_BOT", app: true },
-  { id: "ALLY_BOT", app: true },
-  { id: "WARDEN_BOT", app: true },
-  { id: "TOSSER_BOT", app: true },
-  { id: "BANKER_BOT", app: true },
-  { id: "MART_CLERK_BOT", app: true },
-  { id: "PRISONER_BOT", app: true },
-  { id: "ARMORY_CLERK_BOT", app: true },
-  { id: "SENSEI_BOT", app: true },
+  { symbol: "ADMIN" },
+  { symbol: "PRISONER" },
+  { symbol: "DEGEN" },
+  { symbol: "VERIFIED" },
+  { symbol: "ADMIN_BOT", app: true },
+  { symbol: "BIG_BROTHER_BOT", app: true },
+  { symbol: "ALLY_BOT", app: true },
+  { symbol: "WARDEN_BOT", app: true },
+  { symbol: "TOSSER_BOT", app: true },
+  { symbol: "BANKER_BOT", app: true },
+  { symbol: "MART_CLERK_BOT", app: true },
+  { symbol: "PRISONER_BOT", app: true },
+  { symbol: "ARMORY_CLERK_BOT", app: true },
+  { symbol: "SENSEI_BOT", app: true },
 ];
 
 const structure: Category[] = [
   // Outside World
   {
-    id: "OUTSIDE_WORLD",
+    symbol: "OUTSIDE_WORLD",
     name: "Outside World",
     permissionOverwrites: [
       {
@@ -53,7 +53,7 @@ const structure: Category[] = [
     ],
     channels: [
       {
-        id: "VERIFICATION",
+        symbol: "VERIFICATION",
         name: "\u235d\uff5cverification",
         lockPermissions: false,
         permissionOverwrites: [],
@@ -63,7 +63,7 @@ const structure: Category[] = [
 
   // Admin
   {
-    id: "ADMIN",
+    symbol: "ADMIN",
     name: "Admin",
     permissionOverwrites: [
       {
@@ -73,13 +73,13 @@ const structure: Category[] = [
     ],
     channels: [
       {
-        id: "ADMIN_GENERAL",
+        symbol: "ADMIN_GENERAL",
         name: "\u22c8\uff5cgeneral",
         lockPermissions: true,
         permissionOverwrites: [],
       },
       {
-        id: "ADMIN_SANDBOX",
+        symbol: "ADMIN_SANDBOX",
         name: "\u2668\uff5csandbox",
         lockPermissions: true,
         permissionOverwrites: [],
@@ -89,7 +89,7 @@ const structure: Category[] = [
 
   // Community
   {
-    id: "COMMUNITY",
+    symbol: "COMMUNITY",
     name: "Community",
     permissionOverwrites: [
       {
@@ -115,49 +115,49 @@ const structure: Category[] = [
     ],
     channels: [
       {
-        id: "GENERAL",
+        symbol: "GENERAL",
         name: "\u20aa\uff5cgeneral",
         lockPermissions: true,
         permissionOverwrites: [],
       },
       {
-        id: "WAITING_ROOM",
+        symbol: "WAITING_ROOM",
         name: "\u22c8\uff5cwaiting-room",
         lockPermissions: true,
         permissionOverwrites: READ_ONLY,
       },
       {
-        id: "FEEDBACK",
+        symbol: "FEEDBACK",
         name: "\u22b1\uff5cfeedback",
         lockPermissions: true,
         permissionOverwrites: [],
       },
       {
-        id: "ANNOUNCEMENTS",
+        symbol: "ANNOUNCEMENTS",
         name: "\u2621\uff5cannouncements",
         lockPermissions: false,
         permissionOverwrites: READ_ONLY,
       },
       {
-        id: "LEADERBOARD",
+        symbol: "LEADERBOARD",
         name: "\u2042\uff5cleaderboard",
         lockPermissions: false,
         permissionOverwrites: READ_ONLY,
       },
       {
-        id: "HALL_OF_PRIVACY",
+        symbol: "HALL_OF_PRIVACY",
         name: "\u2205\uff5chall-of-privacy",
         lockPermissions: false,
         permissionOverwrites: READ_ONLY,
       },
       {
-        id: "FAQ",
+        symbol: "FAQ",
         name: "\u2637\uff5cfaq",
         lockPermissions: false,
         permissionOverwrites: READ_ONLY,
       },
       {
-        id: "COMMANDS",
+        symbol: "COMMANDS",
         name: "\u2318\uff5ccommands",
         lockPermissions: false,
         permissionOverwrites: READ_ONLY,
@@ -167,7 +167,7 @@ const structure: Category[] = [
 
   // Beautopia
   {
-    id: "BEAUTOPIA",
+    symbol: "BEAUTOPIA",
     name: "Beautopia",
     permissionOverwrites: [
       {
@@ -189,13 +189,13 @@ const structure: Category[] = [
     ],
     channels: [
       {
-        id: "TOWN_SQUARE",
+        symbol: "TOWN_SQUARE",
         name: "\u2ff4\uff5ctown-square",
         lockPermissions: true,
         permissionOverwrites: [],
       },
       {
-        id: "MART",
+        symbol: "MART",
         name: "\u1789\uff5cmerris-mart",
         lockPermissions: true,
         permissionOverwrites: [
@@ -206,7 +206,7 @@ const structure: Category[] = [
         ],
       },
       {
-        id: "ARMORY",
+        symbol: "ARMORY",
         name: "\u23e3\uff5cthe-armory",
         lockPermissions: true,
         permissionOverwrites: [
@@ -217,7 +217,7 @@ const structure: Category[] = [
         ],
       },
       {
-        id: "TOSS_HOUSE",
+        symbol: "TOSS_HOUSE",
         name: "\u2609\uff5cteds-toss-house",
         lockPermissions: true,
         permissionOverwrites: [
@@ -228,7 +228,7 @@ const structure: Category[] = [
         ],
       },
       {
-        id: "BANK",
+        symbol: "BANK",
         name: "\u1368\uff5cbank-of-beautopia",
         lockPermissions: true,
         permissionOverwrites: [
@@ -239,7 +239,7 @@ const structure: Category[] = [
         ],
       },
       {
-        id: "ARENA",
+        symbol: "ARENA",
         name: "\u0436\uff5cthe-arena",
         lockPermissions: true,
         permissionOverwrites: [
@@ -250,7 +250,7 @@ const structure: Category[] = [
         ],
       },
       {
-        id: "TRAINING_DOJO",
+        symbol: "TRAINING_DOJO",
         name: "\u2059\uff5ctraining-dojo",
         lockPermissions: true,
         permissionOverwrites: [
@@ -265,7 +265,7 @@ const structure: Category[] = [
 
   // D1
   {
-    id: "THE_PROJECTS_D1",
+    symbol: "THE_PROJECTS_D1",
     name: "The Projects D1",
     permissionOverwrites: [],
     channels: [],
@@ -273,7 +273,7 @@ const structure: Category[] = [
 
   // D2
   {
-    id: "THE_PROJECTS_D2",
+    symbol: "THE_PROJECTS_D2",
     name: "The Projects D2",
     permissionOverwrites: [],
     channels: [],
@@ -281,7 +281,7 @@ const structure: Category[] = [
 
   // D3
   {
-    id: "THE_PROJECTS_D3",
+    symbol: "THE_PROJECTS_D3",
     name: "The Projects D3",
     permissionOverwrites: [],
     channels: [],
@@ -289,7 +289,7 @@ const structure: Category[] = [
 
   // D4
   {
-    id: "THE_PROJECTS_D4",
+    symbol: "THE_PROJECTS_D4",
     name: "The Projects D4",
     permissionOverwrites: [],
     channels: [],
@@ -297,7 +297,7 @@ const structure: Category[] = [
 
   // D5
   {
-    id: "THE_PROJECTS_D5",
+    symbol: "THE_PROJECTS_D5",
     name: "The Projects D5",
     permissionOverwrites: [],
     channels: [],
@@ -305,7 +305,7 @@ const structure: Category[] = [
 
   // D6
   {
-    id: "THE_PROJECTS_D6",
+    symbol: "THE_PROJECTS_D6",
     name: "The Projects D6",
     permissionOverwrites: [],
     channels: [],
@@ -313,7 +313,7 @@ const structure: Category[] = [
 
   // Prison
   {
-    id: "PRISON",
+    symbol: "PRISON",
     name: "Prison",
     permissionOverwrites: [
       {
@@ -335,7 +335,7 @@ const structure: Category[] = [
     ],
     channels: [
       {
-        id: "GEN_POP",
+        symbol: "GEN_POP",
         name: "\u25a5\uff5cgen-pop",
         lockPermissions: true,
         permissionOverwrites: [],

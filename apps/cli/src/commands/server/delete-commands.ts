@@ -30,7 +30,7 @@ export default class DeleteCommands extends Command {
           task: async () => {
             await this.put(
               Routes.applicationGuildCommands(
-                Config.clientId(bot.id),
+                Config.clientId(bot.symbol),
                 flags.id
               ),
               [],

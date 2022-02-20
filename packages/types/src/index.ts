@@ -1,4 +1,8 @@
-import { ClientOptions, OverwriteResolvable } from "discord.js";
+import {
+  ClientOptions,
+  CommandInteraction,
+  OverwriteResolvable,
+} from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { APIApplicationCommandPermission } from "discord-api-types/v9";
 
@@ -21,7 +25,7 @@ export type EnvVars = Record<
   string
 >;
 
-export type ChannelId =
+export type ChannelSymbol =
   | "VERIFICATION"
   | "ADMIN_GENERAL"
   | "ADMIN_SANDBOX"
@@ -43,28 +47,28 @@ export type ChannelId =
   | "GEN_POP";
 
 export type Channel = {
-  id: ChannelId;
+  symbol: ChannelSymbol;
   name: string;
   lockPermissions: boolean;
   permissionOverwrites: OverwriteResolvable[];
 };
 
-export type CategoryId =
+export type CategorySymbol =
   | "OUTSIDE_WORLD"
   | "ADMIN"
   | "COMMUNITY"
   | "BEAUTOPIA"
-  | `THE_${DistrictId}`
+  | `THE_${DistrictSymbol}`
   | "PRISON";
 
 export type Category = {
-  id: CategoryId;
+  symbol: CategorySymbol;
   name: string;
   channels: Channel[];
   permissionOverwrites: OverwriteResolvable[];
 };
 
-export type BotId =
+export type BotSymbol =
   | "ADMIN"
   | "ALLY"
   | "ARMORY_CLERK"
@@ -76,28 +80,28 @@ export type BotId =
   | "TOSSER"
   | "WARDEN";
 
-export type RoleId =
+export type RoleSymbol =
   | "ADMIN"
   | "DEGEN"
   | "EVERYONE"
   | "PRISONER"
   | "SERVER_BOOSTER"
   | "VERIFIED"
-  | `${BotId}_BOT`;
+  | `${BotSymbol}_BOT`;
 
 export type Role = {
-  id: RoleId;
+  symbol: RoleSymbol;
   app?: boolean;
 };
 
 export type Command = {
-  id: string;
+  symbol: string;
   permissions: APIApplicationCommandPermission[];
   data: ReturnType<SlashCommandBuilder["toJSON"]>;
 };
 
 export type Bot = {
-  id: BotId;
+  symbol: BotSymbol;
   name: string;
   commands: Command[];
   clientOptions: ClientOptions;
@@ -108,7 +112,7 @@ export enum TenancyType {
   GUEST = "GUEST",
 }
 
-export enum DistrictId {
+export enum DistrictSymbol {
   PROJECTS_D1 = "PROJECTS_D1",
   PROJECTS_D2 = "PROJECTS_D2",
   PROJECTS_D3 = "PROJECTS_D3",
@@ -117,7 +121,7 @@ export enum DistrictId {
   PROJECTS_D6 = "PROJECTS_D6",
 }
 
-export enum ShelterId {
+export enum ShelterSymbol {
   SHELTER_D1 = "SHELTER_D1",
   SHELTER_D2 = "SHELTER_D2",
   SHELTER_D3 = "SHELTER_D3",

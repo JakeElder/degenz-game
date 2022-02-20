@@ -2,7 +2,7 @@ import { GuildMember } from "discord.js";
 import Config from "app-config";
 import { paramCase } from "change-case";
 import { userMention } from "@discordjs/builders";
-import { DistrictId } from "types";
+import { DistrictSymbol } from "types";
 import { User } from "db";
 import Events from "../Events";
 import Utils from "../Utils";
@@ -20,7 +20,7 @@ export default class UserController {
   static async init(
     memberId: GuildMember["id"],
     onboard: boolean = true,
-    district: DistrictId
+    districtSymbol: DistrictSymbol
   ) {
     const admin = Global.bot("ADMIN");
 
@@ -33,17 +33,17 @@ export default class UserController {
       return { success: false, code: "ALREADY_INITIATED" };
     }
 
-    if (district === null) {
+    if (districtSymbol === null) {
       return { success: false, code: "ENTRY_CLOSED" };
     }
 
-    const tenancies = await getTenanciesInDistrict(district);
+    const tenancies = await getTenanciesInDistrict(districtSymbol);
 
     if (tenancies >= Config.general("DISTRICT_CAPACITY")) {
       return { success: false, code: "DISTRICT_FULL" };
     }
 
-    const parent = Config.categoryId(`THE_${district}`);
+    const parent = Config.categoryId(`THE_${districtSymbol}`);
 
     const apartment = await admin.guild.channels.create(
       `\u2302\uFF5C${paramCase(member.displayName)}s-apartment`,
@@ -70,7 +70,7 @@ export default class UserController {
     user = await addUser({
       member,
       apartmentId: apartment.id,
-      districtId: district,
+      districtSymbol,
       tokens: onboard ? 0 : 100,
     });
 

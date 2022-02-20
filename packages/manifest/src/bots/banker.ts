@@ -7,7 +7,7 @@ import { Format } from "lib";
 const { FLAGS } = Intents;
 
 const banker: Bot = {
-  id: "BANKER",
+  symbol: "BANKER",
   name: "Banker Beatrice",
   clientOptions: { intents: [FLAGS.GUILDS] },
   commands: [],
@@ -15,7 +15,7 @@ const banker: Bot = {
 
 // `stock` command
 banker.commands.push({
-  id: "BALANCE",
+  symbol: "BALANCE",
   permissions: [
     { id: Config.roleId("DEGEN"), type: 1, permission: true },
     { id: Config.roleId("ADMIN"), type: 1, permission: true },
@@ -23,14 +23,14 @@ banker.commands.push({
   data: new SlashCommandBuilder()
     .setName("balance")
     .setDescription(
-      `Your current ${Format.currency({ plural: false, bold: false })} balance`
+      `Your current ${Format.currency(null, { bold: false })} balance`
     )
     .toJSON(),
 });
 
 // `transfer` command
 banker.commands.push({
-  id: "TRANSFER",
+  symbol: "TRANSFER",
   permissions: [
     { id: Config.roleId("DEGEN"), type: 1, permission: true },
     { id: Config.roleId("ADMIN"), type: 1, permission: true },
@@ -38,8 +38,7 @@ banker.commands.push({
   data: new SlashCommandBuilder()
     .setName("transfer")
     .setDescription(
-      `Transfer ${Format.currency({
-        plural: true,
+      `Transfer ${Format.currency(null, {
         bold: false,
       })} to a fellow citizen`
     )
@@ -47,7 +46,9 @@ banker.commands.push({
       option
         .setName("amount")
         .setRequired(true)
-        .setDescription(`The amount of ${Format.currency()} to transfer.`)
+        .setDescription(
+          `The amount of ${Format.currency(null, { bold: false })} to transfer.`
+        )
     )
     .addUserOption((option) =>
       option

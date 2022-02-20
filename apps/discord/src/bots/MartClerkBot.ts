@@ -4,7 +4,7 @@ import DiscordBot from "../DiscordBot";
 
 export default class MartClerkBot extends DiscordBot {
   constructor() {
-    const bot = bots.find((bot) => bot.id === "MART_CLERK");
+    const bot = bots.find((bot) => bot.symbol === "MART_CLERK");
     super(bot!, new MartClerkCommandController());
   }
 }
