@@ -4,11 +4,11 @@ import { CommandController } from "../CommandController";
 import { getUser, transferBalance } from "../legacy/db";
 import Utils from "../Utils";
 import {
-  Balance,
   InsufficientFundsTransferReply,
   TransferSuccessfulReply,
 } from "../legacy/templates";
 import { userMention } from "@discordjs/builders";
+import Events from "../Events";
 
 const { r } = Utils;
 
@@ -18,19 +18,15 @@ export default class BankerCommandController extends CommandController {
     if (user === null) return;
 
     i.reply({
-      content: r(<Balance tokens={user.gbt} />),
+      content: r(
+        <>
+          {"\u{1f4b0}"} `{user.gbt}`
+        </>
+      ),
       ephemeral: true,
     });
 
-    // const member = await this.getMember(i.user.id);
-
-    // const e: BalanceCheckedEvent = {
-    //   event: "BALANCE_CHECKED",
-    //   data: { member, balance: user.gbt },
-    // };
-
-    // this.postBalanceResult(e);
-    // this.emit("WORLD_EVENT", e);
+    Events.emit("BALANCE_CHECKED", { user });
   }
 
   async transfer(i: CommandInteraction) {

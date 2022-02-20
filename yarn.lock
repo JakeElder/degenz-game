@@ -7909,6 +7909,11 @@ type-fest@^0.8.1:
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.8.1.tgz#09e249ebde851d3b1e48d27c105444667f17b83d"
   integrity sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==
 
+type-fest@^2.11.2:
+  version "2.11.2"
+  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-2.11.2.tgz#5534a919858bc517492cd3a53a673835a76d2e71"
+  integrity sha512-reW2Y2Mpn0QNA/5fvtm5doROLwDPu2zOm5RtY7xQQS05Q7xgC8MOZ3yPNaP9m/s/sNjjFQtHo7VCNqYW2iI+Ig==
+
 typed-emitter@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/typed-emitter/-/typed-emitter-2.1.0.tgz#ca78e3d8ef1476f228f548d62e04e3d4d3fd77fb"

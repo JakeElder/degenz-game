@@ -363,12 +363,8 @@ export default class TossController {
       .setDescription(
         `It was **${g.result}**! You ${
           win
-            ? `**WON** \`${g.amount}\` ${Format.currency({
-                long: false,
-              })} \u{1f389} `
-            : `**LOST** \`${g.amount}\` ${Format.currency({
-                long: false,
-              })} \u{1f62d}`
+            ? `**WON** ${Format.currency(g.amount)} \u{1f389} `
+            : `**LOST** ${Format.currency(g.amount)} \u{1f62d}`
         }`
       )
       .setColor(win ? "GREEN" : "RED")
@@ -386,10 +382,15 @@ export default class TossController {
     }
 
     embed.addField(
-      `New ${Format.currency({ plural: false })} Balance`,
-      `\`${before}\` => \u{1f4b0} \`${p.user!.gbt}\` (${
-        win ? `+${g.amount - g.rake}` : `-${g.amount}`
-      }) `
+      `New ${Format.currency(null)} Balance`,
+      r(
+        <>
+          {Format.currency(before, { symbol: false })} {"=>"}{" "}
+          {Format.currency(p.user!.gbt, { symbol: false })} `(
+          {win ? "+" : ""}
+          {Format.currency(net, { emoji: false, symbol: false, bold: false })})`
+        </>
+      )
     );
 
     return embed;

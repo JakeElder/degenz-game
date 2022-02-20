@@ -63,36 +63,17 @@ export default class AllyCommandController extends CommandController {
       channel = i.channel as GuildBasedChannel;
     }
 
-    if (!as.user.bot) {
-      await this.respond(i, "NOT_A_BOT", "FAIL");
-      return;
-    }
-
-    const botId = Config.reverseClientId(as.id);
-    if (!botId) {
-      await this.respond(i, `BOT_NOT_FOUND \`${as.displayName}\``, "FAIL");
-      return;
-    }
-
-    const bot = bots.find((bot) => bot.id === botId);
-    if (!bot) {
-      await this.respond(i, `BOT_NOT_FOUND: ${as.displayName}`, "FAIL");
-      return;
-    }
-
-    Events.emit("SEND_MESSAGE_REQUEST", {
-      bot,
+    const res = await AppController.sendMessageFromBot({
+      as,
       channel,
       message,
-      i,
-      done: (success) => {
-        this.respond(
-          i,
-          success ? "MESSAGE_SENT" : "FAILED_TO_SEND",
-          success ? "SUCCESS" : "FAIL"
-        );
-      },
     });
+
+    return this.respond(
+      i,
+      res.success ? "MESSAGE_SENT" : res.code,
+      res.success ? "SUCCESS" : "FAIL"
+    );
   }
 
   async admin_imprison(i: CommandInteraction) {

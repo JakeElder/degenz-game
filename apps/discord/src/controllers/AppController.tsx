@@ -1,19 +1,23 @@
 import Config from "app-config";
 import {
+  GuildBasedChannel,
+  GuildMember,
   Message,
   MessageActionRow,
   MessageButton,
   MessageOptions,
 } from "discord.js";
-import { DistrictId } from "types";
+import { DistrictId, OperationResult } from "types";
 import { AppState, District, User } from "db";
 import { Format } from "lib";
 import { channelMention, userMention } from "@discordjs/builders";
 import equal from "fast-deep-equal";
+import { bots } from "manifest";
 import UserController from "./UserController";
 import { Global } from "../Global";
 import { getLeaders } from "../legacy/db";
 import { makeLeaderboardEmbed } from "../legacy/utils";
+import Events from "../Events";
 
 export default class AppController {
   static leaderboardCronInterval: NodeJS.Timer;
@@ -204,5 +208,57 @@ export default class AppController {
         await AppController.setEnterMessage();
       }
     });
+  }
+
+  static async sendMessageFromBot({
+    as,
+    channel,
+    message,
+  }: {
+    as: GuildMember;
+    channel: GuildBasedChannel;
+    message: string;
+  }): Promise<OperationResult<"NOT_A_BOT" | "BOT_NOT_FOUND">> {
+    if (!as.user.bot) {
+      return { success: false, code: "NOT_A_BOT" };
+    }
+
+    const botId = Config.reverseClientId(as.id);
+    if (!botId) {
+      return { success: false, code: "BOT_NOT_FOUND" };
+    }
+
+    const botData = bots.find((bot) => bot.id === botId);
+    if (!botData) {
+      return { success: false, code: "BOT_NOT_FOUND" };
+    }
+
+    const bot = Global.bot(botData.id);
+
+    try {
+      const c = await bot.getTextChannel(channel.id);
+      await c.send(message);
+      Events.emit("SEND_MESSAGE_AS_EXECUTED", {
+        bot: botData,
+        channel,
+        message,
+        success: true,
+      });
+
+      return { success: true };
+    } catch (e) {
+      Events.emit("SEND_MESSAGE_AS_EXECUTED", {
+        bot: botData,
+        channel,
+        message,
+        success: false,
+      });
+
+      return {
+        success: false,
+        code: "EXCEPTION",
+        message: (e as Error).message,
+      };
+    }
   }
 }

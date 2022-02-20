@@ -1,6 +1,7 @@
 import { BotId } from "types";
 import Events from "./Events";
 import Logger from "./Logger";
+import HOPNotifier from "./HOPNotifier";
 import DiscordBot from "./DiscordBot";
 import OnboardController from "./controllers/OnboardController";
 import AppController from "./controllers/AppController";
@@ -11,39 +12,35 @@ export default class Runner {
   }
 
   private bindEventHandlers() {
-    Events.on("BOT_READY", (data) => {
-      Logger.botReady(data);
+    Events.on("BOT_READY", (e) => {
+      Logger.botReady(e);
 
-      if (data.bot.id === "BIG_BROTHER") {
+      if (e.data.bot.id === "BIG_BROTHER") {
+        HOPNotifier.init();
         AppController.setEnterMessage();
         AppController.setVerifyMessage();
         AppController.setLeaderboardMessage();
       }
     });
 
-    Events.on("COMMAND_NOT_FOUND", (data) => {
-      Logger.commandNotFound(data);
+    Events.on("BALANCE_CHECKED", (e) => {
+      HOPNotifier.balanceChecked(e);
     });
 
-    Events.on("COMMAND_NOT_IMPLEMENTED", (data) => {
-      Logger.commandNotImplemented(data);
+    Events.on("COMMAND_NOT_FOUND", (e) => {
+      Logger.commandNotFound(e);
     });
 
-    Events.on("SEND_MESSAGE_REQUEST", async (data) => {
-      Logger.sendMessageRequest(data);
-      const bot = this.get(data.bot.id);
-
-      if (bot) {
-        const channel = await bot.getTextChannel(data.channel.id);
-        await channel.send(data.message);
-        data.done(true);
-      } else {
-        data.done(false);
-      }
+    Events.on("COMMAND_NOT_IMPLEMENTED", (e) => {
+      Logger.commandNotImplemented(e);
     });
 
-    Events.on("APARTMENT_ALLOCATED", async (data) => {
-      OnboardController.partOne(data.user);
+    Events.on("SEND_MESSAGE_AS_EXECUTED", async (e) => {
+      Logger.sendMessageAsExecuted(e);
+    });
+
+    Events.on("APARTMENT_ALLOCATED", async (e) => {
+      OnboardController.partOne(e.data.user);
     });
   }
 

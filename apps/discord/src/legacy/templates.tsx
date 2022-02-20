@@ -42,12 +42,6 @@ export const Channel = ({ id }: { id: DiscordChannel["id"] }) => (
   <>{`<#${id}>`}</>
 );
 
-export const Balance = ({ tokens }: { tokens: number }) => (
-  <>
-    {emoji.get("moneybag")} `{tokens}`
-  </>
-);
-
 export const GameWelcomeMessage = ({ member }: { member: GuildMember }) => (
   <>
     **Welcome! Comrade <User id={member.id} /> to the{" "}

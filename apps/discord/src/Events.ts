@@ -4,18 +4,55 @@ import TypedEmitter from "typed-emitter";
 import { Bot } from "types";
 import { User } from "db";
 
-export type Events = {
-  BOT_READY: (e: { bot: Bot }) => void;
-  COMMAND_NOT_FOUND: (e: { i: CommandInteraction }) => void;
-  COMMAND_NOT_IMPLEMENTED: (e: { i: CommandInteraction }) => void;
-  SEND_MESSAGE_REQUEST: (e: {
+export type Event<T extends string, D> = {
+  [P in T]: (e: { type: T; data: D }) => void;
+};
+
+type BotReadyEvent = Event<"BOT_READY", { bot: Bot }>;
+
+type CommandNotFoundEvent = Event<
+  "COMMAND_NOT_FOUND",
+  { i: CommandInteraction }
+>;
+
+type CommandNotImplementedEvent = Event<
+  "COMMAND_NOT_IMPLEMENTED",
+  { i: CommandInteraction }
+>;
+
+type SendMessageAsExecutedEvent = Event<
+  "SEND_MESSAGE_AS_EXECUTED",
+  {
     bot: Bot;
     channel: GuildBasedChannel;
     message: string;
-    i: CommandInteraction;
-    done: (success: boolean) => void;
-  }) => void;
-  APARTMENT_ALLOCATED: (e: { user: User; onboard: boolean }) => void;
-};
+    success: boolean;
+  }
+>;
 
-export default new EventEmitter() as TypedEmitter<Events>;
+type ApartmentAllocatedEvent = Event<
+  "APARTMENT_ALLOCATED",
+  { user: User; onboard: boolean }
+>;
+
+type BalanceCheckedEvent = Event<"BALANCE_CHECKED", { user: User }>;
+
+export type Events = BotReadyEvent &
+  CommandNotFoundEvent &
+  CommandNotImplementedEvent &
+  SendMessageAsExecutedEvent &
+  ApartmentAllocatedEvent &
+  BalanceCheckedEvent;
+
+class DegenEventEmitter extends (EventEmitter as new () => TypedEmitter<Events>) {
+  // @ts-ignore
+  emit<E extends keyof Events>(
+    event: E,
+    data: Parameters<Events[E]>[0]["data"]
+  ): boolean {
+    // @ts-ignore
+    return super.emit<E>(event, { type: event, data });
+  }
+}
+
+export default new DegenEventEmitter();

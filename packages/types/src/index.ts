@@ -136,3 +136,23 @@ export enum Achievement {
   JOINED_THE_DEGENZ = "JOINED_THE_DEGENZ",
   SUPER_OBEDIENT = "SUPER_OBEDIENT",
 }
+
+type SuccessfulOperationResult = {
+  success: true;
+};
+
+type FailedOperationResult<T extends string = string> = {
+  success: false;
+  code: T;
+};
+
+type ExceptionOperationResult = {
+  success: false;
+  code: "EXCEPTION";
+  message?: string;
+};
+
+export type OperationResult<T extends string = string> =
+  | SuccessfulOperationResult
+  | FailedOperationResult<T>
+  | ExceptionOperationResult;

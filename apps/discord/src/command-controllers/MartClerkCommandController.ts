@@ -54,11 +54,9 @@ export default class MartClerkCommandController extends CommandController {
           ...items.map((i) => {
             return {
               label: `${i.description}`,
-              description: `[${i.stock}] @ [${i.price} ${Format.currency({
-                bold: false,
-                long: false,
-                copyright: false,
-              })}] ${i.description}`,
+              description: `[${i.stock}] @ [${Format.currency(i.price)}] ${
+                i.description
+              }`,
               value: i.symbol,
             };
           }),
