@@ -1,4 +1,6 @@
 {
+  "type": "postgres",
+  "entities": ["src/entity/**/*.ts"],
   "cli": {
     "entitiesDir": "src/entity",
     "migrationsDir": "src/migration",

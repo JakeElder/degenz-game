@@ -1,12 +1,17 @@
 import React from "react";
 import Config from "app-config";
 import {
+  ButtonInteraction,
   GuildBasedChannel,
   GuildMember,
+  InteractionCollector,
   Message,
   MessageActionRow,
   MessageButton,
   MessageOptions,
+  MessageReaction,
+  ReactionCollector,
+  User as DiscordUser,
 } from "discord.js";
 import { DistrictSymbol, OperationResult } from "types";
 import { AppState, District, User } from "db";
@@ -28,6 +33,8 @@ export default class AppController {
   static leaderboardCronInterval: NodeJS.Timer;
   static leaderboardTableData: any = [];
   static leaderboardMessage: Message;
+  static reactionCollector: ReactionCollector;
+  static buttonCollector: InteractionCollector<ButtonInteraction>;
 
   static async openDistrict(districtSymbol: DistrictSymbol) {
     await District.open(districtSymbol);
@@ -78,7 +85,7 @@ export default class AppController {
   }
 
   static async setVerifyMessage() {
-    const [bb, admin] = Global.bots("BIG_BROTHER", "ADMIN");
+    const [bb] = Global.bots("BIG_BROTHER");
     const c = await bb.getTextChannel(Config.channelId("VERIFICATION"));
 
     let message: Message;
@@ -94,19 +101,26 @@ export default class AppController {
       AppState.setVerifyMessageId(message.id);
     }
 
-    const collector = message.createReactionCollector();
-    collector.on("collect", async (_, user) => {
-      const member = await admin.getMember(user.id);
-      if (
-        !member.roles.cache.some((r) =>
-          [Config.roleId("DEGEN"), Config.roleId("VERIFIED")].includes(r.id)
-        )
-      ) {
-        await member.roles.add(Config.roleId("VERIFIED"));
-        Events.emit("MEMBER_VERIFIED", { member });
-        await this.welcome(member);
-      }
-    });
+    if (this.reactionCollector) {
+      this.reactionCollector.off("collect", this.handleReaction);
+    }
+
+    this.reactionCollector = message.createReactionCollector();
+    this.reactionCollector.on("collect", this.handleReaction);
+  }
+
+  static async handleReaction(_: MessageReaction, user: DiscordUser) {
+    const admin = Global.bot("ADMIN");
+    const member = await admin.getMember(user.id);
+    if (
+      !member.roles.cache.some((r) =>
+        [Config.roleId("DEGEN"), Config.roleId("VERIFIED")].includes(r.id)
+      )
+    ) {
+      await member.roles.add(Config.roleId("VERIFIED"));
+      Events.emit("MEMBER_VERIFIED", { member });
+      await AppController.welcome(member);
+    }
   }
 
   static async welcome(member: GuildMember) {
@@ -202,39 +216,45 @@ export default class AppController {
 
     WaitingRoomController.setStatus(open);
 
-    const collector = message.createMessageComponentCollector({
+    if (this.buttonCollector) {
+      this.buttonCollector.off("collect", this.handleButtonPress);
+    }
+
+    this.buttonCollector = message.createMessageComponentCollector({
       componentType: "BUTTON",
     });
 
-    collector.on("collect", async (i) => {
-      const user = await User.findOne({ where: { discordId: i.user.id } });
+    this.buttonCollector.on("collect", this.handleButtonPress);
+  }
 
-      if (user) {
-        await i.reply({
-          content: `${userMention(user.discordId)} - You're already a Degen.`,
+  static async handleButtonPress(i: ButtonInteraction) {
+    const user = await User.findOne({ where: { discordId: i.user.id } });
+
+    if (user) {
+      await i.reply({
+        content: `${userMention(user.discordId)} - You're already a Degen.`,
+        ephemeral: true,
+      });
+      return;
+    }
+
+    const res = await UserController.init(
+      i.user.id,
+      true,
+      i.customId as DistrictSymbol
+    );
+
+    if (res.success) {
+      await Promise.all([
+        i.reply({
+          content: `${userMention(i.user.id)} - ${channelMention(
+            res.user!.primaryTenancy.discordChannelId
+          )}, your new *private* apartment to receive further instructions.`,
           ephemeral: true,
-        });
-        return;
-      }
-
-      const res = await UserController.init(
-        i.user.id,
-        true,
-        i.customId as DistrictSymbol
-      );
-
-      if (res.success) {
-        await Promise.all([
-          i.reply({
-            content: `${userMention(i.user.id)} - ${channelMention(
-              res.user!.primaryTenancy.discordChannelId
-            )}, your new *private* apartment to receive further instructions.`,
-            ephemeral: true,
-          }),
-          AppController.setEnterMessage(),
-        ]);
-      }
-    });
+        }),
+        AppController.setEnterMessage(),
+      ]);
+    }
   }
 
   static async sendMessageFromBot({
