@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { Connection, createConnection } from "typeorm";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
-import { Achievement as AchievementEnum } from "types";
+import { Achievement as AchievementEnum, DistrictSymbol } from "types";
 import { Achievement } from "./entity/Achievement";
 import { AppState } from "./entity/AppState";
 import { District } from "./entity/District";
@@ -219,7 +219,6 @@ async function seed() {
 
     MartItem.insert([
       {
-        id: 1,
         symbol: "PIZZA",
         name: "Fat Pizza \u00a9",
         description: "A slice of Fat Pizza",
@@ -228,7 +227,6 @@ async function seed() {
         strengthIncrease: 10,
       },
       {
-        id: 2,
         symbol: "NOODLES",
         name: "Degenz Brand Ramen Noodles \u00a9",
         description:
@@ -238,13 +236,65 @@ async function seed() {
         strengthIncrease: 4,
       },
       {
-        id: 3,
         symbol: "GRILLED_RAT",
         name: "Nuu Ping \u00a9",
         description: "Succulent rat meat, barbecue grilled to perfection.",
         price: 1,
         stock: 37,
         strengthIncrease: 1,
+      },
+    ]),
+
+    District.insert([
+      {
+        symbol: DistrictSymbol.PROJECTS_D1,
+        open: false,
+        emoji: "<:D1:944296515919302656>",
+        activeEmoji: "<:D1A:944296515545997372>",
+        inactiveEmoji: "<:D1I:944296515487285268>",
+      },
+      {
+        symbol: DistrictSymbol.PROJECTS_D2,
+        open: false,
+        emoji: "<:D2:944296515512467548>",
+        activeEmoji: "<:D2A:944296515797663814>",
+        inactiveEmoji: "<:D2I:944296515109789697>",
+      },
+      {
+        symbol: DistrictSymbol.PROJECTS_D3,
+        open: false,
+        emoji: "<:D3:944296515734732820>",
+        activeEmoji: "<:D3A:944296515365634108>",
+        inactiveEmoji: "<:D3I:944296515374055475>",
+      },
+      {
+        symbol: DistrictSymbol.PROJECTS_D4,
+        open: false,
+        emoji: "<:D4:944324717811208254>",
+        activeEmoji: "<:D4A:944322981788803163>",
+        inactiveEmoji: "<:D4I:944322981432295434>",
+      },
+      {
+        symbol: DistrictSymbol.PROJECTS_D5,
+        open: false,
+        emoji: "<:D5:944324717882523698>",
+        activeEmoji: "<:D5A:944322981650387004>",
+        inactiveEmoji: "<:D5I:944322981298069545>",
+      },
+      {
+        symbol: DistrictSymbol.PROJECTS_D6,
+        open: false,
+        emoji: "<:D6:944324717840564335>",
+        activeEmoji: "<:D6A:944322981193216091>",
+        inactiveEmoji: "<:D6I:944322981235155016>",
+      },
+    ]),
+
+    AppState.insert([
+      {
+        entryMessageId: "944434734686167080",
+        verifyMessageId: "944508874256420896",
+        leaderboardMessageId: "944541218405240892",
       },
     ]),
   ]);
