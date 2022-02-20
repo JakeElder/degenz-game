@@ -43,6 +43,7 @@ const CHANNEL_IDS: Record<ChannelSymbol, string> = {
   TRAINING_DOJO: "939369938852925480",
   VERIFICATION: "939369903159394315",
   WAITING_ROOM: "939369915645853786",
+  WELCOME_ROOM: "-",
 };
 
 const ROLE_IDS: Record<RoleSymbol, string> = {

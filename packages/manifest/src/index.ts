@@ -115,6 +115,12 @@ const structure: Category[] = [
     ],
     channels: [
       {
+        symbol: "WELCOME_ROOM",
+        name: "\u22c8\uff5cwelcome-room",
+        lockPermissions: true,
+        permissionOverwrites: READ_ONLY,
+      },
+      {
         symbol: "GENERAL",
         name: "\u20aa\uff5cgeneral",
         lockPermissions: true,
@@ -122,7 +128,7 @@ const structure: Category[] = [
       },
       {
         symbol: "WAITING_ROOM",
-        name: "\u22c8\uff5cwaiting-room",
+        name: "\u{1f512}\uff5cwaiting-room",
         lockPermissions: true,
         permissionOverwrites: READ_ONLY,
       },

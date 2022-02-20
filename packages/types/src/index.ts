@@ -29,6 +29,7 @@ export type ChannelSymbol =
   | "VERIFICATION"
   | "ADMIN_GENERAL"
   | "ADMIN_SANDBOX"
+  | "WELCOME_ROOM"
   | "GENERAL"
   | "WAITING_ROOM"
   | "FEEDBACK"

@@ -1,3 +1,4 @@
+import React from "react";
 import Config from "app-config";
 import {
   GuildBasedChannel,
@@ -18,6 +19,10 @@ import { Global } from "../Global";
 import { getLeaders } from "../legacy/db";
 import { makeLeaderboardEmbed } from "../legacy/utils";
 import Events from "../Events";
+import Utils from "../Utils";
+import WaitingRoomController from "./WaitingRoomController";
+
+const { r } = Utils;
 
 export default class AppController {
   static leaderboardCronInterval: NodeJS.Timer;
@@ -99,8 +104,23 @@ export default class AppController {
       ) {
         await member.roles.add(Config.roleId("VERIFIED"));
         Events.emit("MEMBER_VERIFIED", { member });
+        await this.welcome(member);
       }
     });
+  }
+
+  static async welcome(member: GuildMember) {
+    const bb = Global.bot("BIG_BROTHER");
+    const c = await bb.getTextChannel(Config.channelId("WELCOME_ROOM"));
+    await c.send(
+      r(
+        <>
+          **WELCOME, COMRADE {userMention(member.id)}**. To join the game, go to{" "}
+          {channelMention(Config.channelId("WAITING_ROOM"))}, or ask any
+          questions in {channelMention(Config.channelId("GENERAL"))}.
+        </>
+      )
+    );
   }
 
   static async setEnterMessage() {
@@ -175,6 +195,13 @@ export default class AppController {
       AppState.setEntryMessageId(message.id);
     }
 
+    const open = districts.some((d) => {
+      const available = capacity - d.tenancies.length;
+      return d.open && available > 0;
+    });
+
+    WaitingRoomController.setStatus(open);
+
     const collector = message.createMessageComponentCollector({
       componentType: "BUTTON",
     });
@@ -197,15 +224,15 @@ export default class AppController {
       );
 
       if (res.success) {
-        await i.reply({
-          content: `**WELCOME, COMRADE** ${userMention(
-            i.user.id
-          )}. **Go to** ${channelMention(
-            res.user!.primaryTenancy.discordChannelId
-          )}, your new *private* apartment to receive further instructions.`,
-          ephemeral: true,
-        });
-        await AppController.setEnterMessage();
+        await Promise.all([
+          i.reply({
+            content: `${userMention(i.user.id)} - ${channelMention(
+              res.user!.primaryTenancy.discordChannelId
+            )}, your new *private* apartment to receive further instructions.`,
+            ephemeral: true,
+          }),
+          AppController.setEnterMessage(),
+        ]);
       }
     });
   }
