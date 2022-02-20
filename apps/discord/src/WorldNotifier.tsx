@@ -56,4 +56,19 @@ export default class WorldNotifier {
       this.logToChannel("BANK", "BANKER", e.type, message),
     ]);
   }
+
+  static async statsChecked(e: Event<"STATS_CHECKED">) {
+    let message: string;
+    if (e.data.checker.id === e.data.checkee.id) {
+      message = r(<>**{e.data.checker.displayName}** checked their stats.</>);
+    } else {
+      message = r(
+        <>
+          **{e.data.checker.displayName}** checked **
+          {e.data.checkee.displayName}**'s stats.
+        </>
+      );
+    }
+    await this.logToHOP("ALLY", e.type, message);
+  }
 }

@@ -37,12 +37,18 @@ type ApartmentAllocatedEvent = Event<
 
 type BalanceCheckedEvent = Event<"BALANCE_CHECKED", { user: User }>;
 
+type StatsCheckedEvent = Event<
+  "STATS_CHECKED",
+  { checker: User; checkee: User }
+>;
+
 export type Events = BotReadyEvent &
   CommandNotFoundEvent &
   CommandNotImplementedEvent &
   SendMessageAsExecutedEvent &
   ApartmentAllocatedEvent &
-  BalanceCheckedEvent;
+  BalanceCheckedEvent &
+  StatsCheckedEvent;
 
 class DegenEventEmitter extends (EventEmitter as new () => TypedEmitter<Events>) {
   // @ts-ignore
@@ -51,7 +57,7 @@ class DegenEventEmitter extends (EventEmitter as new () => TypedEmitter<Events>)
     data: Parameters<Events[E]>[0]["data"]
   ): boolean {
     // @ts-ignore
-    return super.emit<E>(event, { type: event, data });
+    return super.emit(event, { type: event, data });
   }
 }
 

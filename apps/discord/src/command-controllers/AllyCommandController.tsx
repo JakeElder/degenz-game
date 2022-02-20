@@ -28,6 +28,7 @@ import {
 import ChannelHelpOutput from "../legacy/channel-help";
 import Utils from "../Utils";
 import { Global } from "../Global";
+import Events from "../Events";
 
 const { r } = Utils;
 
@@ -119,35 +120,35 @@ export default class AllyCommandController extends CommandController {
   }
 
   async stats(i: CommandInteraction) {
-    let member = i.options.getMember("name") as null | GuildMember;
-    // let ownStats = false;
+    const checkeeMember = i.options.getMember("name") as null | GuildMember;
 
-    if (!member) {
-      // ownStats = true;
-      member = i.member as GuildMember;
-    }
+    const [checkerUser, checkeeUser] = await Promise.all([
+      getUser(i.user.id),
+      getUser(checkeeMember ? checkeeMember.id : i.user.id),
+    ]);
 
-    const user = await getUser(member.id);
-
-    if (user === null) {
+    if (checkeeUser === null) {
       await i.reply({ content: "Citizen not found", ephemeral: true });
       return;
     }
 
-    const e = makeUserStatsEmbed(user, member);
+    const isSelf = checkerUser.id === checkeeUser.id;
+
+    const e = makeUserStatsEmbed(
+      isSelf ? checkerUser : checkeeUser,
+      (isSelf ? i.member : checkeeMember) as GuildMember
+    );
+
     await i.reply({ embeds: [e], ephemeral: true });
 
-    if (!user.hasAchievement(AchievementEnum.STATS_CHECKED)) {
-      await OnboardController.partFour(user);
+    if (!checkeeUser.hasAchievement(AchievementEnum.STATS_CHECKED)) {
+      await OnboardController.partFour(checkeeUser);
     }
 
-    // this.emit("WORLD_EVENT", {
-    //   event: "STATS_CHECKED",
-    //   data: {
-    //     member: i.member as GuildMember,
-    //     checkee: ownStats ? null : member,
-    //   },
-    // });
+    Events.emit("STATS_CHECKED", {
+      checkee: checkeeUser,
+      checker: checkerUser,
+    });
   }
 
   async leaderboard(i: CommandInteraction) {

@@ -34,12 +34,16 @@ export default class Runner {
       Logger.commandNotImplemented(e);
     });
 
-    Events.on("SEND_MESSAGE_AS_EXECUTED", async (e) => {
+    Events.on("SEND_MESSAGE_AS_EXECUTED", (e) => {
       Logger.sendMessageAsExecuted(e);
     });
 
-    Events.on("APARTMENT_ALLOCATED", async (e) => {
+    Events.on("APARTMENT_ALLOCATED", (e) => {
       OnboardController.partOne(e.data.user);
+    });
+
+    Events.on("STATS_CHECKED", (e) => {
+      WorldNotifier.statsChecked(e);
     });
   }
 
