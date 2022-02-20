@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { Connection, createConnection } from "typeorm";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
-// import { Achievement as AchievementEnum } from "types";
+import { Achievement as AchievementEnum } from "types";
 import { Achievement } from "./entity/Achievement";
 import { AppState } from "./entity/AppState";
 import { District } from "./entity/District";
@@ -33,6 +33,10 @@ export async function connect(url: string) {
     namingStrategy: new SnakeNamingStrategy(),
   });
 
+  if (process.env.SEED) {
+    await seed();
+  }
+
   // await connection.query("DROP TABLE user CASCADE");
 
   // const t = await Tenancy.findOne({
@@ -41,18 +45,6 @@ export async function connect(url: string) {
   // });
 
   // console.log(t);
-
-  // await NPC.insert([
-  //   { symbol: "ALLY", defaultEmojiId: "<:ivan:944574023319294012>" },
-  //   { symbol: "ARMORY_CLERK", defaultEmojiId: "<:private_willy:944574023264788480>" },
-  //   { symbol: "BANKER", defaultEmojiId: "<:banker_beatrice:944574023294156820>" },
-  //   { symbol: "BIG_BROTHER", defaultEmojiId: "<:big_brother:944574023331905556>" },
-  //   { symbol: "MART_CLERK", defaultEmojiId: "<:merris:944574022987968593>" },
-  //   { symbol: "PRISONER", defaultEmojiId: "<:hugh_donie:944574023185076244>" },
-  //   { symbol: "SENSEI", defaultEmojiId: "<:sensei:944574022945996801>" },
-  //   { symbol: "TOSSER", defaultEmojiId: "<:tosser_ted:944574022769848320>" },
-  //   { symbol: "WARDEN", defaultEmojiId: "<:walden:944574022899867679>" },
-  // ]);
 
   // const c = await Achievement.insert(
   //   Object.keys(AchievementEnum).map((k) => {
@@ -189,6 +181,73 @@ export async function connect(url: string) {
   // const allUsers = await User.find();
   // const firstUser = await User.findOne(1);
   // const timber = await User.findOne({ firstName: "Timber", lastName: "Saw" });
+}
+
+async function seed() {
+  await Promise.all([
+    NPC.insert([
+      { symbol: "ALLY", defaultEmojiId: "<:ivan:944574023319294012>" },
+      {
+        symbol: "ARMORY_CLERK",
+        defaultEmojiId: "<:private_willy:944574023264788480>",
+      },
+      {
+        symbol: "BANKER",
+        defaultEmojiId: "<:banker_beatrice:944574023294156820>",
+      },
+      {
+        symbol: "BIG_BROTHER",
+        defaultEmojiId: "<:big_brother:944574023331905556>",
+      },
+      { symbol: "MART_CLERK", defaultEmojiId: "<:merris:944574022987968593>" },
+      {
+        symbol: "PRISONER",
+        defaultEmojiId: "<:hugh_donie:944574023185076244>",
+      },
+      { symbol: "SENSEI", defaultEmojiId: "<:sensei:944574022945996801>" },
+      { symbol: "TOSSER", defaultEmojiId: "<:tosser_ted:944574022769848320>" },
+      { symbol: "WARDEN", defaultEmojiId: "<:walden:944574022899867679>" },
+    ]),
+
+    Achievement.insert(
+      Object.keys(AchievementEnum).map((k) => {
+        return {
+          symbol: (AchievementEnum as any)[k as any],
+        };
+      })
+    ),
+
+    MartItem.insert([
+      {
+        id: 1,
+        symbol: "PIZZA",
+        name: "Fat Pizza \u00a9",
+        description: "A slice of Fat Pizza",
+        price: 25,
+        stock: 0,
+        strengthIncrease: 10,
+      },
+      {
+        id: 2,
+        symbol: "NOODLES",
+        name: "Degenz Brand Ramen Noodles \u00a9",
+        description:
+          "Luxurious instant noodles, complete with a packet of RatSpice.",
+        price: 10,
+        stock: 0,
+        strengthIncrease: 4,
+      },
+      {
+        id: 3,
+        symbol: "GRILLED_RAT",
+        name: "Nuu Ping \u00a9",
+        description: "Succulent rat meat, barbecue grilled to perfection.",
+        price: 1,
+        stock: 37,
+        strengthIncrease: 1,
+      },
+    ]),
+  ]);
 }
 
 export async function disconnect() {
