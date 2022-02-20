@@ -1,4 +1,4 @@
-import { CommandInteraction, GuildBasedChannel } from "discord.js";
+import { CommandInteraction, GuildBasedChannel, GuildMember } from "discord.js";
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
 import { Bot } from "types";
@@ -37,6 +37,8 @@ type ApartmentAllocatedEvent = Event<
 
 type BalanceCheckedEvent = Event<"BALANCE_CHECKED", { user: User }>;
 
+type MemberVerifiedEvent = Event<"MEMBER_VERIFIED", { member: GuildMember }>;
+
 type StatsCheckedEvent = Event<
   "STATS_CHECKED",
   { checker: User; checkee: User }
@@ -48,7 +50,8 @@ export type Events = BotReadyEvent &
   SendMessageAsExecutedEvent &
   ApartmentAllocatedEvent &
   BalanceCheckedEvent &
-  StatsCheckedEvent;
+  StatsCheckedEvent &
+  MemberVerifiedEvent;
 
 class DegenEventEmitter extends (EventEmitter as new () => TypedEmitter<Events>) {
   // @ts-ignore

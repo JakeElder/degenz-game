@@ -45,6 +45,10 @@ export default class Runner {
     Events.on("STATS_CHECKED", (e) => {
       WorldNotifier.statsChecked(e);
     });
+
+    Events.on("MEMBER_VERIFIED", (e) => {
+      WorldNotifier.memberVerified(e);
+    });
   }
 
   get(symbol: BotSymbol) {

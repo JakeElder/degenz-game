@@ -92,13 +92,13 @@ export default class AppController {
     const collector = message.createReactionCollector();
     collector.on("collect", async (_, user) => {
       const member = await admin.getMember(user.id);
-      console.log(member.roles.cache);
       if (
         !member.roles.cache.some((r) =>
           [Config.roleId("DEGEN"), Config.roleId("VERIFIED")].includes(r.id)
         )
       ) {
         await member.roles.add(Config.roleId("VERIFIED"));
+        Events.emit("MEMBER_VERIFIED", { member });
       }
     });
   }

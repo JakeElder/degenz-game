@@ -57,6 +57,14 @@ export default class WorldNotifier {
     ]);
   }
 
+  static async memberVerified(e: Event<"MEMBER_VERIFIED">) {
+    await this.logToHOP(
+      "BIG_BROTHER",
+      e.type,
+      r(<>**{e.data.member.displayName}** verified they are not a bot.</>)
+    );
+  }
+
   static async statsChecked(e: Event<"STATS_CHECKED">) {
     let message: string;
     if (e.data.checker.id === e.data.checkee.id) {
