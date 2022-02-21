@@ -1,4 +1,3 @@
-import { channelMention, userMention } from "@discordjs/builders";
 import Config from "app-config";
 import { AppState, District, Pledge, User } from "db";
 import {
@@ -9,12 +8,13 @@ import {
   MessageButton,
   MessageOptions,
 } from "discord.js";
-import { LessThan, MoreThan } from "typeorm";
-import { DateTime } from "luxon";
-import { Global } from "../Global";
 import { Format } from "lib";
+import { DateTime } from "luxon";
+import pluralize from "pluralize";
+import Events from "../Events";
+import { Global } from "../Global";
 
-export default class HallOfAlleiganceController {
+export default class HallOfAllegianceController {
   static buttonCollector: InteractionCollector<ButtonInteraction>;
 
   static async init() {
@@ -115,28 +115,72 @@ export default class HallOfAlleiganceController {
       order: { createdAt: -1 },
     });
 
-    const mostRecent = DateTime.fromJSDate(pledge!.createdAt);
+    const dailyAllowance = user.primaryTenancy.district.allowance;
 
-    const entitledAllowance = user.primaryTenancy.district.allowance;
+    if (!pledge) {
+      const tx = Format.transaction(user.gbt, dailyAllowance);
+      await HallOfAllegianceController.award(user, dailyAllowance);
+      await i.reply({
+        embeds: [
+          {
+            title: "Pledge Accepted",
+            color: "GREEN",
+            description: `Your first Pledge, Comrade. **Congratulations** \u{1f389}\n\n${tx}`,
+          },
+        ],
+        ephemeral: true,
+      });
+      return;
+    }
 
-    const secondsSinceLastPledge = mostRecent
-      .diffNow(["seconds"])
-      .toObject().seconds;
+    const mostRecent = DateTime.fromJSDate(pledge.createdAt);
+    const now = DateTime.now();
+    const daysPassed = now.diff(mostRecent, ["days"]).toObject().days!;
+    const allowance = Math.floor(dailyAllowance * Math.min(daysPassed, 1));
 
-    // const secondsInADay = 1 * 60 * 60 * 24;
+    if (allowance < 1) {
+      const claim = Format.currency(pledge.yld);
+      const secondsPassed = Math.round(daysPassed * 24 * 60 * 60);
+      const minutesPassed = Math.round(daysPassed * 24 * 60);
 
+      const ago =
+        secondsPassed < 60
+          ? `${secondsPassed} ${pluralize("second", secondsPassed)}`
+          : `${minutesPassed} ${pluralize("minute", minutesPassed)}`;
+
+      const minimumMinutes = Math.ceil((24 * 60) / dailyAllowance);
+      const wait = `${minimumMinutes} ${pluralize("minute", minimumMinutes)}`;
+
+      await i.reply({
+        embeds: [
+          {
+            title: "Pledge Rejected",
+            color: "RED",
+            description: `You claimed ${claim} **${ago} ago**.. You need to wait at least **${wait}** Comrade.`,
+          },
+        ],
+        ephemeral: true,
+      });
+      return;
+    }
+
+    const tx = Format.transaction(user.gbt, allowance);
+    await HallOfAllegianceController.award(user, allowance);
     await i.reply({
-      content: `\`\`\`${JSON.stringify(
+      embeds: [
         {
-          highestDistrict: user.primaryTenancy.district.symbol,
-          entitledAllowance,
-          secondsSinceLastPledge,
-          yield: pledge!.yield,
+          title: "Pledge Accepted",
+          color: "GREEN",
+          description: `There's a good citizen. ${tx}`,
         },
-        null,
-        2
-      )}\`\`\``,
+      ],
       ephemeral: true,
     });
+  }
+
+  static async award(user: User, yld: number) {
+    user.gbt += yld;
+    await Promise.all([user.save(), Pledge.insert({ user, yld })]);
+    Events.emit("ALLEGIANCE_PLEDGED", { user, yld });
   }
 }

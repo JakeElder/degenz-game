@@ -16,7 +16,7 @@ export class Pledge extends BaseEntity {
   id: number;
 
   @Column()
-  yield: number;
+  yld: number;
 
   @ManyToOne(() => User, (user) => user.pledges, { onDelete: "CASCADE" })
   user: User;

@@ -44,6 +44,11 @@ type StatsCheckedEvent = Event<
   { checker: User; checkee: User }
 >;
 
+type AllegiancePledgedEvent = Event<
+  "ALLEGIANCE_PLEDGED",
+  { user: User; yld: number }
+>;
+
 export type Events = BotReadyEvent &
   CommandNotFoundEvent &
   CommandNotImplementedEvent &
@@ -51,7 +56,8 @@ export type Events = BotReadyEvent &
   ApartmentAllocatedEvent &
   BalanceCheckedEvent &
   StatsCheckedEvent &
-  MemberVerifiedEvent;
+  MemberVerifiedEvent &
+  AllegiancePledgedEvent;
 
 class DegenEventEmitter extends (EventEmitter as new () => TypedEmitter<Events>) {
   // @ts-ignore

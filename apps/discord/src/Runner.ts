@@ -6,7 +6,7 @@ import DiscordBot from "./DiscordBot";
 import OnboardController from "./controllers/OnboardController";
 import AppController from "./controllers/AppController";
 import WaitingRoomController from "./controllers/WaitingRoomController";
-import HallOfAlleiganceController from "./controllers/HallOfAlleiganceController";
+import HallOfAlleiganceController from "./controllers/HallOfAllegianceController";
 
 export default class Runner {
   constructor(private bots: DiscordBot[]) {

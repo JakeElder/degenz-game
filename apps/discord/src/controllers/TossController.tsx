@@ -383,14 +383,7 @@ export default class TossController {
 
     embed.addField(
       `New ${Format.currency(null)} Balance`,
-      r(
-        <>
-          {Format.currency(before, { symbol: false })} {"=>"}{" "}
-          {Format.currency(p.user!.gbt, { symbol: false })} `(
-          {win ? "+" : ""}
-          {Format.currency(net, { emoji: false, symbol: false, bold: false })})`
-        </>
-      )
+      Format.transaction(before, net)
     );
 
     return embed;

@@ -36,7 +36,7 @@ async function main() {
   Global.bot("TOSSER", new bots.TosserBot());
   Global.bot("WARDEN", new bots.WardenBot());
 
-  new Runner(Global.bots());
+  runner = new Runner(Global.bots());
 }
 
 main();
