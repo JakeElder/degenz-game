@@ -398,13 +398,6 @@ export const TokenIssuanceAnnouncement = ({ amount }: { amount: number }) => {
   );
 };
 
-export const WelcomeMessagePublic = ({ member }: { member: GuildMember }) => (
-  <Log event="VERIFY" level="neutral">
-    <User id={member.id} /> joined the server. Type the `/obey` command to begin
-    your beautiful life in **{Config.general("WORLD_NAME")}**.
-  </Log>
-);
-
 export const WelcomeMessagePrivate = ({
   member,
   part,

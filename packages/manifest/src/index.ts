@@ -55,7 +55,7 @@ const structure: Category[] = [
       {
         symbol: "VERIFICATION",
         name: "\u235d\uff5cverification",
-        lockPermissions: false,
+        lockPermissions: true,
         permissionOverwrites: [],
       },
     ],

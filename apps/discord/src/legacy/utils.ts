@@ -174,7 +174,13 @@ export function makeInventoryEmbed(
   return m;
 }
 
-export function makeLeaderboardEmbed(users: User[]) {
+export function makeLeaderboardEmbed(users: User[]): MessageEmbedOptions {
+  if (users.length === 0) {
+    return {
+      description: "no users",
+    };
+  }
+
   const longestNameLength = [...users].sort((a, b) => {
     return b.displayName.length - a.displayName.length;
   })[0].displayName.length;

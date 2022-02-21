@@ -1,7 +1,7 @@
 import React from "react";
 import Config from "app-config";
 import { MessageActionRow, MessageEmbed } from "discord.js";
-import { User } from "db";
+import { User, Achievement } from "db";
 import { Achievement as AchievementEnum } from "types";
 import { OnboardDialogAlly, OnboardDialogBB } from "../legacy/onboard-dialog";
 import Utils from "../Utils";
@@ -11,6 +11,7 @@ import AchievementController from "./AchievementController";
 import UserController from "./UserController";
 import { FirstActivityReply } from "../legacy/templates";
 import { Global } from "../Global";
+import { In } from "typeorm";
 
 const { r } = Utils;
 
@@ -325,5 +326,23 @@ export default class OnboardController {
       VIEW_CHANNEL: true,
       EMBED_LINKS: true,
     });
+  }
+
+  static async skip(user: User) {
+    await UserController.openWorld(user);
+
+    const achievements = await Achievement.find({
+      where: {
+        symbol: In([
+          AchievementEnum.JOINED_THE_DEGENZ,
+          AchievementEnum.HELP_REQUESTED,
+          AchievementEnum.STATS_CHECKED,
+        ]),
+      },
+    });
+
+    user.achievements = achievements;
+
+    await user.save();
   }
 }

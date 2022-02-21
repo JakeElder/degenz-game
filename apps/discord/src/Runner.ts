@@ -39,7 +39,11 @@ export default class Runner {
     });
 
     Events.on("APARTMENT_ALLOCATED", (e) => {
-      OnboardController.partOne(e.data.user);
+      if (e.data.onboard) {
+        OnboardController.partOne(e.data.user);
+      } else {
+        OnboardController.skip(e.data.user);
+      }
     });
 
     Events.on("STATS_CHECKED", (e) => {
