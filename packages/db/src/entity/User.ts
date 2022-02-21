@@ -13,7 +13,7 @@ import {
 } from "typeorm";
 import { Role, TextChannel } from "discord.js";
 import { Achievement as AchievementEnum } from "types";
-import { Tenancy, MartItemOwnership } from "..";
+import { Tenancy, MartItemOwnership, Pledge } from "..";
 import { Achievement } from "./Achievement";
 import { Imprisonment } from "./Imprisonment";
 
@@ -49,6 +49,11 @@ export class User extends BaseEntity {
     cascade: true,
   })
   imprisonments: Imprisonment[];
+
+  @OneToMany(() => Pledge, (pledge) => pledge.user, {
+    cascade: true,
+  })
+  pledges: Pledge[];
 
   @ManyToMany(() => Achievement)
   @JoinTable()

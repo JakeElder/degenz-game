@@ -9,6 +9,7 @@ import { Imprisonment } from "./entity/Imprisonment";
 import { MartItem } from "./entity/MartItem";
 import { MartItemOwnership } from "./entity/MartItemOwnership";
 import { NPC } from "./entity/NPC";
+import { Pledge } from "./entity/Pledge";
 import { Tenancy } from "./entity/Tenancy";
 import { User } from "./entity/User";
 
@@ -27,6 +28,7 @@ export async function connect(url: string) {
       MartItem,
       MartItemOwnership,
       NPC,
+      Pledge,
       Tenancy,
       User,
     ],
@@ -314,6 +316,7 @@ export {
   MartItem,
   MartItemOwnership,
   NPC,
+  Pledge,
   Tenancy,
   User,
 };

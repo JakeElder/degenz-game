@@ -202,6 +202,12 @@ const structure: Category[] = [
         permissionOverwrites: [],
       },
       {
+        symbol: "HALL_OF_ALLEIGANCE",
+        name: "\u2ff4\uff5chall-of-alleigance",
+        lockPermissions: true,
+        permissionOverwrites: READ_ONLY,
+      },
+      {
         symbol: "MART",
         name: "\u1789\uff5cmerris-mart",
         lockPermissions: true,

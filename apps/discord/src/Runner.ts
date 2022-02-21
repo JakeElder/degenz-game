@@ -6,6 +6,7 @@ import DiscordBot from "./DiscordBot";
 import OnboardController from "./controllers/OnboardController";
 import AppController from "./controllers/AppController";
 import WaitingRoomController from "./controllers/WaitingRoomController";
+import HallOfAlleiganceController from "./controllers/HallOfAlleiganceController";
 
 export default class Runner {
   constructor(private bots: DiscordBot[]) {
@@ -18,6 +19,7 @@ export default class Runner {
 
       if (e.data.bot.symbol === "BIG_BROTHER") {
         WaitingRoomController.init();
+        HallOfAlleiganceController.init();
         AppController.setVerifyMessage();
         AppController.setLeaderboardMessage();
       }

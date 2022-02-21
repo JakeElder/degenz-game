@@ -22,6 +22,9 @@ export class AppState extends BaseEntity {
   @Column({ type: "text", nullable: true })
   leaderboardMessageId: Message["id"] | null;
 
+  @Column({ type: "text", nullable: true })
+  pledgeMessageId: Message["id"] | null;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -37,6 +40,17 @@ export class AppState extends BaseEntity {
   static async getLeaderboardMessageId() {
     const row = await this.findOneOrFail();
     return row.leaderboardMessageId;
+  }
+
+  static async setPledgeMessageId(id: Message["id"]) {
+    const row = await this.findOneOrFail();
+    row.pledgeMessageId = id;
+    await row.save();
+  }
+
+  static async getPledgeMessageId() {
+    const row = await this.findOneOrFail();
+    return row.pledgeMessageId;
   }
 
   static async setVerifyMessageId(id: Message["id"]) {

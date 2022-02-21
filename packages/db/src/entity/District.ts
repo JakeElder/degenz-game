@@ -32,6 +32,9 @@ export class District extends BaseEntity {
   @Column({ nullable: true })
   inactiveEmoji: string;
 
+  @Column({ nullable: true })
+  allowance: number;
+
   @OneToMany(() => Tenancy, (tenancy) => tenancy.district)
   tenancies: Tenancy[];
 
