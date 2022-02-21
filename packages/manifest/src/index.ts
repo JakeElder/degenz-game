@@ -128,7 +128,8 @@ const structure: Category[] = [
       },
       {
         symbol: "WAITING_ROOM",
-        name: "\u{1f512}\uff5cwaiting-room",
+
+        name: "\u{1f510}\uff5cwaiting-room",
         lockPermissions: true,
         permissionOverwrites: READ_ONLY,
       },

@@ -1,25 +1,18 @@
 import React from "react";
 import Config from "app-config";
 import {
-  ButtonInteraction,
   GuildBasedChannel,
   GuildMember,
-  InteractionCollector,
   Message,
-  MessageActionRow,
-  MessageButton,
-  MessageOptions,
   MessageReaction,
   ReactionCollector,
   User as DiscordUser,
 } from "discord.js";
 import { DistrictSymbol, OperationResult } from "types";
-import { AppState, District, User } from "db";
-import { Format } from "lib";
+import { AppState, District } from "db";
 import { channelMention, userMention } from "@discordjs/builders";
 import equal from "fast-deep-equal";
 import { bots } from "manifest";
-import UserController from "./UserController";
 import { Global } from "../Global";
 import { getLeaders } from "../legacy/db";
 import { makeLeaderboardEmbed } from "../legacy/utils";
@@ -34,16 +27,15 @@ export default class AppController {
   static leaderboardTableData: any = [];
   static leaderboardMessage: Message;
   static reactionCollector: ReactionCollector;
-  static buttonCollector: InteractionCollector<ButtonInteraction>;
 
   static async openDistrict(districtSymbol: DistrictSymbol) {
     await District.open(districtSymbol);
-    await this.setEnterMessage();
+    await WaitingRoomController.update();
   }
 
   static async closeDistrict(districtSymbol: DistrictSymbol) {
     await District.close(districtSymbol);
-    await this.setEnterMessage();
+    await WaitingRoomController.update();
   }
 
   static async setLeaderboardMessage() {
@@ -135,126 +127,6 @@ export default class AppController {
         </>
       )
     );
-  }
-
-  static async setEnterMessage() {
-    const bb = Global.bot("BIG_BROTHER");
-
-    const state = await AppState.findOneOrFail();
-    const c = await bb.getTextChannel(Config.channelId("WAITING_ROOM"));
-    const capacity = Config.general("DISTRICT_CAPACITY");
-
-    const districts = await District.find({
-      relations: ["tenancies"],
-      order: { symbol: 1 },
-    });
-
-    const buttons = districts.map((d) => {
-      const enabled = d.open && d.tenancies.length < capacity;
-      return new MessageButton()
-        .setLabel("JOIN")
-        .setEmoji(enabled ? d.activeEmoji : d.inactiveEmoji)
-        .setStyle(enabled ? "SUCCESS" : "SECONDARY")
-        .setDisabled(!enabled)
-        .setCustomId(d.symbol);
-    });
-
-    const d = districts
-      .map((d) => {
-        const available = capacity - d.tenancies.length;
-        const open = d.open && available > 0;
-        return `${d.open ? d.activeEmoji : d.inactiveEmoji} => ${
-          open
-            ? `\`${available} AVAILABLE\``
-            : `\`${d.open ? "FULL" : "CLOSED"}\``
-        }`;
-      })
-      .join("\n");
-
-    const s: MessageOptions = {
-      content: `**SPACE IN ${Format.worldName()} IS LIMITED**.\nSee the below information to see for available apartments. **Press the buttons below** to join a district and enter the game.`,
-      embeds: [
-        {
-          author: {
-            iconURL:
-              "https://s10.gifyu.com/images/Mind-Control-Degenz-V2-min.gif",
-            name: "Available Apartments",
-          },
-          // title: ":cityscape:\u200b \u200bAvailable Apartments",
-          description: `Beautopia is divided in to districts, 1 to 6. To play the game, you'll need your own apartment. As apartments become available, the buttons below will become active. Check back often to secure your space in ${Format.worldName()}.\n\n${d}`,
-          footer: {
-            // iconURL: bb.client.user!.displayAvatarURL(),
-            text: "Press the District button below to join that district.",
-          },
-        },
-      ],
-      components: [
-        new MessageActionRow().addComponents(buttons.slice(0, 3)),
-        new MessageActionRow().addComponents(buttons.slice(3)),
-      ],
-    };
-
-    let message: Message;
-
-    if (state.entryMessageId) {
-      try {
-        message = await c.messages.fetch(state.entryMessageId);
-        message.edit(s);
-      } catch (e) {
-        message = await c.send(s);
-        AppState.setEntryMessageId(message.id);
-      }
-    } else {
-      message = await c.send(s);
-      AppState.setEntryMessageId(message.id);
-    }
-
-    const open = districts.some((d) => {
-      const available = capacity - d.tenancies.length;
-      return d.open && available > 0;
-    });
-
-    WaitingRoomController.setStatus(open);
-
-    if (this.buttonCollector) {
-      this.buttonCollector.off("collect", this.handleButtonPress);
-    }
-
-    this.buttonCollector = message.createMessageComponentCollector({
-      componentType: "BUTTON",
-    });
-
-    this.buttonCollector.on("collect", this.handleButtonPress);
-  }
-
-  static async handleButtonPress(i: ButtonInteraction) {
-    const user = await User.findOne({ where: { discordId: i.user.id } });
-
-    if (user) {
-      await i.reply({
-        content: `${userMention(user.discordId)} - You're already a Degen.`,
-        ephemeral: true,
-      });
-      return;
-    }
-
-    const res = await UserController.init(
-      i.user.id,
-      true,
-      i.customId as DistrictSymbol
-    );
-
-    if (res.success) {
-      await Promise.all([
-        i.reply({
-          content: `${userMention(i.user.id)} - ${channelMention(
-            res.user!.primaryTenancy.discordChannelId
-          )}, your new *private* apartment to receive further instructions.`,
-          ephemeral: true,
-        }),
-        AppController.setEnterMessage(),
-      ]);
-    }
   }
 
   static async sendMessageFromBot({

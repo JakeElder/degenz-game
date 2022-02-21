@@ -5,6 +5,7 @@ import WorldNotifier from "./WorldNotifier";
 import DiscordBot from "./DiscordBot";
 import OnboardController from "./controllers/OnboardController";
 import AppController from "./controllers/AppController";
+import WaitingRoomController from "./controllers/WaitingRoomController";
 
 export default class Runner {
   constructor(private bots: DiscordBot[]) {
@@ -16,7 +17,7 @@ export default class Runner {
       Logger.botReady(e);
 
       if (e.data.bot.symbol === "BIG_BROTHER") {
-        AppController.setEnterMessage();
+        WaitingRoomController.init();
         AppController.setVerifyMessage();
         AppController.setLeaderboardMessage();
       }

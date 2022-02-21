@@ -13,8 +13,8 @@ import {
   getTenanciesInDistrict,
   getUser,
 } from "../legacy/db";
-import AppController from "./AppController";
 import { Global } from "../Global";
+import WaitingRoomController from "./WaitingRoomController";
 
 export default class UserController {
   static async init(
@@ -114,7 +114,7 @@ export default class UserController {
     // Delete from db
     await deleteUser(member);
 
-    AppController.setEnterMessage();
+    await WaitingRoomController.update();
 
     return { success: true, code: "USER_EJECTED" };
   }

@@ -1,13 +1,11 @@
 import { CommandInteraction, GuildBasedChannel, GuildMember } from "discord.js";
-import Config from "app-config";
-import { bots } from "manifest";
-import Events from "../Events";
 import { issueTokens } from "../legacy/db";
 import UserController from "../controllers/UserController";
 import { CommandController } from "../CommandController";
 import { DistrictSymbol } from "types";
 import AppController from "../controllers/AppController";
 import { Global } from "../Global";
+import WaitingRoomController from "../controllers/WaitingRoomController";
 
 export default class AllyCommandController extends CommandController {
   async respond(
@@ -158,7 +156,7 @@ export default class AllyCommandController extends CommandController {
   }
 
   async admin_setEntryMessage(i: CommandInteraction) {
-    await AppController.setEnterMessage();
+    await WaitingRoomController.update();
     await this.respond(i, "MESSAGE_SENT", "SUCCESS");
   }
 }

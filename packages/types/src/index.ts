@@ -39,6 +39,7 @@ export type ChannelSymbol =
   | "FAQ"
   | "COMMANDS"
   | "TOWN_SQUARE"
+  | "HALL_OF_ALLEIGANCE"
   | "MART"
   | "TOSS_HOUSE"
   | "BANK"

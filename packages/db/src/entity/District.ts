@@ -42,10 +42,10 @@ export class District extends BaseEntity {
   updatedAt: Date;
 
   static async open(symbol: DistrictSymbol) {
-    this.update({ symbol }, { open: true });
+    await this.update({ symbol }, { open: true });
   }
 
   static async close(symbol: DistrictSymbol) {
-    this.update({ symbol }, { open: false });
+    await this.update({ symbol }, { open: false });
   }
 }
