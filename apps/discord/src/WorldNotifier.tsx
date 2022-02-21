@@ -79,4 +79,14 @@ export default class WorldNotifier {
     }
     await this.logToHOP("ALLY", e.type, message);
   }
+
+  static async allegiancePledged(e: Event<"ALLEGIANCE_PLEDGED">) {
+    const message = r(
+      <>
+        **{e.data.user.displayName}** pledged their allegiance and received{" "}
+        {Format.currency(e.data.yld)}.
+      </>
+    );
+    await this.logToHOP("BIG_BROTHER", e.type, message);
+  }
 }
