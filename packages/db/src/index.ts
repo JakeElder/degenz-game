@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { Connection, createConnection } from "typeorm";
+import { Connection, ConnectionOptions, createConnection } from "typeorm";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 import { Achievement as AchievementEnum, DistrictSymbol } from "types";
 import Config from "app-config";
@@ -13,14 +13,14 @@ import { NPC } from "./entity/NPC";
 import { Pledge } from "./entity/Pledge";
 import { Tenancy } from "./entity/Tenancy";
 import { User } from "./entity/User";
+import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 
 let connection: Connection;
 
 export async function connect(url: string) {
-  connection = await createConnection({
+  const base: PostgresConnectionOptions = {
     type: "postgres",
-    url,
-    synchronize: true,
+    namingStrategy: new SnakeNamingStrategy(),
     entities: [
       Achievement,
       AppState,
@@ -33,9 +33,27 @@ export async function connect(url: string) {
       Tenancy,
       User,
     ],
-    ssl: Config.env("NODE_ENV") !== "development",
-    namingStrategy: new SnakeNamingStrategy(),
-  });
+  };
+
+  let options: PostgresConnectionOptions;
+
+  if (Config.env("NODE_ENV") === "development") {
+    options = { ...base, url, synchronize: true };
+  } else {
+    options = {
+      ...base,
+      username: process.env.USERNAME,
+      host: process.env.HOSTNAME,
+      database: process.env.DATABASE,
+      password: process.env.PASSWORD,
+      port: parseInt(process.env.PORT as string),
+      ssl: {
+        ca: process.env.CA_CERT,
+      },
+    };
+  }
+
+  connection = await createConnection(options);
 
   if (process.env.SEED) {
     await seed();
