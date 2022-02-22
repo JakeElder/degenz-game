@@ -1,7 +1,8 @@
 import "reflect-metadata";
-import { Connection, ConnectionOptions, createConnection } from "typeorm";
+import { Connection, createConnection } from "typeorm";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 import { Achievement as AchievementEnum, DistrictSymbol } from "types";
+import Config from "app-config";
 import { Achievement } from "./entity/Achievement";
 import { AppState } from "./entity/AppState";
 import { District } from "./entity/District";
@@ -32,7 +33,7 @@ export async function connect(url: string) {
       Tenancy,
       User,
     ],
-    ssl: process.env.CA_CERT ? { ca: process.env.CA_CERT } : undefined,
+    ssl: Config.env("NODE_ENV") !== "development",
     namingStrategy: new SnakeNamingStrategy(),
   });
 

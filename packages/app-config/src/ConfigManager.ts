@@ -38,6 +38,7 @@ const ENV = {
   MIXPANEL_PROJECT_TOKEN: env.MIXPANEL_PROJECT_TOKEN,
   DATABASE_URL: env.DATABASE_URL,
   ROLLBAR_TOKEN: env.ROLLBAR_TOKEN,
+  NODE_ENV,
 };
 
 export default class ConfigManager {
