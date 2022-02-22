@@ -1,6 +1,5 @@
 FROM node:16.14-alpine AS builder
 RUN apk update
-RUN apk --no-cache add procps
 WORKDIR /app
 RUN yarn global add turbo
 COPY . .
@@ -17,6 +16,7 @@ RUN yarn install
 
 FROM node:16.14-alpine AS sourcer
 RUN apk update
+RUN apk --no-cache add procps
 WORKDIR /app
 COPY --from=installer /app/ .
 COPY --from=builder /app/out/full .
