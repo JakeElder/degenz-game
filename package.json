@@ -12,7 +12,8 @@
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "postinstall": "patch-package"
   },
   "devDependencies": {
     "prettier": "^2.5.1",
@@ -24,6 +25,7 @@
   },
   "packageManager": "yarn@1.22.17",
   "dependencies": {
+    "patch-package": "^6.4.7",
     "pm2": "^5.2.0"
   }
 }

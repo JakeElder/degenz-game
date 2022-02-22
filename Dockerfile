@@ -11,6 +11,7 @@ RUN apk update
 WORKDIR /app
 COPY --from=builder /app/out/json/ .
 COPY --from=builder /app/out/yarn.lock ./yarn.lock
+COPY patches ./patches
 RUN yarn install
 
 FROM node:16.14-alpine AS sourcer
