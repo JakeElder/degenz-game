@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "rm -rf dist && concurrently --raw \"yarn watch\" \"wait-on dist/main.js && yarn start:dev\"",
-    "build": "tsc",
+    "build": "yarn tsc",
     "watch": "tsc --watch",
     "start": "node dist/main",
-    "start:dev": "nodemon --exec \"node -r source-map-support/register dist/main\"",
+    "start:dev": "nodemon --quiet --exec \"node -r source-map-support/register dist/main\"",
     "lint": "eslint",
     "typecheck": "tsc --noEmit"
   },

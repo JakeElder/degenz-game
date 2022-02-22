@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "build": "turbo run build",
+    "clean": "find packages apps -name dist -depth 2 -exec rm -rf '{}' +",
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
@@ -21,5 +22,8 @@
     "npm": ">=7.0.0",
     "node": ">=16.14.0"
   },
-  "packageManager": "yarn@1.22.17"
+  "packageManager": "yarn@1.22.17",
+  "dependencies": {
+    "pm2": "^5.2.0"
+  }
 }

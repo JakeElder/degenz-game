@@ -20,8 +20,8 @@ export class Global {
   }
 
   static bots(...symbols: BotSymbol[]) {
-    if (!symbols) {
-      return Object.values(this.botManifest);
+    if (symbols.length === 0) {
+      return Object.values(this.botManifest) as DiscordBot[];
     }
 
     return symbols.map((id) => this.bot(id));

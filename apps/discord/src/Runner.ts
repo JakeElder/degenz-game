@@ -72,6 +72,7 @@ export default class Runner {
 
   destroy() {
     for (let b of this.bots) {
+      console.log(`SHUTTING_DOWN: ${b.manifest.symbol}`);
       b.destroy();
     }
   }

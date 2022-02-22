@@ -14,12 +14,17 @@ const pe = new PrettyError();
   })
 );
 
-cleanup(() => {
-  console.log("Running cleanup");
-  if (runner) {
-    runner.destroy();
+cleanup(function (_, signal) {
+  if (signal) {
+    if (runner) {
+      runner.destroy();
+    }
+    console.log("DISCONNECTING");
+    disconnect().then(() => {
+      process.kill(process.pid, signal);
+      return false;
+    });
   }
-  disconnect();
 });
 
 let runner: Runner;

@@ -4,6 +4,7 @@
   "license": "UNLICENSED",
   "main": "./dist/index.js",
   "scripts": {
+    "build": "yarn tsc",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit"
   },
