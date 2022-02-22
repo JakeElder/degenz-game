@@ -30,7 +30,9 @@ cleanup(function (_, signal) {
 let runner: Runner;
 
 async function main() {
+  console.log("CONNECTING", Config.env("DB_CONN_STRING"));
   await connect(Config.env("DB_CONN_STRING"));
+  console.log("CONNECTED");
 
   Global.bot("ADMIN", new bots.AdminBot());
   Global.bot("ALLY", new bots.AllyBot());
