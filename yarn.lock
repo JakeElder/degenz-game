@@ -1413,6 +1413,13 @@
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.1.tgz#d3357479a0fdfdd5907fe67e17e0a85c906e1301"
   integrity sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==
 
+"@types/pg-connection-string@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/pg-connection-string/-/pg-connection-string-2.0.0.tgz#1e87e81d83d1a044096d338e09072116549c24bf"
+  integrity sha512-J1ZxH9dN0zSwnJpAlbvRlEtwYD/SYmyLMVF4DF0qfTHv0sH0HEg9WK/B24doWGjgcT8InomL0znJwcYHy3lNUw==
+  dependencies:
+    pg-connection-string "*"
+
 "@types/pluralize@^0.0.29":
   version "0.0.29"
   resolved "https://registry.yarnpkg.com/@types/pluralize/-/pluralize-0.0.29.tgz#6ffa33ed1fc8813c469b859681d09707eb40d03c"
@@ -6999,7 +7006,7 @@ pause-stream@0.0.11:
   dependencies:
     through "~2.3"
 
-pg-connection-string@^2.5.0:
+pg-connection-string@*, pg-connection-string@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/pg-connection-string/-/pg-connection-string-2.5.0.tgz#538cadd0f7e603fc09a12590f3b8a452c2c0cf34"
   integrity sha512-r5o/V/ORTA6TmUnyWZR9nCj1klXCO2CEKNRlVuJptZe85QuhFayC7WeMic7ndayT5IRIR0S0xFxFi2ousartlQ==
