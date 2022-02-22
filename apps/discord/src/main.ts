@@ -29,6 +29,7 @@ cleanup(function (_, signal) {
 let runner: Runner;
 
 async function main() {
+  console.log("CONNECTING");
   await connect(Config.env("DATABASE_URL"));
 
   Global.bot("ADMIN", new bots.AdminBot());
