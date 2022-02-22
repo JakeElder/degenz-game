@@ -1,8 +1,4 @@
-import {
-  ClientOptions,
-  CommandInteraction,
-  OverwriteResolvable,
-} from "discord.js";
+import { ClientOptions, OverwriteResolvable } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { APIApplicationCommandPermission } from "discord-api-types/v9";
 
@@ -12,7 +8,7 @@ export type EnvVars = Record<
   | "ARMORY_CLERK_BOT_TOKEN"
   | "BANKER_BOT_TOKEN"
   | "BIG_BROTHER_BOT_TOKEN"
-  | "DB_CONN_STRING"
+  | "DATABASE_URL"
   | "MART_CLERK_BOT_TOKEN"
   | "MIXPANEL_PROJECT_TOKEN"
   | "MONGO_URI"

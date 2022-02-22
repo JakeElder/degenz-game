@@ -8,8 +8,6 @@ import { Global } from "./Global";
 
 const pe = new PrettyError();
 
-console.log("STARTING");
-
 ["uncaughtException", "unhandledRejection"].forEach((e) =>
   process.on(e, (e) => {
     console.error(pe.render(e));
@@ -21,7 +19,6 @@ cleanup(function (_, signal) {
     if (runner) {
       runner.destroy();
     }
-    console.log("DISCONNECTING");
     disconnect().then(() => {
       process.kill(process.pid, signal);
       return false;
@@ -32,9 +29,7 @@ cleanup(function (_, signal) {
 let runner: Runner;
 
 async function main() {
-  console.log("CONNECTING", Config.env("DB_CONN_STRING"));
-  await connect(Config.env("DB_CONN_STRING"));
-  console.log("CONNECTED");
+  await connect(Config.env("DATABASE_URL"));
 
   Global.bot("ADMIN", new bots.AdminBot());
   Global.bot("ALLY", new bots.AllyBot());
