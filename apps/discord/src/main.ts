@@ -8,6 +8,8 @@ import { Global } from "./Global";
 
 const pe = new PrettyError();
 
+console.log("STARTING");
+
 ["uncaughtException", "unhandledRejection"].forEach((e) =>
   process.on(e, (e) => {
     console.error(pe.render(e));
