@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { Connection, createConnection } from "typeorm";
+import { Connection, ConnectionOptions, createConnection } from "typeorm";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 import { Achievement as AchievementEnum, DistrictSymbol } from "types";
 import { Achievement } from "./entity/Achievement";
@@ -32,6 +32,7 @@ export async function connect(url: string) {
       Tenancy,
       User,
     ],
+    ssl: process.env.CA_CERT ? { ca: process.env.CA_CERT } : undefined,
     namingStrategy: new SnakeNamingStrategy(),
   });
 
