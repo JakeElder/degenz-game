@@ -10,11 +10,16 @@ const http = axios.create({
 
 export default abstract class Command extends OclifCommand {
   async get(route: string, token: string) {
-    return http({
-      method: "GET",
-      url: route,
-      headers: { Authorization: `Bot ${token}` },
-    });
+    try {
+      return http({
+        method: "GET",
+        url: route,
+        headers: { Authorization: `Bot ${token}` },
+      });
+    } catch (e) {
+      this.debug(e);
+      throw e;
+    }
   }
 
   async delete(route: string, token: string) {

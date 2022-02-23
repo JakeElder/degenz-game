@@ -1,24 +1,29 @@
 import { ClientOptions, OverwriteResolvable } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { APIApplicationCommandPermission } from "discord-api-types/v9";
+import { SetOptional } from "type-fest";
 
-export type EnvVars = Record<
-  | "ADMIN_BOT_TOKEN"
-  | "ALLY_BOT_TOKEN"
-  | "ARMORY_CLERK_BOT_TOKEN"
-  | "BANKER_BOT_TOKEN"
-  | "BIG_BROTHER_BOT_TOKEN"
-  | "DATABASE_URL"
-  | "MART_CLERK_BOT_TOKEN"
-  | "MIXPANEL_PROJECT_TOKEN"
-  | "MONGO_URI"
-  | "NODE_ENV"
-  | "PRISONER_BOT_TOKEN"
-  | "ROLLBAR_TOKEN"
-  | "SENSEI_BOT_TOKEN"
-  | "TOSSER_BOT_TOKEN"
-  | "WARDEN_BOT_TOKEN",
-  string
+export type EnvVars = SetOptional<
+  Record<
+    | "ADMIN_BOT_TOKEN"
+    | "ALLY_BOT_TOKEN"
+    | "ARMORY_CLERK_BOT_TOKEN"
+    | "BANKER_BOT_TOKEN"
+    | "BIG_BROTHER_BOT_TOKEN"
+    | "DATABASE_URL"
+    | "MART_CLERK_BOT_TOKEN"
+    | "MIXPANEL_PROJECT_TOKEN"
+    | "MONGO_URI"
+    | "NODE_ENV"
+    | "PRISONER_BOT_TOKEN"
+    | "ROLLBAR_TOKEN"
+    | "SENSEI_BOT_TOKEN"
+    | "TOSSER_BOT_TOKEN"
+    | "CA_CERT"
+    | "WARDEN_BOT_TOKEN",
+    string
+  >,
+  "CA_CERT"
 >;
 
 export type ChannelSymbol =

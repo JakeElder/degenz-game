@@ -51,7 +51,7 @@ export async function connect(url: string) {
       password: db.password!,
       port: db.port ? parseInt(db.port!, 10) : undefined,
       ssl: {
-        ca: process.env.CA_CERT,
+        ca: Config.env("CA_CERT")!.replace(/\\n/g, "\n"),
       },
     };
   }

@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+import findConfig from "find-config";
 import DEV_CONFIG from "./config";
 import STAGE_CONFIG from "./config.stage";
 import PROD_CONFIG from "./config.prod";
@@ -8,10 +10,28 @@ import {
   EnvVars,
   RoleSymbol,
 } from "types";
+import chalk from "chalk";
 
-export const NODE_ENV =
+const envFile = process.env.ENV_FILE || ".env";
+dotenv.config({ path: findConfig(envFile)! });
+
+const NODE_ENV =
   (process.env.NODE_ENV as "development" | "stage" | "production") ||
   "development";
+
+if (envFile !== ".env") {
+  const colour = chalk.hex("#ffc53d");
+  const log = (s: string) => console.log(`  ${s}`);
+  console.log("");
+  const e = ` ENV_FILE: ${envFile}   `;
+  const n = ` NODE_ENV: ${NODE_ENV}   `;
+  const l = Math.max(e.length, n.length);
+  log(colour("-".repeat(l)));
+  log(colour(e));
+  log(colour(n));
+  log(colour("-".repeat(l)));
+  console.log("");
+}
 
 const configs = {
   development: DEV_CONFIG,
@@ -38,6 +58,7 @@ const ENV = {
   MIXPANEL_PROJECT_TOKEN: env.MIXPANEL_PROJECT_TOKEN,
   DATABASE_URL: env.DATABASE_URL,
   ROLLBAR_TOKEN: env.ROLLBAR_TOKEN,
+  CA_CERT: env.CA_CERT,
   NODE_ENV,
 };
 

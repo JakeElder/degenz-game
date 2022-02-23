@@ -4,7 +4,6 @@ import Listr from "listr";
 import { Command } from "../../lib";
 import { structure } from "manifest";
 import Config from "app-config";
-import _ from "discord.js";
 import { resolvableToOverwrite } from "../../utils";
 
 export default class SetPermissions extends Command {
@@ -25,9 +24,9 @@ export default class SetPermissions extends Command {
         return {
           title: `Category: ${category.name}`,
           task: async () => {
-            const categorySymbol = Config.categoryId(category.symbol);
+            const categoryId = Config.categoryId(category.symbol);
             await this.patch(
-              Routes.channel(categorySymbol),
+              Routes.channel(categoryId),
               {
                 permission_overwrites: category.permissionOverwrites.map(
                   resolvableToOverwrite
@@ -41,10 +40,10 @@ export default class SetPermissions extends Command {
                 return {
                   title: channel.name,
                   task: async () => {
-                    const channelSymbol = Config.channelId(channel.symbol);
+                    const channelId = Config.channelId(channel.symbol);
 
                     await this.patch(
-                      Routes.channel(channelSymbol),
+                      Routes.channel(channelId),
                       {
                         permission_overwrites: (channel.lockPermissions
                           ? category
@@ -60,7 +59,7 @@ export default class SetPermissions extends Command {
                           const { id, type, deny, allow } =
                             resolvableToOverwrite(o);
                           return this.put(
-                            Routes.channelPermission(channelSymbol, id),
+                            Routes.channelPermission(channelId, id),
                             { type, deny, allow },
                             flags.token
                           );

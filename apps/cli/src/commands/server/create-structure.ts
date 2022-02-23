@@ -1,31 +1,20 @@
-import { Flags } from "@oclif/core";
 import { Routes, ChannelType } from "discord-api-types/v9";
 import Listr from "listr";
-import { Command } from "../../lib";
 import { structure } from "manifest";
-import _ from "discord.js";
-import { json, resolvableToOverwrite } from "../../utils";
 import { CategorySymbol, ChannelSymbol } from "types";
+import Config from "app-config";
+import { Command } from "../../lib";
+import { json, resolvableToOverwrite } from "../../utils";
 
 export default class CreateStructure extends Command {
   static description = "Create categories and channels";
 
-  static flags = {
-    id: Flags.string({
-      description: "The id of the server",
-      required: true,
-    }),
-    token: Flags.string({
-      description: "The authentication token",
-      required: true,
-    }),
-  };
-
   async run(): Promise<void> {
-    const { flags } = await this.parse(CreateStructure);
-
     const CATEGORY_IDS: Partial<Record<CategorySymbol, string>> = {};
     const CHANNEL_IDS: Partial<Record<ChannelSymbol, string>> = {};
+
+    const guildId = Config.general("GUILD_ID");
+    const token = Config.botToken("ADMIN");
 
     const listr = new Listr(
       structure.map((category) => {
@@ -33,7 +22,7 @@ export default class CreateStructure extends Command {
           title: `Category: ${category.name}`,
           task: async () => {
             const res = await this.post(
-              Routes.guildChannels(flags["id"]),
+              Routes.guildChannels(guildId),
               {
                 type: ChannelType.GuildCategory,
                 name: category.name,
@@ -41,7 +30,7 @@ export default class CreateStructure extends Command {
                   resolvableToOverwrite
                 ),
               },
-              flags.token
+              token
             );
 
             CATEGORY_IDS[category.symbol] = res.data.id;
@@ -52,7 +41,7 @@ export default class CreateStructure extends Command {
                   title: channel.name,
                   task: async () => {
                     const r = await this.post(
-                      Routes.guildChannels(flags["id"]),
+                      Routes.guildChannels(guildId),
                       {
                         type: ChannelType.GuildText,
                         name: channel.name,
@@ -62,7 +51,7 @@ export default class CreateStructure extends Command {
                           : channel
                         ).permissionOverwrites.map(resolvableToOverwrite),
                       },
-                      flags.token
+                      token
                     );
 
                     CHANNEL_IDS[channel.symbol] = r.data.id;
@@ -75,7 +64,7 @@ export default class CreateStructure extends Command {
                           return this.put(
                             Routes.channelPermission(r.data.id, id),
                             { type, deny, allow },
-                            flags.token
+                            token
                           );
                         })
                       );
