@@ -197,14 +197,8 @@ export default class AllyCommandController extends CommandController {
         components: [],
       });
 
-      // const member = await ally.getMember(i.user.id);
-
-      // const e: ItemEatenEvent = {
-      //   event: "ITEM_EATEN",
-      //   data: { member, item: item },
-      // };
-
-      // this.emit("WORLD_EVENT", e);
+      const user = await getUser(i.user.id);
+      Events.emit("ITEM_EATEN", { user, item });
 
       return;
     }

@@ -57,6 +57,10 @@ export default class Runner {
       WorldNotifier.inventoryChecked(e);
     });
 
+    Events.on("ITEM_EATEN", (e) => {
+      WorldNotifier.itemEaten(e);
+    });
+
     Events.on("MEMBER_VERIFIED", (e) => {
       WorldNotifier.memberVerified(e);
     });

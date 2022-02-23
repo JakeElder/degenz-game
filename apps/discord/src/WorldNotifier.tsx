@@ -106,4 +106,13 @@ export default class WorldNotifier {
     );
     await this.logToHOP("BIG_BROTHER", e.type, message);
   }
+
+  static async itemEaten(e: Event<"ITEM_EATEN">) {
+    const message = r(
+      <>
+        **{e.data.user.displayName}** ate **{e.data.item.name}**.
+      </>
+    );
+    await this.logToHOP("BIG_BROTHER", e.type, message);
+  }
 }

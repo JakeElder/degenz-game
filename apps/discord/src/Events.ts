@@ -2,7 +2,7 @@ import { CommandInteraction, GuildBasedChannel, GuildMember } from "discord.js";
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
 import { Bot } from "types";
-import { User } from "db";
+import { User, MartItem } from "db";
 
 export type Event<T extends string, D> = {
   [P in T]: (e: { type: T; data: D }) => void;
@@ -54,6 +54,8 @@ type InventoryCheckedEvent = Event<
   { checker: User; checkee: User }
 >;
 
+type ItemEatenEvent = Event<"ITEM_EATEN", { user: User; item: MartItem }>;
+
 export type Events = BotReadyEvent &
   CommandNotFoundEvent &
   CommandNotImplementedEvent &
@@ -63,7 +65,8 @@ export type Events = BotReadyEvent &
   StatsCheckedEvent &
   MemberVerifiedEvent &
   AllegiancePledgedEvent &
-  InventoryCheckedEvent;
+  InventoryCheckedEvent &
+  ItemEatenEvent;
 
 class DegenEventEmitter extends (EventEmitter as new () => TypedEmitter<Events>) {
   // @ts-ignore
