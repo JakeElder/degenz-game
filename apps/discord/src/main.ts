@@ -2,6 +2,7 @@ import cleanup from "node-cleanup";
 import PrettyError from "pretty-error";
 import Config from "app-config";
 import { connect, disconnect } from "db";
+import Utils from "./Utils";
 import Runner from "./Runner";
 import * as bots from "./bots";
 import { Global } from "./Global";
@@ -10,11 +11,12 @@ const pe = new PrettyError();
 
 ["uncaughtException", "unhandledRejection"].forEach((e) =>
   process.on(e, (e) => {
+    Utils.rollbar.error(e);
     console.error(pe.render(e));
   })
 );
 
-cleanup(function (_, signal) {
+cleanup((_, signal) => {
   if (signal) {
     if (runner) {
       runner.destroy();
