@@ -18,8 +18,8 @@ export class NPC extends BaseEntity {
   @Index({ unique: true })
   symbol: BotSymbol;
 
-  @Column()
-  defaultEmojiId: string;
+  @Column({ type: "varchar", nullable: true })
+  defaultEmojiId: string | null;
 
   @Column({ default: true, nullable: true })
   enabled: boolean;

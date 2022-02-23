@@ -1,6 +1,7 @@
 import { Command as OclifCommand } from "@oclif/core";
 import axios, { AxiosResponse } from "axios";
 import delay from "delay";
+import Listr from "Listr";
 import { json } from "../utils";
 
 const http = axios.create({
@@ -22,19 +23,16 @@ export default abstract class Command extends OclifCommand {
     }
   }
 
-  async delete(route: string, token: string) {
-    return http({
-      method: "DELETE",
-      url: route,
-      headers: { Authorization: `Bot ${token}` },
-    });
+  async delete(route: string, token: string, task: Listr.ListrTaskWrapper) {
+    return this.req(route, null, token, "DELETE", task);
   }
 
-  async push(
+  async req(
     route: string,
     data: any,
     token: string,
-    method: "PUT" | "POST" | "PATCH"
+    method: "PUT" | "POST" | "PATCH" | "DELETE",
+    task?: Listr.ListrTaskWrapper
   ): Promise<AxiosResponse<any, any>> {
     const res = await http({
       method,
@@ -45,7 +43,25 @@ export default abstract class Command extends OclifCommand {
     });
 
     if (res.status === 429) {
-      this.debug(`Waiting ${res.data.retry_after + 2} seconds`);
+      const wait = res.data.retry_after + 2;
+      let delta = 0;
+
+      if (task) {
+        const update = () =>
+          (task.output = `RATE_LIMITED: Waiting ${Math.round(
+            wait - delta
+          )} seconds`);
+        const i = setInterval(() => {
+          update();
+          delta += 1;
+          if (wait - delta < 1) {
+            clearInterval(i);
+          }
+        }, 1000);
+        update();
+      }
+
+      this.debug(`RATE_LIMITED: ${Math.round(wait)} seconds`);
       await delay((res.data.retry_after + 2) * 1000);
       return this.patch(route, data, token);
     }
@@ -58,15 +74,30 @@ export default abstract class Command extends OclifCommand {
     return res;
   }
 
-  async patch(route: string, data: any, token: string) {
-    return this.push(route, data, token, "PATCH");
+  async patch(
+    route: string,
+    data: any,
+    token: string,
+    task: Listr.ListrTaskWrapper
+  ) {
+    return this.req(route, data, token, "PATCH");
   }
 
-  async put(route: string, data: any, token: string) {
-    return this.push(route, data, token, "PUT");
+  async put(
+    route: string,
+    data: any,
+    token: string,
+    task?: Listr.ListrTaskWrapper
+  ) {
+    return this.req(route, data, token, "PUT", task);
   }
 
-  async post(route: string, data: any, token: string) {
-    return this.push(route, data, token, "POST");
+  async post(
+    route: string,
+    data: any,
+    token: string,
+    task?: Listr.ListrTaskWrapper
+  ) {
+    return this.req(route, data, token, "POST", task);
   }
 }

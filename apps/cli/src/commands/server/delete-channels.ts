@@ -26,10 +26,14 @@ export default class DeleteChannels extends Command {
       res.data.map((c: any) => {
         return {
           title: c.name,
-          task: async () => {
-            await this.delete(Routes.channel(c.id), Config.botToken("ADMIN"));
+          task: async (_, task) => {
+            await this.delete(
+              Routes.channel(c.id),
+              Config.botToken("ADMIN"),
+              task
+            );
           },
-        };
+        } as Listr.ListrTask;
       }),
       { concurrent: true }
     );

@@ -17,10 +17,10 @@ export default class CreateStructure extends Command {
     const token = Config.botToken("ADMIN");
 
     const listr = new Listr(
-      structure.map((category) => {
+      structure.map<Listr.ListrTask>((category) => {
         return {
           title: `Category: ${category.name}`,
-          task: async () => {
+          task: async (_, task) => {
             const res = await this.post(
               Routes.guildChannels(guildId),
               {
@@ -30,16 +30,17 @@ export default class CreateStructure extends Command {
                   resolvableToOverwrite
                 ),
               },
-              token
+              token,
+              task
             );
 
             CATEGORY_IDS[category.symbol] = res.data.id;
 
             return new Listr(
-              category.channels.map((channel) => {
+              category.channels.map<Listr.ListrTask>((channel) => {
                 return {
                   title: channel.name,
-                  task: async () => {
+                  task: async (_, task) => {
                     const r = await this.post(
                       Routes.guildChannels(guildId),
                       {
@@ -51,7 +52,8 @@ export default class CreateStructure extends Command {
                           : channel
                         ).permissionOverwrites.map(resolvableToOverwrite),
                       },
-                      token
+                      token,
+                      task
                     );
 
                     CHANNEL_IDS[channel.symbol] = r.data.id;
@@ -64,7 +66,8 @@ export default class CreateStructure extends Command {
                           return this.put(
                             Routes.channelPermission(r.data.id, id),
                             { type, deny, allow },
-                            token
+                            token,
+                            task
                           );
                         })
                       );

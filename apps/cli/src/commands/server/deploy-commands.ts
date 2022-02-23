@@ -1,4 +1,3 @@
-import { Flags } from "@oclif/core";
 import { Routes } from "discord-api-types/v9";
 import { bots } from "manifest";
 import Listr from "listr";
@@ -8,21 +7,14 @@ import { Command } from "../../lib";
 export default class DeployCommands extends Command {
   static description = "Deploy application commands";
 
-  static flags = {
-    id: Flags.string({
-      description: "The id of the server",
-      required: true,
-    }),
-  };
-
   async run(): Promise<void> {
-    const { flags } = await this.parse(DeployCommands);
+    const guildId = Config.general("GUILD_ID");
 
     const listr = new Listr(
-      bots.map((bot) => {
+      bots.map<Listr.ListrTask>((bot) => {
         return {
           title: bot.name,
-          task: async () => {
+          task: async (_, task) => {
             const data = bot.commands.map((command) => ({
               ...command.data,
               default_permission: command.permissions.length === 0,
@@ -31,10 +23,11 @@ export default class DeployCommands extends Command {
             const res = await this.put(
               Routes.applicationGuildCommands(
                 Config.clientId(bot.symbol),
-                flags["id"]
+                guildId
               ),
               data,
-              Config.botToken(bot.symbol)
+              Config.botToken(bot.symbol),
+              task
             );
 
             if (res.status === 200) {
@@ -46,11 +39,12 @@ export default class DeployCommands extends Command {
                   return this.put(
                     Routes.applicationCommandPermissions(
                       Config.clientId(bot.symbol),
-                      flags["id"],
+                      guildId,
                       res.data[idx].id
                     ),
                     { permissions: bot.commands[idx].permissions },
-                    Config.botToken(bot.symbol)
+                    Config.botToken(bot.symbol),
+                    task
                   );
                 })
               );
@@ -58,7 +52,7 @@ export default class DeployCommands extends Command {
           },
         };
       }),
-      { concurrent: true }
+      { exitOnError: false, concurrent: true }
     );
 
     await listr.run();

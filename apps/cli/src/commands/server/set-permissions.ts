@@ -1,4 +1,3 @@
-import { Flags } from "@oclif/core";
 import { Routes } from "discord-api-types/v9";
 import Listr from "listr";
 import { Command } from "../../lib";
@@ -9,21 +8,14 @@ import { resolvableToOverwrite } from "../../utils";
 export default class SetPermissions extends Command {
   static description = "Set category and channel permissions";
 
-  static flags = {
-    token: Flags.string({
-      description: "The authentication token",
-      required: true,
-    }),
-  };
-
   async run(): Promise<void> {
-    const { flags } = await this.parse(SetPermissions);
+    const token = Config.botToken("ADMIN");
 
     const listr = new Listr(
-      structure.map((category) => {
+      structure.map<Listr.ListrTask>((category) => {
         return {
           title: `Category: ${category.name}`,
-          task: async () => {
+          task: async (_, task) => {
             const categoryId = Config.categoryId(category.symbol);
             await this.patch(
               Routes.channel(categoryId),
@@ -32,14 +24,15 @@ export default class SetPermissions extends Command {
                   resolvableToOverwrite
                 ),
               },
-              flags.token
+              token,
+              task
             );
 
             return new Listr(
-              category.channels.map((channel) => {
+              category.channels.map<Listr.ListrTask>((channel) => {
                 return {
                   title: channel.name,
-                  task: async () => {
+                  task: async (_, ctx) => {
                     const channelId = Config.channelId(channel.symbol);
 
                     await this.patch(
@@ -50,7 +43,8 @@ export default class SetPermissions extends Command {
                           : channel
                         ).permissionOverwrites.map(resolvableToOverwrite),
                       },
-                      flags.token
+                      token,
+                      task
                     );
 
                     if (channel.lockPermissions) {
@@ -61,7 +55,8 @@ export default class SetPermissions extends Command {
                           return this.put(
                             Routes.channelPermission(channelId, id),
                             { type, deny, allow },
-                            flags.token
+                            token,
+                            task
                           );
                         })
                       );
