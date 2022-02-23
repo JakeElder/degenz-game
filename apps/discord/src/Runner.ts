@@ -53,6 +53,10 @@ export default class Runner {
       WorldNotifier.statsChecked(e);
     });
 
+    Events.on("INVENTORY_CHECKED", (e) => {
+      WorldNotifier.inventoryChecked(e);
+    });
+
     Events.on("MEMBER_VERIFIED", (e) => {
       WorldNotifier.memberVerified(e);
     });

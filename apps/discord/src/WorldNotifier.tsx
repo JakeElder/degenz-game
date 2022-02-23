@@ -80,6 +80,23 @@ export default class WorldNotifier {
     await this.logToHOP("ALLY", e.type, message);
   }
 
+  static async inventoryChecked(e: Event<"INVENTORY_CHECKED">) {
+    let message: string;
+    if (e.data.checker.id === e.data.checkee.id) {
+      message = r(
+        <>**{e.data.checker.displayName}** checked their inventory.</>
+      );
+    } else {
+      message = r(
+        <>
+          **{e.data.checker.displayName}** checked **
+          {e.data.checkee.displayName}**'s inventory.
+        </>
+      );
+    }
+    await this.logToHOP("ALLY", e.type, message);
+  }
+
   static async allegiancePledged(e: Event<"ALLEGIANCE_PLEDGED">) {
     const message = r(
       <>

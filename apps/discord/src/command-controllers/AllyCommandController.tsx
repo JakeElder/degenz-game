@@ -162,31 +162,27 @@ export default class AllyCommandController extends CommandController {
   }
 
   async inventory(i: CommandInteraction) {
-    let member = i.options.getMember("name") as null | GuildMember;
-    // let ownInventory = false;
+    const checker = i.member as GuildMember;
+    let checkee = i.options.getMember("name") as null | GuildMember;
 
-    if (!member) {
-      // ownInventory = true;
-      member = i.member as GuildMember;
+    if (!checkee) {
+      checkee = checker;
     }
 
-    const user = await getUser(member.id);
+    const users = await Promise.all([getUser(checker.id), getUser(checkee.id)]);
 
-    if (user === null) {
+    if (users[1] === null) {
       await i.reply({ content: "Citizen not found", ephemeral: true });
       return;
     }
 
-    const e = makeInventoryEmbed(await getMartItems(), user, member);
+    const e = makeInventoryEmbed(await getMartItems(), users[1], checkee);
     await i.reply({ embeds: [e], ephemeral: true });
 
-    // this.emit("WORLD_EVENT", {
-    //   event: "INVENTORY_CHECKED",
-    //   data: {
-    //     member: i.member as GuildMember,
-    //     checkee: ownInventory ? null : member,
-    //   },
-    // });
+    Events.emit("INVENTORY_CHECKED", {
+      checker: users[0],
+      checkee: users[1],
+    });
   }
 
   async handleFoodSelect(i: SelectMenuInteraction) {
