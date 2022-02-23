@@ -73,6 +73,10 @@ export default class Runner {
       WorldNotifier.martItemBought(e);
     });
 
+    Events.on("TOSS_COMPLETED", (e) => {
+      WorldNotifier.tossCompleted(e);
+    });
+
     Events.on("ALLEGIANCE_PLEDGED", (e) => {
       WorldNotifier.allegiancePledged(e);
     });

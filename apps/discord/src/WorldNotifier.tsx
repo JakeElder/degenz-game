@@ -7,7 +7,7 @@ import { Events } from "./Events";
 import { Global } from "./Global";
 import Utils from "./Utils";
 import { Format } from "lib";
-import { channelMention } from "@discordjs/builders";
+import { channelMention, userMention } from "@discordjs/builders";
 
 const { r } = Utils;
 
@@ -133,6 +133,31 @@ export default class WorldNotifier {
         **{e.data.user.displayName}** bought **{e.data.item.name}**.
       </>
     );
+    await this.logToHOP("MART_CLERK", e.type, message);
+  }
+
+  static async tossCompleted(e: Event<"TOSS_COMPLETED">) {
+    let message: string;
+    if (e.data.challengee === "HOUSE") {
+      message = r(
+        <>
+          **{e.data.challenger.displayName}** challenged{" "}
+          {userMention(Config.clientId("TOSSER"))} and **
+          {e.data.game.winner === "CHALLENGER" ? "won" : "lost"}**{" "}
+          {Format.currency(e.data.game.amount)}.
+        </>
+      );
+    } else {
+      message = r(
+        <>
+          **{e.data.challenger.displayName}** challenged **
+          {e.data.challengee.displayName}** and **
+          {e.data.game.winner === "CHALLENGER" ? "won" : "lost"}**{" "}
+          {Format.currency(e.data.game.amount)}.
+        </>
+      );
+    }
+
     await this.logToHOP("MART_CLERK", e.type, message);
   }
 }

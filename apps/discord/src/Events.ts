@@ -3,6 +3,7 @@ import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
 import { Bot } from "types";
 import { User, MartItem } from "db";
+import { TossGame } from "./legacy/types";
 
 export type Event<T extends string, D> = {
   [P in T]: (e: { type: T; data: D }) => void;
@@ -92,6 +93,15 @@ type ItemEatenEvent = Event<
   }
 >;
 
+type TossCompletedEvent = Event<
+  "TOSS_COMPLETED",
+  {
+    challenger: User;
+    challengee: User | "HOUSE";
+    game: TossGame;
+  }
+>;
+
 export type Events = BotReadyEvent &
   CommandNotFoundEvent &
   CommandNotImplementedEvent &
@@ -104,7 +114,8 @@ export type Events = BotReadyEvent &
   InventoryCheckedEvent &
   ItemEatenEvent &
   MartStockCheckedEvent &
-  MartItemBoughtEvent;
+  MartItemBoughtEvent &
+  TossCompletedEvent;
 
 class DegenEventEmitter extends (EventEmitter as new () => TypedEmitter<Events>) {
   // @ts-ignore

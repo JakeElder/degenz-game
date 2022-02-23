@@ -20,6 +20,7 @@ import {
   TossChoiceTimeoutPrompt,
 } from "../legacy/templates";
 import { userMention } from "@discordjs/builders";
+import Events from "../Events";
 
 const { r } = Utils;
 
@@ -164,7 +165,11 @@ export default class TossController {
         ephemeral: true,
       });
 
-      // this.emit("WORLD_EVENT", { event: "TOSS_COMPLETED", data: g });
+      Events.emit("TOSS_COMPLETED", {
+        challenger: g.challenger.user,
+        challengee: "HOUSE",
+        game: g,
+      });
       return { success: true, data: { game: g } };
     }
 
@@ -327,7 +332,11 @@ export default class TossController {
       }),
     ]);
 
-    // this.emit("WORLD_EVENT", { event: "TOSS_COMPLETED", data: g });
+    Events.emit("TOSS_COMPLETED", {
+      challenger: g.challenger.user,
+      challengee: g.challengee.user,
+      game: g,
+    });
     return { success: true, data: { game: g } };
   }
 
