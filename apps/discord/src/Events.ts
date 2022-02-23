@@ -8,7 +8,12 @@ export type Event<T extends string, D> = {
   [P in T]: (e: { type: T; data: D }) => void;
 };
 
-type BotReadyEvent = Event<"BOT_READY", { bot: Bot }>;
+type BotReadyEvent = Event<
+  "BOT_READY",
+  {
+    bot: Bot;
+  }
+>;
 
 type CommandNotFoundEvent = Event<
   "COMMAND_NOT_FOUND",
@@ -32,12 +37,25 @@ type SendMessageAsExecutedEvent = Event<
 
 type ApartmentAllocatedEvent = Event<
   "APARTMENT_ALLOCATED",
-  { user: User; onboard: boolean }
+  {
+    user: User;
+    onboard: boolean;
+  }
 >;
 
-type BalanceCheckedEvent = Event<"BALANCE_CHECKED", { user: User }>;
+type BalanceCheckedEvent = Event<
+  "BALANCE_CHECKED",
+  {
+    user: User;
+  }
+>;
 
-type MemberVerifiedEvent = Event<"MEMBER_VERIFIED", { member: GuildMember }>;
+type MemberVerifiedEvent = Event<
+  "MEMBER_VERIFIED",
+  {
+    member: GuildMember;
+  }
+>;
 
 type StatsCheckedEvent = Event<
   "STATS_CHECKED",
@@ -54,7 +72,18 @@ type InventoryCheckedEvent = Event<
   { checker: User; checkee: User }
 >;
 
-type ItemEatenEvent = Event<"ITEM_EATEN", { user: User; item: MartItem }>;
+type MartItemBoughtEvent = Event<
+  "MART_ITEM_BOUGHT",
+  { user: User; item: MartItem }
+>;
+
+type ItemEatenEvent = Event<
+  "ITEM_EATEN",
+  {
+    user: User;
+    item: MartItem;
+  }
+>;
 
 export type Events = BotReadyEvent &
   CommandNotFoundEvent &
@@ -66,7 +95,8 @@ export type Events = BotReadyEvent &
   MemberVerifiedEvent &
   AllegiancePledgedEvent &
   InventoryCheckedEvent &
-  ItemEatenEvent;
+  ItemEatenEvent &
+  MartItemBoughtEvent;
 
 class DegenEventEmitter extends (EventEmitter as new () => TypedEmitter<Events>) {
   // @ts-ignore

@@ -7,8 +7,9 @@ import {
 } from "discord.js";
 import { Format } from "lib";
 import { CommandController } from "../CommandController";
-import { getMartItems, sellItem } from "../legacy/db";
+import { getMartItems, getUser, sellItem } from "../legacy/db";
 import { MartItem } from "db";
+import Events from "../Events";
 
 export default class MartClerkCommandController extends CommandController {
   async stock(i: CommandInteraction) {
@@ -81,6 +82,9 @@ export default class MartClerkCommandController extends CommandController {
     }
 
     const res = await sellItem(item, i.user.id);
+
+    const user = await getUser(i.user.id);
+    Events.emit("MART_ITEM_BOUGHT", { user, item });
 
     if (res.success) {
       await i.update({

@@ -65,6 +65,10 @@ export default class Runner {
       WorldNotifier.memberVerified(e);
     });
 
+    Events.on("MART_ITEM_BOUGHT", (e) => {
+      WorldNotifier.martItemBought(e);
+    });
+
     Events.on("ALLEGIANCE_PLEDGED", (e) => {
       WorldNotifier.allegiancePledged(e);
     });

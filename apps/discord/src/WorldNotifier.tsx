@@ -113,6 +113,15 @@ export default class WorldNotifier {
         **{e.data.user.displayName}** ate **{e.data.item.name}**.
       </>
     );
-    await this.logToHOP("BIG_BROTHER", e.type, message);
+    await this.logToHOP("ALLY", e.type, message);
+  }
+
+  static async martItemBought(e: Event<"MART_ITEM_BOUGHT">) {
+    const message = r(
+      <>
+        **{e.data.user.displayName}** bought **{e.data.item.name}**.
+      </>
+    );
+    await this.logToHOP("MART_CLERK", e.type, message);
   }
 }
