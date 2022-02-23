@@ -7,6 +7,7 @@ import { Events } from "./Events";
 import { Global } from "./Global";
 import Utils from "./Utils";
 import { Format } from "lib";
+import { channelMention } from "@discordjs/builders";
 
 const { r } = Utils;
 
@@ -114,6 +115,16 @@ export default class WorldNotifier {
       </>
     );
     await this.logToHOP("ALLY", e.type, message);
+  }
+
+  static async martStockChecked(e: Event<"MART_STOCK_CHECKED">) {
+    const message = r(
+      <>
+        **{e.data.user.displayName}** checked the stock at{" "}
+        {channelMention(Config.channelId("MART"))}.
+      </>
+    );
+    await this.logToHOP("MART_CLERK", e.type, message);
   }
 
   static async martItemBought(e: Event<"MART_ITEM_BOUGHT">) {

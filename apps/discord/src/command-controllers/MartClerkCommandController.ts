@@ -35,13 +35,8 @@ export default class MartClerkCommandController extends CommandController {
       ephemeral: true,
     });
 
-    // const martClerk = runner.get("MART_CLERK");
-    // const member = await martClerk.getMember(i.user.id);
-
-    // this.emit("WORLD_EVENT", {
-    //   event: "MART_STOCK_CHECKED",
-    //   data: { member },
-    // });
+    const user = await getUser(i.user.id);
+    Events.emit("MART_STOCK_CHECKED", { user });
   }
 
   async buy(i: CommandInteraction) {

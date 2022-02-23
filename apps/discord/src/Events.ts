@@ -72,6 +72,13 @@ type InventoryCheckedEvent = Event<
   { checker: User; checkee: User }
 >;
 
+type MartStockCheckedEvent = Event<
+  "MART_STOCK_CHECKED",
+  {
+    user: User;
+  }
+>;
+
 type MartItemBoughtEvent = Event<
   "MART_ITEM_BOUGHT",
   { user: User; item: MartItem }
@@ -96,6 +103,7 @@ export type Events = BotReadyEvent &
   AllegiancePledgedEvent &
   InventoryCheckedEvent &
   ItemEatenEvent &
+  MartStockCheckedEvent &
   MartItemBoughtEvent;
 
 class DegenEventEmitter extends (EventEmitter as new () => TypedEmitter<Events>) {
