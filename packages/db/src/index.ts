@@ -59,9 +59,9 @@ export async function connect(url: string) {
 
   connection = await createConnection(options);
 
-  if (process.env.SEED) {
-    await seed();
-  }
+  // if (process.env.SEED) {
+  await seed();
+  // }
 
   // await connection.query("DROP TABLE user CASCADE");
 
@@ -212,27 +212,28 @@ export async function connect(url: string) {
 async function seed() {
   await Promise.all([
     NPC.insert([
-      { symbol: "ALLY", defaultEmojiId: "<:ivan:944574023319294012>" },
+      { symbol: "ADMIN", defaultEmojiId: "-" },
+      { symbol: "ALLY", defaultEmojiId: "-" },
       {
         symbol: "ARMORY_CLERK",
-        defaultEmojiId: "<:private_willy:944574023264788480>",
+        defaultEmojiId: "-",
       },
       {
         symbol: "BANKER",
-        defaultEmojiId: "<:banker_beatrice:944574023294156820>",
+        defaultEmojiId: "-",
       },
       {
         symbol: "BIG_BROTHER",
-        defaultEmojiId: "<:big_brother:944574023331905556>",
+        defaultEmojiId: "-",
       },
-      { symbol: "MART_CLERK", defaultEmojiId: "<:merris:944574022987968593>" },
+      { symbol: "MART_CLERK", defaultEmojiId: "-" },
       {
         symbol: "PRISONER",
-        defaultEmojiId: "<:hugh_donie:944574023185076244>",
+        defaultEmojiId: "-",
       },
-      { symbol: "SENSEI", defaultEmojiId: "<:sensei:944574022945996801>" },
-      { symbol: "TOSSER", defaultEmojiId: "<:tosser_ted:944574022769848320>" },
-      { symbol: "WARDEN", defaultEmojiId: "<:walden:944574022899867679>" },
+      { symbol: "SENSEI", defaultEmojiId: "-" },
+      { symbol: "TOSSER", defaultEmojiId: "-" },
+      { symbol: "WARDEN", defaultEmojiId: "-" },
     ]),
 
     Achievement.insert(
@@ -275,52 +276,52 @@ async function seed() {
       {
         symbol: DistrictSymbol.PROJECTS_D1,
         open: false,
-        emoji: "<:D1:944296515919302656>",
-        activeEmoji: "<:D1A:944296515545997372>",
-        inactiveEmoji: "<:D1I:944296515487285268>",
+        emoji: "-",
+        activeEmoji: "-",
+        inactiveEmoji: "-",
       },
       {
         symbol: DistrictSymbol.PROJECTS_D2,
         open: false,
-        emoji: "<:D2:944296515512467548>",
-        activeEmoji: "<:D2A:944296515797663814>",
-        inactiveEmoji: "<:D2I:944296515109789697>",
+        emoji: "-",
+        activeEmoji: "-",
+        inactiveEmoji: "-",
       },
       {
         symbol: DistrictSymbol.PROJECTS_D3,
         open: false,
-        emoji: "<:D3:944296515734732820>",
-        activeEmoji: "<:D3A:944296515365634108>",
-        inactiveEmoji: "<:D3I:944296515374055475>",
+        emoji: "-",
+        activeEmoji: "-",
+        inactiveEmoji: "-",
       },
       {
         symbol: DistrictSymbol.PROJECTS_D4,
         open: false,
-        emoji: "<:D4:944324717811208254>",
-        activeEmoji: "<:D4A:944322981788803163>",
-        inactiveEmoji: "<:D4I:944322981432295434>",
+        emoji: "-",
+        activeEmoji: "-",
+        inactiveEmoji: "-",
       },
       {
         symbol: DistrictSymbol.PROJECTS_D5,
         open: false,
-        emoji: "<:D5:944324717882523698>",
-        activeEmoji: "<:D5A:944322981650387004>",
-        inactiveEmoji: "<:D5I:944322981298069545>",
+        emoji: "-",
+        activeEmoji: "-",
+        inactiveEmoji: "-",
       },
       {
         symbol: DistrictSymbol.PROJECTS_D6,
         open: false,
-        emoji: "<:D6:944324717840564335>",
-        activeEmoji: "<:D6A:944322981193216091>",
-        inactiveEmoji: "<:D6I:944322981235155016>",
+        emoji: "-",
+        activeEmoji: "-",
+        inactiveEmoji: "-",
       },
     ]),
 
     AppState.insert([
       {
-        entryMessageId: "944434734686167080",
-        verifyMessageId: "944508874256420896",
-        leaderboardMessageId: "944541218405240892",
+        entryMessageId: "-",
+        verifyMessageId: "933958426898337802",
+        leaderboardMessageId: "935854598181228545",
       },
     ]),
   ]);

@@ -203,7 +203,7 @@ const structure: Category[] = [
       },
       {
         symbol: "HALL_OF_ALLEIGANCE",
-        name: "\u2ff4\uff5chall-of-allegiance",
+        name: "\u04A7\uff5chall-of-allegiance",
         lockPermissions: true,
         permissionOverwrites: READ_ONLY,
       },
