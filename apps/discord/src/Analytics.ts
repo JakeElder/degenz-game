@@ -63,6 +63,27 @@ export default class Analytics {
     });
   }
 
+  static gbtTransferred(e: Event<"GBT_TRANSFERRED">) {
+    this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
+      distinct_id: e.data.sender.discordId,
+      recipient: e.data.recipient.discordId,
+      amount: e.data.amount,
+    });
+  }
+
+  static martStockChecked(e: Event<"MART_STOCK_CHECKED">) {
+    this.generic(capitalCase("MART_STOCK_CHECKED"), e.data.user.discordId);
+  }
+
+  static martItemBought(e: Event<"MART_ITEM_BOUGHT">) {
+    this.mixpanel.track(capitalCase("MART_ITEM_PURCHASED"), {
+      distinct_id: e.data.user.discordId,
+      item: e.data.item.name,
+      price: e.data.item.price,
+    });
+  }
+
   // logToMixpanel(e: WorldEventMessage) {
   //   const mixPanelEvents: WorldEventId[] = [
   //     "VERIFY", X
@@ -71,8 +92,8 @@ export default class Analytics {
   //     "HELP_REQUESTED", X
   //     "STATS_CHECKED", X
   //     "BALANCE_CHECKED", X
-  //     "TOKEN_TRANSFER",
-  //     "MART_STOCK_CHECKED",
+  //     "TOKEN_TRANSFER", X
+  //     "MART_STOCK_CHECKED", X
   //     "MART_ITEM_PURCHASED",
   //     "ITEM_EATEN",
   //     "INVENTORY_CHECKED",

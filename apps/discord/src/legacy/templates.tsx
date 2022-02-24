@@ -89,7 +89,7 @@ export const TransferSuccessfulReply = ({
 }) => (
   <>
     Transferred {Format.currency(amount)} to <User id={recipient.id} />. How
-    nice of you. {Format.transaction(balance + amount, amount)}
+    nice of you. {Format.transaction(balance + amount, -amount)}
   </>
 );
 

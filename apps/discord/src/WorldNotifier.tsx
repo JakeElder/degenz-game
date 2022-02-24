@@ -58,6 +58,20 @@ export default class WorldNotifier {
     ]);
   }
 
+  static async gbtTransferred(e: Event<"GBT_TRANSFERRED">) {
+    const message = r(
+      <>
+        **{e.data.sender.displayName}** transferred{" "}
+        {Format.currency(e.data.amount)} to **{e.data.recipient.displayName}**.
+      </>
+    );
+
+    await Promise.all([
+      this.logToHOP("BANKER", e.type, message),
+      this.logToChannel("BANK", "BANKER", e.type, message),
+    ]);
+  }
+
   static async memberVerified(e: Event<"MEMBER_VERIFIED">) {
     await this.logToHOP(
       "BIG_BROTHER",

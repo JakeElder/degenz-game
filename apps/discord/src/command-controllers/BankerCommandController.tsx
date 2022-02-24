@@ -38,20 +38,12 @@ export default class BankerCommandController extends CommandController {
 
     // Retrieve recipient info from Db
     const [sender, recipient] = await Promise.all([
-      (await getUser(i.user.id))!,
+      await getUser(i.user.id),
       await getUser(o.recipient.id),
     ]);
 
     // Handle missing recipient
     if (recipient === null) {
-      // emit("TRANSFER", {
-      //   result: "FAIL",
-      //   error: "RECIPIENT_NOT_FOUND",
-      //   recipient: o.recipient,
-      //   amount: o.amount,
-      //   sender: i.guild!.members.cache.get(i.user.id) as GuildMember,
-      // });
-
       await i.reply({
         content: `${userMention(o.recipient.id)}?`,
         ephemeral: true,
@@ -68,14 +60,6 @@ export default class BankerCommandController extends CommandController {
 
     // Handle insufficient balance
     if (o.amount > sender.gbt) {
-      // emit("TRANSFER", {
-      //   result: "FAIL",
-      //   error: "INSUFFICIENT_BALANCE",
-      //   recipient: o.recipient,
-      //   amount: o.amount,
-      //   sender: i.guild!.members.cache.get(i.user.id) as GuildMember,
-      // });
-
       await i.reply({
         content: r(
           <InsufficientFundsTransferReply
@@ -112,6 +96,6 @@ export default class BankerCommandController extends CommandController {
     // };
 
     // this.postTransferResult(e);
-    // this.emit("WORLD_EVENT", e);
+    Events.emit("GBT_TRANSFERRED", { sender, recipient, amount: o.amount });
   }
 }

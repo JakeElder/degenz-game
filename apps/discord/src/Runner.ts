@@ -79,10 +79,12 @@ export default class Runner {
 
     Events.on("MART_STOCK_CHECKED", (e) => {
       WorldNotifier.martStockChecked(e);
+      Analytics.martStockChecked(e);
     });
 
     Events.on("MART_ITEM_BOUGHT", (e) => {
       WorldNotifier.martItemBought(e);
+      Analytics.martItemBought(e);
     });
 
     Events.on("TOSS_COMPLETED", (e) => {
@@ -101,6 +103,11 @@ export default class Runner {
 
     Events.on("ALLEGIANCE_PLEDGED", (e) => {
       WorldNotifier.allegiancePledged(e);
+    });
+
+    Events.on("GBT_TRANSFERRED", (e) => {
+      WorldNotifier.gbtTransferred(e);
+      Analytics.gbtTransferred(e);
     });
   }
 

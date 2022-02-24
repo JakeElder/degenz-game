@@ -129,6 +129,15 @@ type HelpRequestedEvent = Event<
   }
 >;
 
+type GBTTransferredEvent = Event<
+  "GBT_TRANSFERRED",
+  {
+    sender: User;
+    recipient: User;
+    amount: number;
+  }
+>;
+
 export type Events = BotReadyEvent &
   CommandNotFoundEvent &
   CommandNotImplementedEvent &
@@ -145,7 +154,8 @@ export type Events = BotReadyEvent &
   TossCompletedEvent &
   EnterEvent &
   RedpillTakenEvent &
-  HelpRequestedEvent;
+  HelpRequestedEvent &
+  GBTTransferredEvent;
 
 class DegenEventEmitter extends (EventEmitter as new () => TypedEmitter<Events>) {
   // @ts-ignore
