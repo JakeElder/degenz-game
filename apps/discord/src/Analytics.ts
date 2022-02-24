@@ -116,133 +116,24 @@ export default class Analytics {
     });
   }
 
-  // logToMixpanel(e: WorldEventMessage) {
-  //   const mixPanelEvents: WorldEventId[] = [
-  //     "VERIFY", X
-  //     "OBEY", -X
-  //     "REDPILL", X
-  //     "HELP_REQUESTED", X
-  //     "STATS_CHECKED", X
-  //     "BALANCE_CHECKED", X
-  //     "TOKEN_TRANSFER", X
-  //     "MART_STOCK_CHECKED", X
-  //     "MART_ITEM_PURCHASED", X
-  //     "ITEM_EATEN", X
-  //     "INVENTORY_CHECKED", X
-  //     "TOSS_COMPLETED",
-  //     "FIRST_WORLD_CHOICE",
-  //   ];
+  static firstWorldChoice(e: Event<"FIRST_WORLD_CHOICE">) {
+    this.mixpanel.track(capitalCase(e.type), {
+      distinct_id: e.data.user.discordId,
+      choice: e.data.choice,
+    });
+  }
 
-  //   if (mixPanelEvents.includes(e.event)) {
-  //     if (e.event === "ENTER") {
-  //     }
+  static allegiancePledged(e: Event<"ALLEGIANCE_PLEDGED">) {
+    this.mixpanel.track(capitalCase(e.type), {
+      distinct_id: e.data.user.discordId,
+      yld: e.data.yld,
+    });
+  }
 
-  //     if (e.event === "HELP_REQUESTED") {
-  //       mixpanel.track(capitalCase(e.event), {
-  //         distinct_id: e.data.member.id,
-  //         guild_id: GUILD_ID,
-  //         channel_name: (e.data.channel as TextChannel).name,
-  //         channel_id: e.data.channel.id,
-  //         env: NODE_ENV,
-  //       });
-  //       return;
-  //     }
-
-  //     if (e.event === "BALANCE_CHECKED") {
-  //       mixpanel.track(capitalCase(e.event), {
-  //         distinct_id: e.data.member.id,
-  //         guild_id: GUILD_ID,
-  //         balance: e.data.balance,
-  //         env: NODE_ENV,
-  //       });
-  //       return;
-  //     }
-
-  //     if (e.event === "TOKEN_TRANSFER") {
-  //       mixpanel.track(capitalCase(e.event), {
-  //         distinct_id: e.data.member.id,
-  //         guild_id: GUILD_ID,
-  //         recipient: e.data.recipient.id,
-  //         amount: e.data.amount,
-  //         env: NODE_ENV,
-  //       });
-  //       return;
-  //     }
-
-  //     if (e.event === "MART_ITEM_PURCHASED") {
-  //       mixpanel.track(capitalCase(e.event), {
-  //         distinct_id: e.data.member.id,
-  //         guild_id: GUILD_ID,
-  //         item: e.data.item.name,
-  //         price: e.data.item.price,
-  //         env: NODE_ENV,
-  //       });
-  //       return;
-  //     }
-
-  //     if (e.event === "ITEM_EATEN") {
-  //       mixpanel.track(capitalCase(e.event), {
-  //         distinct_id: e.data.member.id,
-  //         guild_id: GUILD_ID,
-  //         item: e.data.item.name,
-  //         env: NODE_ENV,
-  //       });
-  //       return;
-  //     }
-
-  //     if (e.event === "STATS_CHECKED") {
-  //       mixpanel.track(capitalCase(e.event), {
-  //         distinct_id: e.data.member.id,
-  //         guild_id: GUILD_ID,
-  //         checkee_id: e.data.checkee === null ? null : e.data.checkee.id,
-  //         checkee_name:
-  //           e.data.checkee === null ? null : e.data.checkee.displayName,
-  //         env: NODE_ENV,
-  //       });
-  //       return;
-  //     }
-
-  //     if (e.event === "INVENTORY_CHECKED") {
-  //       mixpanel.track(capitalCase(e.event), {
-  //         distinct_id: e.data.member.id,
-  //         guild_id: GUILD_ID,
-  //         checkee_id: e.data.checkee === null ? null : e.data.checkee.id,
-  //         checkee_name:
-  //           e.data.checkee === null ? null : e.data.checkee.displayName,
-  //         env: NODE_ENV,
-  //       });
-  //       return;
-  //     }
-
-  //     if (e.event === "TOSS_COMPLETED") {
-  //       mixpanel.track(capitalCase(e.event), {
-  //         distinct_id: e.data.member.id,
-  //         guild_id: GUILD_ID,
-  //         challengee_id: e.data.challengee.member.id,
-  //         challengee_name: e.data.challengee.member.displayName,
-  //         amount: e.data.amount,
-  //         winner: e.data.winner,
-  //         result: e.data.result,
-  //         env: NODE_ENV,
-  //       });
-  //       return;
-  //     }
-
-  //     if (e.event === "FIRST_WORLD_CHOICE") {
-  //       mixpanel.track(capitalCase(e.event), {
-  //         distinct_id: e.data.member.id,
-  //         guild_id: GUILD_ID,
-  //         choice: e.data.choice,
-  //         env: NODE_ENV,
-  //       });
-  //       return;
-  //     }
-
-  //     mixpanel.track(capitalCase(e.event), {
-  //       distinct_id: e.data.member.id,
-  //       guild_id: GUILD_ID,
-  //       env: NODE_ENV,
-  //     });
-  //   }
-  // }
+  static gameEntered(e: Event<"GAME_ENTERED">) {
+    this.mixpanel.track(capitalCase(e.type), {
+      distinct_id: e.data.user.discordId,
+      district: e.data.district.symbol,
+    });
+  }
 }

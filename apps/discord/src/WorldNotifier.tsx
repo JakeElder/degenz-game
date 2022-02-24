@@ -199,4 +199,13 @@ export default class WorldNotifier {
     );
     await this.logToHOP("ALLY", e.type, message);
   }
+
+  static async gameEntered(e: Event<"GAME_ENTERED">) {
+    const message = r(
+      <>
+        **{e.data.user.displayName}** entered {e.data.district.inactiveEmoji}.
+      </>
+    );
+    await this.logToHOP("BIG_BROTHER", e.type, message);
+  }
 }

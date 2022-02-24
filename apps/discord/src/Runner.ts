@@ -106,11 +106,21 @@ export default class Runner {
 
     Events.on("ALLEGIANCE_PLEDGED", (e) => {
       WorldNotifier.allegiancePledged(e);
+      Analytics.allegiancePledged(e);
     });
 
     Events.on("GBT_TRANSFERRED", (e) => {
       WorldNotifier.gbtTransferred(e);
       Analytics.gbtTransferred(e);
+    });
+
+    Events.on("GAME_ENTERED", (e) => {
+      WorldNotifier.gameEntered(e);
+      Analytics.gameEntered(e);
+    });
+
+    Events.on("FIRST_WORLD_CHOICE", (e) => {
+      Analytics.firstWorldChoice(e);
     });
   }
 

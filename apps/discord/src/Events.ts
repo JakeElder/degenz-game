@@ -138,6 +138,14 @@ type GBTTransferredEvent = Event<
   }
 >;
 
+type FirstWorldChoiceEvent = Event<
+  "FIRST_WORLD_CHOICE",
+  {
+    user: User;
+    choice: string;
+  }
+>;
+
 export type Events = BotReadyEvent &
   CommandNotFoundEvent &
   CommandNotImplementedEvent &
@@ -155,7 +163,8 @@ export type Events = BotReadyEvent &
   EnterEvent &
   RedpillTakenEvent &
   HelpRequestedEvent &
-  GBTTransferredEvent;
+  GBTTransferredEvent &
+  FirstWorldChoiceEvent;
 
 class DegenEventEmitter extends (EventEmitter as new () => TypedEmitter<Events>) {
   // @ts-ignore

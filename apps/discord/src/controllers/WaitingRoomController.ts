@@ -14,6 +14,7 @@ import { DistrictSymbol } from "types";
 import axios from "axios";
 import { Global } from "../Global";
 import UserController from "./UserController";
+import Events from "../Events";
 
 type EntryData = {
   open: boolean;
@@ -175,6 +176,10 @@ export default class WaitingRoomController {
     );
 
     if (res.success) {
+      Events.emit("GAME_ENTERED", {
+        user: res.user!,
+        district: res.user!.primaryTenancy.district,
+      });
       const user = userMention(i.user.id);
       const channel = channelMention(res.user!.primaryTenancy.discordChannelId);
       await Promise.all([

@@ -12,6 +12,7 @@ import UserController from "./UserController";
 import { FirstActivityReply } from "../legacy/templates";
 import { Global } from "../Global";
 import { In } from "typeorm";
+import Events from "../Events";
 
 const { r } = Utils;
 
@@ -301,10 +302,7 @@ export default class OnboardController {
     });
     i.update({ fetchReply: false });
 
-    // this.emit("WORLD_EVENT", {
-    //   event: "FIRST_WORLD_CHOICE",
-    //   data: { member, choice },
-    // });
+    Events.emit("FIRST_WORLD_CHOICE", { user, choice: i.customId });
 
     await apartment.send(r(<FirstActivityReply choice={i.customId} />));
   }
