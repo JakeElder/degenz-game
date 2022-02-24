@@ -9,7 +9,7 @@ import {
 } from "discord.js";
 import Config from "app-config";
 import { Format } from "lib";
-import { TossGame } from "../legacy/types";
+import { TossGame } from "types";
 import { AdminBot } from "../bots";
 import { getUser, transactBalance } from "../legacy/db";
 import { calculateTossRake, makeButton } from "../legacy/utils";

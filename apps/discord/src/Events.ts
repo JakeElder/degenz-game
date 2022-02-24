@@ -3,7 +3,7 @@ import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
 import { Bot } from "types";
 import { User, MartItem } from "db";
-import { TossGame } from "./legacy/types";
+import { TossGame } from "types";
 
 export type Event<T extends string, D> = {
   [P in T]: (e: { type: T; data: D }) => void;
