@@ -49,7 +49,6 @@ export async function connect(url: string) {
       host: db.host!,
       database: db.database!,
       password: db.password!,
-      synchronize: true,
       port: db.port ? parseInt(db.port!, 10) : undefined,
       ssl: {
         ca: Config.env("CA_CERT")!.replace(/\\n/g, "\n"),
@@ -60,7 +59,7 @@ export async function connect(url: string) {
   connection = await createConnection(options);
 
   // if (process.env.SEED) {
-  await seed();
+  // await seed();
   // }
 
   // await connection.query("DROP TABLE user CASCADE");
@@ -72,13 +71,13 @@ export async function connect(url: string) {
 
   // console.log(t);
 
-  // const c = await Achievement.insert(
-  //   Object.keys(AchievementEnum).map((k) => {
-  //     return {
-  //       symbol: (AchievementEnum as any)[k as any],
-  //     };
-  //   })
-  // );
+  //   const c = await Achievement.insert(
+  //     Object.keys(AchievementEnum).map((k) => {
+  //       return {
+  //         symbol: (AchievementEnum as any)[k as any],
+  //       };
+  //     })
+  //   );
 
   //   await MartItem.insert([
   //     {
@@ -313,13 +312,13 @@ async function seed() {
     //       },
     //     ]),
 
-    AppState.insert([
-      {
-        entryMessageId: "-",
-        verifyMessageId: "933958426898337802",
-        leaderboardMessageId: "935854598181228545",
-      },
-    ]),
+    // AppState.insert([
+    //   {
+    //     entryMessageId: "-",
+    //     verifyMessageId: "933958426898337802",
+    //     leaderboardMessageId: "935854598181228545",
+    //   },
+    // ]),
   ]);
 }
 

@@ -21,39 +21,57 @@ async function run() {
 
   // console.log(groupBy(users, (u) => u.tenancies.length));
 
-  const newUsers = users.slice().map((u) => {
-    const user = User.create({
-      discordId: u.Player.DiscordId.toString(),
-      displayName: u.Player.Name,
-      gbt: u.Player.Bank,
-      strength: u.strength,
-      martItemOwnerships: u.items.map((i) => {
-        const m = {
-          "ramen-noodles": "NOODLES",
-          pizza: "PIZZA",
-          "grilled-rat": "GRILLED_RAT",
-        }[i.itemId];
-        const item = allItems.find((i) => i.symbol === m)!;
-        return { item };
-      }),
-      tenancies: [
-        {
-          discordChannelId: u.tenancies[0].propertyId,
-          type: TenancyType.AUTHORITY,
-          district: allDistricts.find(
-            (d) => d.symbol === `PROJECTS_D${u.tenancies[0].district}`
-          ),
-        },
-      ],
-      achievements: u.achievements
-        .map((achievement) => {
+  await Promise.all(
+    users.map(async (u) => {
+      const user = await User.findOne({
+        where: { discordId: u.Player.DiscordId.toString() },
+      });
+
+      // @ts-ignore
+      user!.achievements = u.achievements
+        .map<Achievement | undefined>((achievement) => {
           const match = allAchievements.find((na) => na.symbol === achievement);
-          return match ? match : {};
+          if (match) {
+            return match;
+          }
         })
-        .filter((a) => "symbol" in a),
-    });
-    return user;
-  });
+        .filter((a) => typeof a !== "undefined");
+
+      await user!.save();
+
+      // const user = User.create({
+      //   discordId: u.Player.DiscordId.toString(),
+      //   displayName: u.Player.Name,
+      //   gbt: u.Player.Bank,
+      //   strength: u.strength,
+      //   martItemOwnerships: u.items.map((i) => {
+      //     const m = {
+      //       "ramen-noodles": "NOODLES",
+      //       pizza: "PIZZA",
+      //       "grilled-rat": "GRILLED_RAT",
+      //     }[i.itemId];
+      //     const item = allItems.find((i) => i.symbol === m)!;
+      //     return { item };
+      //   }),
+      //   tenancies: [
+      //     {
+      //       discordChannelId: u.tenancies[0].propertyId,
+      //       type: TenancyType.AUTHORITY,
+      //       district: allDistricts.find(
+      //         (d) => d.symbol === `PROJECTS_D${u.tenancies[0].district}`
+      //       ),
+      //     },
+      //   ],
+      //   achievements: u.achievements
+      //     .map((achievement) => {
+      //       const match = allAchievements.find((na) => na.symbol === achievement);
+      //       return match ? match : {};
+      //     })
+      //     .filter((a) => "symbol" in a),
+      // });
+      return user;
+    })
+  );
 
   // console.log(util.inspect(newUsers, { depth: null, colors: true }));
 
