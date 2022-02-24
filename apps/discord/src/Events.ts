@@ -7,7 +7,7 @@ import {
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
 import { Bot } from "types";
-import { User, MartItem } from "db";
+import { User, MartItem, District } from "db";
 import { TossGame } from "types";
 
 export type Event<T extends string, D> = {
@@ -146,6 +146,14 @@ type FirstWorldChoiceEvent = Event<
   }
 >;
 
+type GameEnteredEvent = Event<
+  "GAME_ENTERED",
+  {
+    user: User;
+    district: District;
+  }
+>;
+
 export type Events = BotReadyEvent &
   CommandNotFoundEvent &
   CommandNotImplementedEvent &
@@ -164,7 +172,8 @@ export type Events = BotReadyEvent &
   RedpillTakenEvent &
   HelpRequestedEvent &
   GBTTransferredEvent &
-  FirstWorldChoiceEvent;
+  FirstWorldChoiceEvent &
+  GameEnteredEvent;
 
 class DegenEventEmitter extends (EventEmitter as new () => TypedEmitter<Events>) {
   // @ts-ignore

@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { Connection, ConnectionOptions, createConnection } from "typeorm";
+import { Connection, createConnection } from "typeorm";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 import { Achievement as AchievementEnum, DistrictSymbol } from "types";
 import Config from "app-config";
