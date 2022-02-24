@@ -91,6 +91,7 @@ export default class Runner {
 
     Events.on("TOSS_COMPLETED", (e) => {
       WorldNotifier.tossCompleted(e);
+      Analytics.tossCompleted(e);
     });
 
     Events.on("REDPILL_TAKEN", (e) => {

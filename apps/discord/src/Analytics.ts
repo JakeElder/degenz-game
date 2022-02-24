@@ -94,9 +94,25 @@ export default class Analytics {
   static inventoryChecked(e: Event<"INVENTORY_CHECKED">) {
     this.mixpanel.track(capitalCase(e.type), {
       distinct_id: e.data.checker.discordId,
-      checkee_id: e.data.checkee.id,
+      checkee_id: e.data.checkee.discordId,
       checkee_name: e.data.checkee.displayName,
       own: e.data.checker.id === e.data.checkee.id,
+    });
+  }
+
+  static tossCompleted(e: Event<"TOSS_COMPLETED">) {
+    const [challengee_id, challengee_name] =
+      e.data.challengee === "HOUSE"
+        ? ["HOUSE", "HOUSE"]
+        : [e.data.challengee.discordId, e.data.challengee.displayName];
+
+    this.mixpanel.track(capitalCase(e.type), {
+      distinct_id: e.data.challenger.discordId,
+      challengee_id,
+      challengee_name,
+      amount: e.data.game.amount,
+      winner: e.data.game.winner,
+      result: e.data.game.result,
     });
   }
 
