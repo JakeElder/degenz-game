@@ -110,7 +110,7 @@ type TossCompletedEvent = Event<
   {
     challenger: User;
     challengee: User | "HOUSE";
-    game: TossGame;
+    game: TossGame<User>;
   }
 >;
 

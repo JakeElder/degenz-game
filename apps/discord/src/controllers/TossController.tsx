@@ -10,6 +10,7 @@ import {
 import Config from "app-config";
 import { Format } from "lib";
 import { TossGame } from "types";
+import { User } from "db";
 import { AdminBot } from "../bots";
 import { getUser, transactBalance } from "../legacy/db";
 import { calculateTossRake, makeButton } from "../legacy/utils";
@@ -26,7 +27,7 @@ const { r } = Utils;
 
 export default class TossController {
   static async toss(i: CommandInteraction, admin: AdminBot) {
-    const g: TossGame = await (async (): Promise<TossGame> => {
+    const g: TossGame<User> = await (async (): Promise<TossGame<User>> => {
       const amount = i.options.getInteger("amount", true);
       const challengeeMember = i.options.getMember(
         "opponent",
@@ -344,7 +345,7 @@ export default class TossController {
     g,
     player,
   }: {
-    g: TossGame;
+    g: TossGame<User>;
     player: "CHALLENGER" | "CHALLENGEE";
   }) {
     const win = g.winner === player;
@@ -361,7 +362,7 @@ export default class TossController {
       },
     };
 
-    const result = g.result as Exclude<TossGame["result"], "UNDECIDED">;
+    const result = g.result as Exclude<TossGame<User>["result"], "UNDECIDED">;
 
     const embed = new MessageEmbed()
       .setAuthor({

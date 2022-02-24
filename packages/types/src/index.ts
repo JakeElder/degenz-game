@@ -2,7 +2,6 @@ import { ClientOptions, GuildMember, OverwriteResolvable } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { APIApplicationCommandPermission } from "discord-api-types/v9";
 import { SetOptional } from "type-fest";
-import { User } from "db";
 
 export type EnvVars = SetOptional<
   Record<
@@ -165,18 +164,18 @@ export type OperationResult<T extends string = string> =
   | FailedOperationResult<T>
   | ExceptionOperationResult;
 
-export type Tosser = {
+export type Tosser<User> = {
   member: GuildMember;
   user: User | null;
   balanceAvailable: null | boolean;
 };
 
-export type TossGame = {
+export type TossGame<User> = {
   amount: number;
   rake: number;
   member: GuildMember;
-  challenger: Tosser;
-  challengee: Tosser;
+  challenger: Tosser<User>;
+  challengee: Tosser<User>;
   choice: "UNDECIDED" | "HEADS" | "TAILS";
   result: "UNDECIDED" | "HEADS" | "TAILS";
   winner: "UNDECIDED" | "CHALLENGER" | "CHALLENGEE";

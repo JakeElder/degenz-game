@@ -63,7 +63,7 @@ export default abstract class Command extends OclifCommand {
 
       this.debug(`RATE_LIMITED: ${Math.round(wait)} seconds`);
       await delay((res.data.retry_after + 2) * 1000);
-      return this.patch(route, data, token);
+      return this.patch(route, data, token, task);
     }
 
     if (res.status < 200 || res.status >= 300) {
@@ -78,9 +78,9 @@ export default abstract class Command extends OclifCommand {
     route: string,
     data: any,
     token: string,
-    task: Listr.ListrTaskWrapper
+    task?: Listr.ListrTaskWrapper
   ) {
-    return this.req(route, data, token, "PATCH");
+    return this.req(route, data, token, "PATCH", task);
   }
 
   async put(
