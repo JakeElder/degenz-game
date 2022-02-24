@@ -210,120 +210,108 @@ export async function connect(url: string) {
 }
 
 async function seed() {
-  await Promise.all([
-    NPC.delete({}),
-    District.delete({}),
-    Achievement.delete({}),
-    AppState.delete({}),
-    MartItem.delete({}),
-  ]);
+  // await Promise.all([
+  //   NPC.delete({}),
+  //   District.delete({}),
+  //   Achievement.delete({}),
+  //   AppState.delete({}),
+  //   MartItem.delete({}),
+  // ]);
 
   await Promise.all([
-    NPC.insert([
-      { symbol: "ADMIN", defaultEmojiId: "-" },
-      { symbol: "ALLY", defaultEmojiId: "-" },
-      {
-        symbol: "ARMORY_CLERK",
-        defaultEmojiId: "-",
-      },
-      {
-        symbol: "BANKER",
-        defaultEmojiId: "-",
-      },
-      {
-        symbol: "BIG_BROTHER",
-        defaultEmojiId: "-",
-      },
-      { symbol: "MART_CLERK", defaultEmojiId: "-" },
-      {
-        symbol: "PRISONER",
-        defaultEmojiId: "-",
-      },
-      { symbol: "SENSEI", defaultEmojiId: "-" },
-      { symbol: "TOSSER", defaultEmojiId: "-" },
-      { symbol: "WARDEN", defaultEmojiId: "-" },
-    ]),
+    // NPC.insert([
+    //   { symbol: "ADMIN", defaultEmojiId: "-" },
+    //   { symbol: "ALLY", defaultEmojiId: "-" },
+    //   { symbol: "ARMORY_CLERK", defaultEmojiId: "-" },
+    //   { symbol: "BANKER", defaultEmojiId: "-" },
+    //   { symbol: "BIG_BROTHER", defaultEmojiId: "-" },
+    //   { symbol: "MART_CLERK", defaultEmojiId: "-" },
+    //   { symbol: "PRISONER", defaultEmojiId: "-" },
+    //   { symbol: "SENSEI", defaultEmojiId: "-" },
+    //   { symbol: "TOSSER", defaultEmojiId: "-" },
+    //   { symbol: "WARDEN", defaultEmojiId: "-" },
+    // ]),
 
-    Achievement.insert(
-      Object.keys(AchievementEnum).map((k) => {
-        return {
-          symbol: (AchievementEnum as any)[k as any],
-        };
-      })
-    ),
+    //     Achievement.insert(
+    //       Object.keys(AchievementEnum).map((k) => {
+    //         return {
+    //           symbol: (AchievementEnum as any)[k as any],
+    //         };
+    //       })
+    //     ),
 
-    MartItem.insert([
-      {
-        symbol: "PIZZA",
-        name: "Fat Pizza \u00a9",
-        description: "A slice of Fat Pizza",
-        price: 25,
-        stock: 0,
-        strengthIncrease: 10,
-      },
-      {
-        symbol: "NOODLES",
-        name: "Degenz Brand Ramen Noodles \u00a9",
-        description:
-          "Luxurious instant noodles, complete with a packet of RatSpice.",
-        price: 10,
-        stock: 0,
-        strengthIncrease: 4,
-      },
-      {
-        symbol: "GRILLED_RAT",
-        name: "Nuu Ping \u00a9",
-        description: "Succulent rat meat, barbecue grilled to perfection.",
-        price: 1,
-        stock: 37,
-        strengthIncrease: 1,
-      },
-    ]),
+    //     MartItem.insert([
+    //       {
+    //         symbol: "PIZZA",
+    //         name: "Fat Pizza \u00a9",
+    //         description: "A slice of Fat Pizza",
+    //         price: 25,
+    //         stock: 0,
+    //         strengthIncrease: 10,
+    //       },
+    //       {
+    //         symbol: "NOODLES",
+    //         name: "Degenz Brand Ramen Noodles \u00a9",
+    //         description:
+    //           "Luxurious instant noodles, complete with a packet of RatSpice.",
+    //         price: 10,
+    //         stock: 0,
+    //         strengthIncrease: 4,
+    //       },
+    //       {
+    //         symbol: "GRILLED_RAT",
+    //         name: "Nuu Ping \u00a9",
+    //         description: "Succulent rat meat, barbecue grilled to perfection.",
+    //         price: 1,
+    //         stock: 37,
+    //         strengthIncrease: 1,
+    //       },
+    //     ]),
 
-    District.insert([
-      {
-        symbol: DistrictSymbol.PROJECTS_D1,
-        open: false,
-        emoji: "-",
-        activeEmoji: "-",
-        inactiveEmoji: "-",
-      },
-      {
-        symbol: DistrictSymbol.PROJECTS_D2,
-        open: false,
-        emoji: "-",
-        activeEmoji: "-",
-        inactiveEmoji: "-",
-      },
-      {
-        symbol: DistrictSymbol.PROJECTS_D3,
-        open: false,
-        emoji: "-",
-        activeEmoji: "-",
-        inactiveEmoji: "-",
-      },
-      {
-        symbol: DistrictSymbol.PROJECTS_D4,
-        open: false,
-        emoji: "-",
-        activeEmoji: "-",
-        inactiveEmoji: "-",
-      },
-      {
-        symbol: DistrictSymbol.PROJECTS_D5,
-        open: false,
-        emoji: "-",
-        activeEmoji: "-",
-        inactiveEmoji: "-",
-      },
-      {
-        symbol: DistrictSymbol.PROJECTS_D6,
-        open: false,
-        emoji: "-",
-        activeEmoji: "-",
-        inactiveEmoji: "-",
-      },
-    ]),
+    //     District.insert([
+    //       {
+    //         symbol: DistrictSymbol.PROJECTS_D1,
+    //         open: false,
+    //         emoji: "-",
+    //         activeEmoji: "-",
+    //         inactiveEmoji: "-",
+    //       },
+    //       {
+    //         symbol: DistrictSymbol.PROJECTS_D2,
+    //         open: false,
+    //         emoji: "-",
+    //         activeEmoji: "-",
+    //         inactiveEmoji: "-",
+    //       },
+    //       {
+    //         symbol: DistrictSymbol.PROJECTS_D3,
+    //         open: false,
+    //         emoji: "-",
+    //         activeEmoji: "-",
+    //         inactiveEmoji: "-",
+    //       },
+    //       {
+    //         symbol: DistrictSymbol.PROJECTS_D4,
+    //         open: false,
+    //         emoji: "-",
+    //         activeEmoji: "-",
+    //         inactiveEmoji: "-",
+    //       },
+    //       {
+    //         symbol: DistrictSymbol.PROJECTS_D5,
+    //         open: false,
+    //         emoji: "-",
+    //         activeEmoji: "-",
+    //         inactiveEmoji: "-",
+    //       },
+    //       {
+    //         symbol: DistrictSymbol.PROJECTS_D6,
+    //         open: false,
+    //         emoji: "-",
+    //         activeEmoji: "-",
+    //         inactiveEmoji: "-",
+    //       },
+    //     ]),
 
     AppState.insert([
       {

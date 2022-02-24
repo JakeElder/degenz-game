@@ -33,16 +33,16 @@ let runner: Runner;
 async function main() {
   await connect(Config.env("DATABASE_URL"));
 
-  // Global.bot("ADMIN", new bots.AdminBot());
-  // Global.bot("ALLY", new bots.AllyBot());
-  // Global.bot("BANKER", new bots.BankerBot());
-  // Global.bot("BIG_BROTHER", new bots.BigBrotherBot());
-  // Global.bot("MART_CLERK", new bots.MartClerkBot());
-  // Global.bot("PRISONER", new bots.PrisonerBot());
-  // Global.bot("TOSSER", new bots.TosserBot());
-  // Global.bot("WARDEN", new bots.WardenBot());
+  Global.bot("ADMIN", new bots.AdminBot());
+  Global.bot("ALLY", new bots.AllyBot());
+  Global.bot("BANKER", new bots.BankerBot());
+  Global.bot("BIG_BROTHER", new bots.BigBrotherBot());
+  Global.bot("MART_CLERK", new bots.MartClerkBot());
+  Global.bot("PRISONER", new bots.PrisonerBot());
+  Global.bot("TOSSER", new bots.TosserBot());
+  Global.bot("WARDEN", new bots.WardenBot());
 
-  // runner = new Runner(Global.bots());
+  runner = new Runner(Global.bots());
 }
 
 main();

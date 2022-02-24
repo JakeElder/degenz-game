@@ -33,6 +33,7 @@ export type ChannelSymbol =
   | "WELCOME_ROOM"
   | "GENERAL"
   | "WAITING_ROOM"
+  | "SNEAK_PEEKS"
   | "FEEDBACK"
   | "ANNOUNCEMENTS"
   | "LEADERBOARD"

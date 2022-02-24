@@ -134,6 +134,12 @@ const structure: Category[] = [
         permissionOverwrites: READ_ONLY,
       },
       {
+        symbol: "SNEAK_PEEKS",
+        name: "\u235b\uff5csneak-peeks",
+        lockPermissions: true,
+        permissionOverwrites: READ_ONLY,
+      },
+      {
         symbol: "FEEDBACK",
         name: "\u22b1\uff5cfeedback",
         lockPermissions: true,
@@ -203,7 +209,7 @@ const structure: Category[] = [
       },
       {
         symbol: "HALL_OF_ALLEIGANCE",
-        name: "\u04A7\uff5chall-of-allegiance",
+        name: "\u04a7\uff5chall-of-allegiance",
         lockPermissions: true,
         permissionOverwrites: READ_ONLY,
       },
