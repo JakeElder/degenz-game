@@ -11,6 +11,9 @@ export default class AchievementController {
     HELP_REQUESTED: "You used the `/help` command.",
     STATS_CHECKED: "You used the `/stats` command.",
     SUPER_OBEDIENT: "You typed the `/obey` command twice. Such a good citizen.",
+    FINISHED_TRAINER: "-",
+    MART_ITEM_BOUGHT: "-",
+    MART_STOCK_CHECKED: "-",
   };
 
   static async award(user: User, achievement: Achievement) {

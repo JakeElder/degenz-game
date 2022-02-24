@@ -211,6 +211,14 @@ export async function connect(url: string) {
 
 async function seed() {
   await Promise.all([
+    NPC.delete({}),
+    District.delete({}),
+    Achievement.delete({}),
+    AppState.delete({}),
+    MartItem.delete({}),
+  ]);
+
+  await Promise.all([
     NPC.insert([
       { symbol: "ADMIN", defaultEmojiId: "-" },
       { symbol: "ALLY", defaultEmojiId: "-" },
