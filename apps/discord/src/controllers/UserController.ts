@@ -79,6 +79,8 @@ export default class UserController {
       return { success: false, code: "USER_NOT_ADDED_DB" };
     }
 
+    await WaitingRoomController.update();
+
     Events.emit("APARTMENT_ALLOCATED", { user, onboard });
 
     return { success: true, code: "USER_INITIATED", user };
