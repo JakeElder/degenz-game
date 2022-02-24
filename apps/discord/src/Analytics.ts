@@ -46,6 +46,15 @@ export default class Analytics {
     });
   }
 
+  static statsChecked(e: Event<"STATS_CHECKED">) {
+    this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
+      distinct_id: e.data.checker.discordId,
+      channel_name: e.data.channel.name,
+      channel_id: e.data.channel.id,
+    });
+  }
+
   // logToMixpanel(e: WorldEventMessage) {
   //   const mixPanelEvents: WorldEventId[] = [
   //     "VERIFY", X

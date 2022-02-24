@@ -72,7 +72,7 @@ type MemberVerifiedEvent = Event<
 
 type StatsCheckedEvent = Event<
   "STATS_CHECKED",
-  { checker: User; checkee: User }
+  { checker: User; checkee: User; channel: TextChannel }
 >;
 
 type AllegiancePledgedEvent = Event<

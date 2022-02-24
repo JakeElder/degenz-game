@@ -69,12 +69,18 @@ export default class WorldNotifier {
   static async statsChecked(e: Event<"STATS_CHECKED">) {
     let message: string;
     if (e.data.checker.id === e.data.checkee.id) {
-      message = r(<>**{e.data.checker.displayName}** checked their stats.</>);
+      message = r(
+        <>
+          **{e.data.checker.displayName}** checked their stats in{" "}
+          {channelMention(e.data.channel.id)}.
+        </>
+      );
     } else {
       message = r(
         <>
           **{e.data.checker.displayName}** checked **
-          {e.data.checkee.displayName}**'s stats.
+          {e.data.checkee.displayName}**'s stats in{" "}
+          {channelMention(e.data.channel.id)}.
         </>
       );
     }

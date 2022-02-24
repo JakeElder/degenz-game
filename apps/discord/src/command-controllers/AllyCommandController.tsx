@@ -146,6 +146,7 @@ export default class AllyCommandController extends CommandController {
     Events.emit("STATS_CHECKED", {
       checkee: checkeeUser,
       checker: checkerUser,
+      channel: i.channel as TextChannel,
     });
   }
 
