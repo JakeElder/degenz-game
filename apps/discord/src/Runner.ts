@@ -36,6 +36,7 @@ export default class Runner {
 
     Events.on("BALANCE_CHECKED", (e) => {
       WorldNotifier.balanceChecked(e);
+      Analytics.balanceChecked(e);
     });
 
     Events.on("COMMAND_NOT_FOUND", (e) => {
@@ -60,6 +61,7 @@ export default class Runner {
 
     Events.on("STATS_CHECKED", (e) => {
       WorldNotifier.statsChecked(e);
+      Analytics.statsChecked(e);
     });
 
     Events.on("INVENTORY_CHECKED", (e) => {
@@ -89,10 +91,12 @@ export default class Runner {
 
     Events.on("REDPILL_TAKEN", (e) => {
       WorldNotifier.redpillTaken(e);
+      Analytics.redpillTaken(e);
     });
 
     Events.on("HELP_REQUESTED", (e) => {
       WorldNotifier.helpRequested(e);
+      Analytics.helpRequested(e);
     });
 
     Events.on("ALLEGIANCE_PLEDGED", (e) => {

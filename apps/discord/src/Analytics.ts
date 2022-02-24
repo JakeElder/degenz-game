@@ -55,14 +55,22 @@ export default class Analytics {
     });
   }
 
+  static balanceChecked(e: Event<"BALANCE_CHECKED">) {
+    this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
+      distinct_id: e.data.user.discordId,
+      balance: e.data.user.gbt,
+    });
+  }
+
   // logToMixpanel(e: WorldEventMessage) {
   //   const mixPanelEvents: WorldEventId[] = [
   //     "VERIFY", X
   //     "OBEY", -X
   //     "REDPILL", X
   //     "HELP_REQUESTED", X
-  //     "STATS_CHECKED",
-  //     "BALANCE_CHECKED",
+  //     "STATS_CHECKED", X
+  //     "BALANCE_CHECKED", X
   //     "TOKEN_TRANSFER",
   //     "MART_STOCK_CHECKED",
   //     "MART_ITEM_PURCHASED",
