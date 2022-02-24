@@ -66,10 +66,12 @@ export default class Runner {
 
     Events.on("INVENTORY_CHECKED", (e) => {
       WorldNotifier.inventoryChecked(e);
+      Analytics.inventoryChecked(e);
     });
 
     Events.on("ITEM_EATEN", (e) => {
       WorldNotifier.itemEaten(e);
+      Analytics.itemEaten(e);
     });
 
     Events.on("MEMBER_VERIFIED", (e) => {
