@@ -7,6 +7,7 @@ import OnboardController from "./controllers/OnboardController";
 import AppController from "./controllers/AppController";
 import WaitingRoomController from "./controllers/WaitingRoomController";
 import HallOfAllegianceController from "./controllers/HallOfAllegianceController";
+import Analytics from "./Analytics";
 
 export default class Runner {
   constructor(private bots: DiscordBot[]) {
@@ -14,8 +15,16 @@ export default class Runner {
   }
 
   private bindEventHandlers() {
+    Events.on("ENTER", (e) => {
+      Analytics.enter(e);
+    });
+
     Events.on("BOT_READY", (e) => {
       Logger.botReady(e);
+
+      if (e.data.bot.symbol === "ADMIN") {
+        AppController.bindEnterListener();
+      }
 
       if (e.data.bot.symbol === "BIG_BROTHER") {
         WaitingRoomController.init();
@@ -63,6 +72,7 @@ export default class Runner {
 
     Events.on("MEMBER_VERIFIED", (e) => {
       WorldNotifier.memberVerified(e);
+      Analytics.verify(e);
     });
 
     Events.on("MART_STOCK_CHECKED", (e) => {
@@ -75,6 +85,14 @@ export default class Runner {
 
     Events.on("TOSS_COMPLETED", (e) => {
       WorldNotifier.tossCompleted(e);
+    });
+
+    Events.on("REDPILL_TAKEN", (e) => {
+      WorldNotifier.redpillTaken(e);
+    });
+
+    Events.on("HELP_REQUESTED", (e) => {
+      WorldNotifier.helpRequested(e);
     });
 
     Events.on("ALLEGIANCE_PLEDGED", (e) => {

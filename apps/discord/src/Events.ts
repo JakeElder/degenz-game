@@ -1,4 +1,9 @@
-import { CommandInteraction, GuildBasedChannel, GuildMember } from "discord.js";
+import {
+  CommandInteraction,
+  GuildBasedChannel,
+  GuildMember,
+  TextChannel,
+} from "discord.js";
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
 import { Bot } from "types";
@@ -8,6 +13,13 @@ import { TossGame } from "types";
 export type Event<T extends string, D> = {
   [P in T]: (e: { type: T; data: D }) => void;
 };
+
+type EnterEvent = Event<
+  "ENTER",
+  {
+    member: GuildMember;
+  }
+>;
 
 type BotReadyEvent = Event<
   "BOT_READY",
@@ -102,6 +114,21 @@ type TossCompletedEvent = Event<
   }
 >;
 
+type RedpillTakenEvent = Event<
+  "REDPILL_TAKEN",
+  {
+    user: User;
+  }
+>;
+
+type HelpRequestedEvent = Event<
+  "HELP_REQUESTED",
+  {
+    user: User;
+    channel: TextChannel;
+  }
+>;
+
 export type Events = BotReadyEvent &
   CommandNotFoundEvent &
   CommandNotImplementedEvent &
@@ -115,7 +142,10 @@ export type Events = BotReadyEvent &
   ItemEatenEvent &
   MartStockCheckedEvent &
   MartItemBoughtEvent &
-  TossCompletedEvent;
+  TossCompletedEvent &
+  EnterEvent &
+  RedpillTakenEvent &
+  HelpRequestedEvent;
 
 class DegenEventEmitter extends (EventEmitter as new () => TypedEmitter<Events>) {
   // @ts-ignore

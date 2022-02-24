@@ -37,6 +37,7 @@
     "luxon": "^2.3.0",
     "manifest": "*",
     "memoizee": "^0.4.15",
+    "mixpanel": "^0.14.0",
     "mongodb": "^4.3.1",
     "node-cleanup": "^2.1.2",
     "node-emoji": "^1.11.0",

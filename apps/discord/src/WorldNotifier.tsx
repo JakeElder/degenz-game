@@ -160,4 +160,23 @@ export default class WorldNotifier {
 
     await this.logToHOP("MART_CLERK", e.type, message);
   }
+
+  static async redpillTaken(e: Event<"REDPILL_TAKEN">) {
+    const message = r(
+      <>
+        **{e.data.user.displayName}** took the red pill {"\u{1f48a}"}.
+      </>
+    );
+    await this.logToHOP("ALLY", e.type, message);
+  }
+
+  static async helpRequested(e: Event<"HELP_REQUESTED">) {
+    const message = r(
+      <>
+        **{e.data.user.displayName}** requested help in{" "}
+        {channelMention(e.data.channel.id)}.
+      </>
+    );
+    await this.logToHOP("ALLY", e.type, message);
+  }
 }

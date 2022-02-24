@@ -28,6 +28,15 @@ export default class AppController {
   static leaderboardMessage: Message;
   static reactionCollector: ReactionCollector;
 
+  static async bindEnterListener() {
+    const admin = Global.bot("ADMIN");
+    admin.client.on("guildMemberAdd", async (member) => {
+      if (!member.user.bot) {
+        Events.emit("ENTER", { member });
+      }
+    });
+  }
+
   static async openDistrict(districtSymbol: DistrictSymbol) {
     await District.open(districtSymbol);
     await WaitingRoomController.update();

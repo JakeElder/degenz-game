@@ -4595,7 +4595,7 @@ http-proxy-agent@^5.0.0:
     agent-base "6"
     debug "4"
 
-https-proxy-agent@5, https-proxy-agent@^5.0.0:
+https-proxy-agent@5, https-proxy-agent@5.0.0, https-proxy-agent@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-5.0.0.tgz#e2a90542abb68a762e0a0850f6c9edadfd8506b2"
   integrity sha512-EkYm5BcKUGiduxzSt3Eppko+PiNWNEpa4ySk9vTC6wDsQJW9rHSa+UhGNJoRYp7bz6Ht1eaRIa6QaJqO5rCFbA==
@@ -6213,6 +6213,13 @@ minizlib@^2.0.0, minizlib@^2.1.1, minizlib@^2.1.2:
   dependencies:
     minipass "^3.0.0"
     yallist "^4.0.0"
+
+mixpanel@^0.14.0:
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/mixpanel/-/mixpanel-0.14.0.tgz#5d948c30cd1ad17acb235dc084478c7b32eff04f"
+  integrity sha512-PY2zSMXCGHSEnuuFnlPeSX3R7YeU3/8IaSUgmGc9DnM2U7weg6sfdKu7s5+3euwGz0R1KHQoUJOUbIuXtHgGmA==
+  dependencies:
+    https-proxy-agent "5.0.0"
 
 mkdirp-classic@^0.5.2:
   version "0.5.3"

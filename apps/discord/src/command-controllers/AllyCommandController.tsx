@@ -6,6 +6,7 @@ import {
   MessageSelectMenu,
   SelectMenuInteraction,
   TextBasedChannel,
+  TextChannel,
 } from "discord.js";
 import Config from "app-config";
 import { CommandController } from "../CommandController";
@@ -72,12 +73,13 @@ export default class AllyCommandController extends CommandController {
 
     i.reply("`REDPILL_TAKEN`");
     const user = await getUser(member.id);
+    Events.emit("REDPILL_TAKEN", { user });
     await OnboardController.partThree(user);
   }
 
   async help(i: CommandInteraction) {
     const ally = Global.bot("ALLY");
-    const channel = i.channel as TextBasedChannel;
+    const channel = i.channel as TextChannel;
 
     const [member, apartmentUser, imprisonment] = await Promise.all([
       ally.getMember(i.user.id),
@@ -108,15 +110,11 @@ export default class AllyCommandController extends CommandController {
     });
 
     const user = await getUser(member.id);
+    Events.emit("HELP_REQUESTED", { user, channel });
 
     if (!user.hasAchievement(AchievementEnum.HELP_REQUESTED)) {
       await OnboardController.partFive(user);
     }
-
-    // this.emit("WORLD_EVENT", {
-    //   event: "HELP_REQUESTED",
-    //   data: { member, channel: i.channel as TextBasedChannel },
-    // });
   }
 
   async stats(i: CommandInteraction) {
