@@ -23,7 +23,7 @@ export default abstract class Command extends OclifCommand {
     }
   }
 
-  async delete(route: string, token: string, task: Listr.ListrTaskWrapper) {
+  async delete(route: string, token: string, task?: Listr.ListrTaskWrapper) {
     return this.req(route, null, token, "DELETE", task);
   }
 
@@ -63,7 +63,7 @@ export default abstract class Command extends OclifCommand {
 
       this.debug(`RATE_LIMITED: ${Math.round(wait)} seconds`);
       await delay((res.data.retry_after + 2) * 1000);
-      return this.patch(route, data, token, task);
+      return this.req(route, data, token, method, task);
     }
 
     if (res.status < 200 || res.status >= 300) {

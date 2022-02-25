@@ -105,7 +105,8 @@ export default class DeployEmojis extends Command {
                     );
 
                     if (!(await exists(f))) {
-                      throw new Error(`No icon for ${bot.name}`);
+                      task.skip(`No icon for ${bot.name}`);
+                      return;
                     }
 
                     const c = await fs.readFile(f, { encoding: "base64" });
