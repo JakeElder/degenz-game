@@ -6,12 +6,6 @@
     "packages": [
       "apps/*",
       "packages/*"
-    ],
-    "nohoist": [
-      "**/typeorm",
-      "**/typeorm/**",
-      "**/turndown",
-      "**/turndown/**"
     ]
   },
   "scripts": {
@@ -20,6 +14,7 @@
     "delete:dist": "find packages apps -name dist -depth 2 -exec rm -rf '{}' +",
     "delete:node_modules": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "dev": "turbo run dev --parallel",
+    "reinit": "yarn clean && yarn install && yarn build",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "typecheck": "turbo run typecheck",

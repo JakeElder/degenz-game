@@ -1,5 +1,6 @@
 import "reflect-metadata";
-import { Connection, createConnection } from "typeorm";
+import { Connection, ConnectionOptionsReader, createConnection } from "typeorm";
+import findParentDir from "find-parent-dir";
 // import { Achievement as AchievementEnum, DistrictSymbol } from "types";
 import { Achievement } from "./entity/Achievement";
 import { AppState } from "./entity/AppState";
@@ -11,12 +12,28 @@ import { NPC } from "./entity/NPC";
 import { Pledge } from "./entity/Pledge";
 import { Tenancy } from "./entity/Tenancy";
 import { User } from "./entity/User";
-import pg from "pg-connection-string";
 
 let connection: Connection;
 
+async function findPackageRoot(i = 0): Promise<string> {
+  const dir = await new Promise<string | null>((resolve, reject) => {
+    if (!module.paths[i]) {
+      reject();
+    }
+    findParentDir(module.paths[i], "ormconfig.js", (_, dir) => {
+      resolve(dir);
+    });
+  });
+  return dir ? dir : findPackageRoot(i++);
+}
+
 export async function connect() {
-  connection = await createConnection();
+  const connectionOptionsReader = new ConnectionOptionsReader({
+    root: await findPackageRoot(),
+  });
+
+  const options = await connectionOptionsReader.get("default");
+  connection = await createConnection(options);
 
   // if (process.env.SEED) {
   // await seed();

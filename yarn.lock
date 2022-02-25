@@ -1307,6 +1307,11 @@
   resolved "https://registry.yarnpkg.com/@types/find-config/-/find-config-1.0.1.tgz#b0e72f7b6375b6747e0884f7367a5cd64c796403"
   integrity sha512-H4DFIQMwxCKRgVWMSqALg6aowTOgZi5D4pSPBBuOQFJLRwfNZaByhC9+s870CZgTRJoyVg5J+iesdF5uvnJ0mA==
 
+"@types/find-parent-dir@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@types/find-parent-dir/-/find-parent-dir-0.3.0.tgz#0a8e9b1eb4fa77e6761d7a078daaed92ad2868f1"
+  integrity sha512-jz1cHlySrflg1Xf6fhy8xe/Bc//eO7wkg7OQePQei4vIYHm9IIQs0Ed8pakV6qVuihTnmy+Le+xUYDardq7yNg==
+
 "@types/glob@^7.1.1":
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/@types/glob/-/glob-7.2.0.tgz#bc1b5bf3aa92f25bd5dd39f35c57361bdce5b2eb"
@@ -4047,6 +4052,11 @@ find-config@^1.0.0:
   integrity sha1-6vorm8B/qckOmgw++c7PHMgA9TA=
   dependencies:
     user-home "^2.0.0"
+
+find-parent-dir@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/find-parent-dir/-/find-parent-dir-0.3.1.tgz#c5c385b96858c3351f95d446cab866cbf9f11125"
+  integrity sha512-o4UcykWV/XN9wm+jMEtWLPlV8RXCZnMhQI6F6OdHeSez7iiJWePw8ijOlskJZMsaQoGR/b7dH6lO02HhaTN7+A==
 
 find-up@^2.1.0:
   version "2.1.0"

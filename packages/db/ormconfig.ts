@@ -9,6 +9,10 @@ const base = {
   type: "postgres" as const,
   namingStrategy: new SnakeNamingStrategy(),
   entities: [`${__dirname}/dist/app/entity/**/*.js`],
+  migrations: [`${__dirname}/dist/app/migration/**/*.js`],
+  cli: {
+    migrationsDir: `${__dirname}/app/migration`,
+  },
 };
 
 if (Config.env("NODE_ENV") === "development") {
