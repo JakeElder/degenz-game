@@ -1,8 +1,6 @@
 import "reflect-metadata";
 import { Connection, createConnection } from "typeorm";
-import { SnakeNamingStrategy } from "typeorm-naming-strategies";
-import { Achievement as AchievementEnum, DistrictSymbol } from "types";
-import Config from "app-config";
+// import { Achievement as AchievementEnum, DistrictSymbol } from "types";
 import { Achievement } from "./entity/Achievement";
 import { AppState } from "./entity/AppState";
 import { District } from "./entity/District";
@@ -13,50 +11,12 @@ import { NPC } from "./entity/NPC";
 import { Pledge } from "./entity/Pledge";
 import { Tenancy } from "./entity/Tenancy";
 import { User } from "./entity/User";
-import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 import pg from "pg-connection-string";
 
 let connection: Connection;
 
-export async function connect(url: string) {
-  const db = pg.parse(url);
-
-  const base: PostgresConnectionOptions = {
-    type: "postgres",
-    namingStrategy: new SnakeNamingStrategy(),
-    entities: [
-      Achievement,
-      AppState,
-      District,
-      Imprisonment,
-      MartItem,
-      MartItemOwnership,
-      NPC,
-      Pledge,
-      Tenancy,
-      User,
-    ],
-  };
-
-  let options: PostgresConnectionOptions;
-
-  if (Config.env("NODE_ENV") === "development") {
-    options = { ...base, url, synchronize: true };
-  } else {
-    options = {
-      ...base,
-      username: db.user,
-      host: db.host!,
-      database: db.database!,
-      password: db.password!,
-      port: db.port ? parseInt(db.port!, 10) : undefined,
-      ssl: {
-        ca: Config.env("CA_CERT")!.replace(/\\n/g, "\n"),
-      },
-    };
-  }
-
-  connection = await createConnection(options);
+export async function connect() {
+  connection = await createConnection();
 
   // if (process.env.SEED) {
   // await seed();
@@ -230,7 +190,6 @@ async function seed() {
     //   { symbol: "TOSSER", defaultEmojiId: "-" },
     //   { symbol: "WARDEN", defaultEmojiId: "-" },
     // ]),
-
     //     Achievement.insert(
     //       Object.keys(AchievementEnum).map((k) => {
     //         return {
@@ -238,7 +197,6 @@ async function seed() {
     //         };
     //       })
     //     ),
-
     //     MartItem.insert([
     //       {
     //         symbol: "PIZZA",
@@ -266,7 +224,6 @@ async function seed() {
     //         strengthIncrease: 1,
     //       },
     //     ]),
-
     //     District.insert([
     //       {
     //         symbol: DistrictSymbol.PROJECTS_D1,
@@ -311,7 +268,6 @@ async function seed() {
     //         inactiveEmoji: "-",
     //       },
     //     ]),
-
     // AppState.insert([
     //   {
     //     entryMessageId: "-",

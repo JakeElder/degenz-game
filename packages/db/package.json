@@ -2,18 +2,24 @@
   "name": "db",
   "version": "0.0.0",
   "license": "UNLICENSED",
-  "main": "./dist/index.js",
+  "main": "./dist/app/index.js",
   "scripts": {
     "build": "yarn tsc",
-    "dev": "tsc --watch",
+    "dev": "rm -rf dist && concurrently --raw \"yarn watch\" \"wait-on dist && yarn watch:dist\"",
+    "watch": "tsc --watch",
+    "watch:dist": "nodemon --quiet --watch dist --exec \"yarn copy-config\"",
+    "copy-config": "cp dist/ormconfig.js .",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/node": "^17.0.18",
     "@types/pg-connection-string": "^2.0.0",
+    "concurrently": "^7.0.0",
+    "nodemon": "^2.0.15",
     "tsconfig": "*",
     "typeorm-uml": "^1.6.4",
-    "typescript": "^4.5.3"
+    "typescript": "^4.5.3",
+    "wait-on": "^6.0.1"
   },
   "dependencies": {
     "app-config": "*",

@@ -23,7 +23,7 @@ export default class DeployEmojis extends Command {
   async run(): Promise<void> {
     const guildId = Config.general("GUILD_ID");
 
-    await connect(Config.env("DATABASE_URL"));
+    await connect();
     const districts = await District.find({ order: { symbol: 1 } });
 
     const listr = new Listr(

@@ -1,12 +1,12 @@
 {
   "extends": "tsconfig/component.json",
   "compilerOptions": {
-    "rootDir": "./src",
+    "rootDir": ".",
     "outDir": "./dist",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false
   },
-  "include": ["src/**/*.ts"],
+  "include": ["ormconfig.ts", "app/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

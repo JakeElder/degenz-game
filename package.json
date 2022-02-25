@@ -2,10 +2,18 @@
   "name": "degenz",
   "version": "0.0.0",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/typeorm",
+      "**/typeorm/**",
+      "**/turndown",
+      "**/turndown/**"
+    ]
+  },
   "scripts": {
     "build": "turbo run build",
     "clean": "yarn delete:dist && yarn delete:node_modules",

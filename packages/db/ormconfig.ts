@@ -1,17 +1,14 @@
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 import pg from "pg-connection-string";
 import Config from "app-config";
+import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 
-let config;
+let config: PostgresConnectionOptions;
 
 const base = {
-  type: "postgres",
+  type: "postgres" as const,
   namingStrategy: new SnakeNamingStrategy(),
-  entities: ["src/entity/**/*.ts"],
-  migrations: [__dirname + "src/migrations/**/*.ts"],
-  cli: {
-    migrationsDir: "src/migration",
-  },
+  entities: [`${__dirname}/dist/app/entity/**/*.js`],
 };
 
 if (Config.env("NODE_ENV") === "development") {
@@ -25,8 +22,8 @@ if (Config.env("NODE_ENV") === "development") {
   config = {
     ...base,
     username: db.user,
-    host: db.host,
-    database: db.database,
+    host: db.host!,
+    database: db.database!,
     password: db.password,
     port: db.port ? parseInt(db.port, 10) : undefined,
     ssl: {

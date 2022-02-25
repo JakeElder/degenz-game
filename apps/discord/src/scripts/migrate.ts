@@ -12,7 +12,7 @@ async function run() {
   const mongo = new MongoClient(process.env.MONGO_URI!);
   db = mongo.db();
   await mongo.connect();
-  await connect(Config.env("DATABASE_URL"));
+  await connect();
   const users = await getUsers();
 
   const allAchievements = await Achievement.find();

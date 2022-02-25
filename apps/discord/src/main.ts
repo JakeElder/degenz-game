@@ -31,7 +31,7 @@ cleanup((_, signal) => {
 let runner: Runner;
 
 async function main() {
-  await connect(Config.env("DATABASE_URL"));
+  await connect();
 
   Global.bot("ADMIN", new bots.AdminBot());
   Global.bot("ALLY", new bots.AllyBot());
