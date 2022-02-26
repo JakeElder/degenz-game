@@ -9,7 +9,7 @@ import {
   ChannelSymbol,
   EnvVars,
   RoleSymbol,
-} from "types";
+} from "data/types";
 import chalk from "chalk";
 
 const envFile = process.env.ENV_FILE || ".env";

@@ -1,6 +1,6 @@
 import { channelMention, userMention } from "@discordjs/builders";
 import Config from "app-config";
-import { AppState, District, User } from "db";
+import { AppState, District, User } from "data/db";
 import {
   ButtonInteraction,
   InteractionCollector,
@@ -10,7 +10,7 @@ import {
   MessageOptions,
 } from "discord.js";
 import { Format } from "lib";
-import { DistrictSymbol } from "types";
+import { DistrictSymbol } from "data/types";
 import axios from "axios";
 import { Global } from "../Global";
 import UserController from "./UserController";

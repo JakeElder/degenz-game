@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { Connection, ConnectionOptionsReader, createConnection } from "typeorm";
 import findParentDir from "find-parent-dir";
-// import { Achievement as AchievementEnum, DistrictSymbol } from "types";
+// import { Achievement as AchievementEnum, DistrictSymbol } from "./types";
 import { Achievement } from "./entity/Achievement";
 import { AppState } from "./entity/AppState";
 import { District } from "./entity/District";

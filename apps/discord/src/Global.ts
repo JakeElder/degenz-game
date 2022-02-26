@@ -1,4 +1,4 @@
-import { BotSymbol } from "types";
+import { BotSymbol } from "data/types";
 import DiscordBot from "./DiscordBot";
 
 export class Global {

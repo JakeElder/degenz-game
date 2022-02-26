@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { Bot } from "types";
+import { Bot } from "data/types";
 import { Intents } from "discord.js";
 import Config from "app-config";
 import { Format } from "lib";

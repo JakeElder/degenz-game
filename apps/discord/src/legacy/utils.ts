@@ -2,7 +2,7 @@ import { capitalCase } from "change-case";
 import { GuildMember, MessageButton, MessageEmbedOptions } from "discord.js";
 import emoji from "node-emoji";
 import { groupBy } from "lodash";
-import { User, MartItem } from "db";
+import { User, MartItem } from "data/db";
 
 export function calculateTossRake(amount: number) {
   return Math.max(Math.ceil(amount * 0.02), 1);

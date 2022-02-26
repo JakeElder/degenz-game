@@ -1,9 +1,16 @@
-import { connect, disconnect, User, Achievement, District, MartItem } from "db";
+import {
+  connect,
+  disconnect,
+  User,
+  Achievement,
+  District,
+  MartItem,
+} from "data/db";
 import { Db, MongoClient } from "mongodb";
 import Config from "app-config";
 import { groupBy } from "lodash";
 import { PlayerModel, Tenancy } from "./t";
-import { TenancyType } from "types";
+import { TenancyType } from "data/types";
 import util from "util";
 
 let db: Db;

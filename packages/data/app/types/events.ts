@@ -4,10 +4,8 @@ import {
   GuildMember,
   TextChannel,
 } from "discord.js";
-import EventEmitter from "events";
-import TypedEmitter from "typed-emitter";
-import { Bot, TossGame } from "data/types";
-import { User, MartItem, District } from "data/db";
+import { Bot, TossGame } from ".";
+import { District, MartItem, User } from "../db";
 
 type EnterEvent = {
   type: "ENTER";
@@ -199,16 +197,3 @@ type DegenEmitterEvents = EventHandler<BotReadyEvent> &
 export type PickEvent<T extends keyof DegenEmitterEvents> = Parameters<
   DegenEmitterEvents[T]
 >[0];
-
-class DegenEventEmitter extends (EventEmitter as new () => TypedEmitter<DegenEmitterEvents>) {
-  // @ts-ignore
-  emit<E extends keyof DegenEmitterEvents>(
-    event: E,
-    data: Parameters<DegenEmitterEvents[E]>[0]["data"]
-  ): boolean {
-    // @ts-ignore
-    return super.emit(event, { type: event, data });
-  }
-}
-
-export default new DegenEventEmitter();

@@ -8,8 +8,8 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from "typeorm";
-import { DistrictSymbol } from "types";
-import { Tenancy } from "..";
+import { DistrictSymbol } from "../types";
+import { Tenancy } from "../db";
 
 @Entity()
 export class District extends BaseEntity {

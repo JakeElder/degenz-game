@@ -2,7 +2,7 @@ import { CommandInteraction, GuildBasedChannel, GuildMember } from "discord.js";
 import { issueTokens } from "../legacy/db";
 import UserController from "../controllers/UserController";
 import { CommandController } from "../CommandController";
-import { DistrictSymbol } from "types";
+import { DistrictSymbol } from "data/types";
 import AppController from "../controllers/AppController";
 import { Global } from "../Global";
 import WaitingRoomController from "../controllers/WaitingRoomController";

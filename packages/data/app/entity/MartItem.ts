@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from "typeorm";
-import { MartItemOwnership } from "..";
+import { MartItemOwnership } from "../db";
 
 @Entity()
 export class MartItem extends BaseEntity {

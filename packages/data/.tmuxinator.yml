@@ -1,4 +1,4 @@
-name: "Db"
+name: "Data"
 attach: false
 tmux_options: -L degenz
 pre_window: nvm use

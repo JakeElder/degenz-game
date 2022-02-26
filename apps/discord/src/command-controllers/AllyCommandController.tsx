@@ -18,7 +18,7 @@ import {
   getUser,
   getUserByApartment,
 } from "../legacy/db";
-import { Achievement as AchievementEnum } from "types";
+import { Achievement as AchievementEnum } from "data/types";
 import { groupBy } from "lodash";
 import OnboardController from "../controllers/OnboardController";
 import {

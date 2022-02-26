@@ -8,7 +8,7 @@ import {
 import { Format } from "lib";
 import { CommandController } from "../CommandController";
 import { getMartItems, getUser, sellItem } from "../legacy/db";
-import { MartItem } from "db";
+import { MartItem } from "data/db";
 import Events from "../Events";
 
 export default class MartClerkCommandController extends CommandController {

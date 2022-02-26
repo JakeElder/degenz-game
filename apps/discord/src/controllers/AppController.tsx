@@ -8,8 +8,8 @@ import {
   ReactionCollector,
   User as DiscordUser,
 } from "discord.js";
-import { DistrictSymbol, OperationResult } from "types";
-import { AppState, District } from "db";
+import { DistrictSymbol, OperationResult } from "data/types";
+import { AppState, District } from "data/db";
 import { channelMention, userMention } from "@discordjs/builders";
 import equal from "fast-deep-equal";
 import { bots } from "manifest";
@@ -120,7 +120,6 @@ export default class AppController {
     ) {
       await member.roles.add(Config.roleId("VERIFIED"));
       Events.emit("MEMBER_VERIFIED", { member });
-      await AppController.welcome(member);
     }
   }
 

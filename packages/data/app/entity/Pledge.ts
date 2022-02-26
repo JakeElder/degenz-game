@@ -1,26 +1,25 @@
 import {
   Entity,
   PrimaryGeneratedColumn,
+  Column,
   BaseEntity,
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
   DeleteDateColumn,
 } from "typeorm";
-import { MartItem, User } from "..";
+import { User } from "../db";
 
 @Entity()
-export class MartItemOwnership extends BaseEntity {
+export class Pledge extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.martItemOwnerships, {
-    onDelete: "CASCADE",
-  })
-  user: User;
+  @Column()
+  yld: number;
 
-  @ManyToOne(() => MartItem, (martItem) => martItem.ownerships, { eager: true })
-  item: MartItem;
+  @ManyToOne(() => User, (user) => user.pledges, { onDelete: "CASCADE" })
+  user: User;
 
   @CreateDateColumn()
   createdAt: Date;

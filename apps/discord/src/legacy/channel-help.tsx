@@ -1,7 +1,7 @@
 import { GuildMember, TextBasedChannel } from "discord.js";
 import React from "react";
 import Config from "app-config";
-import { Imprisonment, User as UserType } from "db";
+import { Imprisonment, User as UserType } from "data/db";
 import { Channel, User } from "./templates";
 import { currency } from "./utils";
 

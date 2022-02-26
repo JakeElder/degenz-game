@@ -1,4 +1,4 @@
-import { BotSymbol } from "types";
+import { BotSymbol } from "data/types";
 import Events from "./Events";
 import Logger from "./Logger";
 import WorldNotifier from "./WorldNotifier";
@@ -76,6 +76,7 @@ export default class Runner {
 
     Events.on("MEMBER_VERIFIED", (e) => {
       WorldNotifier.memberVerified(e);
+      AppController.welcome(e.data.member);
       Analytics.verify(e);
     });
 

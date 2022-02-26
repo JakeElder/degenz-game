@@ -2,11 +2,10 @@
 
 packages=(
   .
-  packages/types
   packages/app-config
   packages/manifest
   packages/lib
-  packages/db
+  packages/data
   apps/discord
   apps/cli
 )

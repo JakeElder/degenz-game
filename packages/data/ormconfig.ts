@@ -1,7 +1,11 @@
+import dotenv from "dotenv";
+import findConfig from "find-config";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 import pg from "pg-connection-string";
-import Config from "app-config";
 import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
+
+const envFile = process.env.ENV_FILE || ".env";
+dotenv.config({ path: findConfig(envFile)! });
 
 let config: PostgresConnectionOptions;
 
@@ -15,14 +19,16 @@ const base = {
   },
 };
 
-if (Config.env("NODE_ENV") === "development") {
+const env = process.env.NODE_ENV || "development";
+
+if (env === "development") {
   config = {
     ...base,
-    url: Config.env("DATABASE_URL"),
+    url: process.env.DATABASE_URL,
     synchronize: true,
   };
 } else {
-  const db = pg.parse(Config.env("DATABASE_URL"));
+  const db = pg.parse(process.env.DATABASE_URL!);
   config = {
     ...base,
     username: db.user,
@@ -31,7 +37,7 @@ if (Config.env("NODE_ENV") === "development") {
     password: db.password,
     port: db.port ? parseInt(db.port, 10) : undefined,
     ssl: {
-      ca: Config.env("CA_CERT")!.replace(/\\n/g, "\n"),
+      ca: process.env.CA_CERTIFICATE!.replace(/\\n/g, "\n"),
     },
   };
 }

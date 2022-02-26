@@ -1,4 +1,4 @@
-import { Category, Role } from "types";
+import { Category, Role } from "data/types";
 import Config from "app-config";
 import { READ_ONLY } from "app-config/dist/constants";
 import bots from "./bots";

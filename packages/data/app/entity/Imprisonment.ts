@@ -9,7 +9,7 @@ import {
   ManyToOne,
   DeleteDateColumn,
 } from "typeorm";
-import { User } from "..";
+import { User } from "../db";
 
 @Entity()
 export class Imprisonment extends BaseEntity {

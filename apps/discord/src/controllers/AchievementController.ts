@@ -1,6 +1,6 @@
 import { MessageEmbed } from "discord.js";
-import { User } from "db";
-import { Achievement } from "types";
+import { User } from "data/db";
+import { Achievement } from "data/types";
 import { addAchievement, transactBalance } from "../legacy/db";
 import { currency } from "../legacy/utils";
 import { Global } from "../Global";

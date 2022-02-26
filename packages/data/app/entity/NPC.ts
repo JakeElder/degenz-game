@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
   Index,
 } from "typeorm";
-import { BotSymbol } from "types";
+import { BotSymbol } from "../types";
 
 @Entity()
 export class NPC extends BaseEntity {

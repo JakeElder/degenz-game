@@ -1,8 +1,8 @@
 import React from "react";
 import Config from "app-config";
 import { MessageActionRow, MessageEmbed } from "discord.js";
-import { User, Achievement } from "db";
-import { Achievement as AchievementEnum } from "types";
+import { User, Achievement } from "data/db";
+import { Achievement as AchievementEnum } from "data/types";
 import { OnboardDialogAlly, OnboardDialogBB } from "../legacy/onboard-dialog";
 import Utils from "../Utils";
 import { makeButton } from "../legacy/utils";

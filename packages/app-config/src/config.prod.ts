@@ -1,4 +1,9 @@
-import { BotSymbol, CategorySymbol, ChannelSymbol, RoleSymbol } from "types";
+import {
+  BotSymbol,
+  CategorySymbol,
+  ChannelSymbol,
+  RoleSymbol,
+} from "data/types";
 
 const GENERAL = {
   DISTRICT_CAPACITY: 50,

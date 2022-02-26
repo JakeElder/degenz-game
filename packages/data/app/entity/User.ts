@@ -12,8 +12,8 @@ import {
   JoinTable,
 } from "typeorm";
 import { Role, TextChannel } from "discord.js";
-import { Achievement as AchievementEnum } from "types";
-import { Tenancy, MartItemOwnership, Pledge } from "..";
+import { Achievement as AchievementEnum } from "../types";
+import { Tenancy, MartItemOwnership, Pledge } from "../db";
 import { Achievement } from "./Achievement";
 import { Imprisonment } from "./Imprisonment";
 

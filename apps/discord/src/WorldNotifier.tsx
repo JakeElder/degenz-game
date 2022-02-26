@@ -1,17 +1,15 @@
 import React from "react";
-import { NPC } from "db";
-import { BotSymbol, ChannelSymbol } from "types";
+import { NPC } from "data/db";
+import { BotSymbol, ChannelSymbol } from "data/types";
 import memoize from "memoizee";
 import Config from "app-config";
-import { Events } from "./Events";
+import { Event, PickEvent } from "./Events";
 import { Global } from "./Global";
 import Utils from "./Utils";
 import { Format } from "lib";
 import { channelMention, userMention } from "@discordjs/builders";
 
 const { r } = Utils;
-
-type Event<T extends keyof Events> = Parameters<Events[T]>[0];
 
 export default class WorldNotifier {
   static getChannel = memoize(
@@ -24,7 +22,7 @@ export default class WorldNotifier {
 
   static async logToHOP(
     botSymbol: BotSymbol,
-    e: keyof Events,
+    e: Event["type"],
     message: string
   ) {
     const [npc, hop] = await Promise.all([
@@ -37,14 +35,14 @@ export default class WorldNotifier {
   static async logToChannel(
     channelSymbol: ChannelSymbol,
     botSymbol: BotSymbol,
-    e: keyof Events,
+    e: Event["type"],
     message: string
   ) {
     const channel = await this.getChannel(botSymbol, channelSymbol);
     await channel.send(`\`${e}\` ${message}`);
   }
 
-  static async balanceChecked(e: Event<"BALANCE_CHECKED">) {
+  static async balanceChecked(e: PickEvent<"BALANCE_CHECKED">) {
     const message = r(
       <>
         **{e.data.user.displayName}** checked their balance.{" "}
@@ -58,7 +56,7 @@ export default class WorldNotifier {
     ]);
   }
 
-  static async gbtTransferred(e: Event<"GBT_TRANSFERRED">) {
+  static async gbtTransferred(e: PickEvent<"GBT_TRANSFERRED">) {
     const message = r(
       <>
         **{e.data.sender.displayName}** transferred{" "}
@@ -72,7 +70,7 @@ export default class WorldNotifier {
     ]);
   }
 
-  static async memberVerified(e: Event<"MEMBER_VERIFIED">) {
+  static async memberVerified(e: PickEvent<"MEMBER_VERIFIED">) {
     await this.logToHOP(
       "BIG_BROTHER",
       e.type,
@@ -80,7 +78,7 @@ export default class WorldNotifier {
     );
   }
 
-  static async statsChecked(e: Event<"STATS_CHECKED">) {
+  static async statsChecked(e: PickEvent<"STATS_CHECKED">) {
     let message: string;
     if (e.data.checker.id === e.data.checkee.id) {
       message = r(
@@ -101,7 +99,7 @@ export default class WorldNotifier {
     await this.logToHOP("ALLY", e.type, message);
   }
 
-  static async inventoryChecked(e: Event<"INVENTORY_CHECKED">) {
+  static async inventoryChecked(e: PickEvent<"INVENTORY_CHECKED">) {
     let message: string;
     if (e.data.checker.id === e.data.checkee.id) {
       message = r(
@@ -118,7 +116,7 @@ export default class WorldNotifier {
     await this.logToHOP("ALLY", e.type, message);
   }
 
-  static async allegiancePledged(e: Event<"ALLEGIANCE_PLEDGED">) {
+  static async allegiancePledged(e: PickEvent<"ALLEGIANCE_PLEDGED">) {
     const message = r(
       <>
         **{e.data.user.displayName}** pledged their allegiance and received{" "}
@@ -128,7 +126,7 @@ export default class WorldNotifier {
     await this.logToHOP("BIG_BROTHER", e.type, message);
   }
 
-  static async itemEaten(e: Event<"ITEM_EATEN">) {
+  static async itemEaten(e: PickEvent<"ITEM_EATEN">) {
     const message = r(
       <>
         **{e.data.user.displayName}** ate **{e.data.item.name}**.
@@ -137,7 +135,7 @@ export default class WorldNotifier {
     await this.logToHOP("ALLY", e.type, message);
   }
 
-  static async martStockChecked(e: Event<"MART_STOCK_CHECKED">) {
+  static async martStockChecked(e: PickEvent<"MART_STOCK_CHECKED">) {
     const message = r(
       <>
         **{e.data.user.displayName}** checked the stock at{" "}
@@ -147,7 +145,7 @@ export default class WorldNotifier {
     await this.logToHOP("MART_CLERK", e.type, message);
   }
 
-  static async martItemBought(e: Event<"MART_ITEM_BOUGHT">) {
+  static async martItemBought(e: PickEvent<"MART_ITEM_BOUGHT">) {
     const message = r(
       <>
         **{e.data.user.displayName}** bought **{e.data.item.name}**.
@@ -156,7 +154,7 @@ export default class WorldNotifier {
     await this.logToHOP("MART_CLERK", e.type, message);
   }
 
-  static async tossCompleted(e: Event<"TOSS_COMPLETED">) {
+  static async tossCompleted(e: PickEvent<"TOSS_COMPLETED">) {
     let message: string;
     if (e.data.challengee === "HOUSE") {
       message = r(
@@ -181,7 +179,7 @@ export default class WorldNotifier {
     await this.logToHOP("MART_CLERK", e.type, message);
   }
 
-  static async redpillTaken(e: Event<"REDPILL_TAKEN">) {
+  static async redpillTaken(e: PickEvent<"REDPILL_TAKEN">) {
     const message = r(
       <>
         **{e.data.user.displayName}** took the red pill {"\u{1f48a}"}.
@@ -190,7 +188,7 @@ export default class WorldNotifier {
     await this.logToHOP("ALLY", e.type, message);
   }
 
-  static async helpRequested(e: Event<"HELP_REQUESTED">) {
+  static async helpRequested(e: PickEvent<"HELP_REQUESTED">) {
     const message = r(
       <>
         **{e.data.user.displayName}** requested help in{" "}
@@ -200,7 +198,7 @@ export default class WorldNotifier {
     await this.logToHOP("ALLY", e.type, message);
   }
 
-  static async gameEntered(e: Event<"GAME_ENTERED">) {
+  static async gameEntered(e: PickEvent<"GAME_ENTERED">) {
     const message = r(
       <>
         **{e.data.user.displayName}** entered {e.data.district.inactiveEmoji}.

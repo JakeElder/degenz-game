@@ -6,7 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Achievement as AchievementEnum } from "types";
+import { Achievement as AchievementEnum } from "../types";
 
 @Entity()
 export class Achievement extends BaseEntity {

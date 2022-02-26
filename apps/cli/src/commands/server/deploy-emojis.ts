@@ -5,7 +5,7 @@ import Config from "app-config";
 import { promises as fs } from "fs";
 import path from "path";
 import { snakeCase } from "change-case";
-import { NPC, connect, disconnect, District } from "db";
+import { NPC, connect, disconnect, District } from "data/db";
 import { Command } from "../../lib";
 
 async function exists(path: string) {

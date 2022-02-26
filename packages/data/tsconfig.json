@@ -7,6 +7,6 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false
   },
-  "include": ["ormconfig.ts", "app/**/*.ts"],
+  "include": ["ormconfig.ts", "db.ts", "types.ts", "app/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

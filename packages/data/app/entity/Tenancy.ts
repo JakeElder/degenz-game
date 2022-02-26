@@ -8,8 +8,8 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from "typeorm";
-import { TenancyType } from "types";
-import { User, District } from "..";
+import { TenancyType } from "../types";
+import { User, District } from "../db";
 
 @Entity()
 export class Tenancy extends BaseEntity {

@@ -1,9 +1,0 @@
-name: "Types"
-attach: false
-tmux_options: -L degenz
-pre_window: nvm use
-
-windows:
-  - Vim: vim
-  - Terminal:
-  - Dev: yarn dev

@@ -1,5 +1,5 @@
 import Config from "app-config";
-import { AppState, District, Pledge, User } from "db";
+import { AppState, District, Pledge, User } from "data/db";
 import {
   ButtonInteraction,
   InteractionCollector,

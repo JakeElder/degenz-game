@@ -2,9 +2,9 @@ import { GuildMember } from "discord.js";
 import Config from "app-config";
 import { paramCase } from "change-case";
 import { userMention } from "@discordjs/builders";
-import { DistrictSymbol } from "types";
-import { User } from "db";
+import { DistrictSymbol } from "data/types";
 import Events from "../Events";
+import { User } from "data/db";
 import Utils from "../Utils";
 import {
   addUser,

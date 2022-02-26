@@ -7,12 +7,12 @@ import {
   Tenancy,
   User,
   District,
-} from "db";
+} from "data/db";
 import {
   DistrictSymbol,
   TenancyType,
   Achievement as AchievementEnum,
-} from "types";
+} from "data/types";
 import { In } from "typeorm";
 
 export async function getMartItems() {

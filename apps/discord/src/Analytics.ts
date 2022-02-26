@@ -1,9 +1,7 @@
-import { Events } from "./Events";
+import { PickEvent } from "./Events";
 import Mixpanel from "mixpanel";
 import Config from "app-config";
 import { capitalCase } from "change-case";
-
-type Event<T extends keyof Events> = Parameters<Events[T]>[0];
 
 export default class Analytics {
   static mixpanel = Mixpanel.init(Config.env("MIXPANEL_PROJECT_TOKEN"));
@@ -19,7 +17,7 @@ export default class Analytics {
     });
   }
 
-  static enter(e: Event<"ENTER">) {
+  static enter(e: PickEvent<"ENTER">) {
     const [$first_name, $last_name] = e.data.member.user.tag.split("#");
     this.mixpanel.people.set(e.data.member.id, {
       $first_name,
@@ -29,15 +27,15 @@ export default class Analytics {
     });
   }
 
-  static verify(e: Event<"MEMBER_VERIFIED">) {
+  static verify(e: PickEvent<"MEMBER_VERIFIED">) {
     this.generic(capitalCase("VERIFY"), e.data.member.id);
   }
 
-  static redpillTaken(e: Event<"REDPILL_TAKEN">) {
+  static redpillTaken(e: PickEvent<"REDPILL_TAKEN">) {
     this.generic(capitalCase("REDPILL"), e.data.user.discordId);
   }
 
-  static helpRequested(e: Event<"HELP_REQUESTED">) {
+  static helpRequested(e: PickEvent<"HELP_REQUESTED">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
       distinct_id: e.data.user.discordId,
@@ -46,7 +44,7 @@ export default class Analytics {
     });
   }
 
-  static statsChecked(e: Event<"STATS_CHECKED">) {
+  static statsChecked(e: PickEvent<"STATS_CHECKED">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
       distinct_id: e.data.checker.discordId,
@@ -55,7 +53,7 @@ export default class Analytics {
     });
   }
 
-  static balanceChecked(e: Event<"BALANCE_CHECKED">) {
+  static balanceChecked(e: PickEvent<"BALANCE_CHECKED">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
       distinct_id: e.data.user.discordId,
@@ -63,7 +61,7 @@ export default class Analytics {
     });
   }
 
-  static gbtTransferred(e: Event<"GBT_TRANSFERRED">) {
+  static gbtTransferred(e: PickEvent<"GBT_TRANSFERRED">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
       distinct_id: e.data.sender.discordId,
@@ -72,11 +70,11 @@ export default class Analytics {
     });
   }
 
-  static martStockChecked(e: Event<"MART_STOCK_CHECKED">) {
+  static martStockChecked(e: PickEvent<"MART_STOCK_CHECKED">) {
     this.generic(capitalCase("MART_STOCK_CHECKED"), e.data.user.discordId);
   }
 
-  static martItemBought(e: Event<"MART_ITEM_BOUGHT">) {
+  static martItemBought(e: PickEvent<"MART_ITEM_BOUGHT">) {
     this.mixpanel.track(capitalCase("MART_ITEM_PURCHASED"), {
       distinct_id: e.data.user.discordId,
       item: e.data.item.name,
@@ -84,14 +82,14 @@ export default class Analytics {
     });
   }
 
-  static itemEaten(e: Event<"ITEM_EATEN">) {
+  static itemEaten(e: PickEvent<"ITEM_EATEN">) {
     this.mixpanel.track(capitalCase(e.type), {
       distinct_id: e.data.user.discordId,
       item: e.data.item.name,
     });
   }
 
-  static inventoryChecked(e: Event<"INVENTORY_CHECKED">) {
+  static inventoryChecked(e: PickEvent<"INVENTORY_CHECKED">) {
     this.mixpanel.track(capitalCase(e.type), {
       distinct_id: e.data.checker.discordId,
       checkee_id: e.data.checkee.discordId,
@@ -100,7 +98,7 @@ export default class Analytics {
     });
   }
 
-  static tossCompleted(e: Event<"TOSS_COMPLETED">) {
+  static tossCompleted(e: PickEvent<"TOSS_COMPLETED">) {
     const [challengee_id, challengee_name] =
       e.data.challengee === "HOUSE"
         ? ["HOUSE", "HOUSE"]
@@ -116,21 +114,21 @@ export default class Analytics {
     });
   }
 
-  static firstWorldChoice(e: Event<"FIRST_WORLD_CHOICE">) {
+  static firstWorldChoice(e: PickEvent<"FIRST_WORLD_CHOICE">) {
     this.mixpanel.track(capitalCase(e.type), {
       distinct_id: e.data.user.discordId,
       choice: e.data.choice,
     });
   }
 
-  static allegiancePledged(e: Event<"ALLEGIANCE_PLEDGED">) {
+  static allegiancePledged(e: PickEvent<"ALLEGIANCE_PLEDGED">) {
     this.mixpanel.track(capitalCase(e.type), {
       distinct_id: e.data.user.discordId,
       yld: e.data.yld,
     });
   }
 
-  static gameEntered(e: Event<"GAME_ENTERED">) {
+  static gameEntered(e: PickEvent<"GAME_ENTERED">) {
     this.mixpanel.track(capitalCase(e.type), {
       distinct_id: e.data.user.discordId,
       district: e.data.district.symbol,

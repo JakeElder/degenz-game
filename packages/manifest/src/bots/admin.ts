@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { Bot, DistrictSymbol } from "types";
+import { Bot, DistrictSymbol } from "data/types";
 import Config from "app-config";
 import { Format } from "lib";
 import { Intents } from "discord.js";

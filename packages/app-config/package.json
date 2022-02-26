@@ -19,6 +19,6 @@
     "discord.js": "^13.6.0",
     "dotenv": "^16.0.0",
     "find-config": "^1.0.0",
-    "types": "*"
+    "data": "*"
   }
 }
