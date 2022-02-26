@@ -7,7 +7,7 @@ import {
   ManyToOne,
   DeleteDateColumn,
 } from "typeorm";
-import { MartItem, User } from "../db";
+import { MartItem, User } from "..";
 
 @Entity()
 export class MartItemOwnership extends BaseEntity {

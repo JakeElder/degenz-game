@@ -5,6 +5,7 @@ import findParentDir from "find-parent-dir";
 import { Achievement } from "./entity/Achievement";
 import { AppState } from "./entity/AppState";
 import { District } from "./entity/District";
+import { Event } from "./entity/Event";
 import { Imprisonment } from "./entity/Imprisonment";
 import { MartItem } from "./entity/MartItem";
 import { MartItemOwnership } from "./entity/MartItemOwnership";
@@ -305,6 +306,7 @@ export {
   Achievement,
   AppState,
   District,
+  Event,
   Imprisonment,
   MartItem,
   MartItemOwnership,

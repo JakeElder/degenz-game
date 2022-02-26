@@ -9,7 +9,7 @@ import {
   OneToMany,
 } from "typeorm";
 import { DistrictSymbol } from "../types";
-import { Tenancy } from "../db";
+import { Tenancy } from "..";
 
 @Entity()
 export class District extends BaseEntity {

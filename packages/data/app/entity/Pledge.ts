@@ -8,7 +8,7 @@ import {
   ManyToOne,
   DeleteDateColumn,
 } from "typeorm";
-import { User } from "../db";
+import { User } from "..";
 
 @Entity()
 export class Pledge extends BaseEntity {

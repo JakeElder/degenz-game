@@ -1,24 +1,20 @@
 import {
   Entity,
   PrimaryGeneratedColumn,
-  Column,
   BaseEntity,
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
   DeleteDateColumn,
 } from "typeorm";
-import { User } from "../db";
+import { User } from "..";
 
 @Entity()
-export class Pledge extends BaseEntity {
+export class Event extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  yld: number;
-
-  @ManyToOne(() => User, (user) => user.pledges, { onDelete: "CASCADE" })
+  @ManyToOne(() => User, (user) => user.events, { onDelete: "CASCADE" })
   user: User;
 
   @CreateDateColumn()

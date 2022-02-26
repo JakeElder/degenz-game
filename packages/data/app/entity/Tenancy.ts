@@ -9,7 +9,7 @@ import {
   ManyToOne,
 } from "typeorm";
 import { TenancyType } from "../types";
-import { User, District } from "../db";
+import { User, District } from "..";
 
 @Entity()
 export class Tenancy extends BaseEntity {

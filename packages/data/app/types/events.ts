@@ -5,7 +5,7 @@ import {
   TextChannel,
 } from "discord.js";
 import { Bot, TossGame } from ".";
-import { District, MartItem, User } from "../db";
+import { District, MartItem, User } from "..";
 
 type EnterEvent = {
   type: "ENTER";

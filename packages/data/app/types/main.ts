@@ -2,7 +2,7 @@ import { ClientOptions, GuildMember, OverwriteResolvable } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { APIApplicationCommandPermission } from "discord-api-types/v9";
 import { SetOptional } from "type-fest";
-import { User } from "../db";
+import { User } from "..";
 
 export type EnvVars = SetOptional<
   Record<
