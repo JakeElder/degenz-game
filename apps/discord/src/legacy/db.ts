@@ -19,7 +19,11 @@ export async function getMartItems() {
 }
 
 export async function getLeaders(take: number = 50) {
-  return User.find({ order: { gbt: -1 }, take });
+  return User.find({
+    where: { inGame: true },
+    order: { gbt: -1 },
+    take,
+  });
 }
 
 export async function getUser(id: string) {
