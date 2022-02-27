@@ -9,7 +9,7 @@ import {
 import {
   BotSymbolEnum,
   ChannelSymbolEnum,
-  PersistentMessageSymbol,
+  PersistentMessageSymbolEnum,
 } from "../types";
 
 @Entity()
@@ -17,16 +17,16 @@ export class PersistentMessage extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: "enum", enum: PersistentMessageSymbol, unique: true })
-  symbol: PersistentMessageSymbol;
+  @Column({ type: "enum", enum: PersistentMessageSymbolEnum, unique: true })
+  symbol: PersistentMessageSymbolEnum;
 
-  @Column()
+  @Column({ nullable: true })
   messageId: string;
 
-  @Column({ type: "enum", enum: ChannelSymbolEnum, unique: true })
+  @Column({ type: "enum", enum: ChannelSymbolEnum })
   channelSymbol: ChannelSymbolEnum;
 
-  @Column({ type: "enum", enum: BotSymbolEnum, unique: true })
+  @Column({ type: "enum", enum: BotSymbolEnum })
   maintainerSymbol: BotSymbolEnum;
 
   @CreateDateColumn()

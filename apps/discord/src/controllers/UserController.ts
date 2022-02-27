@@ -13,6 +13,7 @@ import {
 } from "../legacy/db";
 import { Global } from "../Global";
 import WaitingRoomController from "./WaitingRoomController";
+import WelcomeRoomController from "./WelcomeRoomController";
 
 export default class UserController {
   static async add(member: GuildMember) {
@@ -90,7 +91,10 @@ export default class UserController {
 
     await user.save();
 
-    await WaitingRoomController.update();
+    await Promise.all([
+      WaitingRoomController.update(),
+      WelcomeRoomController.updateWelcomeMessage(),
+    ]);
 
     Events.emit("APARTMENT_ALLOCATED", { user, onboard });
 

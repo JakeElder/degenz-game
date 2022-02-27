@@ -148,9 +148,12 @@ export enum Achievement {
   MART_ITEM_BOUGHT = "MART_ITEM_BOUGHT",
 }
 
-export enum PersistentMessageSymbol {
-  WELCOME_MESSAGE = "WELCOME_MESSAGE",
+export enum PersistentMessageSymbolEnum {
+  WELCOME_INFO = "WELCOME_INFO",
+  WELCOME_NOTIFICATION = "WELCOME_NOTIFICATION",
 }
+
+export type PersistentMessageSymbol = `${PersistentMessageSymbolEnum}`;
 
 type SuccessfulOperationResult = {
   success: true;

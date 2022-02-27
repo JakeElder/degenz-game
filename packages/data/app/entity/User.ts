@@ -62,7 +62,7 @@ export class User extends BaseEntity {
   @JoinTable()
   achievements: Achievement[];
 
-  @Column({ type: "timestamptz", nullable: true })
+  @Column({ type: "timestamp", nullable: true })
   welcomeMentionMadeAt: Date;
 
   @CreateDateColumn()

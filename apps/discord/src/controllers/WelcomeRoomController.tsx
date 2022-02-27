@@ -1,19 +1,18 @@
 import React from "react";
 import { channelMention, userMention } from "@discordjs/builders";
 import Config from "app-config";
-import { AppState, NPC, User } from "data/db";
-import {
-  GuildMember,
-  Message,
-  MessageEmbedOptions,
-  MessageOptions,
-} from "discord.js";
+import { NPC, User } from "data/db";
+import { GuildMember, MessageEmbedOptions, MessageOptions } from "discord.js";
 import { Format } from "lib";
 import pluralize from "pluralize";
 import random from "random";
 import { getBorderCharacters, table } from "table";
 import { Global } from "../Global";
 import Utils from "../Utils";
+import { PersistentMessageController } from "./PersistentMessageController";
+import { In, MoreThan, Not } from "typeorm";
+import listify from "listify";
+import { DateTime } from "luxon";
 
 const { r } = Utils;
 
@@ -41,9 +40,8 @@ type WelcomeMessageData = {
 
 export default class WelcomeRoomController {
   static intervalId: NodeJS.Timer;
-  static maxMentions = 30;
+  static maxMentions = 50;
   static minMentions = 10;
-  static newUntil = 1 * 60 * 10; // 10 minutes as seconds
 
   static async init() {
     await this.updateInfoMessage();
@@ -62,7 +60,34 @@ export default class WelcomeRoomController {
   }
 
   static async computeWelcomeData(): Promise<WelcomeMessageData> {
-    return { newestUsers: [] };
+    const cutoff = DateTime.now().minus({ minutes: 20 });
+
+    const users = await User.find({
+      where: { createdAt: MoreThan(cutoff) },
+      order: { createdAt: -1 },
+      take: this.maxMentions,
+    });
+
+    let extra: User[] = [];
+
+    if (users.length < this.minMentions) {
+      extra = await User.find({
+        where: { id: Not(In(users.map((u) => u.id))) },
+        order: { createdAt: -1 },
+        take: this.minMentions - users.length,
+      });
+    }
+
+    return {
+      newestUsers: [...users, ...extra].map((u) => {
+        return {
+          tag: u.welcomeMentionMadeAt === null,
+          displayName: u.displayName,
+          discordId: u.discordId,
+          id: u.id,
+        };
+      }),
+    };
   }
 
   static async computeInfoData(): Promise<InfoMessageData> {
@@ -89,10 +114,12 @@ export default class WelcomeRoomController {
   }
 
   static makeStrengthBar(strength: number, width: number = 34) {
-    // prettier-ignore
     const s = [
-      ['\u2588'.repeat((width - 4) * (strength / 100)), `|${strength.toString().padStart(3, ' ')}`]
-    ]
+      [
+        "\u2588".repeat((width - 4) * (strength / 100)),
+        `|${strength.toString().padStart(3, " ")}`,
+      ],
+    ];
 
     const bar = table(s, {
       border: getBorderCharacters("void"),
@@ -125,10 +152,8 @@ export default class WelcomeRoomController {
     const w1 = wa - (w0 + w2);
 
     const attributes = table(s, {
-      // border: getBorderCharacters("void"),
       columnDefault: { paddingLeft: 0, paddingRight: 0, alignment: "center" },
       drawVerticalLine: (idx) => [1, 2].includes(idx),
-      // drawHorizontalLine: () => false,
       columns: [
         { width: w0 },
         { width: w1, alignment: "center" },
@@ -187,59 +212,38 @@ export default class WelcomeRoomController {
     const bb = Global.bot("BIG_BROTHER");
     await bb.ready;
 
-    const state = await AppState.findOneOrFail();
-    const c = await bb.getTextChannel(Config.channelId("WELCOME_ROOM"));
-
-    let message: Message;
-    let isNew = false;
-
-    const s = this.makeInfoMessage(data);
-
-    const makeNew = async () => {
-      isNew = true;
-      return c.send(s);
-    };
-
-    if (!state.welcomeInfoMessageId) {
-      message = await makeNew();
-    } else {
-      try {
-        message = await c.messages.fetch(state.welcomeInfoMessageId);
-        await message.edit(s);
-      } catch (e) {
-        message = await makeNew();
-      }
-    }
-
-    if (isNew) {
-      await AppState.setWelcomeInfoMessageId(message.id);
-    }
+    const message = this.makeInfoMessage(data);
+    PersistentMessageController.set("WELCOME_INFO", message);
   }
 
   static async setWelcomeMessage(data: WelcomeMessageData) {
     const bb = Global.bot("BIG_BROTHER");
     await bb.ready;
 
-    const c = await bb.getTextChannel(Config.channelId("WELCOME_ROOM"));
-
-    if (data.newestUsers.length === 0) {
-      return;
-    }
-
     const qualifier = pluralize("comrade", data.newestUsers.length);
     const mentionList = data.newestUsers.map((u) =>
       u.tag ? userMention(u.discordId) : `**${u.displayName}**`
     );
+
     const waitingRoom = channelMention(Config.channelId("WAITING_ROOM"));
     const generalRoom = channelMention(Config.channelId("GENERAL"));
 
-    await c.send(
-      r(
-        <>
-          **Welcome, to our newest {qualifier} - {mentionList.join(" ")}**. To
-          join the game, go to {waitingRoom}, or go and chat in {generalRoom}.
-        </>
-      )
+    await PersistentMessageController.set(
+      "WELCOME_NOTIFICATION",
+      {
+        content: r(
+          <>
+            **WELCOME, to our newest {qualifier}** - {listify(mentionList)}. To
+            join the game, go to {waitingRoom}, or go and chat in {generalRoom}.
+          </>
+        ),
+      },
+      { replace: true }
+    );
+
+    await User.update(
+      { id: In(data.newestUsers.filter((u) => u.tag).map((u) => u.id)) },
+      { welcomeMentionMadeAt: new Date() }
     );
   }
 }
