@@ -1,0 +1,9 @@
+name: "Web"
+attach: false
+tmux_options: -L degenz
+pre_window: nvm use
+
+windows:
+  - Vim: vim
+  - Terminal:
+  - Server: yarn dev
