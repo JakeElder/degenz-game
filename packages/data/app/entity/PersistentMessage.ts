@@ -18,16 +18,16 @@ export class PersistentMessage extends BaseEntity {
   id: number;
 
   @Column({ type: "enum", enum: PersistentMessageSymbolEnum, unique: true })
-  symbol: PersistentMessageSymbolEnum;
+  symbol: `${PersistentMessageSymbolEnum}`;
 
   @Column({ nullable: true })
   messageId: string;
 
   @Column({ type: "enum", enum: ChannelSymbolEnum })
-  channelSymbol: ChannelSymbolEnum;
+  channelSymbol: `${ChannelSymbolEnum}`;
 
   @Column({ type: "enum", enum: BotSymbolEnum })
-  maintainerSymbol: BotSymbolEnum;
+  maintainerSymbol: `${BotSymbolEnum}`;
 
   @CreateDateColumn()
   createdAt: Date;
