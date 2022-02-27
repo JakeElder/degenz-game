@@ -10,6 +10,7 @@ import HallOfAllegianceController from "./controllers/HallOfAllegianceController
 import Analytics from "./Analytics";
 import UserController from "./controllers/UserController";
 import WelcomeRoomController from "./controllers/WelcomeRoomController";
+import { LeaderboardController } from "./controllers/LeaderboardController";
 
 export default class Runner {
   constructor(private bots: DiscordBot[]) {
@@ -33,7 +34,7 @@ export default class Runner {
         WaitingRoomController.init();
         HallOfAllegianceController.init();
         AppController.setVerifyMessage();
-        AppController.setLeaderboardMessage();
+        LeaderboardController.init();
       }
     });
 

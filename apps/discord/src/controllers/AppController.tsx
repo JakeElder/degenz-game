@@ -1,4 +1,3 @@
-import React from "react";
 import Config from "app-config";
 import {
   GuildBasedChannel,
@@ -10,22 +9,12 @@ import {
 } from "discord.js";
 import { DistrictSymbol, OperationResult } from "data/types";
 import { AppState, District } from "data/db";
-import { channelMention, userMention } from "@discordjs/builders";
-import equal from "fast-deep-equal";
 import { bots } from "manifest";
 import { Global } from "../Global";
-import { getLeaders } from "../legacy/db";
-import { makeLeaderboardEmbed } from "../legacy/utils";
 import Events from "../Events";
-import Utils from "../Utils";
 import WaitingRoomController from "./WaitingRoomController";
 
-const { r } = Utils;
-
 export default class AppController {
-  static leaderboardCronInterval: NodeJS.Timer;
-  static leaderboardTableData: any = [];
-  static leaderboardMessage: Message;
   static reactionCollector: ReactionCollector;
 
   static async bindEnterListener() {
@@ -45,44 +34,6 @@ export default class AppController {
   static async closeDistrict(districtSymbol: DistrictSymbol) {
     await District.close(districtSymbol);
     await WaitingRoomController.update();
-  }
-
-  static async setLeaderboardMessage() {
-    const bb = Global.bot("BIG_BROTHER");
-
-    const state = await AppState.findOneOrFail();
-    const c = await bb.getTextChannel(Config.channelId("LEADERBOARD"));
-
-    try {
-      this.leaderboardMessage = await c.messages.fetch(
-        `${state.leaderboardMessageId}`
-      );
-    } catch (e) {
-      this.leaderboardMessage = await c.send({
-        embeds: [{ description: "-" }],
-      });
-      await AppState.setLeaderboardMessageId(this.leaderboardMessage.id);
-    }
-
-    this.leaderboardCronInterval = setInterval(
-      () => this.updateLeaderboard(),
-      1000
-    );
-  }
-
-  static async updateLeaderboard() {
-    const leaders = await getLeaders();
-    const tableData = [...leaders.map((l) => [l.displayName, l.gbt])];
-
-    if (equal(this.leaderboardTableData, tableData)) {
-      return;
-    }
-
-    await this.leaderboardMessage.edit({
-      embeds: [makeLeaderboardEmbed(leaders)],
-    });
-
-    this.leaderboardTableData = tableData;
   }
 
   static async setVerifyMessage() {

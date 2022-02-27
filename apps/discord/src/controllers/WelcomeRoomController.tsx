@@ -41,12 +41,12 @@ type WelcomeMessageData = {
 export default class WelcomeRoomController {
   static intervalId: NodeJS.Timer;
   static maxMentions = 50;
-  static minMentions = 10;
+  static minMentions = 5;
 
   static async init() {
     await this.updateInfoMessage();
     await this.updateWelcomeMessage();
-    this.intervalId = setInterval(() => this.updateInfoMessage(), 10_000);
+    this.intervalId = setInterval(() => this.updateInfoMessage(), 6000);
   }
 
   static async updateInfoMessage() {
@@ -172,6 +172,8 @@ export default class WelcomeRoomController {
           color: data.color,
           image: {
             url: data.imageURL,
+            height: 680,
+            width: 680,
           },
           author: {
             name: data.member.displayName,

@@ -151,6 +151,8 @@ export enum Achievement {
 export enum PersistentMessageSymbolEnum {
   WELCOME_INFO = "WELCOME_INFO",
   WELCOME_NOTIFICATION = "WELCOME_NOTIFICATION",
+  GBT_LEADERBOARD_1 = "GBT_LEADERBOARD_1",
+  GBT_LEADERBOARD_2 = "GBT_LEADERBOARD_2",
 }
 
 export type PersistentMessageSymbol = `${PersistentMessageSymbolEnum}`;
