@@ -123,20 +123,6 @@ export default class AppController {
     }
   }
 
-  static async welcome(member: GuildMember) {
-    const bb = Global.bot("BIG_BROTHER");
-    const c = await bb.getTextChannel(Config.channelId("WELCOME_ROOM"));
-    await c.send(
-      r(
-        <>
-          **WELCOME, COMRADE {userMention(member.id)}**. To join the game, go to{" "}
-          {channelMention(Config.channelId("WAITING_ROOM"))}, or ask any
-          questions in {channelMention(Config.channelId("GENERAL"))}.
-        </>
-      )
-    );
-  }
-
   static async sendMessageFromBot({
     as,
     channel,

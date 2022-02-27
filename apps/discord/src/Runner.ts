@@ -8,6 +8,8 @@ import AppController from "./controllers/AppController";
 import WaitingRoomController from "./controllers/WaitingRoomController";
 import HallOfAllegianceController from "./controllers/HallOfAllegianceController";
 import Analytics from "./Analytics";
+import UserController from "./controllers/UserController";
+import WelcomeRoomController from "./controllers/WelcomeRoomController";
 
 export default class Runner {
   constructor(private bots: DiscordBot[]) {
@@ -24,6 +26,7 @@ export default class Runner {
 
       if (e.data.bot.symbol === "ADMIN") {
         AppController.bindEnterListener();
+        WelcomeRoomController.init();
       }
 
       if (e.data.bot.symbol === "BIG_BROTHER") {
@@ -74,9 +77,10 @@ export default class Runner {
       Analytics.itemEaten(e);
     });
 
-    Events.on("MEMBER_VERIFIED", (e) => {
+    Events.on("MEMBER_VERIFIED", async (e) => {
       WorldNotifier.memberVerified(e);
-      AppController.welcome(e.data.member);
+      await UserController.add(e.data.member);
+      WelcomeRoomController.updateWelcomeMessage();
       Analytics.verify(e);
     });
 

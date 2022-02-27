@@ -7,7 +7,7 @@
     "dev": "rm -rf dist && concurrently --raw \"yarn watch\" \"wait-on dist && yarn watch:dist\"",
     "watch": "tsc --watch",
     "watch:dist": "nodemon --quiet --watch dist --exec \"yarn copy-config\"",
-    "copy-config": "cp dist/ormconfig.js . && rm dist/ormconfig.js",
+    "copy-config": "wait-on dist/ormconfig.js && cp dist/ormconfig.js . && rm dist/ormconfig.js",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

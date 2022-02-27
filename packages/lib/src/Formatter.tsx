@@ -1,3 +1,4 @@
+import pluralize from "pluralize";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import TurndownService from "turndown";
@@ -11,29 +12,52 @@ export default class Formatter {
     return md;
   }
 
+  static codeBlock(content: string | number) {
+    return `\`\`\`${content}\`\`\``;
+  }
+
   static currency(
     amount: number | null,
-    props: { emoji?: boolean; symbol?: boolean; bold?: boolean } = {}
+    props: {
+      emoji?: boolean;
+      symbol?: boolean;
+      bold?: boolean;
+      full?: boolean;
+      plural?: boolean;
+      bare?: boolean;
+    } = {}
   ) {
-    const { symbol, emoji, bold } = {
+    const { symbol, emoji, bold, full, plural, bare } = {
       symbol: true,
       emoji: true,
       bold: true,
+      full: false,
+      bare: false,
       ...props,
     };
 
-    if (amount === null) {
-      return "$GBT";
+    if (bare && amount !== null) {
+      return amount.toLocaleString();
     }
 
-    let t = `${amount}`;
+    let base = full ? "GoodBoyToken" : "$GBT";
+
+    if (full && (amount !== null || plural)) {
+      base = pluralize(base);
+    }
+
+    if (amount === null) {
+      return base;
+    }
+
+    let t = `${amount.toLocaleString()}`;
 
     if (bold) {
       t = `**${t}**`;
     }
 
     if (symbol) {
-      t += " `$GBT`";
+      t += ` \`${base}\``;
     }
 
     if (emoji) {

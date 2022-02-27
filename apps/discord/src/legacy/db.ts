@@ -1,4 +1,3 @@
-import { GuildMember } from "discord.js";
 import {
   Achievement,
   Imprisonment,
@@ -116,44 +115,6 @@ export async function sellItem(item: MartItem, memberId: User["discordId"]) {
   ]);
 
   return { success: true };
-}
-
-export async function addUser({
-  member,
-  apartmentId,
-  districtSymbol,
-  tokens = 0,
-}: {
-  member: GuildMember;
-  apartmentId: string;
-  districtSymbol: DistrictSymbol;
-  tokens?: number;
-}) {
-  const district = await District.findOneOrFail({
-    where: { symbol: districtSymbol },
-  });
-
-  const user = User.create({
-    discordId: member.id,
-    displayName: member.displayName,
-    gbt: tokens,
-    strength: 100,
-    tenancies: [
-      {
-        discordChannelId: apartmentId,
-        type: TenancyType.AUTHORITY,
-        district,
-      },
-    ],
-  });
-
-  await user.save({ reload: true });
-  return user;
-}
-
-export async function deleteUser(member: GuildMember) {
-  const user = await User.findOneOrFail({ where: { discordId: member.id } });
-  await user.remove();
 }
 
 export async function getAvailableCellNumber() {

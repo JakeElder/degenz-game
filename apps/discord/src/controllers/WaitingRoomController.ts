@@ -159,9 +159,9 @@ export default class WaitingRoomController {
   }
 
   static async handleButtonPress(i: ButtonInteraction) {
-    const user = await User.findOne({ where: { discordId: i.user.id } });
+    const user = await User.findOneOrFail({ where: { discordId: i.user.id } });
 
-    if (user) {
+    if (user.inGame) {
       await i.reply({
         content: `${userMention(user.discordId)} - You're already a Degen.`,
         ephemeral: true,

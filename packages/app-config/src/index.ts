@@ -1,3 +1,3 @@
-import ConfigManager from "./ConfigManager";
+import Config from "./ConfigManager";
 
-export default ConfigManager;
+export default Config;

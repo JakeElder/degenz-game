@@ -25,6 +25,9 @@ export class AppState extends BaseEntity {
   @Column({ type: "text", nullable: true })
   pledgeMessageId: Message["id"] | null;
 
+  @Column({ type: "text", nullable: true })
+  welcomeInfoMessageId: Message["id"] | null;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -73,5 +76,16 @@ export class AppState extends BaseEntity {
   static async getEntryMessageId() {
     const row = await this.findOneOrFail();
     return row.entryMessageId;
+  }
+
+  static async setWelcomeInfoMessageId(id: Message["id"]) {
+    const row = await this.findOneOrFail();
+    row.welcomeInfoMessageId = id;
+    await row.save();
+  }
+
+  static async getWelcomeInfoMessageId() {
+    const row = await this.findOneOrFail();
+    return row.welcomeInfoMessageId;
   }
 }

@@ -2,13 +2,11 @@ import { GuildMember } from "discord.js";
 import Config from "app-config";
 import { paramCase } from "change-case";
 import { userMention } from "@discordjs/builders";
-import { DistrictSymbol } from "data/types";
+import { DistrictSymbol, TenancyType } from "data/types";
 import Events from "../Events";
-import { User } from "data/db";
+import { District, Tenancy, User } from "data/db";
 import Utils from "../Utils";
 import {
-  addUser,
-  deleteUser,
   getAvailableCellNumber,
   getTenanciesInDistrict,
   getUser,
@@ -17,6 +15,15 @@ import { Global } from "../Global";
 import WaitingRoomController from "./WaitingRoomController";
 
 export default class UserController {
+  static async add(member: GuildMember) {
+    const user = User.create({
+      discordId: member.id,
+      displayName: member.displayName,
+    });
+    await user.save();
+    return user;
+  }
+
   static async init(
     memberId: GuildMember["id"],
     onboard: boolean = true,
@@ -29,8 +36,8 @@ export default class UserController {
       User.findOne({ where: { discordId: memberId } }),
     ]);
 
-    if (typeof user !== "undefined") {
-      return { success: false, code: "ALREADY_INITIATED" };
+    if (typeof user === "undefined") {
+      return { success: false, code: "USER_NOT_FOUND" };
     }
 
     if (districtSymbol === null) {
@@ -67,17 +74,21 @@ export default class UserController {
       }
     );
 
-    user = await addUser({
-      member,
-      apartmentId: apartment.id,
-      districtSymbol,
-      tokens: onboard ? 0 : 100,
+    const district = await District.findOneOrFail({
+      where: { symbol: districtSymbol },
     });
 
-    if (user === null) {
-      await apartment.delete();
-      return { success: false, code: "USER_NOT_ADDED_DB" };
-    }
+    user.gbt = onboard ? 0 : 100;
+    user.inGame = true;
+    user.tenancies = [
+      Tenancy.create({
+        discordChannelId: apartment.id,
+        type: TenancyType.AUTHORITY,
+        district,
+      }),
+    ];
+
+    await user.save();
 
     await WaitingRoomController.update();
 
@@ -113,8 +124,11 @@ export default class UserController {
       Config.roleId("VERIFIED"),
     ]);
 
-    // Delete from db
-    await deleteUser(member);
+    // Remove from game
+    user.inGame = false;
+    user.gbt = 0;
+
+    await Promise.all([user.save(), Tenancy.delete({ user })]);
 
     await WaitingRoomController.update();
 

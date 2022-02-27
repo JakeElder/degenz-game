@@ -5,11 +5,11 @@ import findParentDir from "find-parent-dir";
 import { Achievement } from "./entity/Achievement";
 import { AppState } from "./entity/AppState";
 import { District } from "./entity/District";
-import { Event } from "./entity/Event";
 import { Imprisonment } from "./entity/Imprisonment";
 import { MartItem } from "./entity/MartItem";
 import { MartItemOwnership } from "./entity/MartItemOwnership";
 import { NPC } from "./entity/NPC";
+import { PersistentMessage } from "./entity/PersistentMessage";
 import { Pledge } from "./entity/Pledge";
 import { Tenancy } from "./entity/Tenancy";
 import { User } from "./entity/User";
@@ -306,11 +306,11 @@ export {
   Achievement,
   AppState,
   District,
-  Event,
   Imprisonment,
   MartItem,
   MartItemOwnership,
   NPC,
+  PersistentMessage,
   Pledge,
   Tenancy,
   User,

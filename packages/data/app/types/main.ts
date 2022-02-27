@@ -6,50 +6,45 @@ import { User } from "..";
 
 export type EnvVars = SetOptional<
   Record<
-    | "ADMIN_BOT_TOKEN"
-    | "ALLY_BOT_TOKEN"
-    | "ARMORY_CLERK_BOT_TOKEN"
-    | "BANKER_BOT_TOKEN"
-    | "BIG_BROTHER_BOT_TOKEN"
-    | "DATABASE_URL"
-    | "MART_CLERK_BOT_TOKEN"
-    | "MIXPANEL_PROJECT_TOKEN"
-    | "MONGO_URI"
-    | "NODE_ENV"
-    | "PRISONER_BOT_TOKEN"
-    | "ROLLBAR_TOKEN"
-    | "SENSEI_BOT_TOKEN"
-    | "TOSSER_BOT_TOKEN"
+    | `${BotSymbol}_BOT_TOKEN`
     | "CA_CERT"
-    | "WARDEN_BOT_TOKEN",
+    | "DATABASE_URL"
+    | "MONGO_URI"
+    | "MIXPANEL_PROJECT_TOKEN"
+    | "NODE_ENV"
+    | "ROLLBAR_TOKEN"
+    | "WEB_URL",
     string
   >,
   "CA_CERT"
 >;
 
-export type ChannelSymbol =
-  | "VERIFICATION"
-  | "ADMIN_GENERAL"
-  | "ADMIN_SANDBOX"
-  | "WELCOME_ROOM"
-  | "GENERAL"
-  | "WAITING_ROOM"
-  | "SNEAK_PEEKS"
-  | "FEEDBACK"
-  | "ANNOUNCEMENTS"
-  | "LEADERBOARD"
-  | "HALL_OF_PRIVACY"
-  | "FAQ"
-  | "COMMANDS"
-  | "TOWN_SQUARE"
-  | "HALL_OF_ALLEIGANCE"
-  | "MART"
-  | "TOSS_HOUSE"
-  | "BANK"
-  | "ARENA"
-  | "ARMORY"
-  | "TRAINING_DOJO"
-  | "GEN_POP";
+export enum ChannelSymbolEnum {
+  VERIFICATION = "VERIFICATION",
+  ADMIN_GENERAL = "ADMIN_GENERAL",
+  ADMIN_SANDBOX = "ADMIN_SANDBOX",
+  WELCOME_ROOM = "WELCOME_ROOM",
+  GENERAL = "GENERAL",
+  WAITING_ROOM = "WAITING_ROOM",
+  SNEAK_PEEKS = "SNEAK_PEEKS",
+  FEEDBACK = "FEEDBACK",
+  ANNOUNCEMENTS = "ANNOUNCEMENTS",
+  LEADERBOARD = "LEADERBOARD",
+  HALL_OF_PRIVACY = "HALL_OF_PRIVACY",
+  FAQ = "FAQ",
+  COMMANDS = "COMMANDS",
+  TOWN_SQUARE = "TOWN_SQUARE",
+  HALL_OF_ALLEIGANCE = "HALL_OF_ALLEIGANCE",
+  MART = "MART",
+  TOSS_HOUSE = "TOSS_HOUSE",
+  BANK = "BANK",
+  ARENA = "ARENA",
+  ARMORY = "ARMORY",
+  TRAINING_DOJO = "TRAINING_DOJO",
+  GEN_POP = "GEN_POP",
+}
+
+export type ChannelSymbol = `${ChannelSymbolEnum}`;
 
 export type Channel = {
   symbol: ChannelSymbol;
@@ -73,17 +68,21 @@ export type Category = {
   permissionOverwrites: OverwriteResolvable[];
 };
 
-export type BotSymbol =
-  | "ADMIN"
-  | "ALLY"
-  | "ARMORY_CLERK"
-  | "BANKER"
-  | "BIG_BROTHER"
-  | "MART_CLERK"
-  | "PRISONER"
-  | "SENSEI"
-  | "TOSSER"
-  | "WARDEN";
+export enum BotSymbolEnum {
+  ADMIN = "ADMIN",
+  ALLY = "ALLY",
+  ARMORY_CLERK = "ARMORY_CLERK",
+  BANKER = "BANKER",
+  BIG_BROTHER = "BIG_BROTHER",
+  DEVILS_ADVOCATE = "DEVILS_ADVOCATE",
+  MART_CLERK = "MART_CLERK",
+  PRISONER = "PRISONER",
+  SENSEI = "SENSEI",
+  TOSSER = "TOSSER",
+  WARDEN = "WARDEN",
+}
+
+export type BotSymbol = `${BotSymbolEnum}`;
 
 export type RoleSymbol =
   | "ADMIN"
@@ -147,6 +146,10 @@ export enum Achievement {
   FINISHED_TRAINER = "FINISHED_TRAINER",
   MART_STOCK_CHECKED = "MART_STOCK_CHECKED",
   MART_ITEM_BOUGHT = "MART_ITEM_BOUGHT",
+}
+
+export enum PersistentMessageSymbol {
+  WELCOME_MESSAGE = "WELCOME_MESSAGE",
 }
 
 type SuccessfulOperationResult = {

@@ -13,7 +13,7 @@ import {
 } from "typeorm";
 import { Role, TextChannel } from "discord.js";
 import { Achievement as AchievementEnum } from "../types";
-import { Tenancy, MartItemOwnership, Pledge, Event } from "..";
+import { Tenancy, MartItemOwnership, Pledge } from "..";
 import { Achievement } from "./Achievement";
 import { Imprisonment } from "./Imprisonment";
 
@@ -29,11 +29,14 @@ export class User extends BaseEntity {
   @Column()
   displayName: string;
 
-  @Column()
+  @Column({ nullable: true })
   gbt: number;
 
-  @Column({ default: 100 })
+  @Column({ nullable: true })
   strength: number;
+
+  @Column({ default: false })
+  inGame: boolean;
 
   @OneToMany(() => Tenancy, (tenancy) => tenancy.user, { cascade: true })
   tenancies: Tenancy[];
@@ -55,14 +58,12 @@ export class User extends BaseEntity {
   })
   pledges: Pledge[];
 
-  @OneToMany(() => Pledge, (pledge) => pledge.user, {
-    cascade: true,
-  })
-  events: Event[];
-
   @ManyToMany(() => Achievement)
   @JoinTable()
   achievements: Achievement[];
+
+  @Column({ type: "timestamptz", nullable: true })
+  welcomeMentionMadeAt: Date;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -10,6 +10,10 @@ export default abstract class DiscordBot {
   client: Client;
   guild!: Guild;
 
+  get ready() {
+    return this.readyPromise;
+  }
+
   constructor(public manifest: Bot, public controller: CommandController) {
     this.client = new Client(this.manifest.clientOptions);
 

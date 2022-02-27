@@ -7,6 +7,7 @@ packages=(
   packages/lib
   packages/data
   apps/discord
+  apps/web
   apps/cli
 )
 
