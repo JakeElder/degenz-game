@@ -4,20 +4,20 @@ import { READ_ONLY } from "app-config/dist/constants";
 import bots from "./bots";
 
 const roles: Role[] = [
-  { symbol: "ADMIN" },
-  { symbol: "PRISONER" },
-  { symbol: "DEGEN" },
-  { symbol: "VERIFIED" },
-  { symbol: "ADMIN_BOT", app: true },
-  { symbol: "BIG_BROTHER_BOT", app: true },
-  { symbol: "ALLY_BOT", app: true },
-  { symbol: "WARDEN_BOT", app: true },
-  { symbol: "TOSSER_BOT", app: true },
-  { symbol: "BANKER_BOT", app: true },
-  { symbol: "MART_CLERK_BOT", app: true },
-  { symbol: "PRISONER_BOT", app: true },
-  { symbol: "ARMORY_CLERK_BOT", app: true },
-  { symbol: "SENSEI_BOT", app: true },
+  { symbol: "ADMIN", permissions: "1071698660937" },
+  { symbol: "PRISONER", permissions: "1071698659905" },
+  { symbol: "DEGEN", permissions: "1071698660929" },
+  { symbol: "VERIFIED", permissions: "1071698660929" },
+  { symbol: "ADMIN_BOT", managed: true },
+  { symbol: "BIG_BROTHER_BOT", managed: true },
+  { symbol: "ALLY_BOT", managed: true },
+  { symbol: "WARDEN_BOT", managed: true },
+  { symbol: "TOSSER_BOT", managed: true },
+  { symbol: "BANKER_BOT", managed: true },
+  { symbol: "MART_CLERK_BOT", managed: true },
+  { symbol: "PRISONER_BOT", managed: true },
+  { symbol: "ARMORY_CLERK_BOT", managed: true },
+  { symbol: "SENSEI_BOT", managed: true },
 ];
 
 const structure: Category[] = [

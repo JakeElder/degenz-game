@@ -95,7 +95,9 @@ export type RoleSymbol =
 
 export type Role = {
   symbol: RoleSymbol;
-  app?: boolean;
+  name?: string;
+  managed?: boolean;
+  permissions?: string;
 };
 
 export type Command = {
