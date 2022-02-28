@@ -1,38 +1,39 @@
 import { roles } from "manifest";
 import Listr from "listr";
-import { Command } from "../../lib";
-import { Routes } from "discord-api-types";
+import { Routes } from "discord-api-types/v9";
 import Config from "app-config";
+import { RoleSymbol } from "data/types";
+import { Command } from "../../lib";
+import { json } from "../../utils";
 
 export default class Roles extends Command {
   static description = "Get server roles";
 
   async run(): Promise<void> {
+    const ROLE_IDS: Partial<Record<RoleSymbol, string>> = {};
+
     const listr = new Listr(
       roles
         .filter((r) => !r.managed)
-        .map<Listr.ListrTask>((r) => {
+        .map<Listr.ListrTask>((role) => {
           return {
-            title: r.symbol,
-            task: async (_, task) => {
+            title: role.name!,
+            task: async () => {
               const res = await this.post(
                 Routes.guildRoles(Config.general("GUILD_ID")),
                 {
-                  name: r.name,
-                  permissions: r.permissions,
+                  name: role.name,
+                  permissions: role.permissions,
                 },
                 Config.botToken("ADMIN")
               );
+              ROLE_IDS[role.symbol] = res.data.id;
             },
           };
         })
     );
+    await listr.run();
 
-    // const res = await this.post(
-    //   Routes.guildRoles(Config.general("GUILD_ID")),
-    //   Config.botToken("ADMIN")
-    //   {  }
-    // );
-    // this.log(json(res.data.filter((r) => !r.managed)));
+    this.log(json({ ROLE_IDS }));
   }
 }

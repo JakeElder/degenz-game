@@ -165,8 +165,9 @@ export default class WelcomeRoomController {
   }
 
   static makeInfoMessage(data: InfoMessageData) {
+    const emojis = data.emojis.join(" ");
     const message: MessageOptions = {
-      content: `**Welcome** to the **DEGENZ GAME** server ${data.emojis.join()}. \nYour **Degenz NFT** (dropping **March** \u{1f680}) will be your in game character that give you access to unique commands, attributes and special areas inside **${Format.worldName()}**.`,
+      content: `**Welcome** to the **DEGENZ GAME** server ${emojis}\nYour **Degenz NFT** (dropping **March** \u{1f680}) will be your in game character that give you access to unique commands, attributes and special areas inside **${Format.worldName()}**.`,
       embeds: [
         {
           color: data.color,

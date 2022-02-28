@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+import * as dotenv from "dotenv";
 import findConfig from "find-config";
 import DEV_CONFIG from "./config";
 import STAGE_CONFIG from "./config.stage";

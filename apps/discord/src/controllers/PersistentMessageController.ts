@@ -24,8 +24,10 @@ export class PersistentMessageController {
     const channel = await bot.getTextChannel(channelId);
 
     if (options.replace) {
-      message = await channel.messages.fetch(pm.messageId);
-      await message.delete();
+      try {
+        message = await channel.messages.fetch(pm.messageId);
+        await message.delete();
+      } catch (e) {}
       await this.create(pm, value);
       return;
     }

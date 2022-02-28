@@ -33,7 +33,8 @@ export async function connect() {
   });
 
   const options = await connectionOptionsReader.get("default");
-  return createConnection(options);
+  connection = await createConnection(options);
+  return connection;
 }
 
 export async function disconnect() {
