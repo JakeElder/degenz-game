@@ -1,2 +1,3 @@
 import Format from "./Formatter";
-export { Format };
+import watcher from "./watcher";
+export { Format, watcher };

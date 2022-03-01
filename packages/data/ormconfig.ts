@@ -9,13 +9,15 @@ dotenv.config({ path: findConfig(envFile)! });
 
 let config: PostgresConnectionOptions;
 
+const dir = __dirname.replace(/\/dist$/, "");
+
 const base = {
   type: "postgres" as const,
   namingStrategy: new SnakeNamingStrategy(),
-  entities: [`${__dirname}/dist/app/entity/**/*.js`],
-  migrations: [`${__dirname}/dist/app/migration/**/*.js`],
+  entities: [`${dir}/dist/app/entity/**/*.js`],
+  migrations: [`${dir}/dist/app/migration/**/*.js`],
   cli: {
-    migrationsDir: `${__dirname}/app/migration`,
+    migrationsDir: `${dir}/app/migration`,
   },
 };
 
