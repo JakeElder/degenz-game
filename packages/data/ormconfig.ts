@@ -27,7 +27,6 @@ if (env === "development") {
   config = {
     ...base,
     url: process.env.DATABASE_URL,
-    synchronize: true,
   };
 } else {
   const db = pg.parse(process.env.DATABASE_URL!);
@@ -39,7 +38,7 @@ if (env === "development") {
     password: db.password,
     port: db.port ? parseInt(db.port, 10) : undefined,
     ssl: {
-      ca: process.env.CA_CERTIFICATE!.replace(/\\n/g, "\n"),
+      ca: process.env.CA_CERT!.replace(/\\n/g, "\n"),
     },
   };
 }
