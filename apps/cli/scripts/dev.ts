@@ -6,7 +6,8 @@ watcher.watch(path.resolve(__dirname, ".."), {
   onBuild() {
     cp(
       path.resolve(process.cwd(), "src/images"),
-      path.resolve(process.cwd(), "dist/images")
+      path.resolve(process.cwd(), "dist/images"),
+      { overwrite: true }
     );
   },
 });

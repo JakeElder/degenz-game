@@ -16,8 +16,14 @@ async function watch(
   opts: {
     onBuild?: () => void;
     onError?: (diagnostic: ts.Diagnostic) => void;
-  } = { onBuild: () => {}, onError: () => {} }
+  } = {}
 ) {
+  const { onBuild, onError } = {
+    onBuild: () => {},
+    onError: () => {},
+    ...opts,
+  };
+
   const configPath = ts.findConfigFile(dir, ts.sys.fileExists, "tsconfig.json");
   if (!configPath) {
     throw new Error("Could not find a valid 'tsconfig.json'.");
@@ -47,7 +53,7 @@ async function watch(
     ts.sys,
     createProgram,
     (diagnostic) => {
-      opts.onError!(diagnostic);
+      onError(diagnostic);
       reportDiagnostic(dir, diagnostic);
     },
     reportWatchStatusChanged
@@ -57,7 +63,7 @@ async function watch(
 
   host.afterProgramCreate = (program) => {
     console.log(chalk.green("[built]"));
-    opts.onBuild!();
+    onBuild();
     origPostProgramCreate!(program);
   };
 

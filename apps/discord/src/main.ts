@@ -1,6 +1,5 @@
 import cleanup from "node-cleanup";
 import PrettyError from "pretty-error";
-import Config from "app-config";
 import { connect, disconnect } from "data/db";
 import Utils from "./Utils";
 import Runner from "./Runner";

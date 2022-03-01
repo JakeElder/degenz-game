@@ -97,6 +97,17 @@ export default class ConfigManager {
     return configs[env].ROLE_IDS[k];
   }
 
+  static reverseRoleId = (
+    id: string,
+    { env }: { env: keyof typeof configs } = { env: NODE_ENV }
+  ) => {
+    for (const [key, value] of Object.entries(configs[env].ROLE_IDS)) {
+      if (value === id) {
+        return key as RoleSymbol;
+      }
+    }
+  };
+
   static clientId(
     k: BotSymbol,
     { env }: { env: keyof typeof configs } = { env: NODE_ENV }
@@ -118,7 +129,7 @@ export default class ConfigManager {
   ) => {
     for (const [key, value] of Object.entries(configs[env].CLIENT_IDS)) {
       if (value === id) {
-        return key;
+        return key as BotSymbol;
       }
     }
   };
