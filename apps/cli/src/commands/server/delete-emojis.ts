@@ -1,6 +1,6 @@
 import { Routes } from "discord-api-types/v9";
 import Listr from "listr";
-import Config from "app-config";
+import Config from "config";
 import { Command } from "../../lib";
 
 export default class DeleteEmojis extends Command {

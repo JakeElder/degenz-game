@@ -1,5 +1,5 @@
 import { Routes } from "discord-api-types/v9";
-import Config from "app-config";
+import Config from "config";
 import { Command } from "../../lib";
 import { json } from "../../utils";
 

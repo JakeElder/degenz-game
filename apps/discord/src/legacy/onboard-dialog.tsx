@@ -1,7 +1,7 @@
 import { GuildMember } from "discord.js";
 import emoji from "node-emoji";
 import React from "react";
-import Config from "app-config";
+import Config from "config";
 import { User, Channel } from "./templates";
 import { currency } from "./utils";
 

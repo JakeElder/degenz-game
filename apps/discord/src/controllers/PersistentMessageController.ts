@@ -1,6 +1,6 @@
 import { PersistentMessage } from "data/db";
 import { PersistentMessageSymbol } from "data/types";
-import Config from "app-config";
+import Config from "config";
 import { Global } from "../Global";
 import { Message, MessageOptions } from "discord.js";
 

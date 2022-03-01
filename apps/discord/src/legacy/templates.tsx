@@ -2,7 +2,7 @@ import React from "react";
 import { Channel as DiscordChannel, GuildMember } from "discord.js";
 import { channelMention, userMention } from "@discordjs/builders";
 import emoji from "node-emoji";
-import Config from "app-config";
+import Config from "config";
 import { Format } from "lib";
 
 ////////////////////////////////////////////////////////////////////////////////

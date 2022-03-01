@@ -1,6 +1,6 @@
 import { PickEvent } from "./Events";
 import Mixpanel from "mixpanel";
-import Config from "app-config";
+import Config from "config";
 import { capitalCase } from "change-case";
 
 export default class Analytics {

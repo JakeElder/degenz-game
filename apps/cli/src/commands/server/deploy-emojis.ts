@@ -1,7 +1,7 @@
 import { Routes } from "discord-api-types/v9";
 import { bots } from "manifest";
 import Listr from "listr";
-import Config from "app-config";
+import Config from "config";
 import { promises as fs } from "fs";
 import path from "path";
 import { snakeCase } from "change-case";

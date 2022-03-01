@@ -2,7 +2,7 @@
 
 packages=(
   .
-  packages/app-config
+  packages/config
   packages/manifest
   packages/lib
   packages/data

@@ -1,4 +1,4 @@
-import Config from "app-config";
+import Config from "config";
 import delay from "delay";
 import { renderToStaticMarkup } from "react-dom/server";
 import TurndownService from "turndown";

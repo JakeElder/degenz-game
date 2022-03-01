@@ -1,6 +1,6 @@
 import { Client, Guild, GuildMember, TextChannel } from "discord.js";
 import { Bot } from "data/types";
-import Config from "app-config";
+import Config from "config";
 import Events from "./Events";
 import { CommandController } from "./CommandController";
 

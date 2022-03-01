@@ -1,5 +1,5 @@
 import { channelMention, userMention } from "@discordjs/builders";
-import Config from "app-config";
+import Config from "config";
 import { District, User } from "data/db";
 import {
   ButtonInteraction,

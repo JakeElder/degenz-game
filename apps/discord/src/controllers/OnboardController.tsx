@@ -1,5 +1,5 @@
 import React from "react";
-import Config from "app-config";
+import Config from "config";
 import { MessageActionRow, MessageEmbed } from "discord.js";
 import { User, Achievement } from "data/db";
 import { Achievement as AchievementEnum } from "data/types";

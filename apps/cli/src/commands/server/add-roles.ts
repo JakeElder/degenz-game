@@ -1,7 +1,7 @@
 import { roles } from "manifest";
 import Listr from "listr";
 import { Routes } from "discord-api-types/v9";
-import Config from "app-config";
+import Config from "config";
 import { RoleSymbol } from "data/types";
 import { Command } from "../../lib";
 import { json } from "../../utils";

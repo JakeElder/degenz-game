@@ -2,7 +2,7 @@ import { Routes } from "discord-api-types/v9";
 import Listr from "listr";
 import { Command } from "../../lib";
 import { structure } from "manifest";
-import Config from "app-config";
+import Config from "config";
 import { resolvableToOverwrite } from "../../utils";
 
 export default class SetPermissions extends Command {

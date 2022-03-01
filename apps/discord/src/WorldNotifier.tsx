@@ -2,7 +2,7 @@ import React from "react";
 import { NPC } from "data/db";
 import { BotSymbol, ChannelSymbol } from "data/types";
 import memoize from "memoizee";
-import Config from "app-config";
+import Config from "config";
 import { Event, PickEvent } from "./Events";
 import { Global } from "./Global";
 import Utils from "./Utils";

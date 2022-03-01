@@ -1,8 +1,6 @@
-import { Message } from "discord.js";
 import {
   Entity,
   PrimaryGeneratedColumn,
-  Column,
   BaseEntity,
   CreateDateColumn,
   UpdateDateColumn,

@@ -1,6 +1,6 @@
 import React from "react";
 import { channelMention, userMention } from "@discordjs/builders";
-import Config from "app-config";
+import Config from "config";
 import { NPC, User } from "data/db";
 import { GuildMember, MessageEmbedOptions, MessageOptions } from "discord.js";
 import { Format } from "lib";

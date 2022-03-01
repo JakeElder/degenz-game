@@ -7,7 +7,7 @@ import {
   MartItem,
 } from "data/db";
 import { Db, MongoClient } from "mongodb";
-import Config from "app-config";
+import Config from "config";
 import { groupBy } from "lodash";
 import { PlayerModel, Tenancy } from "./t";
 import { TenancyType } from "data/types";

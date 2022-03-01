@@ -2,7 +2,7 @@ import { Routes, ChannelType } from "discord-api-types/v9";
 import Listr from "listr";
 import { structure } from "manifest";
 import { CategorySymbol, ChannelSymbol } from "data/types";
-import Config from "app-config";
+import Config from "config";
 import { Command } from "../../lib";
 import { json, resolvableToOverwrite } from "../../utils";
 

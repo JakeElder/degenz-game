@@ -7,7 +7,7 @@ import {
   MessageEmbed,
   TextChannel,
 } from "discord.js";
-import Config from "app-config";
+import Config from "config";
 import { Format } from "lib";
 import { TossGame } from "data/types";
 import { AdminBot } from "../bots";

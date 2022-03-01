@@ -8,7 +8,7 @@ import {
   TextBasedChannel,
   TextChannel,
 } from "discord.js";
-import Config from "app-config";
+import Config from "config";
 import { CommandController } from "../CommandController";
 import {
   eatItem,

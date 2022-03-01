@@ -3,7 +3,7 @@ import { Routes } from "discord-api-types/v9";
 import Listr from "listr";
 import { Command } from "../../lib";
 import _ from "discord.js";
-import Config from "app-config";
+import Config from "config";
 
 export default class DeleteChannels extends Command {
   static description = "Delete categories and channels";
