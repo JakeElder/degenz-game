@@ -137,6 +137,21 @@ export default class Seed extends Command {
               channelSymbol: "LEADERBOARD",
               maintainerSymbol: "BIG_BROTHER",
             },
+            {
+              symbol: "ENTRY",
+              channelSymbol: "WAITING_ROOM",
+              maintainerSymbol: "BIG_BROTHER",
+            },
+            {
+              symbol: "VERIFY",
+              channelSymbol: "VERIFICATION",
+              maintainerSymbol: "BIG_BROTHER",
+            },
+            {
+              symbol: "PLEDGE",
+              channelSymbol: "HALL_OF_ALLEIGANCE",
+              maintainerSymbol: "BIG_BROTHER",
+            },
           ]);
         },
       },

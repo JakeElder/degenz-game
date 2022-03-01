@@ -1,9 +1,7 @@
-import Config from "app-config";
-import { AppState, District, Pledge, User } from "data/db";
+import { District, Pledge, User } from "data/db";
 import {
   ButtonInteraction,
   InteractionCollector,
-  Message,
   MessageActionRow,
   MessageButton,
   MessageOptions,
@@ -12,7 +10,7 @@ import { Format } from "lib";
 import { DateTime } from "luxon";
 import pluralize from "pluralize";
 import Events from "../Events";
-import { Global } from "../Global";
+import { PersistentMessageController } from "./PersistentMessageController";
 
 export default class HallOfAllegianceController {
   static buttonCollector: InteractionCollector<ButtonInteraction>;
@@ -65,35 +63,8 @@ export default class HallOfAllegianceController {
   }
 
   static async setPledgeMessage() {
-    const bb = Global.bot("BIG_BROTHER");
-
-    const state = await AppState.findOneOrFail();
-    const c = await bb.getTextChannel(Config.channelId("HALL_OF_ALLEIGANCE"));
-
-    let message: Message;
-    let isNew = false;
-
-    const s = await this.makePledgeMessage();
-
-    const makeNew = async () => {
-      isNew = true;
-      return c.send(s);
-    };
-
-    if (!state.pledgeMessageId) {
-      message = await makeNew();
-    } else {
-      try {
-        message = await c.messages.fetch(state.pledgeMessageId);
-        await message.edit(s);
-      } catch (e) {
-        message = await makeNew();
-      }
-    }
-
-    if (isNew) {
-      await AppState.setPledgeMessageId(message.id);
-    }
+    const options = await this.makePledgeMessage();
+    const message = await PersistentMessageController.set("PLEDGE", options);
 
     if (this.buttonCollector) {
       this.buttonCollector.off("collect", this.handleButtonPress);

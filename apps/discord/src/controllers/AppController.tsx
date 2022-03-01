@@ -2,17 +2,17 @@ import Config from "app-config";
 import {
   GuildBasedChannel,
   GuildMember,
-  Message,
   MessageReaction,
   ReactionCollector,
   User as DiscordUser,
 } from "discord.js";
 import { DistrictSymbol, OperationResult } from "data/types";
-import { AppState, District } from "data/db";
+import { District } from "data/db";
 import { bots } from "manifest";
 import { Global } from "../Global";
 import Events from "../Events";
 import WaitingRoomController from "./WaitingRoomController";
+import { PersistentMessageController } from "./PersistentMessageController";
 
 export default class AppController {
   static reactionCollector: ReactionCollector;
@@ -37,21 +37,12 @@ export default class AppController {
   }
 
   static async setVerifyMessage() {
-    const [bb] = Global.bots("BIG_BROTHER");
-    const c = await bb.getTextChannel(Config.channelId("VERIFICATION"));
-
-    let message: Message;
-
-    const state = await AppState.findOneOrFail();
     const instruction =
       "Welcome. `REACT` to this message to prove you're not a bot.";
 
-    try {
-      message = await c.messages.fetch(`${state.verifyMessageId}`);
-    } catch (e) {
-      message = await c.send(instruction);
-      AppState.setVerifyMessageId(message.id);
-    }
+    const message = await PersistentMessageController.set("VERIFY", {
+      content: instruction,
+    });
 
     if (this.reactionCollector) {
       this.reactionCollector.off("collect", this.handleReaction);

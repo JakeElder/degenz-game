@@ -1,10 +1,9 @@
 import { channelMention, userMention } from "@discordjs/builders";
 import Config from "app-config";
-import { AppState, District, User } from "data/db";
+import { District, User } from "data/db";
 import {
   ButtonInteraction,
   InteractionCollector,
-  Message,
   MessageActionRow,
   MessageButton,
   MessageOptions,
@@ -15,6 +14,7 @@ import axios from "axios";
 import { Global } from "../Global";
 import UserController from "./UserController";
 import Events from "../Events";
+import { PersistentMessageController } from "./PersistentMessageController";
 
 type EntryData = {
   open: boolean;
@@ -119,35 +119,9 @@ export default class WaitingRoomController {
   }
 
   static async setEnterMessage(data: EntryData) {
-    const bb = Global.bot("BIG_BROTHER");
+    const options = this.makeEntryMessage(data);
 
-    const state = await AppState.findOneOrFail();
-    const c = await bb.getTextChannel(Config.channelId("WAITING_ROOM"));
-
-    let message: Message;
-    let isNew = false;
-
-    const s = this.makeEntryMessage(data);
-
-    const makeNew = async () => {
-      isNew = true;
-      return c.send(s);
-    };
-
-    if (!state.entryMessageId) {
-      message = await makeNew();
-    } else {
-      try {
-        message = await c.messages.fetch(state.entryMessageId);
-        await message.edit(s);
-      } catch (e) {
-        message = await makeNew();
-      }
-    }
-
-    if (isNew) {
-      await AppState.setEntryMessageId(message.id);
-    }
+    const message = await PersistentMessageController.set("ENTRY", options);
 
     if (this.buttonCollector) {
       this.buttonCollector.off("collect", this.handleButtonPress);

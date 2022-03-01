@@ -164,6 +164,9 @@ export enum PersistentMessageSymbolEnum {
   WELCOME_NOTIFICATION = "WELCOME_NOTIFICATION",
   GBT_LEADERBOARD_1 = "GBT_LEADERBOARD_1",
   GBT_LEADERBOARD_2 = "GBT_LEADERBOARD_2",
+  ENTRY = "ENTRY",
+  VERIFY = "VERIFY",
+  PLEDGE = "PLEDGE",
 }
 
 export type PersistentMessageSymbol = `${PersistentMessageSymbolEnum}`;

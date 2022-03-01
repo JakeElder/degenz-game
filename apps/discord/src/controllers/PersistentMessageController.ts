@@ -15,8 +15,7 @@ export class PersistentMessageController {
     let message: Message;
 
     if (pm.messageId === null) {
-      await this.create(pm, value);
-      return;
+      return this.create(pm, value);
     }
 
     const channelId = Config.channelId(pm.channelSymbol);
@@ -28,17 +27,17 @@ export class PersistentMessageController {
         message = await channel.messages.fetch(pm.messageId);
         await message.delete();
       } catch (e) {}
-      await this.create(pm, value);
-      return;
+      return this.create(pm, value);
     }
 
     try {
       message = await channel.messages.fetch(pm.messageId);
       await message.edit(value);
     } catch (e) {
-      await this.create(pm, value);
-      return;
+      return this.create(pm, value);
     }
+
+    return message;
   }
 
   static async create(pm: PersistentMessage, value: MessageOptions) {
@@ -48,5 +47,6 @@ export class PersistentMessageController {
     const message = await channel.send(value);
     pm.messageId = message.id;
     await pm.save();
+    return message;
   }
 }

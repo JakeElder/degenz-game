@@ -4,7 +4,7 @@ import { getLeaders } from "../legacy/db";
 import { PersistentMessageController } from "./PersistentMessageController";
 import { GuildMember, MessageEmbedOptions } from "discord.js";
 import { Format } from "lib";
-import { table, getBorderCharacters } from "table";
+import { table } from "table";
 import truncate from "truncate";
 import { Global } from "../Global";
 
@@ -82,7 +82,7 @@ export class LeaderboardController {
 
     const data = await this.computeData(leaders);
 
-    PersistentMessageController.set("GBT_LEADERBOARD_1", {
+    await PersistentMessageController.set("GBT_LEADERBOARD_1", {
       embeds: data.map((l, idx) => this.makeEmbed(l, idx + 1)),
     });
 

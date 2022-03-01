@@ -138,6 +138,7 @@ export default class WelcomeRoomController {
 
   static makeAttributes(data: InfoMessageData, width: number = 34) {
     const { strength, luck, charisma } = data.attributes;
+
     // prettier-ignore
     const s = [
       ['Strength', 'Luck', 'Charisma'],
@@ -216,7 +217,7 @@ export default class WelcomeRoomController {
     await bb.ready;
 
     const message = this.makeInfoMessage(data);
-    PersistentMessageController.set("WELCOME_INFO", message);
+    await PersistentMessageController.set("WELCOME_INFO", message);
   }
 
   static async setWelcomeMessage(data: WelcomeMessageData) {
