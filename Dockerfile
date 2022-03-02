@@ -4,10 +4,10 @@ RUN apk --no-cache add procps
 WORKDIR /app
 ENV PATH="/app/out/full/node_modules/.bin:${PATH}"
 COPY . .
-RUN npx turbo prune --scope=discord --docker
-RUN cp -r ./patches ./out/full/patches
-WORKDIR /app/out/full
-RUN cp ./packages/config/src/config.example.ts ./packages/config/src/config.ts
+RUN npx turbo prune --scope=discord 
+RUN cp -r ./patches ./out/patches \
+    && cp ./out/packages/config/src/config.example.ts ./out/packages/config/src/config.ts
+WORKDIR /app/out
 RUN yarn install
 RUN yarn turbo run build
 
