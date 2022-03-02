@@ -1,3 +1,4 @@
+import { Exclude } from "class-transformer";
 import { TextChannel } from "discord.js";
 import {
   Entity,
@@ -13,6 +14,7 @@ import { User } from "..";
 
 @Entity()
 export class Imprisonment extends BaseEntity {
+  @Exclude()
   @PrimaryGeneratedColumn()
   id: number;
 

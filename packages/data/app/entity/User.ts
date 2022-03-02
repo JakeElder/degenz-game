@@ -16,9 +16,12 @@ import { Achievement as AchievementEnum } from "../types";
 import { Tenancy, MartItemOwnership, Pledge } from "..";
 import { Achievement } from "./Achievement";
 import { Imprisonment } from "./Imprisonment";
+import { PlayerEvent } from "./PlayerEvent";
+import { Exclude } from "class-transformer";
 
 @Entity()
 export class User extends BaseEntity {
+  @Exclude()
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -40,6 +43,11 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Tenancy, (tenancy) => tenancy.user, { cascade: true })
   tenancies: Tenancy[];
+
+  @OneToMany(() => PlayerEvent, (playerEvent) => playerEvent.user, {
+    cascade: true,
+  })
+  playerEvents: PlayerEvent[];
 
   @OneToMany(
     () => MartItemOwnership,

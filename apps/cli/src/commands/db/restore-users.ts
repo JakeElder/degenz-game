@@ -1,0 +1,66 @@
+import {
+  connect,
+  disconnect,
+  District,
+  MartItem,
+  User,
+  Achievement,
+} from "data/db";
+import { Command } from "../../lib";
+
+export default class Seed extends Command {
+  static description = "Seeds the database";
+
+  async run(): Promise<void> {
+    await connect();
+
+    const [allMartItems, allDistricts, allAchievements] = await Promise.all([
+      MartItem.find(),
+      District.find(),
+      Achievement.find(),
+    ]);
+
+    const users = require("../../../users.json") as User[];
+
+    const insert = async (u: User, idx: number) => {
+      console.log(`${idx + 1} of ${users.length}`);
+
+      const user = User.create({
+        discordId: u.discordId,
+        displayName: u.displayName,
+        gbt: u.gbt,
+        strength: u.strength,
+        inGame: true,
+        createdAt: u.createdAt,
+        updatedAt: u.updatedAt,
+        welcomeMentionMadeAt: u.createdAt,
+        playerEvents: u.playerEvents,
+        tenancies: u.tenancies.map((t) => {
+          t.district = allDistricts.find(
+            (d) => d.symbol === t.district.symbol
+          )!;
+          return t;
+        }),
+        pledges: u.pledges,
+        imprisonments: u.imprisonments,
+        achievements: u.achievements.map((a) => {
+          return allAchievements.find((aa) => a.symbol == aa.symbol)!;
+        }),
+        martItemOwnerships: u.martItemOwnerships.map((o) => {
+          o.item = allMartItems.find((i) => i.symbol === o.item.symbol)!;
+          return o;
+        }),
+      });
+
+      await user.save();
+    };
+
+    let i = 0;
+    for (const user of users) {
+      await insert(user, i);
+      i++;
+    }
+
+    await disconnect();
+  }
+}

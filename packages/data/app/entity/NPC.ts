@@ -1,3 +1,4 @@
+import { Exclude } from "class-transformer";
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -11,6 +12,7 @@ import { BotSymbol } from "../types";
 
 @Entity()
 export class NPC extends BaseEntity {
+  @Exclude()
   @PrimaryGeneratedColumn()
   id: number;
 

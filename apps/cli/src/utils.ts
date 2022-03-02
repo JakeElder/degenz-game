@@ -3,7 +3,11 @@ import { OverwriteResolvable, Permissions } from "discord.js";
 import { inspect } from "util";
 
 export function json(data: any) {
-  return inspect(data, { colors: process.stdout.isTTY });
+  return inspect(data, {
+    colors: process.stdout.isTTY,
+    depth: null,
+    maxArrayLength: null,
+  });
 }
 
 export function resolvableToOverwrite(

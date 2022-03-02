@@ -10,9 +10,11 @@ import {
 } from "typeorm";
 import { TenancyType } from "../types";
 import { User, District } from "..";
+import { Exclude } from "class-transformer";
 
 @Entity()
 export class Tenancy extends BaseEntity {
+  @Exclude()
   @PrimaryGeneratedColumn()
   id: number;
 

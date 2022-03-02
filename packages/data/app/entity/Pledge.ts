@@ -1,3 +1,4 @@
+import { Exclude } from "class-transformer";
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -12,6 +13,7 @@ import { User } from "..";
 
 @Entity()
 export class Pledge extends BaseEntity {
+  @Exclude()
   @PrimaryGeneratedColumn()
   id: number;
 

@@ -9,6 +9,7 @@ import { MartItem } from "./entity/MartItem";
 import { MartItemOwnership } from "./entity/MartItemOwnership";
 import { NPC } from "./entity/NPC";
 import { PersistentMessage } from "./entity/PersistentMessage";
+import { PlayerEvent } from "./entity/PlayerEvent";
 import { Pledge } from "./entity/Pledge";
 import { Tenancy } from "./entity/Tenancy";
 import { User } from "./entity/User";

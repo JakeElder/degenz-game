@@ -1,3 +1,4 @@
+import { Exclude } from "class-transformer";
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -11,6 +12,7 @@ import { MartItem, User } from "..";
 
 @Entity()
 export class MartItemOwnership extends BaseEntity {
+  @Exclude()
   @PrimaryGeneratedColumn()
   id: number;
 

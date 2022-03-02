@@ -10,9 +10,11 @@ import {
 } from "typeorm";
 import { DistrictSymbol } from "../types";
 import { Tenancy } from "..";
+import { Exclude } from "class-transformer";
 
 @Entity()
 export class District extends BaseEntity {
+  @Exclude()
   @PrimaryGeneratedColumn()
   id: number;
 

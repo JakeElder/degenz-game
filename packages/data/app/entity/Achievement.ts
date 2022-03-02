@@ -1,3 +1,4 @@
+import { Exclude } from "class-transformer";
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -10,6 +11,7 @@ import { Achievement as AchievementEnum } from "../types";
 
 @Entity()
 export class Achievement extends BaseEntity {
+  @Exclude()
   @PrimaryGeneratedColumn()
   id: number;
 
