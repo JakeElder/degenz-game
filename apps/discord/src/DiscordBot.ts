@@ -54,8 +54,13 @@ export default abstract class DiscordBot {
   async getMember(id: GuildMember["id"]): Promise<GuildMember> {
     let member = this.guild.members.cache.get(id);
     if (member) return member;
-    member = await this.guild.members.fetch(id);
-    if (!member) throw new Error(`Member ${id} not found`);
+
+    try {
+      member = await this.guild.members.fetch(id);
+    } catch (e) {
+      throw new Error(`Member ${id} not found`);
+    }
+
     return member;
   }
 
