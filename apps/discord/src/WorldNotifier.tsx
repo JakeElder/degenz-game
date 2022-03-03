@@ -136,13 +136,21 @@ export default class WorldNotifier {
   }
 
   static async martStockChecked(e: PickEvent<"MART_STOCK_CHECKED">) {
-    const message = r(
+    const hopMessage = r(
       <>
         **{e.data.user.displayName}** checked the stock at{" "}
         {channelMention(Config.channelId("MART"))}.
       </>
     );
-    await this.logToHOP("MART_CLERK", e.type, message);
+
+    const martMessage = r(
+      <>**{e.data.user.displayName}** checked the stock.</>
+    );
+
+    await Promise.all([
+      this.logToHOP("MART_CLERK", e.type, hopMessage),
+      this.logToChannel("MART", "MART_CLERK", e.type, martMessage),
+    ]);
   }
 
   static async martItemBought(e: PickEvent<"MART_ITEM_BOUGHT">) {
@@ -151,7 +159,10 @@ export default class WorldNotifier {
         **{e.data.user.displayName}** bought **{e.data.item.name}**.
       </>
     );
-    await this.logToHOP("MART_CLERK", e.type, message);
+    await Promise.all([
+      this.logToHOP("MART_CLERK", e.type, message),
+      this.logToChannel("MART", "MART_CLERK", e.type, message),
+    ]);
   }
 
   static async tossCompleted(e: PickEvent<"TOSS_COMPLETED">) {
@@ -176,7 +187,10 @@ export default class WorldNotifier {
       );
     }
 
-    await this.logToHOP("MART_CLERK", e.type, message);
+    await Promise.all([
+      this.logToHOP("TOSSER", e.type, message),
+      this.logToChannel("TOSS_HOUSE", "TOSSER", e.type, message),
+    ]);
   }
 
   static async redpillTaken(e: PickEvent<"REDPILL_TAKEN">) {

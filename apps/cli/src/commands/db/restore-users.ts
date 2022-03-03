@@ -55,9 +55,34 @@ export default class Seed extends Command {
       await user.save();
     };
 
-    let i = 0;
+    const userDiscordIds = users.map((u) => u.discordId);
+
+    i = 0;
     for (const user of users) {
       await insert(user, i);
+      i++;
+    }
+
+    const members = require("../../../members.json");
+    const nonGameMembers = members.filter((m) => {
+      return !m.user.bot && !userDiscordIds.includes(m.user.id);
+    });
+
+    const prime = async (u: any, idx: number) => {
+      console.log(`${idx + 1} of ${nonGameMembers.length}`);
+      const user = User.create({
+        discordId: u.user.id,
+        displayName: u.user.username,
+        createdAt: new Date(u.joined_at),
+        welcomeMentionMadeAt: new Date(u.joined_at),
+        inGame: false,
+      });
+      await user.save();
+    };
+
+    let i = 0;
+    for (const member of nonGameMembers) {
+      await prime(member, i);
       i++;
     }
 

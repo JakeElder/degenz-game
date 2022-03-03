@@ -38,6 +38,9 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   strength: number;
 
+  @Column({ type: "int4", array: true, default: [] })
+  inventory: number;
+
   @Column({ default: false })
   inGame: boolean;
 

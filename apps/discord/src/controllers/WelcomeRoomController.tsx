@@ -238,7 +238,8 @@ export default class WelcomeRoomController {
         content: r(
           <>
             **WELCOME, to our newest {qualifier}** - {listify(mentionList)}. To
-            join the game, go to {waitingRoom}, or go and chat in {generalRoom}.
+            join the game, go to {waitingRoom}, or come and chat in{" "}
+            {generalRoom}.
           </>
         ),
       },
