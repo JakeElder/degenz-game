@@ -32,15 +32,27 @@ export class LeaderboardController {
 
   static async computeData(leaders: User[]): Promise<LeaderboardData> {
     const bb = Global.bot("BIG_BROTHER");
-    const members = await Promise.all(
-      leaders.map((u) => bb.getMember(u.discordId))
+    let members = await Promise.all(
+      leaders.map((u) => {
+        try {
+          return bb.getMember(u.discordId);
+        } catch (e) {
+          return null;
+        }
+      })
     );
 
-    return leaders.map((u, idx) => ({
+    members = members.filter((m) => m !== null);
+
+    const pruned = leaders.filter((l) =>
+      members.map((m) => m!.id).includes(l.discordId)
+    );
+
+    return pruned.map((u, idx) => ({
       id: u.id,
       displayName: u.displayName,
       gbt: u.gbt,
-      member: members[idx],
+      member: members.find((m) => m!.id === u.discordId)!,
     }));
   }
 

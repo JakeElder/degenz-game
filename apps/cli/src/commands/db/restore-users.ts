@@ -50,6 +50,7 @@ export default class Seed extends Command {
           o.item = allMartItems.find((i) => i.symbol === o.item.symbol)!;
           return o;
         }),
+        inventory: u.inventory,
       });
 
       await user.save();
@@ -57,7 +58,7 @@ export default class Seed extends Command {
 
     const userDiscordIds = users.map((u) => u.discordId);
 
-    i = 0;
+    let i = 0;
     for (const user of users) {
       await insert(user, i);
       i++;
@@ -80,7 +81,7 @@ export default class Seed extends Command {
       await user.save();
     };
 
-    let i = 0;
+    i = 0;
     for (const member of nonGameMembers) {
       await prime(member, i);
       i++;
