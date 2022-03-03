@@ -91,7 +91,7 @@ export class LeaderboardController {
     const data = await this.computeData(leaders);
 
     await PersistentMessageController.set("GBT_LEADERBOARD_1", {
-      embeds: data.map((l, idx) => this.makeEmbed(l, idx + 1)),
+      embeds: data.slice(0, 10).map((l, idx) => this.makeEmbed(l, idx + 1)),
     });
 
     // PersistentMessageController.set("GBT_LEADERBOARD_2", {
