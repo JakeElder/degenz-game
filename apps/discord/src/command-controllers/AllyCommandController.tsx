@@ -100,7 +100,7 @@ export default class AllyCommandController extends CommandController {
       content: r(
         <ChannelHelpOutput
           channel={i.channel as TextBasedChannel}
-          member={member}
+          member={member!}
           type={t}
           cellNumber={isCell ? imprisonment.cellNumber : undefined}
           apartmentUser={apartmentUser}
@@ -109,7 +109,7 @@ export default class AllyCommandController extends CommandController {
       ephemeral: true,
     });
 
-    const user = await getUser(member.id);
+    const user = await getUser(member!.id);
     Events.emit("HELP_REQUESTED", { user, channel });
 
     if (!user.hasAchievement(AchievementEnum.HELP_REQUESTED)) {

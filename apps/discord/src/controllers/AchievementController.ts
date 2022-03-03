@@ -35,8 +35,8 @@ export default class AchievementController {
 
     let embed = new MessageEmbed()
       .setAuthor({
-        iconURL: member.displayAvatarURL(),
-        name: member.displayName,
+        iconURL: member!.displayAvatarURL(),
+        name: member!.displayName,
       })
       .setTitle("Achievement Unlocked!")
       .setDescription(AchievementController.descriptions[achievement])

@@ -50,10 +50,10 @@ export default class TossController {
         result: "UNDECIDED",
         againstHouse: isTed,
         accepted: isTed ? true : null,
-        member: challengerMember,
+        member: challengerMember!,
         challenger: {
           user: challengerUser,
-          member: challengerMember,
+          member: challengerMember!,
           balanceAvailable: challengerUser!.gbt >= amount,
         },
         challengee: {

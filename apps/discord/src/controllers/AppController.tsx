@@ -56,12 +56,12 @@ export default class AppController {
     const admin = Global.bot("ADMIN");
     const member = await admin.getMember(user.id);
     if (
-      !member.roles.cache.some((r) =>
+      !member!.roles.cache.some((r) =>
         [Config.roleId("DEGEN"), Config.roleId("VERIFIED")].includes(r.id)
       )
     ) {
-      await member.roles.add(Config.roleId("VERIFIED"));
-      Events.emit("MEMBER_VERIFIED", { member });
+      await member!.roles.add(Config.roleId("VERIFIED"));
+      Events.emit("MEMBER_VERIFIED", { member: member! });
     }
   }
 

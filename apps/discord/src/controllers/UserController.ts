@@ -54,7 +54,7 @@ export default class UserController {
     const parent = Config.categoryId(`THE_${districtSymbol}`);
 
     const apartment = await admin.guild.channels.create(
-      `\u2302\uFF5C${paramCase(member.displayName)}s-apartment`,
+      `\u2302\uFF5C${paramCase(member!.displayName)}s-apartment`,
       {
         type: "GUILD_TEXT",
         parent,
@@ -64,7 +64,7 @@ export default class UserController {
             deny: ["VIEW_CHANNEL"],
           },
           {
-            id: member.id,
+            id: member!.id,
             allow: ["VIEW_CHANNEL"],
           },
           {
@@ -122,7 +122,7 @@ export default class UserController {
     }
 
     // Remove roles
-    await member.roles.remove([
+    await member!.roles.remove([
       Config.roleId("DEGEN"),
       Config.roleId("PRISONER"),
       Config.roleId("VERIFIED"),
@@ -143,13 +143,13 @@ export default class UserController {
     const admin = Global.bot("ADMIN");
 
     const member = await admin.getMember(memberId);
-    const user = await getUser(member.id);
+    const user = await getUser(member!.id);
 
     if (user === null) {
       return { success: false, code: "USER_NOT_FOUND" };
     }
 
-    const entryRoleIds = member.roles.cache
+    const entryRoleIds = member!.roles.cache
       .map((r) => r.id)
       .filter(
         (i) =>
@@ -178,7 +178,7 @@ export default class UserController {
             allow: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
           },
           {
-            id: member.id,
+            id: member!.id,
             allow: ["VIEW_CHANNEL"],
           },
         ],
@@ -197,10 +197,10 @@ export default class UserController {
         entryRoleIds,
       }),
       apartment.permissionOverwrites.delete(user.discordId),
-      member.roles.remove(entryRoleIds),
+      member!.roles.remove(entryRoleIds),
     ]);
 
-    await member.roles.add(Config.roleId("PRISONER"));
+    await member!.roles.add(Config.roleId("PRISONER"));
 
     Utils.delay(1000);
 
@@ -249,7 +249,7 @@ export default class UserController {
     const admin = Global.bot("ADMIN");
 
     const member = await admin.getMember(memberId);
-    const user = await getUser(member.id);
+    const user = await getUser(member!.id);
 
     if (!user.imprisoned) {
       return { success: false, code: "NOT_IMPRISONED" };
@@ -264,12 +264,12 @@ export default class UserController {
     );
 
     await Promise.all([
-      apartment.permissionOverwrites.create(member.id, { VIEW_CHANNEL: true }),
-      community.permissionOverwrites.create(member.id, { VIEW_CHANNEL: null }),
-      member.roles.add(user.imprisonment.entryRoleIds),
+      apartment.permissionOverwrites.create(member!.id, { VIEW_CHANNEL: true }),
+      community.permissionOverwrites.create(member!.id, { VIEW_CHANNEL: null }),
+      member!.roles.add(user.imprisonment.entryRoleIds),
     ]);
 
-    await member.roles.remove(Config.roleId("PRISONER"));
+    await member!.roles.remove(Config.roleId("PRISONER"));
 
     const cellChannel = await admin.getTextChannel(
       user.imprisonment.cellDiscordChannelId
@@ -284,7 +284,7 @@ export default class UserController {
     const admin = Global.bot("ADMIN");
 
     const member = await admin.getMember(user.discordId);
-    await member.roles.add(Config.roleId("DEGEN"));
-    await member.roles.remove(Config.roleId("VERIFIED"));
+    await member!.roles.add(Config.roleId("DEGEN"));
+    await member!.roles.remove(Config.roleId("VERIFIED"));
   }
 }

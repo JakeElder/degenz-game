@@ -34,11 +34,7 @@ export class LeaderboardController {
     const bb = Global.bot("BIG_BROTHER");
     let members = await Promise.all(
       leaders.map((u) => {
-        try {
-          return bb.getMember(u.discordId);
-        } catch (e) {
-          return null;
-        }
+        return bb.getMember(u.discordId);
       })
     );
 

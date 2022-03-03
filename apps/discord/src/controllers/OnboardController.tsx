@@ -25,19 +25,21 @@ export default class OnboardController {
     );
     const member = await bb.getMember(user.discordId);
 
-    await apartment.send(r(<OnboardDialogBB part={1} member={member} />));
+    await apartment.send(r(<OnboardDialogBB part={1} member={member!} />));
     await Utils.delay(2500);
 
-    await apartment.send(r(<OnboardDialogBB part={2} member={member} />));
+    await apartment.send(r(<OnboardDialogBB part={2} member={member!} />));
     await Utils.delay(3000);
 
     await apartment.send(
-      r(<OnboardDialogBB part={3} member={member} apartmentId={apartment.id} />)
+      r(
+        <OnboardDialogBB part={3} member={member!} apartmentId={apartment.id} />
+      )
     );
     await Utils.delay(3500);
 
     const m = await apartment.send({
-      content: r(<OnboardDialogBB part={4} member={member} />),
+      content: r(<OnboardDialogBB part={4} member={member!} />),
       components: [
         new MessageActionRow().addComponents(
           makeButton("yes"),
@@ -49,7 +51,7 @@ export default class OnboardController {
     const i = await m.awaitMessageComponent({ componentType: "BUTTON" });
 
     await m.edit({
-      content: r(<OnboardDialogBB part={4} member={member} />),
+      content: r(<OnboardDialogBB part={4} member={member!} />),
       components: [
         new MessageActionRow().addComponents(
           makeButton("yes", {
@@ -66,13 +68,13 @@ export default class OnboardController {
 
     await Promise.all([
       i.update({ fetchReply: false }),
-      transactBalance(member.id, i.customId === "yes" ? 100 : 40),
+      transactBalance(member!.id, i.customId === "yes" ? 100 : 40),
     ]);
 
     await apartment.send({
       content: r(
         <OnboardDialogBB
-          member={member}
+          member={member!}
           part={5}
           response={i.customId as "yes" | "no"}
         />
@@ -84,7 +86,7 @@ export default class OnboardController {
       content: r(
         <OnboardDialogBB
           part={6}
-          member={member}
+          member={member!}
           response={i.customId as "yes" | "no"}
         />
       ),
@@ -92,12 +94,12 @@ export default class OnboardController {
 
     await Utils.delay(3000);
     await apartment.send({
-      content: r(<OnboardDialogBB part={7} member={member} />),
+      content: r(<OnboardDialogBB part={7} member={member!} />),
     });
 
     await Utils.delay(4000);
     await apartment.send({
-      content: r(<OnboardDialogBB part={8} member={member} />),
+      content: r(<OnboardDialogBB part={8} member={member!} />),
     });
 
     await Utils.delay(1000);
@@ -117,7 +119,7 @@ export default class OnboardController {
     const member = await ally.getMember(user.discordId);
 
     const m = await apartment.send({
-      content: r(<OnboardDialogAlly part={1} member={member} />),
+      content: r(<OnboardDialogAlly part={1} member={member!} />),
       components: [
         new MessageActionRow().addComponents(
           makeButton("yes"),
@@ -134,7 +136,7 @@ export default class OnboardController {
     const i = await m.awaitMessageComponent({ componentType: "BUTTON" });
 
     await m.edit({
-      content: r(<OnboardDialogAlly part={1} member={member} />),
+      content: r(<OnboardDialogAlly part={1} member={member!} />),
       components: [
         new MessageActionRow().addComponents(
           makeButton("yes", {
@@ -162,18 +164,18 @@ export default class OnboardController {
       r(
         <OnboardDialogAlly
           part={2}
-          member={member}
+          member={member!}
           response={i.customId as "yes" | "no" | "unsure"}
         />
       )
     );
     await Utils.delay(3000);
 
-    await apartment.send(r(<OnboardDialogAlly member={member} part={3} />));
+    await apartment.send(r(<OnboardDialogAlly member={member!} part={3} />));
     await Utils.delay(4000);
 
     await apartment.send({
-      content: r(<OnboardDialogAlly member={member} part={4} />),
+      content: r(<OnboardDialogAlly member={member!} part={4} />),
       embeds: [
         new MessageEmbed().setImage(
           "https://s10.gifyu.com/images/red-pill.gif"
@@ -182,7 +184,7 @@ export default class OnboardController {
     });
     await Utils.delay(1000);
 
-    await apartment.send(r(<OnboardDialogAlly member={member} part={5} />));
+    await apartment.send(r(<OnboardDialogAlly member={member!} part={5} />));
   }
 
   static async partThree(user: User) {
@@ -199,13 +201,13 @@ export default class OnboardController {
     );
     const member = await ally.getMember(user.discordId);
 
-    await apartment.send(r(<OnboardDialogAlly member={member} part={6} />));
+    await apartment.send(r(<OnboardDialogAlly member={member!} part={6} />));
     await Utils.delay(3000);
 
-    await apartment.send(r(<OnboardDialogAlly member={member} part={7} />));
+    await apartment.send(r(<OnboardDialogAlly member={member!} part={7} />));
     await Utils.delay(2500);
 
-    await apartment.send(r(<OnboardDialogAlly member={member} part={8} />));
+    await apartment.send(r(<OnboardDialogAlly member={member!} part={8} />));
   }
 
   static async partFour(user: User) {
@@ -216,23 +218,23 @@ export default class OnboardController {
     );
     const member = await ally.getMember(user.discordId);
 
-    await apartment.send(r(<OnboardDialogAlly member={member} part={9} />));
+    await apartment.send(r(<OnboardDialogAlly member={member!} part={9} />));
     await Utils.delay(2000);
 
     await AchievementController.award(user!, AchievementEnum.STATS_CHECKED);
 
     await Utils.delay(3000);
 
-    await apartment.send(r(<OnboardDialogAlly member={member} part={10} />));
+    await apartment.send(r(<OnboardDialogAlly member={member!} part={10} />));
     await Utils.delay(2000);
 
-    await apartment.send(r(<OnboardDialogAlly member={member} part={11} />));
+    await apartment.send(r(<OnboardDialogAlly member={member!} part={11} />));
     await Utils.delay(2500);
 
-    await apartment.send(r(<OnboardDialogAlly member={member} part={12} />));
+    await apartment.send(r(<OnboardDialogAlly member={member!} part={12} />));
     await Utils.delay(3000);
 
-    await apartment.send(r(<OnboardDialogAlly member={member} part={13} />));
+    await apartment.send(r(<OnboardDialogAlly member={member!} part={13} />));
   }
 
   static async partFive(user: User) {
@@ -248,16 +250,16 @@ export default class OnboardController {
     await AchievementController.award(user!, AchievementEnum.HELP_REQUESTED);
     await Utils.delay(2000);
 
-    await apartment.send(r(<OnboardDialogAlly member={member} part={14} />));
+    await apartment.send(r(<OnboardDialogAlly member={member!} part={14} />));
     await Utils.delay(2000);
 
     await OnboardController.sendNextPrompt(user);
     await Utils.delay(3000);
 
-    await apartment.send(r(<OnboardDialogAlly member={member} part={15} />));
+    await apartment.send(r(<OnboardDialogAlly member={member!} part={15} />));
     await Utils.delay(2500);
 
-    await apartment.send(r(<OnboardDialogAlly member={member} part={16} />));
+    await apartment.send(r(<OnboardDialogAlly member={member!} part={16} />));
   }
 
   static async sendNextPrompt(user: User) {
