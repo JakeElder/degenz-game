@@ -128,13 +128,8 @@ export default class UserController {
       Config.roleId("VERIFIED"),
     ]);
 
-    // Remove from game
-    user.inGame = false;
-    user.gbt = 0;
-
-    await Promise.all([user.save(), Tenancy.delete({ user })]);
-
-    await WaitingRoomController.update();
+    // Remove from db
+    await User.remove(user);
 
     return { success: true, code: "USER_EJECTED" };
   }

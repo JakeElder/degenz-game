@@ -41,8 +41,7 @@ export default class WaitingRoomController {
   static async update() {
     const data = await this.computeEntryData();
     await this.setEnterMessage(data);
-    const statusRes = await this.setStatus(data.open);
-    return { statusRes };
+    this.setStatus(data.open);
   }
 
   static async computeEntryData(): Promise<EntryData> {
@@ -82,12 +81,14 @@ export default class WaitingRoomController {
         .setCustomId(d.symbol);
     });
 
+    const capacity = Config.general("DISTRICT_CAPACITY");
+
     const districtTable = data.districts
       .map((d) => {
         return `${d.tableEmoji} => ${
           d.open
-            ? `\`${d.capacity} AVAILABLE\``
-            : `\`${d.open ? "FULL" : "CLOSED"}\``
+            ? `\`[OPEN]\` => \`${d.capacity}/${capacity} available\``
+            : `\`[CLOSED]\` => \`${d.capacity}/${capacity} available\``
         }`;
       })
       .join("\n");
@@ -133,12 +134,12 @@ export default class WaitingRoomController {
   }
 
   static async handleButtonPress(i: ButtonInteraction) {
+    await i.deferReply({ ephemeral: true });
     const user = await User.findOneOrFail({ where: { discordId: i.user.id } });
 
     if (user.inGame) {
-      await i.reply({
+      await i.editReply({
         content: `${userMention(user.discordId)} - You're already a Degen.`,
-        ephemeral: true,
       });
       return;
     }
@@ -157,9 +158,8 @@ export default class WaitingRoomController {
       const user = userMention(i.user.id);
       const channel = channelMention(res.user!.primaryTenancy.discordChannelId);
       await Promise.all([
-        i.reply({
+        i.editReply({
           content: `${user} - ${channel}, your new *private* apartment to receive further instructions.`,
-          ephemeral: true,
         }),
         WaitingRoomController.update(),
       ]);
