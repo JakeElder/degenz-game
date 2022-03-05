@@ -131,6 +131,9 @@ export default class UserController {
     // Remove from db
     await User.remove(user);
 
+    WaitingRoomController.update();
+    WelcomeRoomController.updateWelcomeMessage();
+
     return { success: true, code: "USER_EJECTED" };
   }
 
