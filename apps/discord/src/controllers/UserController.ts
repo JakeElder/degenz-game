@@ -37,8 +37,15 @@ export default class UserController {
       User.findOne({ where: { discordId: memberId } }),
     ]);
 
+    if (member === null) {
+      return { success: false, code: "MEMBER_NOT_FOUND" };
+    }
+
     if (typeof user === "undefined") {
-      return { success: false, code: "USER_NOT_FOUND" };
+      [user] = await Promise.all([
+        this.add(member),
+        member.roles.add(Config.roleId("VERIFIED")),
+      ]);
     }
 
     if (districtSymbol === null) {
