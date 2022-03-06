@@ -1,15 +1,17 @@
 import { getBorderCharacters, table } from "table";
 import {
   CommandInteraction,
-  MessageActionRow,
-  MessageSelectMenu,
+  MessageEmbedOptions,
   SelectMenuInteraction,
 } from "discord.js";
-import { Format } from "lib";
+import { MartItem } from "data/db";
+import Config from "config";
 import { CommandController } from "../CommandController";
 import { getMartItems, getUser, sellItem } from "../legacy/db";
-import { MartItem } from "data/db";
 import Events from "../Events";
+import { Global } from "../Global";
+import { Format } from "lib";
+import truncate from "truncate";
 
 export default class MartClerkCommandController extends CommandController {
   async stock(i: CommandInteraction) {
@@ -42,28 +44,75 @@ export default class MartClerkCommandController extends CommandController {
   async buy(i: CommandInteraction) {
     const items = await getMartItems();
 
-    const row = new MessageActionRow().addComponents(
-      new MessageSelectMenu()
-        .setCustomId("itemSelect")
-        .setPlaceholder("What do you want to buy?")
-        .addOptions([
-          ...items.map((i) => {
-            return {
-              label: `${i.description}`,
-              description: `[${i.stock}] @ [${Format.currency(i.price)}] ${
-                i.description
-              }`,
-              value: i.symbol,
-            };
-          }),
-        ])
-    );
+    // const row = new MessageActionRow().addComponents(
+    //   new MessageSelectMenu()
+    //     .setCustomId("itemSelect")
+    //     .setPlaceholder("What do you want to buy?")
+    //     .addOptions([
+    //       ...items.map((i) => {
+    //         return {
+    //           label: `${i.description}`,
+    //           description: `[${i.stock}] @ [${Format.currency(i.price)}] ${
+    //             i.description
+    //           }`,
+    //           value: i.symbol,
+    //         };
+    //       }),
+    //     ])
+    // );
+
+    const url = `${Config.env("WEB_URL")}/mart-items/buy`;
+    // const merris = Global.bot("MART_CLERK");
+    const w = 24;
+
+    const embeds: MessageEmbedOptions[] = items.map((item) => {
+      // `${position.toString().padStart(2, " ")}.${truncate(
+      //   l.displayName,
+      //   22 - 4 - 1
+      // )}`,
+      // ` ${Format.token()} ${Format.currency(l.gbt, { bare: true })}`,
+
+      // prettier-ignore
+      const s = [
+        ['Stock', 'Price', 'Effect'],
+        [item.stock, Format.currency(item.price, { bare: true }), `+${item.strengthIncrease} strength`]
+      ];
+
+      const info = Format.codeBlock(
+        table(s, {
+          drawVerticalLine: (idx) => [1, 2].includes(idx),
+          columnDefault: { alignment: "center" },
+          drawHorizontalLine: (i) => i === 1,
+          columns: [{ width: 5 }, { width: 5 }, { width: w - 5 - 5 }],
+        })
+      );
+
+      // const description = Format.codeBlock(
+      //   table([[item.description]], {
+      //     border: getBorderCharacters("void"),
+      //     columns: [{ width: w, wrapWord: true }],
+      //   })
+      // );
+
+      return {
+        author: {
+          name: item.name,
+          // iconURL: merris.client.user!.displayAvatarURL({ size: 32 }),
+        },
+        description: info,
+        thumbnail: {
+          height: 32,
+          width: 32,
+          url: `${url}/${item.symbol}.png`,
+        },
+      };
+    });
 
     // Selection handled by MartClerkBot.handleBuy
 
     await i.reply({
-      content: `Yes. Buy what?`,
-      components: [row],
+      embeds,
+      // components: [row],
       ephemeral: true,
     });
   }
