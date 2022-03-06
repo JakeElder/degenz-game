@@ -98,10 +98,8 @@ export default class UserController {
 
     await user.save();
 
-    await Promise.all([
-      WaitingRoomController.update(),
-      WelcomeRoomController.updateWelcomeMessage(),
-    ]);
+    WaitingRoomController.update();
+    WelcomeRoomController.updateWelcomeMessage();
 
     Events.emit("APARTMENT_ALLOCATED", { user, onboard });
 
