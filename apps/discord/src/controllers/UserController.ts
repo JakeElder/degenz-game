@@ -87,6 +87,7 @@ export default class UserController {
     });
 
     user.gbt = onboard ? 0 : 100;
+    user.strength = 100;
     user.inGame = true;
     user.tenancies = [
       Tenancy.create({
