@@ -111,7 +111,6 @@ export default class UserController {
 
     let i = 0;
     while (i < bots.length) {
-      console.log(bots[i].manifest.symbol);
       const member = bots[i].guild.members.cache.get(id);
       if (member) {
         return member;
