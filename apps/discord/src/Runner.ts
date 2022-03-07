@@ -11,6 +11,7 @@ import Analytics from "./Analytics";
 import UserController from "./controllers/UserController";
 import WelcomeRoomController from "./controllers/WelcomeRoomController";
 import { LeaderboardController } from "./controllers/LeaderboardController";
+import MartClerkCommandController from "./command-controllers/MartClerkCommandController";
 
 export default class Runner {
   constructor(private bots: DiscordBot[]) {
@@ -36,6 +37,10 @@ export default class Runner {
         AppController.setVerifyMessage();
         LeaderboardController.init();
       }
+
+      if (e.data.bot.symbol === "MART_CLERK") {
+        MartClerkCommandController.init();
+      }
     });
 
     Events.on("BALANCE_CHECKED", (e) => {
@@ -56,9 +61,12 @@ export default class Runner {
     });
 
     Events.on("APARTMENT_ALLOCATED", (e) => {
+      console.log("APARTMENT_ALLOCATED");
       if (e.data.onboard) {
+        console.log("CALLING ONBOARD");
         OnboardController.partOne(e.data.user);
       } else {
+        console.log("CALLING SKIP");
         OnboardController.skip(e.data.user);
       }
     });

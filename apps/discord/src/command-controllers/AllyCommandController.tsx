@@ -18,7 +18,7 @@ import {
   getUser,
   getUserByApartment,
 } from "../legacy/db";
-import { Achievement as AchievementEnum } from "data/types";
+import { Achievement as AchievementEnum, MartItemSymbol } from "data/types";
 import { groupBy } from "lodash";
 import OnboardController from "../controllers/OnboardController";
 import {
@@ -186,7 +186,7 @@ export default class AllyCommandController extends CommandController {
 
   async handleFoodSelect(i: SelectMenuInteraction) {
     const items = await getMartItems();
-    const res = await eatItem(i.values[0], i.user.id);
+    const res = await eatItem(i.values[0] as MartItemSymbol, i.user.id);
 
     const item = items.find((item) => item.symbol === i.values[0])!;
 

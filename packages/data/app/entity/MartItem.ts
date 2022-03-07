@@ -10,6 +10,7 @@ import {
   OneToMany,
 } from "typeorm";
 import { MartItemOwnership } from "..";
+import { MartItemSymbol, MartItemSymbolEnum } from "../types";
 
 @Entity()
 export class MartItem extends BaseEntity {
@@ -18,8 +19,8 @@ export class MartItem extends BaseEntity {
   id: number;
 
   @Column()
-  @Index({ unique: true })
-  symbol: string;
+  @Column({ type: "enum", enum: MartItemSymbolEnum })
+  symbol: MartItemSymbol;
 
   @Column()
   name: string;

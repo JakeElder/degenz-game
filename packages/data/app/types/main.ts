@@ -59,6 +59,14 @@ export type Channel = {
   permissionOverwrites: OverwriteResolvable[];
 };
 
+export enum MartItemSymbolEnum {
+  PIZZA = "PIZZA",
+  NOODLES = "NOODLES",
+  GRILLED_RAT = "GRILLED_RAT",
+}
+
+export type MartItemSymbol = `${MartItemSymbolEnum}`;
+
 export type CategorySymbol =
   | "OUTSIDE_WORLD"
   | "ADMIN"

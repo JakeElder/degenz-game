@@ -1,104 +1,117 @@
 import { getBorderCharacters, table } from "table";
 import {
   CommandInteraction,
+  InteractionReplyOptions,
+  MessageActionRow,
+  MessageButton,
   MessageEmbedOptions,
-  SelectMenuInteraction,
 } from "discord.js";
 import { MartItem } from "data/db";
 import Config from "config";
 import { CommandController } from "../CommandController";
 import { getMartItems, getUser, sellItem } from "../legacy/db";
 import Events from "../Events";
-import { Global } from "../Global";
 import { Format } from "lib";
-import truncate from "truncate";
+import { Global } from "../Global";
+import { MartItemSymbol } from "data/types";
 
 export default class MartClerkCommandController extends CommandController {
-  async stock(i: CommandInteraction) {
-    const items = await getMartItems();
+  static async init() {
+    const merris = Global.bot("MART_CLERK");
 
-    const t = table(
-      [
-        ["Item", "Price", "Stock"],
-        ...items.map((i) => [`${i.name}\n${i.description}`, i.price, i.stock]),
-      ],
-      {
-        border: getBorderCharacters("norc"),
-        header: {
-          content: `MERRIS MART\nstock`,
-          alignment: "center",
-        },
-        columns: [{}, { alignment: "center" }, { alignment: "center" }],
+    merris.client.on("interactionCreate", async (i) => {
+      if (!i.isButton()) return;
+      if (i.customId.startsWith("buy:")) {
+        const [_, symbol] = i.customId.split(":") as [any, MartItemSymbol];
+        const item = await MartItem.findOne({ where: { symbol } });
+
+        if (!item) {
+          i.update({ content: "Error", components: [], embeds: [] });
+          return;
+        }
+
+        const res = await sellItem(item, i.user.id);
+
+        const user = await getUser(i.user.id);
+        Events.emit("MART_ITEM_BOUGHT", { user, item });
+
+        if (res.success) {
+          const update = await MartClerkCommandController.makeBuyResponse(
+            symbol
+          );
+          await i.update(update);
+          return;
+        } else {
+          if (res.code === "INSUFFICIENT_BALANCE") {
+            i.update({
+              content: `You don't have enough ${Format.token()} to buy **${
+                item.name
+              }**.`,
+            });
+            return;
+          }
+          await i.update({
+            content: "That's out of stock. Try again later.",
+            embeds: [],
+            components: [],
+          });
+        }
       }
-    );
-
-    await i.reply({
-      content: `Here's what I have. \`\`\`${t}\`\`\``,
-      ephemeral: true,
     });
-
-    const user = await getUser(i.user.id);
-    Events.emit("MART_STOCK_CHECKED", { user });
   }
 
-  async buy(i: CommandInteraction) {
-    const items = await getMartItems();
+  async stock(i: CommandInteraction) {
+    return this.buy(i);
+  }
 
-    // const row = new MessageActionRow().addComponents(
-    //   new MessageSelectMenu()
-    //     .setCustomId("itemSelect")
-    //     .setPlaceholder("What do you want to buy?")
-    //     .addOptions([
-    //       ...items.map((i) => {
-    //         return {
-    //           label: `${i.description}`,
-    //           description: `[${i.stock}] @ [${Format.currency(i.price)}] ${
-    //             i.description
-    //           }`,
-    //           value: i.symbol,
-    //         };
-    //       }),
-    //     ])
-    // );
+  static async makeBuyResponse(
+    boughtItem?: MartItemSymbol
+  ): Promise<InteractionReplyOptions> {
+    const items = await MartItem.find({
+      order: { price: -1 },
+    });
 
     const url = `${Config.env("WEB_URL")}/mart-items/buy`;
-    // const merris = Global.bot("MART_CLERK");
-    const w = 24;
+    const w = 22;
 
-    const embeds: MessageEmbedOptions[] = items.map((item) => {
-      // `${position.toString().padStart(2, " ")}.${truncate(
-      //   l.displayName,
-      //   22 - 4 - 1
-      // )}`,
-      // ` ${Format.token()} ${Format.currency(l.gbt, { bare: true })}`,
+    const emojis: Record<MartItemSymbol, string> = {
+      GRILLED_RAT: "\u{1f400} ",
+      PIZZA: "\u{1f355} ",
+      NOODLES: "\u{1f35c} ",
+    };
 
-      // prettier-ignore
+    const embedItems = boughtItem
+      ? items.filter((i) => i.symbol === boughtItem)
+      : items;
+
+    const embeds: MessageEmbedOptions[] = embedItems.map((item) => {
       const s = [
-        ['Stock', 'Price', 'Effect'],
-        [item.stock, Format.currency(item.price, { bare: true }), `+${item.strengthIncrease} strength`]
+        ["Stock", "$GBT", "Effect"],
+        [
+          item.stock,
+          Format.currency(item.price, { bare: true }),
+          `+${item.strengthIncrease} strength`,
+        ],
       ];
 
-      const info = Format.codeBlock(
-        table(s, {
-          drawVerticalLine: (idx) => [1, 2].includes(idx),
-          columnDefault: { alignment: "center" },
-          drawHorizontalLine: (i) => i === 1,
-          columns: [{ width: 5 }, { width: 5 }, { width: w - 5 - 5 }],
-        })
-      );
-
-      // const description = Format.codeBlock(
-      //   table([[item.description]], {
-      //     border: getBorderCharacters("void"),
-      //     columns: [{ width: w, wrapWord: true }],
-      //   })
-      // );
+      const info = !boughtItem
+        ? Format.codeBlock(
+            table(s, {
+              drawVerticalLine: (idx) => [1, 2].includes(idx),
+              columnDefault: { alignment: "center" },
+              drawHorizontalLine: (i) => i === 1,
+              columns: [{ width: 5 }, { width: 4 }, { width: w - 5 - 4 }],
+            })
+          )
+        : Format.codeBlock(
+            `+1 ${item.name} added to your inventory.`.padEnd(w, " ")
+          );
 
       return {
         author: {
-          name: item.name,
-          // iconURL: merris.client.user!.displayAvatarURL({ size: 32 }),
+          name: `${emojis[item.symbol]} ${item.name}`,
         },
+        color: item.stock === 0 ? "DARK_RED" : "DARK_GREEN",
         description: info,
         thumbnail: {
           height: 32,
@@ -108,42 +121,25 @@ export default class MartClerkCommandController extends CommandController {
       };
     });
 
-    // Selection handled by MartClerkBot.handleBuy
-
-    await i.reply({
+    return {
       embeds,
-      // components: [row],
+      components: [
+        new MessageActionRow().addComponents(
+          items.map((item) =>
+            new MessageButton()
+              .setCustomId(`buy:${item.symbol}`)
+              .setStyle(item.stock > 0 ? "PRIMARY" : "SECONDARY")
+              .setLabel(`${emojis[item.symbol]} ${item.name}`)
+              .setDisabled(!!boughtItem || item.stock === 0)
+          )
+        ),
+      ],
       ephemeral: true,
-    });
+    };
   }
 
-  async handleItemSelect(i: SelectMenuInteraction) {
-    const item = await MartItem.findOne({ where: { symbol: i.values[0] } });
-
-    if (!item) {
-      i.update({ content: "Error", components: [] });
-      return;
-    }
-
-    const res = await sellItem(item, i.user.id);
-
-    const user = await getUser(i.user.id);
-    Events.emit("MART_ITEM_BOUGHT", { user, item });
-
-    if (res.success) {
-      await i.update({
-        content: `Ok. 1 **${item.name}** added to your inventory.`,
-        components: [],
-      });
-      return;
-    } else {
-      if (res.code === "INSUFFICIENT_BALANCE") {
-        i.update({
-          content: `You want a **${item.name}**? It's out of stock.\nChoose something else or scram.`,
-        });
-        return;
-      }
-      await i.update({ content: "Error", components: [] });
-    }
+  async buy(i: CommandInteraction) {
+    const reply = await MartClerkCommandController.makeBuyResponse();
+    await i.reply(reply);
   }
 }
