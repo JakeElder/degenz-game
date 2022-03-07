@@ -30,10 +30,8 @@ export default class UserController {
     onboard: boolean = true,
     districtSymbol: DistrictSymbol
   ) {
-    const admin = Global.bot("ADMIN");
-
     let [member, user] = await Promise.all([
-      admin.getMember(memberId),
+      UserController.getMember(memberId),
       User.findOne({ where: { discordId: memberId } }),
     ]);
 
@@ -59,6 +57,7 @@ export default class UserController {
     }
 
     const parent = Config.categoryId(`THE_${districtSymbol}`);
+    const admin = Global.bot("ADMIN");
 
     const apartment = await admin.guild.channels.create(
       `\u2302\uFF5C${paramCase(member!.displayName)}s-apartment`,
@@ -107,11 +106,73 @@ export default class UserController {
     return { success: true, code: "USER_INITIATED", user };
   }
 
+  static getCachedMember(id: GuildMember["id"]) {
+    const bots = Global.bots();
+
+    let i = 0;
+    while (i < bots.length) {
+      console.log(bots[i].manifest.symbol);
+      const member = bots[i].guild.members.cache.get(id);
+      if (member) {
+        return member;
+      }
+      i++;
+    }
+
+    return null;
+  }
+
+  static async getMember(id: GuildMember["id"]) {
+    const bots = Global.bots();
+    await Promise.all(bots.map((b) => b.ready));
+
+    let member = this.getCachedMember(id);
+
+    if (member) {
+      return member;
+    }
+
+    return bots
+      .find((b) => b.manifest.symbol === "ADMIN")!
+      .guild.members.fetch(id);
+  }
+
+  static async getMembers(ids: GuildMember["id"][]) {
+    let members: (GuildMember | null)[] = ids.map(() => null);
+    const bots = Global.bots();
+
+    await Promise.all(bots.map((b) => b.ready));
+
+    // Check cache
+    members = members.map((m, idx) => m ?? this.getCachedMember(ids[idx]));
+
+    // Return if we found them all
+    if (!members.some((m) => m === null)) {
+      return members;
+    }
+
+    // If not hit API
+    const remaining = await bots
+      .find((b) => b.manifest.symbol === "ADMIN")!
+      .guild.members.fetch({
+        user: ids.filter(
+          (id) => !members.some((m) => m !== null && m.id === id)
+        ),
+      });
+
+    // And fill in remaining
+    members = members.map(
+      (m, idx) => m ?? remaining.find((m) => m.id === ids[idx]) ?? null
+    );
+
+    return members;
+  }
+
   static async eject(memberId: GuildMember["id"]) {
     const admin = Global.bot("ADMIN");
 
     const user = await getUser(memberId);
-    const member = await admin.getMember(memberId);
+    const member = await UserController.getMember(memberId);
 
     // Check user exists in db
     if (user === null) {
@@ -146,7 +207,7 @@ export default class UserController {
   static async imprison(memberId: GuildMember["id"]) {
     const admin = Global.bot("ADMIN");
 
-    const member = await admin.getMember(memberId);
+    const member = await UserController.getMember(memberId);
     const user = await getUser(member!.id);
 
     if (user === null) {
@@ -252,7 +313,7 @@ export default class UserController {
   static async release(memberId: GuildMember["id"]) {
     const admin = Global.bot("ADMIN");
 
-    const member = await admin.getMember(memberId);
+    const member = await UserController.getMember(memberId);
     const user = await getUser(member!.id);
 
     if (!user.imprisoned) {
@@ -285,9 +346,7 @@ export default class UserController {
   }
 
   static async openWorld(user: User) {
-    const admin = Global.bot("ADMIN");
-
-    const member = await admin.getMember(user.discordId);
+    const member = await UserController.getMember(user.discordId);
     await member!.roles.add(Config.roleId("DEGEN"));
     await member!.roles.remove(Config.roleId("VERIFIED"));
   }

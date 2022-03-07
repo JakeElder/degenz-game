@@ -92,15 +92,12 @@ export default class WelcomeRoomController {
 
   static async computeInfoData(): Promise<InfoMessageData> {
     const admin = Global.bot("ADMIN");
-    const [members, npcs] = await Promise.all([
-      admin.guild.members.fetch(),
-      NPC.find(),
-    ]);
+    const npcs = await NPC.find();
 
     const strength = random.int(10, 100);
 
     return {
-      member: members.random()!,
+      member: admin.guild.members.cache.random()!,
       imageURL: this.randomColourImage,
       strength,
       color: strength > 80 ? "GREEN" : strength > 30 ? "ORANGE" : "RED",
@@ -181,7 +178,7 @@ export default class WelcomeRoomController {
             name: data.member.displayName,
             iconURL: data.member.displayAvatarURL(),
           },
-          description: `\`Level ${random.int(1, 100)} Degen\``,
+          description: `\`Level ${random.int(1, 20)} Degen\``,
           fields: [
             {
               name: Format.currency(null, { full: true, plural: true }),

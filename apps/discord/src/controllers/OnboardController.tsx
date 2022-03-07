@@ -18,19 +18,13 @@ const { r } = Utils;
 
 export default class OnboardController {
   static async partOne(user: User) {
-    console.log("GETTING BOT");
-    console.log(user, user.primaryTenancy);
     const bb = Global.bot("BIG_BROTHER");
 
-    console.log("GETTING APT");
     const apartment = await bb.getTextChannel(
       user.primaryTenancy.discordChannelId
     );
-    console.log(apartment);
-    console.log("GETTING MEMBER");
-    const member = await bb.getMember(user.discordId);
+    const member = await UserController.getMember(user.discordId);
 
-    console.log("SENDING MESSAGE");
     await apartment.send(r(<OnboardDialogBB part={1} member={member!} />));
     await Utils.delay(2500);
 

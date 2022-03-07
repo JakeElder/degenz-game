@@ -6,7 +6,7 @@ import { GuildMember, MessageEmbedOptions } from "discord.js";
 import { Format } from "lib";
 import { table } from "table";
 import truncate from "truncate";
-import { Global } from "../Global";
+import UserController from "./UserController";
 
 type Leader = {
   id: User["id"];
@@ -31,20 +31,16 @@ export class LeaderboardController {
   }
 
   static async computeData(leaders: User[]): Promise<LeaderboardData> {
-    const bb = Global.bot("BIG_BROTHER");
-    let members = await Promise.all(
-      leaders.map((u) => {
-        return bb.getMember(u.discordId);
-      })
+    let members = await UserController.getMembers(
+      leaders.map((l) => l.discordId)
     );
-
     members = members.filter((m) => m !== null);
 
     const pruned = leaders.filter((l) =>
       members.map((m) => m!.id).includes(l.discordId)
     );
 
-    return pruned.map((u, idx) => ({
+    return pruned.map((u) => ({
       id: u.id,
       displayName: u.displayName,
       gbt: u.gbt,

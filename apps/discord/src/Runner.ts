@@ -61,12 +61,9 @@ export default class Runner {
     });
 
     Events.on("APARTMENT_ALLOCATED", (e) => {
-      console.log("APARTMENT_ALLOCATED");
       if (e.data.onboard) {
-        console.log("CALLING ONBOARD");
         OnboardController.partOne(e.data.user);
       } else {
-        console.log("CALLING SKIP");
         OnboardController.skip(e.data.user);
       }
     });

@@ -1,4 +1,4 @@
-import { getBorderCharacters, table } from "table";
+import { table } from "table";
 import {
   CommandInteraction,
   InteractionReplyOptions,
@@ -9,7 +9,7 @@ import {
 import { MartItem } from "data/db";
 import Config from "config";
 import { CommandController } from "../CommandController";
-import { getMartItems, getUser, sellItem } from "../legacy/db";
+import { getUser, sellItem } from "../legacy/db";
 import Events from "../Events";
 import { Format } from "lib";
 import { Global } from "../Global";
@@ -72,7 +72,7 @@ export default class MartClerkCommandController extends CommandController {
     });
 
     const url = `${Config.env("WEB_URL")}/mart-items/buy`;
-    const w = 22;
+    const w = 16;
 
     const emojis: Record<MartItemSymbol, string> = {
       GRILLED_RAT: "\u{1f400} ",
@@ -90,7 +90,7 @@ export default class MartClerkCommandController extends CommandController {
         [
           item.stock,
           Format.currency(item.price, { bare: true }),
-          `+${item.strengthIncrease} strength`,
+          `+${item.strengthIncrease} \u{1f4aa}`,
         ],
       ];
 
