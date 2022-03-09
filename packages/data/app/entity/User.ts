@@ -39,7 +39,16 @@ export class User extends BaseEntity {
   strength: number;
 
   @Column({ type: "int4", array: true, default: [] })
-  inventory: number;
+  inventory: number[];
+
+  @Column({ type: "int4", default: 0 })
+  focus: number;
+
+  @Column({ type: "int4", default: 0 })
+  charisma: number;
+
+  @Column({ type: "int4", default: 0 })
+  luck: number;
 
   @Column({ default: false })
   inGame: boolean;
