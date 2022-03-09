@@ -99,7 +99,7 @@ export default class UserController {
     await user.save();
 
     WaitingRoomController.update();
-    WelcomeRoomController.updateWelcomeMessage();
+    // WelcomeRoomController.updateWelcomeMessage();
 
     Events.emit("APARTMENT_ALLOCATED", { user, onboard });
 
@@ -198,7 +198,7 @@ export default class UserController {
     await User.remove(user);
 
     WaitingRoomController.update();
-    WelcomeRoomController.updateWelcomeMessage();
+    // WelcomeRoomController.updateWelcomeMessage();
 
     return { success: true, code: "USER_EJECTED" };
   }

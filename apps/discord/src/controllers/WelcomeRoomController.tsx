@@ -45,7 +45,7 @@ export default class WelcomeRoomController {
 
   static async init() {
     await this.updateInfoMessage();
-    await this.updateWelcomeMessage();
+    // await this.updateWelcomeMessage();
     this.intervalId = setInterval(() => this.updateInfoMessage(), 6000);
   }
 
@@ -215,6 +215,27 @@ export default class WelcomeRoomController {
 
     const message = this.makeInfoMessage(data);
     await PersistentMessageController.set("WELCOME_INFO", message);
+  }
+
+  static async welcome(member: GuildMember) {
+    const bb = Global.bot("BIG_BROTHER");
+    await bb.ready;
+
+    const welcomeChannel = await bb.getTextChannel(
+      Config.channelId("WELCOME_ROOM")
+    );
+
+    const waitingRoom = channelMention(Config.channelId("WAITING_ROOM"));
+    const generalRoom = channelMention(Config.channelId("GENERAL"));
+
+    await welcomeChannel.send(
+      r(
+        <>
+          **WELCOME, COMRADE** {userMention(member.id)}. To join the game, go to{" "}
+          {waitingRoom}, or come and chat in {generalRoom}.
+        </>
+      )
+    );
   }
 
   static async setWelcomeMessage(data: WelcomeMessageData) {

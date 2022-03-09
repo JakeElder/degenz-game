@@ -121,6 +121,12 @@ structure.push({
       permissionOverwrites: READ_ONLY,
     },
     {
+      symbol: "ORIENTATION",
+      name: "\u22c8\uff5corientation",
+      lockPermissions: true,
+      permissionOverwrites: READ_ONLY,
+    },
+    {
       symbol: "WAITING_ROOM",
       name: "\u{1f510}\uff5cwaiting-room",
       lockPermissions: true,

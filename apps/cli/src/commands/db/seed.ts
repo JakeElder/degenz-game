@@ -119,7 +119,7 @@ export default class Seed extends Command {
           await PersistentMessage.insert([
             {
               symbol: "WELCOME_INFO",
-              channelSymbol: "WELCOME_ROOM",
+              channelSymbol: "ORIENTATION",
               maintainerSymbol: "BIG_BROTHER",
             },
             {

@@ -4,7 +4,6 @@ import {
   PrimaryGeneratedColumn,
   Column,
   BaseEntity,
-  Index,
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
@@ -18,8 +17,7 @@ export class MartItem extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  @Column({ type: "enum", enum: MartItemSymbolEnum })
+  @Column({ type: "enum", enum: MartItemSymbolEnum, unique: true })
   symbol: MartItemSymbol;
 
   @Column()

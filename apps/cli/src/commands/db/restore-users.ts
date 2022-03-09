@@ -65,7 +65,7 @@ export default class Seed extends Command {
     }
 
     const members = require("../../../members.json");
-    const nonGameMembers = members.filter((m) => {
+    const nonGameMembers = members.filter((m: any) => {
       return !m.user.bot && !userDiscordIds.includes(m.user.id);
     });
 

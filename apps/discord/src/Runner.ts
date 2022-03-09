@@ -86,7 +86,7 @@ export default class Runner {
     Events.on("MEMBER_VERIFIED", async (e) => {
       WorldNotifier.memberVerified(e);
       await UserController.add(e.data.member);
-      WelcomeRoomController.updateWelcomeMessage();
+      WelcomeRoomController.welcome(e.data.member);
       Analytics.verify(e);
     });
 
