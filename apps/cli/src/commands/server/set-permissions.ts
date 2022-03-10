@@ -68,7 +68,7 @@ export default class SetPermissions extends Command {
           },
         };
       }),
-      { concurrent: true }
+      { concurrent: true, exitOnError: false }
     );
 
     await listr.run();
