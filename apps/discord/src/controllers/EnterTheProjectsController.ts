@@ -1,6 +1,6 @@
 import { channelMention, userMention } from "@discordjs/builders";
 import Config from "config";
-import { District, User } from "data/db";
+import { ApartmentTenancy, District, User } from "data/db";
 import {
   ButtonInteraction,
   MessageActionRow,
@@ -155,7 +155,7 @@ export default class EnterTheProjectsController {
     if (res.success) {
       Events.emit("GAME_ENTERED_APARTMENT", {
         user: res.user!,
-        district: res.user!.primaryTenancy.district,
+        district: (res.user!.primaryTenancy as ApartmentTenancy).district,
       });
       const user = userMention(i.user.id);
       const channel = channelMention(res.user!.primaryTenancy.discordChannelId);

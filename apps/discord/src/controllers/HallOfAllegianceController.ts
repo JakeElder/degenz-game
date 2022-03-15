@@ -1,4 +1,4 @@
-import { District, Pledge, User } from "data/db";
+import { ApartmentTenancy, District, Pledge, User } from "data/db";
 import {
   ButtonInteraction,
   InteractionCollector,
@@ -86,7 +86,8 @@ export default class HallOfAllegianceController {
       order: { createdAt: -1 },
     });
 
-    const dailyAllowance = user.primaryTenancy.district.allowance;
+    const dailyAllowance = (user.primaryTenancy as ApartmentTenancy).district
+      .allowance;
 
     if (!pledge) {
       const tx = Format.transaction(user.gbt, dailyAllowance);

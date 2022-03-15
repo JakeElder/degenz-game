@@ -5,6 +5,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  Column,
+  OneToOne,
 } from "typeorm";
 import { User } from "..";
 import { Exclude } from "class-transformer";
@@ -12,14 +14,19 @@ import { Dormitory } from "..";
 
 @Entity()
 export class DormitoryTenancy extends BaseEntity {
+  type: "DORMITORY";
+
   @Exclude()
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ nullable: true })
+  onboardingThreadId: string;
+
   @ManyToOne(() => Dormitory, (dormitory) => dormitory.tenancies)
   dormitory: Dormitory;
 
-  @ManyToOne(() => User, (user) => user.apartmentTenancies, {
+  @OneToOne(() => User, (user) => user.dormitoryTenancy, {
     onDelete: "CASCADE",
   })
   user: User;
@@ -29,4 +36,8 @@ export class DormitoryTenancy extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  get discordChannelId() {
+    return this.dormitory.discordChannelId;
+  }
 }

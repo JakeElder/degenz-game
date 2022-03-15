@@ -9,12 +9,14 @@ export const OnboardDialogBB = ({
   part,
   member,
   response,
-  apartmentId,
+  channelId,
+  type = "APARTMENT",
 }: {
   part: number;
   member: GuildMember;
   response?: "yes" | "no";
-  apartmentId?: string;
+  channelId?: string;
+  type?: "APARTMENT" | "DORMITORY";
 }) => {
   switch (part) {
     case 1:
@@ -28,12 +30,21 @@ export const OnboardDialogBB = ({
         <>I am the **SUPREME LEADER** of **{Config.general("WORLD_NAME")}**.</>
       );
     case 3:
-      return (
-        <>
-          I have issued you with your own apartment,{" "}
-          <Channel id={apartmentId!} />! *Beautiful*, isn't it?
-        </>
-      );
+      if (type === "APARTMENT") {
+        return (
+          <>
+            I have issued you with your own apartment,{" "}
+            <Channel id={channelId!} />! *Beautiful*, isn't it?
+          </>
+        );
+      } else {
+        return (
+          <>
+            You have been assigned a bunk in the
+            <Channel id={channelId!} /> dormitory
+          </>
+        );
+      }
     case 4:
       return (
         <>

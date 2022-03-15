@@ -26,4 +26,10 @@ export class AppState extends BaseEntity {
   static async fetch() {
     return this.findOneOrFail();
   }
+
+  static async increaseDormitoryCapacity(amount: number) {
+    const state = await this.fetch();
+    state.dormitoryCapacity += amount;
+    await state.save();
+  }
 }

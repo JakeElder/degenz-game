@@ -173,7 +173,15 @@ admin.commands.push({
         .setDescription(`Set entry message`)
     )
     .addSubcommand((subcommand) =>
-      subcommand.setName("available").setDescription(`Available`)
+      subcommand
+        .setName("increase-dorm-capacity")
+        .setDescription(`Increase the capacity of all dormitories.`)
+        .addNumberOption((option) =>
+          option
+            .setName("amount")
+            .setRequired(true)
+            .setDescription(`The amount to increase by`)
+        )
     )
     .toJSON(),
 });

@@ -70,6 +70,14 @@ export default class Runner {
       }
     });
 
+    Events.on("DORMITORY_ALLOCATED", (e) => {
+      if (e.data.onboard) {
+        OnboardController.partOne(e.data.user);
+      } else {
+        OnboardController.skip(e.data.user);
+      }
+    });
+
     Events.on("STATS_CHECKED", (e) => {
       WorldNotifier.statsChecked(e);
       Analytics.statsChecked(e);
@@ -133,7 +141,7 @@ export default class Runner {
     });
 
     Events.on("GAME_ENTERED_DORMITORY", (e) => {
-      console.log(e);
+      // console.log(e);
       // WorldNotifier.gameEntered(e);
       // Analytics.gameEntered(e);
     });

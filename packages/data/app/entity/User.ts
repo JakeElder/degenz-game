@@ -56,6 +56,7 @@ export class User extends BaseEntity {
   inGame: boolean;
 
   @OneToMany(() => ApartmentTenancy, (tenancy) => tenancy.user, {
+    eager: true,
     cascade: true,
   })
   apartmentTenancies: ApartmentTenancy[];
@@ -149,7 +150,12 @@ export class User extends BaseEntity {
     if (!this.apartmentTenancies) {
       throw new Error("Tenancies not loaded");
     }
-    return this.apartmentTenancies[0];
+
+    if (this.apartmentTenancies.length) {
+      return this.apartmentTenancies[0];
+    }
+
+    return this.dormitoryTenancy;
   }
 
   public hasAchievement(achievement: AchievementEnum) {

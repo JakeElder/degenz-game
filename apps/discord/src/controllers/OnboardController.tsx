@@ -13,32 +13,49 @@ import { FirstActivityReply } from "../legacy/templates";
 import { Global } from "../Global";
 import { In } from "typeorm";
 import Events from "../Events";
+import DiscordBot from "../DiscordBot";
 
 const { r } = Utils;
 
 export default class OnboardController {
+  static async getChannel(user: User, bot: DiscordBot) {
+    const tenancy = user.primaryTenancy;
+
+    if (tenancy.type === "APARTMENT") {
+      return bot.getTextChannel(tenancy.discordChannelId);
+    }
+
+    const dormId = Config.channelId(tenancy.dormitory.symbol);
+    const dormChannel = await bot.getTextChannel(dormId);
+    const thread = await dormChannel.threads.fetch(tenancy.onboardingThreadId);
+
+    return thread!;
+  }
+
   static async partOne(user: User) {
     const bb = Global.bot("BIG_BROTHER");
-
-    const apartment = await bb.getTextChannel(
-      user.primaryTenancy.discordChannelId
-    );
+    const channel = await this.getChannel(user, bb);
     const member = await UserController.getMember(user.discordId);
 
-    await apartment.send(r(<OnboardDialogBB part={1} member={member!} />));
+    await channel.send(r(<OnboardDialogBB part={1} member={member!} />));
     await Utils.delay(2500);
 
-    await apartment.send(r(<OnboardDialogBB part={2} member={member!} />));
+    await channel.send(r(<OnboardDialogBB part={2} member={member!} />));
     await Utils.delay(3000);
 
-    await apartment.send(
+    await channel.send(
       r(
-        <OnboardDialogBB part={3} member={member!} apartmentId={apartment.id} />
+        <OnboardDialogBB
+          part={3}
+          member={member!}
+          channelId={channel.id}
+          type={user.primaryTenancy.type}
+        />
       )
     );
     await Utils.delay(3500);
 
-    const m = await apartment.send({
+    const m = await channel.send({
       content: r(<OnboardDialogBB part={4} member={member!} />),
       components: [
         new MessageActionRow().addComponents(
@@ -71,7 +88,7 @@ export default class OnboardController {
       transactBalance(member!.id, i.customId === "yes" ? 100 : 40),
     ]);
 
-    await apartment.send({
+    await channel.send({
       content: r(
         <OnboardDialogBB
           member={member!}
@@ -82,7 +99,7 @@ export default class OnboardController {
     });
 
     await Utils.delay(2500);
-    await apartment.send({
+    await channel.send({
       content: r(
         <OnboardDialogBB
           part={6}
@@ -93,12 +110,12 @@ export default class OnboardController {
     });
 
     await Utils.delay(3000);
-    await apartment.send({
+    await channel.send({
       content: r(<OnboardDialogBB part={7} member={member!} />),
     });
 
     await Utils.delay(4000);
-    await apartment.send({
+    await channel.send({
       content: r(<OnboardDialogBB part={8} member={member!} />),
     });
 
@@ -113,12 +130,10 @@ export default class OnboardController {
 
   static async partTwo(user: User) {
     const ally = Global.bot("ALLY");
-    const apartment = await ally.getTextChannel(
-      user.primaryTenancy.discordChannelId
-    );
+    const channel = await this.getChannel(user, ally);
     const member = await ally.getMember(user.discordId);
 
-    const m = await apartment.send({
+    const m = await channel.send({
       content: r(<OnboardDialogAlly part={1} member={member!} />),
       components: [
         new MessageActionRow().addComponents(
@@ -160,7 +175,7 @@ export default class OnboardController {
     });
     i.update({ fetchReply: false });
 
-    await apartment.send(
+    await channel.send(
       r(
         <OnboardDialogAlly
           part={2}
@@ -171,10 +186,10 @@ export default class OnboardController {
     );
     await Utils.delay(3000);
 
-    await apartment.send(r(<OnboardDialogAlly member={member!} part={3} />));
+    await channel.send(r(<OnboardDialogAlly member={member!} part={3} />));
     await Utils.delay(4000);
 
-    await apartment.send({
+    await channel.send({
       content: r(<OnboardDialogAlly member={member!} part={4} />),
       embeds: [
         new MessageEmbed().setImage(
@@ -184,7 +199,7 @@ export default class OnboardController {
     });
     await Utils.delay(1000);
 
-    await apartment.send(r(<OnboardDialogAlly member={member!} part={5} />));
+    await channel.send(r(<OnboardDialogAlly member={member!} part={5} />));
   }
 
   static async partThree(user: User) {
@@ -196,53 +211,45 @@ export default class OnboardController {
 
     await Utils.delay(3000);
 
-    const apartment = await ally.getTextChannel(
-      user.primaryTenancy.discordChannelId
-    );
+    const channel = await this.getChannel(user, ally);
     const member = await ally.getMember(user.discordId);
 
-    await apartment.send(r(<OnboardDialogAlly member={member!} part={6} />));
+    await channel.send(r(<OnboardDialogAlly member={member!} part={6} />));
     await Utils.delay(3000);
 
-    await apartment.send(r(<OnboardDialogAlly member={member!} part={7} />));
+    await channel.send(r(<OnboardDialogAlly member={member!} part={7} />));
     await Utils.delay(2500);
 
-    await apartment.send(r(<OnboardDialogAlly member={member!} part={8} />));
+    await channel.send(r(<OnboardDialogAlly member={member!} part={8} />));
   }
 
   static async partFour(user: User) {
     const ally = Global.bot("ALLY");
-
-    const apartment = await ally.getTextChannel(
-      user.primaryTenancy.discordChannelId
-    );
+    const channel = await this.getChannel(user, ally);
     const member = await ally.getMember(user.discordId);
 
-    await apartment.send(r(<OnboardDialogAlly member={member!} part={9} />));
+    await channel.send(r(<OnboardDialogAlly member={member!} part={9} />));
     await Utils.delay(2000);
 
     await AchievementController.award(user!, AchievementEnum.STATS_CHECKED);
 
     await Utils.delay(3000);
 
-    await apartment.send(r(<OnboardDialogAlly member={member!} part={10} />));
+    await channel.send(r(<OnboardDialogAlly member={member!} part={10} />));
     await Utils.delay(2000);
 
-    await apartment.send(r(<OnboardDialogAlly member={member!} part={11} />));
+    await channel.send(r(<OnboardDialogAlly member={member!} part={11} />));
     await Utils.delay(2500);
 
-    await apartment.send(r(<OnboardDialogAlly member={member!} part={12} />));
+    await channel.send(r(<OnboardDialogAlly member={member!} part={12} />));
     await Utils.delay(3000);
 
-    await apartment.send(r(<OnboardDialogAlly member={member!} part={13} />));
+    await channel.send(r(<OnboardDialogAlly member={member!} part={13} />));
   }
 
   static async partFive(user: User) {
     const ally = Global.bot("ALLY");
-
-    const apartment = await ally.getTextChannel(
-      user.primaryTenancy.discordChannelId
-    );
+    const channel = await this.getChannel(user, ally);
     const member = await ally.getMember(user.discordId);
 
     await Utils.delay(2000);
@@ -250,26 +257,23 @@ export default class OnboardController {
     await AchievementController.award(user!, AchievementEnum.HELP_REQUESTED);
     await Utils.delay(2000);
 
-    await apartment.send(r(<OnboardDialogAlly member={member!} part={14} />));
+    await channel.send(r(<OnboardDialogAlly member={member!} part={14} />));
     await Utils.delay(2000);
 
     await OnboardController.sendNextPrompt(user);
     await Utils.delay(3000);
 
-    await apartment.send(r(<OnboardDialogAlly member={member!} part={15} />));
+    await channel.send(r(<OnboardDialogAlly member={member!} part={15} />));
     await Utils.delay(2500);
 
-    await apartment.send(r(<OnboardDialogAlly member={member!} part={16} />));
+    await channel.send(r(<OnboardDialogAlly member={member!} part={16} />));
   }
 
   static async sendNextPrompt(user: User) {
     const ally = Global.bot("ALLY");
+    const channel = await this.getChannel(user, ally);
 
-    const apartment = await ally.getTextChannel(
-      user.primaryTenancy.discordChannelId
-    );
-
-    const m = await apartment.send({
+    const m = await channel.send({
       content:
         "There's lots to see and do here, so what do you feel like doing?",
       components: [
@@ -306,26 +310,25 @@ export default class OnboardController {
 
     Events.emit("FIRST_WORLD_CHOICE", { user, choice: i.customId });
 
-    await apartment.send(r(<FirstActivityReply choice={i.customId} />));
+    await channel.send(r(<FirstActivityReply choice={i.customId} />));
   }
 
   static async switchOnboardNPCs(user: User) {
     const admin = Global.bot("ADMIN");
+    const channel = await this.getChannel(user, admin);
 
-    const apartment = await admin.getTextChannel(
-      user.primaryTenancy.discordChannelId
-    );
+    if (channel.type === "GUILD_TEXT") {
+      await channel.permissionOverwrites.delete(
+        Config.roleId("BIG_BROTHER_BOT")
+      );
 
-    await apartment.permissionOverwrites.delete(
-      Config.roleId("BIG_BROTHER_BOT")
-    );
+      await Utils.delay(2000);
 
-    await Utils.delay(2000);
-
-    await apartment.permissionOverwrites.create(Config.roleId("ALLY_BOT"), {
-      VIEW_CHANNEL: true,
-      EMBED_LINKS: true,
-    });
+      await channel.permissionOverwrites.create(Config.roleId("ALLY_BOT"), {
+        VIEW_CHANNEL: true,
+        EMBED_LINKS: true,
+      });
+    }
   }
 
   static async skip(user: User) {

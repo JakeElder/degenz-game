@@ -18,6 +18,9 @@ export class Dormitory extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ nullable: true })
+  discordChannelId: string;
+
   @Column({ type: "enum", enum: DormitorySymbolEnum, unique: true })
   symbol: `${DormitorySymbolEnum}`;
 

@@ -137,8 +137,24 @@ export default class UserController {
       return { success: false, code: "THE_SHELTERS_FULL" };
     }
 
-    // const parent = Config.channelId(dormitory.symbol);
-    // const admin = Global.bot("ADMIN");
+    const dormId = Config.channelId(dormitory.symbol);
+    const admin = Global.bot("ADMIN");
+
+    const dormChannel = await admin.getTextChannel(dormId);
+    await Promise.all([
+      dormChannel.permissionOverwrites.create(user.discordId, {
+        VIEW_CHANNEL: true,
+      }),
+    ]);
+
+    const thread = await dormChannel.threads.create({
+      name: `orientation\uFF5C${paramCase(member!.displayName)}`,
+      invitable: false,
+      type:
+        Config.env("NODE_ENV") === "production"
+          ? "GUILD_PRIVATE_THREAD"
+          : "GUILD_PUBLIC_THREAD",
+    });
 
     // const apartment = await admin.guild.channels.create(
     //   `\u2302\uFF5C${paramCase(member!.displayName)}s-apartment`,
@@ -165,7 +181,10 @@ export default class UserController {
     user.gbt = onboard ? 0 : 100;
     user.strength = 100;
     user.inGame = true;
-    user.dormitoryTenancy = DormitoryTenancy.create({ dormitory });
+    user.dormitoryTenancy = DormitoryTenancy.create({
+      dormitory,
+      onboardingThreadId: thread.id,
+    });
 
     await user.save();
 
@@ -254,6 +273,20 @@ export default class UserController {
       const apartment = await admin.getTextChannel(tenancy.discordChannelId);
       await apartment.delete();
     } catch (e) {
+      // this.error(e);
+    }
+
+    // Remove dorm tenancy
+    try {
+      const tenancy = user.dormitoryTenancy;
+      const dormChannel = await admin.getTextChannel(tenancy.discordChannelId);
+      const thread = await dormChannel.threads.fetch(
+        tenancy.onboardingThreadId
+      );
+      await thread?.delete();
+      dormChannel.permissionOverwrites.delete(user.discordId);
+    } catch (e) {
+      console.log(e);
       // this.error(e);
     }
 

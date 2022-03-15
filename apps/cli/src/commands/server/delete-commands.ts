@@ -19,13 +19,13 @@ export default class DeleteCommands extends Command {
                 Config.general("GUILD_ID")
               ),
               [],
-              Config.botToken("ADMIN"),
+              Config.botToken(bot.symbol),
               task
             );
           },
         };
       }),
-      { concurrent: true }
+      { concurrent: true, exitOnError: false }
     );
 
     await listr.run();

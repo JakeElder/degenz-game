@@ -6,8 +6,9 @@ import { DistrictSymbol } from "data/types";
 import AppController from "../controllers/AppController";
 import { Global } from "../Global";
 import EnterTheProjectsController from "../controllers/EnterTheProjectsController";
-import { Dormitory } from "data/db";
+import { AppState, Dormitory } from "data/db";
 import { Format } from "lib";
+import EnterTheSheltersController from "../controllers/EnterTheSheltersController";
 
 export default class AllyCommandController extends CommandController {
   async respond(
@@ -162,8 +163,13 @@ export default class AllyCommandController extends CommandController {
     await this.respond(i, "MESSAGE_SENT", "SUCCESS");
   }
 
-  async admin_available(i: CommandInteraction) {
-    const res = await Dormitory.choose();
-    await i.reply(Format.codeBlock(JSON.stringify(res, null, 2)));
+  async admin_increaseDormCapacity(i: CommandInteraction) {
+    const amount = i.options.getNumber("amount", true);
+    if (amount > 50) {
+      await this.respond(i, "50_MAXIMUM_EXCEEDED", "FAIL");
+    }
+    await AppState.increaseDormitoryCapacity(amount);
+    EnterTheSheltersController.update();
+    await this.respond(i, `DORM_CAPACITY_INCREASED: +${amount}`, "SUCCESS");
   }
 }

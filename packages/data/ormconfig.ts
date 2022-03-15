@@ -14,6 +14,7 @@ const dir = __dirname.replace(/\/dist$/, "");
 const base = {
   type: "postgres" as const,
   namingStrategy: new SnakeNamingStrategy(),
+  logging: true,
   entities: [`${dir}/dist/app/entity/**/*.js`],
   migrations: [`${dir}/dist/app/migration/**/*.js`],
   cli: {
