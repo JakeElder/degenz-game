@@ -212,7 +212,7 @@ export default class WorldNotifier {
     await this.logToHOP("ALLY", e.type, message);
   }
 
-  static async gameEntered(e: PickEvent<"GAME_ENTERED">) {
+  static async gameEntered(e: PickEvent<"GAME_ENTERED_APARTMENT">) {
     const message = r(
       <>
         **{e.data.user.displayName}** entered {e.data.district.inactiveEmoji}.

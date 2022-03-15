@@ -225,14 +225,16 @@ export default class WelcomeRoomController {
       Config.channelId("WELCOME_ROOM")
     );
 
-    const waitingRoom = channelMention(Config.channelId("WAITING_ROOM"));
+    const enterTheProjects = channelMention(
+      Config.channelId("ENTER_THE_PROJECTS")
+    );
     const generalRoom = channelMention(Config.channelId("GENERAL"));
 
     await welcomeChannel.send(
       r(
         <>
           **WELCOME, COMRADE** {userMention(member.id)}. To join the game, go to{" "}
-          {waitingRoom}, or come and chat in {generalRoom}.
+          {enterTheProjects}, or come and chat in {generalRoom}.
         </>
       )
     );
@@ -247,7 +249,7 @@ export default class WelcomeRoomController {
       u.tag ? userMention(u.discordId) : `**${u.displayName}**`
     );
 
-    const waitingRoom = channelMention(Config.channelId("WAITING_ROOM"));
+    const waitingRoom = channelMention(Config.channelId("ENTER_THE_PROJECTS"));
     const generalRoom = channelMention(Config.channelId("GENERAL"));
 
     await PersistentMessageController.set(

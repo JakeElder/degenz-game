@@ -308,7 +308,8 @@ export const ChannelHelpOutput = ({
 
   const COMMUNITY_CHANNELS = [
     Config.channelId("GENERAL"),
-    Config.channelId("WAITING_ROOM"),
+    Config.channelId("ENTER_THE_PROJECTS"),
+    Config.channelId("ENTER_THE_SHELTERS"),
     Config.channelId("FEEDBACK"),
     Config.channelId("ANNOUNCEMENTS"),
     Config.channelId("LEADERBOARD"),

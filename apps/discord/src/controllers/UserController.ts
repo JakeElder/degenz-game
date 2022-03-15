@@ -2,9 +2,15 @@ import { GuildMember } from "discord.js";
 import Config from "config";
 import { paramCase } from "change-case";
 import { userMention } from "@discordjs/builders";
-import { DistrictSymbol, TenancyType } from "data/types";
+import { DistrictSymbol, ApartmentTenancyLevelEnum } from "data/types";
 import Events from "../Events";
-import { District, Tenancy, User } from "data/db";
+import {
+  District,
+  ApartmentTenancy,
+  User,
+  Dormitory,
+  DormitoryTenancy,
+} from "data/db";
 import Utils from "../Utils";
 import {
   getAvailableCellNumber,
@@ -12,8 +18,8 @@ import {
   getUser,
 } from "../legacy/db";
 import { Global } from "../Global";
-import WaitingRoomController from "./WaitingRoomController";
-import WelcomeRoomController from "./WelcomeRoomController";
+import EnterTheProjectsController from "./EnterTheProjectsController";
+import EnterTheSheltersController from "./EnterTheSheltersController";
 
 export default class UserController {
   static async add(member: GuildMember) {
@@ -25,7 +31,7 @@ export default class UserController {
     return user;
   }
 
-  static async init(
+  static async initApartment(
     memberId: GuildMember["id"],
     onboard: boolean = true,
     districtSymbol: DistrictSymbol
@@ -50,9 +56,9 @@ export default class UserController {
       return { success: false, code: "ENTRY_CLOSED" };
     }
 
-    const tenancies = await getTenanciesInDistrict(districtSymbol);
+    const apartmentTenancies = await getTenanciesInDistrict(districtSymbol);
 
-    if (tenancies >= Config.general("DISTRICT_CAPACITY")) {
+    if (apartmentTenancies >= Config.general("DISTRICT_CAPACITY")) {
       return { success: false, code: "DISTRICT_FULL" };
     }
 
@@ -88,20 +94,84 @@ export default class UserController {
     user.gbt = onboard ? 0 : 100;
     user.strength = 100;
     user.inGame = true;
-    user.tenancies = [
-      Tenancy.create({
+    user.apartmentTenancies = [
+      ApartmentTenancy.create({
         discordChannelId: apartment.id,
-        type: TenancyType.AUTHORITY,
+        level: ApartmentTenancyLevelEnum.AUTHORITY,
         district,
       }),
     ];
 
     await user.save();
 
-    WaitingRoomController.update();
-    // WelcomeRoomController.updateWelcomeMessage();
+    EnterTheProjectsController.update();
 
     Events.emit("APARTMENT_ALLOCATED", { user, onboard });
+
+    return { success: true, code: "USER_INITIATED", user };
+  }
+
+  static async initShelters(
+    memberId: GuildMember["id"],
+    onboard: boolean = true
+  ) {
+    let [member, user] = await Promise.all([
+      UserController.getMember(memberId),
+      User.findOne({ where: { discordId: memberId } }),
+    ]);
+
+    if (member === null) {
+      return { success: false, code: "MEMBER_NOT_FOUND" };
+    }
+
+    if (typeof user === "undefined") {
+      [user] = await Promise.all([
+        this.add(member),
+        member.roles.add(Config.roleId("VERIFIED")),
+      ]);
+    }
+
+    const dormitory = await Dormitory.choose();
+
+    if (dormitory === null) {
+      return { success: false, code: "THE_SHELTERS_FULL" };
+    }
+
+    // const parent = Config.channelId(dormitory.symbol);
+    // const admin = Global.bot("ADMIN");
+
+    // const apartment = await admin.guild.channels.create(
+    //   `\u2302\uFF5C${paramCase(member!.displayName)}s-apartment`,
+    //   {
+    //     type: "GUILD_TEXT",
+    //     parent,
+    //     permissionOverwrites: [
+    //       {
+    //         id: Config.roleId("EVERYONE"),
+    //         deny: ["VIEW_CHANNEL"],
+    //       },
+    //       {
+    //         id: member!.id,
+    //         allow: ["VIEW_CHANNEL"],
+    //       },
+    //       {
+    //         id: Config.roleId(onboard ? "BIG_BROTHER_BOT" : "ALLY_BOT"),
+    //         allow: ["VIEW_CHANNEL"],
+    //       },
+    //     ],
+    //   }
+    // );
+
+    user.gbt = onboard ? 0 : 100;
+    user.strength = 100;
+    user.inGame = true;
+    user.dormitoryTenancy = DormitoryTenancy.create({ dormitory });
+
+    await user.save();
+
+    EnterTheSheltersController.update();
+
+    Events.emit("DORMITORY_ALLOCATED", { user, onboard });
 
     return { success: true, code: "USER_INITIATED", user };
   }
@@ -197,8 +267,8 @@ export default class UserController {
     // Remove from db
     await User.remove(user);
 
-    WaitingRoomController.update();
-    // WelcomeRoomController.updateWelcomeMessage();
+    EnterTheProjectsController.update();
+    EnterTheSheltersController.update();
 
     return { success: true, code: "USER_EJECTED" };
   }

@@ -151,7 +151,7 @@ export default class Analytics {
     });
   }
 
-  static gameEntered(e: PickEvent<"GAME_ENTERED">) {
+  static gameEntered(e: PickEvent<"GAME_ENTERED_APARTMENT">) {
     this.mixpanel.track(capitalCase(e.type), {
       distinct_id: e.data.user.discordId,
       user_display_name: e.data.user.displayName,

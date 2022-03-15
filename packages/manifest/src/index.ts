@@ -1,6 +1,6 @@
 import { Category, Role } from "data/types";
 import Config from "config";
-import { READ_ONLY } from "config/dist/constants";
+import { READ_ONLY, READ_ONLY_BEAUTOPIA } from "config/dist/constants";
 import bots from "./bots";
 
 const roles: Role[] = [
@@ -126,9 +126,44 @@ structure.push({
       lockPermissions: true,
       permissionOverwrites: READ_ONLY,
     },
+  ],
+});
+
+structure.push({
+  symbol: "JOIN_THE_GAME",
+  name: "Join The Game",
+  permissionOverwrites: [
     {
-      symbol: "WAITING_ROOM",
-      name: "\u{1f510}\uff5cwaiting-room",
+      id: Config.roleId("EVERYONE"),
+      deny: ["VIEW_CHANNEL"],
+    },
+    {
+      id: Config.roleId("DEGEN"),
+      allow: ["VIEW_CHANNEL"],
+    },
+    {
+      id: Config.roleId("VERIFIED"),
+      allow: ["VIEW_CHANNEL"],
+    },
+    {
+      id: Config.roleId("BIG_BROTHER_BOT"),
+      allow: ["VIEW_CHANNEL"],
+    },
+    {
+      id: Config.roleId("PRISONER"),
+      deny: ["VIEW_CHANNEL"],
+    },
+  ],
+  channels: [
+    {
+      symbol: "ENTER_THE_PROJECTS",
+      name: "\u{1f510}\uff5cthe-projects",
+      lockPermissions: true,
+      permissionOverwrites: READ_ONLY,
+    },
+    {
+      symbol: "ENTER_THE_SHELTERS",
+      name: "\u{1f510}\uff5cthe-shelters",
       lockPermissions: true,
       permissionOverwrites: READ_ONLY,
     },
@@ -267,7 +302,7 @@ structure.push({
       symbol: "METRO",
       name: "\u03c6\uff5cmetro",
       lockPermissions: true,
-      permissionOverwrites: READ_ONLY,
+      permissionOverwrites: READ_ONLY_BEAUTOPIA,
     },
     {
       symbol: "TAVERN",
@@ -279,7 +314,7 @@ structure.push({
       symbol: "HALL_OF_ALLEIGANCE",
       name: "\u04a7\uff5chall-of-allegiance",
       lockPermissions: true,
-      permissionOverwrites: READ_ONLY,
+      permissionOverwrites: READ_ONLY_BEAUTOPIA,
     },
     {
       symbol: "MART",
@@ -390,6 +425,55 @@ structure.push({
   name: "The Projects D6",
   permissionOverwrites: [],
   channels: [],
+});
+
+structure.push({
+  symbol: "THE_SHELTERS",
+  name: "The Shelters",
+  permissionOverwrites: [
+    {
+      id: Config.roleId("EVERYONE"),
+      deny: ["VIEW_CHANNEL"],
+    },
+    {
+      id: Config.roleId("PRISONER"),
+      deny: ["VIEW_CHANNEL"],
+    },
+    {
+      id: Config.roleId("DEGEN"),
+      allow: ["VIEW_CHANNEL"],
+    },
+    {
+      id: Config.roleId("BIG_BROTHER_BOT"),
+      allow: ["VIEW_CHANNEL"],
+    },
+  ],
+  channels: [
+    {
+      symbol: "BULLSEYE",
+      name: "\u25c9\uff5cbullseye",
+      lockPermissions: true,
+      permissionOverwrites: [],
+    },
+    {
+      symbol: "THE_GRID",
+      name: "\u25a6\uff5cbullseye",
+      lockPermissions: true,
+      permissionOverwrites: [],
+    },
+    {
+      symbol: "THE_LEFT",
+      name: "\u25e7\uff5cthe-left",
+      lockPermissions: true,
+      permissionOverwrites: [],
+    },
+    {
+      symbol: "THE_RIGHT",
+      name: "\u25e8\uff5cthe-right",
+      lockPermissions: true,
+      permissionOverwrites: [],
+    },
+  ],
 });
 
 structure.push({

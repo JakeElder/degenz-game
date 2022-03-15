@@ -13,19 +13,21 @@ const GENERAL = {
 };
 
 const CATEGORY_IDS: Record<CategorySymbol, string> = {
-  OUTSIDE_WORLD: "",
   ADMIN: "",
-  ENTRANCE: "",
+  BEAUTOPIA: "",
   COMMAND_CENTER: "",
   COMMUNITY: "",
-  BEAUTOPIA: "",
+  ENTRANCE: "",
+  JOIN_THE_GAME: "",
+  OUTSIDE_WORLD: "",
+  PRISON: "",
   THE_PROJECTS_D1: "",
   THE_PROJECTS_D2: "",
   THE_PROJECTS_D3: "",
   THE_PROJECTS_D4: "",
   THE_PROJECTS_D5: "",
   THE_PROJECTS_D6: "",
-  PRISON: "",
+  THE_SHELTERS: "",
 };
 
 const CHANNEL_IDS: Record<ChannelSymbol, string> = {
@@ -35,7 +37,10 @@ const CHANNEL_IDS: Record<ChannelSymbol, string> = {
   ARENA: "",
   ARMORY: "",
   BANK: "",
+  BULLSEYE: "",
   COMMANDS: "",
+  ENTER_THE_PROJECTS: "",
+  ENTER_THE_SHELTERS: "",
   FAQ: "",
   FEEDBACK: "",
   GENERAL: "",
@@ -47,6 +52,9 @@ const CHANNEL_IDS: Record<ChannelSymbol, string> = {
   METRO: "",
   ORIENTATION: "",
   TAVERN: "",
+  THE_GRID: "",
+  THE_LEFT: "",
+  THE_RIGHT: "",
   TOSS_HOUSE: "",
   TOWN_SQUARE: "",
   TRAINING_DOJO: "",

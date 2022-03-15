@@ -11,7 +11,7 @@ import { District } from "data/db";
 import { bots } from "manifest";
 import { Global } from "../Global";
 import Events from "../Events";
-import WaitingRoomController from "./WaitingRoomController";
+import EnterTheProjectsController from "./EnterTheProjectsController";
 import { PersistentMessageController } from "./PersistentMessageController";
 
 export default class AppController {
@@ -28,12 +28,12 @@ export default class AppController {
 
   static async openDistrict(districtSymbol: DistrictSymbol) {
     await District.open(districtSymbol);
-    await WaitingRoomController.update();
+    await EnterTheProjectsController.update();
   }
 
   static async closeDistrict(districtSymbol: DistrictSymbol) {
     await District.close(districtSymbol);
-    await WaitingRoomController.update();
+    await EnterTheProjectsController.update();
   }
 
   static async setVerifyMessage() {

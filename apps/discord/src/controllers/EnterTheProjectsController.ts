@@ -3,7 +3,6 @@ import Config from "config";
 import { District, User } from "data/db";
 import {
   ButtonInteraction,
-  InteractionCollector,
   MessageActionRow,
   MessageButton,
   MessageOptions,
@@ -29,18 +28,29 @@ type EntryData = {
   }[];
 };
 
-export default class WaitingRoomController {
-  static buttonCollector: InteractionCollector<ButtonInteraction>;
+export default class EnterTheProjectsController {
   static messageEntryData: EntryData | null;
   static rateLimited = false;
 
   static async init() {
     await this.update();
+    await this.bindButtonListeners();
+  }
+
+  static async bindButtonListeners() {
+    const bb = Global.bot("BIG_BROTHER");
+    await bb.ready;
+
+    bb.client.on("interactionCreate", async (i) => {
+      if (i.isButton() && i.customId.startsWith("ENTER_GAME_APARTMENT:")) {
+        this.handleButtonPress(i);
+      }
+    });
   }
 
   static async update() {
     const data = await this.computeEntryData();
-    await this.setEnterMessage(data);
+    await this.setEnterMessages(data);
     this.setStatus(data.open);
   }
 
@@ -78,7 +88,7 @@ export default class WaitingRoomController {
         .setEmoji(d.buttonEmoji)
         .setStyle(d.available ? "SUCCESS" : "SECONDARY")
         .setDisabled(!d.available)
-        .setCustomId(d.symbol);
+        .setCustomId(`ENTER_GAME_APARTMENT:${d.symbol}`);
     });
 
     const capacity = Config.general("DISTRICT_CAPACITY");
@@ -87,7 +97,7 @@ export default class WaitingRoomController {
       .map((d) => {
         return `${d.tableEmoji} => ${
           d.open
-            ? `\`[OPEN]\` => \`${d.capacity}/${capacity} available\``
+            ? `\` [OPEN] \` => \`${d.capacity}/${capacity} available\``
             : `\`[CLOSED]\` => \`${d.capacity}/${capacity} available\``
         }`;
       })
@@ -119,18 +129,9 @@ export default class WaitingRoomController {
     return message;
   }
 
-  static async setEnterMessage(data: EntryData) {
-    const options = this.makeEntryMessage(data);
-
-    const message = await PersistentMessageController.set("ENTRY", options);
-
-    if (this.buttonCollector) {
-      this.buttonCollector.off("collect", this.handleButtonPress);
-    }
-
-    this.buttonCollector = message
-      .createMessageComponentCollector({ componentType: "BUTTON" })
-      .on("collect", this.handleButtonPress);
+  static async setEnterMessages(data: EntryData) {
+    const entryOptions = this.makeEntryMessage(data);
+    await PersistentMessageController.set("THE_PROJECTS_ENTRY", entryOptions);
   }
 
   static async handleButtonPress(i: ButtonInteraction) {
@@ -144,38 +145,41 @@ export default class WaitingRoomController {
       return;
     }
 
-    const res = await UserController.init(
+    const [_, districtSymbol] = i.customId.split(":") as [any, DistrictSymbol];
+    const res = await UserController.initApartment(
       i.user.id,
       true,
-      i.customId as DistrictSymbol
+      districtSymbol
     );
 
     if (res.success) {
-      Events.emit("GAME_ENTERED", {
+      Events.emit("GAME_ENTERED_APARTMENT", {
         user: res.user!,
         district: res.user!.primaryTenancy.district,
       });
       const user = userMention(i.user.id);
       const channel = channelMention(res.user!.primaryTenancy.discordChannelId);
-      await Promise.all([
-        i.editReply({
-          content: `${user} - ${channel}, your new *private* apartment to receive further instructions.`,
-        }),
-        WaitingRoomController.update(),
-      ]);
+
+      await i.editReply({
+        content: `${user} - ${channel}, your new *private* apartment to receive further instructions.`,
+      });
+
+      EnterTheProjectsController.update();
     }
   }
 
-  static async setStatus(open: boolean, retry = false) {
-    if (this.rateLimited && !retry) {
+  static async setStatus(open: boolean, isRetry = false) {
+    if (this.rateLimited && !isRetry) {
       return { status: 429 };
     }
 
     const admin = Global.bot("ADMIN");
-    const room = await admin.getTextChannel(Config.channelId("WAITING_ROOM"));
+    const room = await admin.getTextChannel(
+      Config.channelId("ENTER_THE_PROJECTS")
+    );
 
-    const disabled = `\u{1f510}\uff5cwaiting-room`;
-    const enabled = `\u{1f513}\uff5cwaiting-room`;
+    const disabled = `\u{1f510}\uff5cthe-projects`;
+    const enabled = `\u{1f513}\uff5cthe-projects`;
 
     const newName = open ? enabled : disabled;
 
@@ -186,7 +190,7 @@ export default class WaitingRoomController {
     const res = await axios({
       method: "PATCH",
       baseURL: "https://discord.com/api/v9",
-      url: `/channels/${Config.channelId("WAITING_ROOM")}`,
+      url: `/channels/${Config.channelId("ENTER_THE_PROJECTS")}`,
       data: { name: newName },
       headers: {
         Accept: "application/json",

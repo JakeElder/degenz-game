@@ -23,7 +23,7 @@ export class LeaderboardController {
 
   static async init() {
     await this.update();
-    this.cronInterval = setInterval(() => this.update(), 1000);
+    // this.cronInterval = setInterval(() => this.update(), 1000);
   }
 
   static async update() {

@@ -7,7 +7,7 @@ import {
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
 import { Bot, TossGame } from "data/types";
-import { User, MartItem, District } from "data/db";
+import { User, MartItem, District, Dormitory } from "data/db";
 
 type EnterEvent = {
   type: "ENTER";
@@ -45,6 +45,14 @@ type SendMessageAsExecutedEvent = {
 
 type ApartmentAllocatedEvent = {
   type: "APARTMENT_ALLOCATED";
+  data: {
+    user: User;
+    onboard: boolean;
+  };
+};
+
+type DormitoryAllocatedEvent = {
+  type: "DORMITORY_ALLOCATED";
   data: {
     user: User;
     onboard: boolean;
@@ -141,11 +149,19 @@ type FirstWorldChoiceEvent = {
   };
 };
 
-type GameEnteredEvent = {
-  type: "GAME_ENTERED";
+type GameEnteredApartmentEvent = {
+  type: "GAME_ENTERED_APARTMENT";
   data: {
     user: User;
     district: District;
+  };
+};
+
+type GameEnteredDormitoryEvent = {
+  type: "GAME_ENTERED_DORMITORY";
+  data: {
+    user: User;
+    dormitory: Dormitory;
   };
 };
 
@@ -169,7 +185,9 @@ export type Event =
   | HelpRequestedEvent
   | GBTTransferredEvent
   | FirstWorldChoiceEvent
-  | GameEnteredEvent;
+  | GameEnteredApartmentEvent
+  | GameEnteredDormitoryEvent
+  | DormitoryAllocatedEvent;
 
 type EventHandler<E extends Event> = {
   [P in E["type"]]: (e: { type: E["type"]; data: E["data"] }) => void;
@@ -194,7 +212,9 @@ type DegenEmitterEvents = EventHandler<BotReadyEvent> &
   EventHandler<HelpRequestedEvent> &
   EventHandler<GBTTransferredEvent> &
   EventHandler<FirstWorldChoiceEvent> &
-  EventHandler<GameEnteredEvent>;
+  EventHandler<GameEnteredApartmentEvent> &
+  EventHandler<GameEnteredDormitoryEvent> &
+  EventHandler<DormitoryAllocatedEvent>;
 
 export type PickEvent<T extends keyof DegenEmitterEvents> = Parameters<
   DegenEmitterEvents[T]

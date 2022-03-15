@@ -10,14 +10,16 @@ import {
   DeleteDateColumn,
   ManyToMany,
   JoinTable,
+  OneToOne,
 } from "typeorm";
 import { Role, TextChannel } from "discord.js";
 import { Achievement as AchievementEnum } from "../types";
-import { Tenancy, MartItemOwnership, Pledge } from "..";
+import { ApartmentTenancy, MartItemOwnership, Pledge } from "..";
 import { Achievement } from "./Achievement";
 import { Imprisonment } from "./Imprisonment";
 import { PlayerEvent } from "./PlayerEvent";
 import { Exclude } from "class-transformer";
+import { DormitoryTenancy } from "./DormitoryTenancy";
 
 @Entity()
 export class User extends BaseEntity {
@@ -53,8 +55,15 @@ export class User extends BaseEntity {
   @Column({ default: false })
   inGame: boolean;
 
-  @OneToMany(() => Tenancy, (tenancy) => tenancy.user, { cascade: true })
-  tenancies: Tenancy[];
+  @OneToMany(() => ApartmentTenancy, (tenancy) => tenancy.user, {
+    cascade: true,
+  })
+  apartmentTenancies: ApartmentTenancy[];
+
+  @OneToOne(() => DormitoryTenancy, (tenancy) => tenancy.user, {
+    cascade: true,
+  })
+  dormitoryTenancy: DormitoryTenancy;
 
   @OneToMany(() => PlayerEvent, (playerEvent) => playerEvent.user, {
     cascade: true,
@@ -137,10 +146,10 @@ export class User extends BaseEntity {
   }
 
   public get primaryTenancy() {
-    if (!this.tenancies) {
+    if (!this.apartmentTenancies) {
       throw new Error("Tenancies not loaded");
     }
-    return this.tenancies[0];
+    return this.apartmentTenancies[0];
   }
 
   public hasAchievement(achievement: AchievementEnum) {

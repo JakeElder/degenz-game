@@ -3,32 +3,32 @@ import {
   PrimaryGeneratedColumn,
   Column,
   BaseEntity,
-  Index,
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
 } from "typeorm";
-import { TenancyType } from "../types";
 import { User, District } from "..";
 import { Exclude } from "class-transformer";
+import { ApartmentTenancyLevelEnum } from "../types";
 
 @Entity()
-export class Tenancy extends BaseEntity {
+export class ApartmentTenancy extends BaseEntity {
   @Exclude()
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  @Index()
   discordChannelId: string;
 
-  @Column({ type: "enum", enum: TenancyType })
-  type: TenancyType;
+  @Column({ type: "enum", enum: ApartmentTenancyLevelEnum })
+  level: `${ApartmentTenancyLevelEnum}`;
 
   @ManyToOne(() => District, (district) => district.tenancies)
   district: District;
 
-  @ManyToOne(() => User, (user) => user.tenancies, { onDelete: "CASCADE" })
+  @ManyToOne(() => User, (user) => user.apartmentTenancies, {
+    onDelete: "CASCADE",
+  })
   user: User;
 
   @CreateDateColumn()

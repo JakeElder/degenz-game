@@ -5,7 +5,9 @@ import { CommandController } from "../CommandController";
 import { DistrictSymbol } from "data/types";
 import AppController from "../controllers/AppController";
 import { Global } from "../Global";
-import WaitingRoomController from "../controllers/WaitingRoomController";
+import EnterTheProjectsController from "../controllers/EnterTheProjectsController";
+import { Dormitory } from "data/db";
+import { Format } from "lib";
 
 export default class AllyCommandController extends CommandController {
   async respond(
@@ -33,7 +35,7 @@ export default class AllyCommandController extends CommandController {
     const districtSymbol = i.options.getString("district") as DistrictSymbol;
     const member = i.options.getMember("member", true) as GuildMember;
 
-    const result = await UserController.init(
+    const result = await UserController.initApartment(
       member.id,
       onboard === null || onboard ? true : false,
       districtSymbol
@@ -156,7 +158,12 @@ export default class AllyCommandController extends CommandController {
   }
 
   async admin_setEntryMessage(i: CommandInteraction) {
-    await WaitingRoomController.update();
+    await EnterTheProjectsController.update();
     await this.respond(i, "MESSAGE_SENT", "SUCCESS");
+  }
+
+  async admin_available(i: CommandInteraction) {
+    const res = await Dormitory.choose();
+    await i.reply(Format.codeBlock(JSON.stringify(res, null, 2)));
   }
 }

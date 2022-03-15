@@ -26,7 +26,12 @@ export enum ChannelSymbolEnum {
 
   WELCOME_ROOM = "WELCOME_ROOM",
   ORIENTATION = "ORIENTATION",
+
+  // TODO: Delete WAITING_ROOM
   WAITING_ROOM = "WAITING_ROOM",
+
+  ENTER_THE_PROJECTS = "ENTER_THE_PROJECTS",
+  ENTER_THE_SHELTERS = "ENTER_THE_SHELTERS",
 
   ANNOUNCEMENTS = "ANNOUNCEMENTS",
   LEADERBOARD = "LEADERBOARD",
@@ -51,7 +56,7 @@ export enum ChannelSymbolEnum {
   GEN_POP = "GEN_POP",
 }
 
-export type ChannelSymbol = `${ChannelSymbolEnum}`;
+export type ChannelSymbol = `${ChannelSymbolEnum}` | `${DormitorySymbolEnum}`;
 
 export type Channel = {
   symbol: ChannelSymbol;
@@ -72,10 +77,12 @@ export type CategorySymbol =
   | "OUTSIDE_WORLD"
   | "ADMIN"
   | "ENTRANCE"
+  | "JOIN_THE_GAME"
   | "COMMAND_CENTER"
   | "COMMUNITY"
   | "BEAUTOPIA"
   | `THE_${DistrictSymbol}`
+  | "THE_SHELTERS"
   | "PRISON";
 
 export type Category = {
@@ -131,10 +138,12 @@ export type Bot = {
   clientOptions: ClientOptions;
 };
 
-export enum TenancyType {
+export enum ApartmentTenancyLevelEnum {
   AUTHORITY = "AUTHORITY",
   GUEST = "GUEST",
 }
+
+export type ApartmentTenancyLevel = `${ApartmentTenancyLevelEnum}`;
 
 export enum DistrictSymbol {
   PROJECTS_D1 = "PROJECTS_D1",
@@ -145,18 +154,14 @@ export enum DistrictSymbol {
   PROJECTS_D6 = "PROJECTS_D6",
 }
 
-export enum ShelterSymbol {
-  SHELTER_D1 = "SHELTER_D1",
-  SHELTER_D2 = "SHELTER_D2",
-  SHELTER_D3 = "SHELTER_D3",
-  SHELTER_D4 = "SHELTER_D4",
-  SHELTER_D5 = "SHELTER_D5",
-  SHELTER_D6 = "SHELTER_D6",
-  SHELTER_D7 = "SHELTER_D7",
-  SHELTER_D8 = "SHELTER_D8",
-  SHELTER_D9 = "SHELTER_D9",
-  SHELTER_D10 = "SHELTER_D10",
+export enum DormitorySymbolEnum {
+  THE_LEFT = "THE_LEFT",
+  THE_RIGHT = "THE_RIGHT",
+  THE_GRID = "THE_GRID",
+  BULLSEYE = "BULLSEYE",
 }
+
+export type DormitorySymbol = `${DormitorySymbolEnum}`;
 
 export enum Achievement {
   HELP_REQUESTED = "HELP_REQUESTED",
@@ -169,13 +174,16 @@ export enum Achievement {
 }
 
 export enum PersistentMessageSymbolEnum {
-  WELCOME_INFO = "WELCOME_INFO",
-  WELCOME_NOTIFICATION = "WELCOME_NOTIFICATION",
+  // TODO: Delete ENTRY
+  ENTRY = "ENTRY",
   GBT_LEADERBOARD_1 = "GBT_LEADERBOARD_1",
   GBT_LEADERBOARD_2 = "GBT_LEADERBOARD_2",
-  ENTRY = "ENTRY",
-  VERIFY = "VERIFY",
   PLEDGE = "PLEDGE",
+  THE_PROJECTS_ENTRY = "THE_PROJECTS_ENTRY",
+  THE_SHELTERS_ENTRY = "THE_SHELTERS_ENTRY",
+  VERIFY = "VERIFY",
+  WELCOME_INFO = "WELCOME_INFO",
+  WELCOME_NOTIFICATION = "WELCOME_NOTIFICATION",
 }
 
 export type PersistentMessageSymbol = `${PersistentMessageSymbolEnum}`;

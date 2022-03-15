@@ -9,7 +9,7 @@ import {
   OneToMany,
 } from "typeorm";
 import { DistrictSymbol } from "../types";
-import { Tenancy } from "..";
+import { ApartmentTenancy } from "..";
 import { Exclude } from "class-transformer";
 
 @Entity()
@@ -37,8 +37,8 @@ export class District extends BaseEntity {
   @Column({ nullable: true })
   allowance: number;
 
-  @OneToMany(() => Tenancy, (tenancy) => tenancy.district)
-  tenancies: Tenancy[];
+  @OneToMany(() => ApartmentTenancy, (tenancy) => tenancy.district)
+  tenancies: ApartmentTenancy[];
 
   @CreateDateColumn()
   createdAt: Date;

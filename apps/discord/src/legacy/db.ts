@@ -3,15 +3,11 @@ import {
   Imprisonment,
   MartItem,
   MartItemOwnership,
-  Tenancy,
+  ApartmentTenancy,
   User,
   District,
 } from "data/db";
-import {
-  DistrictSymbol,
-  TenancyType,
-  Achievement as AchievementEnum,
-} from "data/types";
+import { DistrictSymbol, Achievement as AchievementEnum } from "data/types";
 import { In } from "typeorm";
 
 export async function getMartItems() {
@@ -30,7 +26,7 @@ export async function getUser(id: string) {
   return User.findOneOrFail({
     where: { discordId: id },
     relations: [
-      "tenancies",
+      "apartmentTenancies",
       "imprisonments",
       "achievements",
       "martItemOwnerships",
@@ -41,7 +37,7 @@ export async function getUser(id: string) {
 export async function getUsers() {
   return User.find({
     relations: [
-      "tenancies",
+      "apartmentTenancies",
       "imprisonments",
       "achievements",
       "martItemOwnerships",
@@ -53,13 +49,13 @@ export async function getTenanciesInDistrict(districtSymbol: DistrictSymbol) {
   const district = await District.findOneOrFail({
     where: { symbol: districtSymbol },
   });
-  return Tenancy.count({ where: { district } });
+  return ApartmentTenancy.count({ where: { district } });
 }
 
 export async function getUserByApartment(id: string) {
-  const t = await Tenancy.findOne({
+  const t = await ApartmentTenancy.findOne({
     relations: ["user"],
-    where: { discordChannelId: id, type: TenancyType.AUTHORITY },
+    where: { discordChannelId: id, level: "AUTHORITY" },
   });
   return t?.user;
 }

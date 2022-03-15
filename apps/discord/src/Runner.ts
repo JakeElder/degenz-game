@@ -5,7 +5,8 @@ import WorldNotifier from "./WorldNotifier";
 import DiscordBot from "./DiscordBot";
 import OnboardController from "./controllers/OnboardController";
 import AppController from "./controllers/AppController";
-import WaitingRoomController from "./controllers/WaitingRoomController";
+import EnterTheProjectsController from "./controllers/EnterTheProjectsController";
+import EnterTheSheltersController from "./controllers/EnterTheSheltersController";
 import HallOfAllegianceController from "./controllers/HallOfAllegianceController";
 import Analytics from "./Analytics";
 import UserController from "./controllers/UserController";
@@ -32,7 +33,8 @@ export default class Runner {
       }
 
       if (e.data.bot.symbol === "BIG_BROTHER") {
-        WaitingRoomController.init();
+        EnterTheProjectsController.init();
+        EnterTheSheltersController.init();
         HallOfAllegianceController.init();
         AppController.setVerifyMessage();
         LeaderboardController.init();
@@ -125,9 +127,15 @@ export default class Runner {
       Analytics.gbtTransferred(e);
     });
 
-    Events.on("GAME_ENTERED", (e) => {
+    Events.on("GAME_ENTERED_APARTMENT", (e) => {
       WorldNotifier.gameEntered(e);
       Analytics.gameEntered(e);
+    });
+
+    Events.on("GAME_ENTERED_DORMITORY", (e) => {
+      console.log(e);
+      // WorldNotifier.gameEntered(e);
+      // Analytics.gameEntered(e);
     });
 
     Events.on("FIRST_WORLD_CHOICE", (e) => {

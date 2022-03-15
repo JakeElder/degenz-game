@@ -5,7 +5,7 @@ import Config from "config";
 import { promises as fs } from "fs";
 import path from "path";
 import { snakeCase } from "change-case";
-import { NPC, connect, disconnect, District } from "data/db";
+import { NPC, connect, disconnect, District, Dormitory } from "data/db";
 import { Command } from "../../lib";
 
 async function exists(path: string) {
@@ -25,9 +25,77 @@ export default class DeployEmojis extends Command {
 
     await connect();
     const districts = await District.find({ order: { symbol: 1 } });
+    const dormitories = await Dormitory.find({ order: { symbol: 1 } });
 
     const listr = new Listr(
       [
+        {
+          title: "Dormitories",
+          task: () => {
+            return new Listr(
+              dormitories.map((d) => {
+                return {
+                  title: d.symbol,
+                  task: async () => {
+                    return new Listr(
+                      ["active", "inactive"].map<Listr.ListrTask>((i) => {
+                        return {
+                          title: i,
+                          task: async (_, task) => {
+                            if (d.inactiveEmoji && d.activeEmoji) {
+                              task.skip(
+                                `Emojis already uploaded for ${d.symbol}`
+                              );
+                              return;
+                            }
+                            const name = d.symbol.toLowerCase();
+                            const variant = i === "active" ? "" : "_i";
+                            const file = path.join(
+                              __dirname,
+                              `../../images/dormitory/${name}${variant}.png`
+                            );
+                            const iconExists = await exists(file);
+
+                            if (!iconExists) {
+                              throw new Error(`No ${i} icon for ${d.symbol}`);
+                            }
+
+                            const icon = await fs.readFile(file, {
+                              encoding: "base64",
+                            });
+
+                            const res = await this.post(
+                              Routes.guildEmojis(guildId),
+                              {
+                                name: `${name}${variant}`,
+                                image: `data:image/jpeg;base64,${icon}`,
+                                roles: [Config.roleId("EVERYONE")],
+                              },
+                              Config.botToken("ADMIN"),
+                              task
+                            );
+
+                            if (res.status >= 200 && res.status < 300) {
+                              d[
+                                variant === "_i"
+                                  ? "inactiveEmoji"
+                                  : "activeEmoji"
+                              ] = `<:${name}${variant}:${res.data.id}>`;
+                              await d.save();
+                            } else {
+                              throw new Error(res.statusText);
+                            }
+                          },
+                        };
+                      })
+                    );
+                  },
+                };
+              }),
+              { exitOnError: false }
+            );
+          },
+        },
         {
           title: "Districts",
           task: () => {
@@ -41,6 +109,12 @@ export default class DeployEmojis extends Command {
                         return {
                           title: i,
                           task: async (_, task) => {
+                            if (d.inactiveEmoji && d.activeEmoji) {
+                              task.skip(
+                                `Emojis already uploaded for ${d.symbol}`
+                              );
+                              return;
+                            }
                             const name = d.symbol.split("_")[1];
                             const variant = i === "active" ? "A" : "I";
                             const file = path.join(
@@ -98,6 +172,12 @@ export default class DeployEmojis extends Command {
                 return {
                   title: bot.name,
                   task: async (_, task) => {
+                    const npc = await NPC.findOneOrFail({ symbol: bot.symbol });
+                    if (npc.defaultEmojiId) {
+                      task.skip(`Emojis already uploaded for ${npc.symbol}`);
+                      return;
+                    }
+
                     const name = snakeCase(bot.name);
                     const f = path.join(
                       __dirname,
@@ -136,7 +216,7 @@ export default class DeployEmojis extends Command {
           },
         },
       ],
-      { exitOnError: false }
+      { exitOnError: false, collapse: false } as any
     );
 
     await listr.run();

@@ -5,6 +5,7 @@ import {
   BaseEntity,
   CreateDateColumn,
   UpdateDateColumn,
+  Column,
 } from "typeorm";
 
 @Entity()
@@ -13,9 +14,16 @@ export class AppState extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ default: 1 })
+  dormitoryCapacity: number;
+
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  static async fetch() {
+    return this.findOneOrFail();
+  }
 }

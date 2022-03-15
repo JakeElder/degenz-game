@@ -78,7 +78,7 @@ export default class HallOfAllegianceController {
   static async handleButtonPress(i: ButtonInteraction) {
     const user = await User.findOneOrFail({
       where: { discordId: i.user.id },
-      relations: ["tenancies", "tenancies.district"],
+      relations: ["apartmentTenancies", "apartmentTenancies.district"],
     });
 
     const pledge = await Pledge.findOne({

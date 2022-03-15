@@ -172,6 +172,9 @@ admin.commands.push({
         .setName("set-entry-message")
         .setDescription(`Set entry message`)
     )
+    .addSubcommand((subcommand) =>
+      subcommand.setName("available").setDescription(`Available`)
+    )
     .toJSON(),
 });
 
