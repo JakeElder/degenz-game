@@ -18,6 +18,7 @@ build
 *.pem
 *.tsbuildinfo
 dist
+.idea/
 
 # debug
 npm-debug.log*
