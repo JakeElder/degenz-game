@@ -19,7 +19,7 @@ export class Invite extends BaseEntity {
     @Column()
     userId: string;
 
-    @Column()
+    @Column({default: 0})
     count: number;
 
     @CreateDateColumn()

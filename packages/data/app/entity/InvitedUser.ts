@@ -5,7 +5,7 @@ import {
     Column,
     BaseEntity,
     CreateDateColumn, DeleteDateColumn,
-    ManyToOne
+    ManyToOne, Index
 } from "typeorm";
 import { Invite } from "./Invite";
 
@@ -16,13 +16,14 @@ export class InvitedUser extends BaseEntity {
     id: number;
 
     @Column()
-    inviterId: string;
+    @Index({unique : true})
+    discordId: string;
 
     @ManyToOne(() => Invite)
-    invite: Invite;
+    inviteId: Invite;
 
-    @Column({ nullable: true })
-    count: number;
+    @Column({default: false})
+    accepted: boolean;
 
     @CreateDateColumn()
     createdAt: Date;
