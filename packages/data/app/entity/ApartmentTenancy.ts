@@ -30,7 +30,7 @@ export class ApartmentTenancy extends BaseEntity {
   @Column({ type: "enum", enum: ApartmentTenancyLevelEnum })
   level: `${ApartmentTenancyLevelEnum}`;
 
-  @ManyToOne(() => District, (district) => district.tenancies)
+  @ManyToOne(() => District, (district) => district.tenancies, { eager: true })
   district: District;
 
   @ManyToOne(() => User, (user) => user.apartmentTenancies, {
@@ -43,4 +43,8 @@ export class ApartmentTenancy extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  get dailyAllowance() {
+    return this.district.allowance;
+  }
 }

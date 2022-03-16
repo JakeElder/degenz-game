@@ -8,6 +8,7 @@ import {
   MartItem,
   NPC,
   PersistentMessage,
+  Dormitory,
 } from "data/db";
 import {
   Achievement as AchievementEnum,
@@ -36,7 +37,19 @@ export default class Seed extends Command {
       {
         title: "App State",
         task: async () => {
-          await AppState.insert({});
+          await AppState.insert({ dormitoryCapacity: 1 });
+        },
+      },
+      {
+        title: "Dormitories",
+        task: async () => {
+          await Dormitory.insert([
+            { symbol: "BULLSEYE" },
+            { symbol: "THE_GRID" },
+            { symbol: "THE_LEFT" },
+            { symbol: "THE_RIGHT" },
+            { symbol: "VULTURE" },
+          ]);
         },
       },
       {

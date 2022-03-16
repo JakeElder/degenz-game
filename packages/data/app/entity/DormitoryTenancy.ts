@@ -47,4 +47,8 @@ export class DormitoryTenancy extends BaseEntity {
   get discordChannelId() {
     return this.bunkThreadId;
   }
+
+  get dailyAllowance() {
+    return 80;
+  }
 }

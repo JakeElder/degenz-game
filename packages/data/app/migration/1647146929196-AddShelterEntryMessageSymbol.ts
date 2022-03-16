@@ -7,9 +7,6 @@ export class AddShelterEntryMessageSymbol1647146929196
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `DROP INDEX "public"."IDX_65b80781585329c4d6148f7729"`
-    );
-    await queryRunner.query(
       `ALTER TYPE "public"."persistent_message_symbol_enum" RENAME TO "persistent_message_symbol_enum_old"`
     );
     await queryRunner.query(
@@ -35,9 +32,6 @@ export class AddShelterEntryMessageSymbol1647146929196
     );
     await queryRunner.query(
       `ALTER TYPE "public"."persistent_message_symbol_enum_old" RENAME TO "persistent_message_symbol_enum"`
-    );
-    await queryRunner.query(
-      `CREATE UNIQUE INDEX "IDX_65b80781585329c4d6148f7729" ON "mart_item" ("symbol") `
     );
   }
 }

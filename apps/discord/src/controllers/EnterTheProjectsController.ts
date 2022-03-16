@@ -161,7 +161,7 @@ export default class EnterTheProjectsController {
       const channel = channelMention(res.user!.primaryTenancy.discordChannelId);
 
       await i.editReply({
-        content: `${user} - ${channel}, your new *private* apartment to receive further instructions.`,
+        content: `${user} - Go to ${channel}, your new *private* apartment to receive further instructions.`,
       });
 
       EnterTheProjectsController.update();

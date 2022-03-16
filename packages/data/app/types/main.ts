@@ -159,6 +159,7 @@ export enum DormitorySymbolEnum {
   THE_RIGHT = "THE_RIGHT",
   THE_GRID = "THE_GRID",
   BULLSEYE = "BULLSEYE",
+  VULTURE = "VULTURE",
 }
 
 export type DormitorySymbol = `${DormitorySymbolEnum}`;

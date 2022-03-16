@@ -155,12 +155,16 @@ export default class EnterTheProjectsController {
         Config.channelId(user.dormitoryTenancy.dormitory.symbol)
       );
       const bunk = channelMention(user.dormitoryTenancy.bunkThreadId);
+      const prefix = user.dormitoryTenancy.dormitory.symbol.startsWith("THE")
+        ? ""
+        : "the ";
 
       await i.editReply(
         r(
           <>
-            {um} - You have been assigned your own bunk in {dorm} dormitory. Go
-            to {bunk}, your own private area to receive further instructions.
+            {um} - You have been assigned your own bunk in {prefix}
+            {dorm} dormitory. Go to {bunk}, your own private area to receive
+            further instructions.
           </>
         )
       );

@@ -159,6 +159,8 @@ export default class UserController {
           : "GUILD_PUBLIC_THREAD",
     });
 
+    await thread.members.add(user.discordId);
+
     user.gbt = onboard ? 0 : 100;
     user.strength = 100;
     user.inGame = true;
@@ -341,7 +343,7 @@ export default class UserController {
     );
 
     const primaryTenancy = user.primaryTenancy;
-    const apartment = await admin.getTextChannel(
+    const residence = await admin.getTextChannel(
       primaryTenancy.discordChannelId
     );
 
@@ -351,7 +353,7 @@ export default class UserController {
         cellNumber: number,
         entryRoleIds,
       }),
-      apartment.permissionOverwrites.delete(user.discordId),
+      residence.permissionOverwrites.delete(user.discordId),
       member!.roles.remove(entryRoleIds),
     ]);
 
@@ -414,12 +416,12 @@ export default class UserController {
       Config.categoryId("COMMUNITY")
     );
 
-    const apartment = await admin.getTextChannel(
+    const residence = await admin.getTextChannel(
       user.primaryTenancy.discordChannelId
     );
 
     await Promise.all([
-      apartment.permissionOverwrites.create(member!.id, { VIEW_CHANNEL: true }),
+      residence.permissionOverwrites.create(member!.id, { VIEW_CHANNEL: true }),
       community.permissionOverwrites.create(member!.id, { VIEW_CHANNEL: null }),
       member!.roles.add(user.imprisonment.entryRoleIds),
     ]);
@@ -439,5 +441,13 @@ export default class UserController {
     const member = await UserController.getMember(user.discordId);
     await member!.roles.add(Config.roleId("DEGEN"));
     await member!.roles.remove(Config.roleId("VERIFIED"));
+    const admin = Global.bot("ADMIN");
+
+    if (user.primaryTenancy.type === "DORMITORY") {
+      const dormChannel = await admin.getTextChannel(
+        user.primaryTenancy.dormitory.discordChannelId
+      );
+      await dormChannel.permissionOverwrites.delete(user.discordId);
+    }
   }
 }
