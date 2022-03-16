@@ -477,6 +477,12 @@ structure.push({
       lockPermissions: true,
       permissionOverwrites: [],
     },
+    {
+      symbol: "VULTURE",
+      name: "\u{13182}\uff5cvulture",
+      lockPermissions: true,
+      permissionOverwrites: [],
+    },
   ],
 });
 
