@@ -59,6 +59,7 @@ const CHANNEL_IDS: Record<ChannelSymbol, string> = {
   TOWN_SQUARE: "",
   TRAINING_DOJO: "",
   VERIFICATION: "",
+  VULTURE: "",
   WAITING_ROOM: "",
   WELCOME_ROOM: "",
 };
