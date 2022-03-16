@@ -16,6 +16,11 @@ import { Dormitory } from "..";
 export class DormitoryTenancy extends BaseEntity {
   type: "DORMITORY";
 
+  constructor() {
+    super();
+    this.type = "DORMITORY";
+  }
+
   @Exclude()
   @PrimaryGeneratedColumn()
   id: number;
@@ -23,7 +28,9 @@ export class DormitoryTenancy extends BaseEntity {
   @Column({ nullable: true })
   onboardingThreadId: string;
 
-  @ManyToOne(() => Dormitory, (dormitory) => dormitory.tenancies)
+  @ManyToOne(() => Dormitory, (dormitory) => dormitory.tenancies, {
+    eager: true,
+  })
   dormitory: Dormitory;
 
   @OneToOne(() => User, (user) => user.dormitoryTenancy, {
@@ -38,6 +45,6 @@ export class DormitoryTenancy extends BaseEntity {
   updatedAt: Date;
 
   get discordChannelId() {
-    return this.dormitory.discordChannelId;
+    return this.onboardingThreadId;
   }
 }

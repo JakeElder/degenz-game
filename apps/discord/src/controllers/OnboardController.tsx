@@ -329,6 +329,17 @@ export default class OnboardController {
         EMBED_LINKS: true,
       });
     }
+
+    if (
+      channel.type === "GUILD_PRIVATE_THREAD" ||
+      channel.type === "GUILD_PUBLIC_THREAD"
+    ) {
+      if (channel.isThread()) {
+        await channel.members.remove(Config.clientId("BIG_BROTHER"));
+        await Utils.delay(2000);
+        await channel.members.add(Config.clientId("ALLY"));
+      }
+    }
   }
 
   static async skip(user: User) {

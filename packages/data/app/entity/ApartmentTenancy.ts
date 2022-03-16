@@ -15,6 +15,11 @@ import { ApartmentTenancyLevelEnum } from "../types";
 export class ApartmentTenancy extends BaseEntity {
   type: "APARTMENT";
 
+  constructor() {
+    super();
+    this.type = "APARTMENT";
+  }
+
   @Exclude()
   @PrimaryGeneratedColumn()
   id: number;

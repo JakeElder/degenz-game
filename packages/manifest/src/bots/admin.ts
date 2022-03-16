@@ -183,6 +183,9 @@ admin.commands.push({
             .setDescription(`The amount to increase by`)
         )
     )
+    .addSubcommand((subcommand) =>
+      subcommand.setName("test").setDescription(`Do something.`)
+    )
     .toJSON(),
 });
 

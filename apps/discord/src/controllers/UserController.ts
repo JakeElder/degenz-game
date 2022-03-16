@@ -138,16 +138,19 @@ export default class UserController {
     }
 
     const dormId = Config.channelId(dormitory.symbol);
+    const bb = Global.bot("BIG_BROTHER");
     const admin = Global.bot("ADMIN");
 
-    const dormChannel = await admin.getTextChannel(dormId);
+    const dormChannelBB = await bb.getTextChannel(dormId);
+    const dormChannelAdmin = await admin.getTextChannel(dormId);
+
     await Promise.all([
-      dormChannel.permissionOverwrites.create(user.discordId, {
+      dormChannelAdmin.permissionOverwrites.create(user.discordId, {
         VIEW_CHANNEL: true,
       }),
     ]);
 
-    const thread = await dormChannel.threads.create({
+    const thread = await dormChannelBB.threads.create({
       name: `orientation\uFF5C${paramCase(member!.displayName)}`,
       invitable: false,
       type:
@@ -257,7 +260,7 @@ export default class UserController {
   }
 
   static async eject(memberId: GuildMember["id"]) {
-    const admin = Global.bot("ADMIN");
+    const [admin, bb] = Global.bots("ADMIN", "BIG_BROTHER");
 
     const user = await getUser(memberId);
     const member = await UserController.getMember(memberId);
@@ -270,8 +273,10 @@ export default class UserController {
     // Remove apartment
     try {
       const tenancy = user.primaryTenancy;
-      const apartment = await admin.getTextChannel(tenancy.discordChannelId);
-      await apartment.delete();
+      if (tenancy.type === "APARTMENT") {
+        const apartment = await admin.getTextChannel(tenancy.discordChannelId);
+        await apartment.delete();
+      }
     } catch (e) {
       // this.error(e);
     }
@@ -279,12 +284,16 @@ export default class UserController {
     // Remove dorm tenancy
     try {
       const tenancy = user.dormitoryTenancy;
-      const dormChannel = await admin.getTextChannel(tenancy.discordChannelId);
-      const thread = await dormChannel.threads.fetch(
-        tenancy.onboardingThreadId
-      );
-      await thread?.delete();
-      dormChannel.permissionOverwrites.delete(user.discordId);
+      const { onboardingThreadId } = tenancy;
+      const discordChannelId = tenancy.dormitory.discordChannelId;
+      const dormChannel = await admin.getTextChannel(discordChannelId);
+      const thread = await dormChannel.threads.fetch(onboardingThreadId);
+
+      await Promise.all([
+        thread?.delete(),
+        dormChannel.permissionOverwrites.delete(user.discordId),
+        user.dormitoryTenancy.remove(),
+      ]);
     } catch (e) {
       console.log(e);
       // this.error(e);
@@ -300,6 +309,7 @@ export default class UserController {
     // Remove from db
     await User.remove(user);
 
+    // Update entry persistent messages
     EnterTheProjectsController.update();
     EnterTheSheltersController.update();
 

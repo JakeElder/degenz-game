@@ -27,6 +27,7 @@ export async function getUser(id: string) {
     where: { discordId: id },
     relations: [
       "apartmentTenancies",
+      "dormitoryTenancy",
       "imprisonments",
       "achievements",
       "martItemOwnerships",
@@ -38,6 +39,7 @@ export async function getUsers() {
   return User.find({
     relations: [
       "apartmentTenancies",
+      "dormitoryTenancy",
       "imprisonments",
       "achievements",
       "martItemOwnerships",

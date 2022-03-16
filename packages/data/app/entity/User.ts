@@ -11,6 +11,7 @@ import {
   ManyToMany,
   JoinTable,
   OneToOne,
+  JoinColumn,
 } from "typeorm";
 import { Role, TextChannel } from "discord.js";
 import { Achievement as AchievementEnum } from "../types";
@@ -62,8 +63,11 @@ export class User extends BaseEntity {
   apartmentTenancies: ApartmentTenancy[];
 
   @OneToOne(() => DormitoryTenancy, (tenancy) => tenancy.user, {
+    eager: true,
     cascade: true,
+    onDelete: "CASCADE",
   })
+  @JoinColumn()
   dormitoryTenancy: DormitoryTenancy;
 
   @OneToMany(() => PlayerEvent, (playerEvent) => playerEvent.user, {

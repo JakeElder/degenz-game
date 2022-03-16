@@ -1,12 +1,12 @@
 import { CommandInteraction, GuildBasedChannel, GuildMember } from "discord.js";
-import { issueTokens } from "../legacy/db";
+import { getUser, issueTokens } from "../legacy/db";
 import UserController from "../controllers/UserController";
 import { CommandController } from "../CommandController";
 import { DistrictSymbol } from "data/types";
 import AppController from "../controllers/AppController";
 import { Global } from "../Global";
 import EnterTheProjectsController from "../controllers/EnterTheProjectsController";
-import { AppState, Dormitory } from "data/db";
+import { AppState } from "data/db";
 import { Format } from "lib";
 import EnterTheSheltersController from "../controllers/EnterTheSheltersController";
 
@@ -171,5 +171,10 @@ export default class AllyCommandController extends CommandController {
     await AppState.increaseDormitoryCapacity(amount);
     EnterTheSheltersController.update();
     await this.respond(i, `DORM_CAPACITY_INCREASED: +${amount}`, "SUCCESS");
+  }
+
+  async admin_test(i: CommandInteraction) {
+    const user = await getUser("931842868694360116");
+    await i.reply(Format.codeBlock(JSON.stringify(user, null, 2)));
   }
 }

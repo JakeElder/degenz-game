@@ -447,6 +447,10 @@ structure.push({
       id: Config.roleId("BIG_BROTHER_BOT"),
       allow: ["VIEW_CHANNEL"],
     },
+    {
+      id: Config.roleId("ALLY_BOT"),
+      allow: ["VIEW_CHANNEL"],
+    },
   ],
   channels: [
     {
