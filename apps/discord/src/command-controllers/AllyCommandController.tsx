@@ -17,6 +17,7 @@ import {
   getMartItems,
   getUser,
   getUserByApartment,
+  getUserByBunk,
 } from "../legacy/db";
 import { Achievement as AchievementEnum, MartItemSymbol } from "data/types";
 import { groupBy } from "lodash";
@@ -81,18 +82,21 @@ export default class AllyCommandController extends CommandController {
     const ally = Global.bot("ALLY");
     const channel = i.channel as TextChannel;
 
-    const [member, apartmentUser, imprisonment] = await Promise.all([
+    const [member, apartmentUser, imprisonment, bunkUser] = await Promise.all([
       ally.getMember(i.user.id),
       getUserByApartment(channel.id),
       getImprisonmentByCellChannelId(channel.id),
+      getUserByBunk(channel.id),
     ]);
 
     const isApartment = typeof apartmentUser !== "undefined";
     const isCell = typeof imprisonment !== "undefined";
+    const isBunk = typeof bunkUser !== "undefined";
 
     let t: React.ComponentProps<typeof ChannelHelpOutput>["type"] = (() => {
       if (isCell) return "CELL";
       if (isApartment) return "APARTMENT";
+      if (isBunk) return "BUNK";
       return "WORLD";
     })();
 
@@ -104,6 +108,7 @@ export default class AllyCommandController extends CommandController {
           type={t}
           cellNumber={isCell ? imprisonment.cellNumber : undefined}
           apartmentUser={apartmentUser}
+          bunkUser={bunkUser}
         />
       ),
       ephemeral: true,

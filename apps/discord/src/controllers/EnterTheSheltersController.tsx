@@ -1,3 +1,4 @@
+import React from "react";
 import Config from "config";
 import { AppState, Dormitory, User } from "data/db";
 import {
@@ -14,6 +15,9 @@ import { PersistentMessageController } from "./PersistentMessageController";
 import { channelMention, userMention } from "@discordjs/builders";
 import Events from "../Events";
 import UserController from "./UserController";
+import Utils from "../Utils";
+
+const { r } = Utils;
 
 type EntryData = {
   open: boolean;
@@ -111,7 +115,7 @@ export default class EnterTheProjectsController {
             iconURL: "https://s10.gifyu.com/images/VPN-Degenz.gif",
             name: "Join The Shelters",
           },
-          description: `Securing a space in a dormitory will grant you entry to the game. New dormitories and beds are being added all the time, so check back often to secure your space in ${Format.worldName()}.\n\n${dormitoryTable}`,
+          description: `Securing a space in a dormitory will grant you entry to the game. New dormitories and bunks are being added all the time, so check back often to secure your space in ${Format.worldName()}.\n\n${dormitoryTable}`,
           footer: {
             text: "Pressing the button below will have you randomly assigned to a dormitory that has capacity.",
           },
@@ -150,10 +154,16 @@ export default class EnterTheProjectsController {
       const dorm = channelMention(
         Config.channelId(user.dormitoryTenancy.dormitory.symbol)
       );
+      const bunk = channelMention(user.dormitoryTenancy.bunkThreadId);
 
-      await i.editReply({
-        content: `${um} - You have been assigned a bed in ${dorm}. Go to {this thread} to receive further instructions.`,
-      });
+      await i.editReply(
+        r(
+          <>
+            {um} - You have been assigned your own bunk in {dorm} dormitory. Go
+            to {bunk}, your own private area to receive further instructions.
+          </>
+        )
+      );
 
       EnterTheProjectsController.update();
     }

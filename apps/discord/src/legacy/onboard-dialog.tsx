@@ -40,8 +40,8 @@ export const OnboardDialogBB = ({
       } else {
         return (
           <>
-            You have been assigned a bunk in the
-            <Channel id={channelId!} /> dormitory
+            This channel, <Channel id={channelId!} /> is your own personal
+            space, where you will receive game notifications. Cosy, isn't it?
           </>
         );
       }

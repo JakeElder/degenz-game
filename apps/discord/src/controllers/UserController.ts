@@ -151,7 +151,7 @@ export default class UserController {
     ]);
 
     const thread = await dormChannelBB.threads.create({
-      name: `orientation\uFF5C${paramCase(member!.displayName)}`,
+      name: `\u{132b3}\uFF5C${paramCase(member!.displayName)}s-bunk`,
       invitable: false,
       type:
         Config.env("NODE_ENV") === "production"
@@ -159,34 +159,12 @@ export default class UserController {
           : "GUILD_PUBLIC_THREAD",
     });
 
-    // const apartment = await admin.guild.channels.create(
-    //   `\u2302\uFF5C${paramCase(member!.displayName)}s-apartment`,
-    //   {
-    //     type: "GUILD_TEXT",
-    //     parent,
-    //     permissionOverwrites: [
-    //       {
-    //         id: Config.roleId("EVERYONE"),
-    //         deny: ["VIEW_CHANNEL"],
-    //       },
-    //       {
-    //         id: member!.id,
-    //         allow: ["VIEW_CHANNEL"],
-    //       },
-    //       {
-    //         id: Config.roleId(onboard ? "BIG_BROTHER_BOT" : "ALLY_BOT"),
-    //         allow: ["VIEW_CHANNEL"],
-    //       },
-    //     ],
-    //   }
-    // );
-
     user.gbt = onboard ? 0 : 100;
     user.strength = 100;
     user.inGame = true;
     user.dormitoryTenancy = DormitoryTenancy.create({
       dormitory,
-      onboardingThreadId: thread.id,
+      bunkThreadId: thread.id,
     });
 
     await user.save();
@@ -284,10 +262,10 @@ export default class UserController {
     // Remove dorm tenancy
     try {
       const tenancy = user.dormitoryTenancy;
-      const { onboardingThreadId } = tenancy;
+      const { bunkThreadId } = tenancy;
       const discordChannelId = tenancy.dormitory.discordChannelId;
       const dormChannel = await admin.getTextChannel(discordChannelId);
-      const thread = await dormChannel.threads.fetch(onboardingThreadId);
+      const thread = await dormChannel.threads.fetch(bunkThreadId);
 
       await Promise.all([
         thread?.delete(),

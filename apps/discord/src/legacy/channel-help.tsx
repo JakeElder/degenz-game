@@ -2,6 +2,7 @@ import { GuildMember, TextBasedChannel } from "discord.js";
 import React from "react";
 import Config from "config";
 import { Imprisonment, User as UserType } from "data/db";
+import { capitalCase } from "change-case";
 import { Channel, User } from "./templates";
 import { currency } from "./utils";
 
@@ -61,27 +62,36 @@ export const ChannelHelpOutput = ({
   type = "WORLD",
   cellNumber,
   apartmentUser,
+  bunkUser,
 }: {
   channel: TextBasedChannel;
   member: GuildMember;
-  type?: "WORLD" | "APARTMENT" | "CELL";
+  type?: "WORLD" | "APARTMENT" | "CELL" | "BUNK";
   cellNumber?: Imprisonment["cellNumber"] | null;
   apartmentUser?: UserType | null;
+  bunkUser?: UserType | null;
 }) => {
-  if (type === "APARTMENT") {
+  if (type === "APARTMENT" || type === "BUNK") {
+    const user = type === "APARTMENT" ? apartmentUser : bunkUser;
+    const commands = [
+      <>**`/eat`** - Eat food from your inventory.</>,
+      <>**`/stats`** - Check your own or someone elses stats.</>,
+      <>**`/inventory`** - Check your own or someone elses inventory.</>,
+    ];
+    let plannedCommands = [
+      <>**`/sleep`** - Sleep to replenish your strength.</>,
+    ];
+    if (type === "APARTMENT") {
+      plannedCommands.push(
+        <>**`/invite`** - Grant other Degenz access to your apartment.</>,
+        <>**`/evict`** - Revoke access to other tenants of your apartment.</>
+      );
+    }
     return (
       <Info
-        channelName={`${apartmentUser!.displayName}'s Apartment`}
-        commands={[
-          <>**`/eat`** - Eat food from your inventory.</>,
-          <>**`/stats`** - Check your own or someone elses stats.</>,
-          <>**`/inventory`** - Check your own or someone elses inventory.</>,
-        ]}
-        plannedCommands={[
-          <>**`/sleep`** - Sleep to replenish your energy.</>,
-          <>**`/invite`** - Grant other Degenz access to your apartment.</>,
-          <>**`/evict`** - Revoke access to other tenants of your apartment.</>,
-        ]}
+        channelName={`${user!.displayName}'s ${capitalCase(type)}`}
+        commands={commands}
+        plannedCommands={plannedCommands}
       >
         <Channel id={channel.id} /> is your own personal space.. *For now*..
         Safe from <User id={Config.clientId("BIG_BROTHER")} />

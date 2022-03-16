@@ -26,7 +26,7 @@ export class DormitoryTenancy extends BaseEntity {
   id: number;
 
   @Column({ nullable: true })
-  onboardingThreadId: string;
+  bunkThreadId: string;
 
   @ManyToOne(() => Dormitory, (dormitory) => dormitory.tenancies, {
     eager: true,
@@ -45,6 +45,6 @@ export class DormitoryTenancy extends BaseEntity {
   updatedAt: Date;
 
   get discordChannelId() {
-    return this.onboardingThreadId;
+    return this.bunkThreadId;
   }
 }

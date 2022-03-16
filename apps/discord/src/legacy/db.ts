@@ -6,6 +6,7 @@ import {
   ApartmentTenancy,
   User,
   District,
+  DormitoryTenancy,
 } from "data/db";
 import { DistrictSymbol, Achievement as AchievementEnum } from "data/types";
 import { In } from "typeorm";
@@ -58,6 +59,14 @@ export async function getUserByApartment(id: string) {
   const t = await ApartmentTenancy.findOne({
     relations: ["user"],
     where: { discordChannelId: id, level: "AUTHORITY" },
+  });
+  return t?.user;
+}
+
+export async function getUserByBunk(id: string) {
+  const t = await DormitoryTenancy.findOne({
+    relations: ["user"],
+    where: { bunkThreadId: id },
   });
   return t?.user;
 }

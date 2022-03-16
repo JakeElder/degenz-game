@@ -27,9 +27,9 @@ export default class OnboardController {
 
     const dormId = Config.channelId(tenancy.dormitory.symbol);
     const dormChannel = await bot.getTextChannel(dormId);
-    const thread = await dormChannel.threads.fetch(tenancy.onboardingThreadId);
+    const bunk = await dormChannel.threads.fetch(tenancy.bunkThreadId);
 
-    return thread!;
+    return bunk!;
   }
 
   static async partOne(user: User) {
