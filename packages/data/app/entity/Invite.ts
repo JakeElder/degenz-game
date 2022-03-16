@@ -17,7 +17,7 @@ export class Invite extends BaseEntity {
     code: string;
 
     @Column()
-    userId: string;
+    discordId: string;
 
     @Column({default: 0})
     count: number;

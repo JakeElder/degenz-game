@@ -20,7 +20,7 @@ export class InvitedUser extends BaseEntity {
     discordId: string;
 
     @ManyToOne(() => Invite)
-    inviteId: Invite;
+    invite: Invite;
 
     @Column({default: false})
     accepted: boolean;
