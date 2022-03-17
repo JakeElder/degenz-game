@@ -22,12 +22,12 @@ export class Invite extends BaseEntity {
     @Column({default: 0})
     count: number;
 
-    @CreateDateColumn()
+    @CreateDateColumn({default: () => "now() at time zone 'utc'"})
     createdAt: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({default: () => "now() at time zone 'utc'"})
     updatedAt: Date;
 
-    @DeleteDateColumn()
+    @DeleteDateColumn({default: () => "now() at time zone 'utc'"})
     deletedAt: Date;
 }

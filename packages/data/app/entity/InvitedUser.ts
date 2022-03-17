@@ -25,9 +25,9 @@ export class InvitedUser extends BaseEntity {
     @Column({default: false})
     accepted: boolean;
 
-    @CreateDateColumn()
+    @CreateDateColumn({default: () => "now() at time zone 'utc'"})
     createdAt: Date;
 
-    @DeleteDateColumn()
+    @DeleteDateColumn({default: () => "now() at time zone 'utc'"})
     deletedAt: Date;
 }
