@@ -112,10 +112,8 @@ export default class EnterTheProjectsController {
               "https://s10.gifyu.com/images/Mind-Control-Degenz-V2-min.gif",
             name: "Available Apartments",
           },
-          // title: ":cityscape:\u200b \u200bAvailable Apartments",
           description: `Beautopia is divided in to districts, 1 to 6. To play the game, you'll need your own apartment. As apartments become available, the buttons below will become active. Check back often to secure your space in ${Format.worldName()}.\n\n${districtTable}`,
           footer: {
-            // iconURL: bb.client.user!.displayAvatarURL(),
             text: "Press the District button below to join that district.",
           },
         },

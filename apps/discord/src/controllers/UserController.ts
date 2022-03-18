@@ -158,8 +158,6 @@ export default class UserController {
         : "GUILD_PUBLIC_THREAD",
     });
 
-    await thread.members.add(user.discordId);
-
     user.gbt = onboard ? 0 : 100;
     user.strength = 100;
     user.inGame = true;

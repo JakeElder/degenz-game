@@ -99,11 +99,9 @@ export default class EnterTheProjectsController {
 
     const dormitoryTable = data.dormitories
       .map((d) => {
-        return `${d.tableEmoji} \`${d.symbol.padEnd(l)}\` => ${
-          d.available
-            ? `\`[VACANCIES]\` => \`${d.capacity}/${data.dormitoryCapacity} available\``
-            : `\`  [FULL]   \` => \`${d.capacity}/${data.dormitoryCapacity} available\``
-        }`;
+        const symbol = d.symbol.padEnd(l);
+        const availability = `\`${d.capacity}/${data.dormitoryCapacity} available\``;
+        return `${d.tableEmoji} \`${symbol}\` => ${availability}`;
       })
       .join("\n");
 

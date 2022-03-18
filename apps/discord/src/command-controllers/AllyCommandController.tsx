@@ -31,6 +31,7 @@ import ChannelHelpOutput from "../legacy/channel-help";
 import Utils from "../Utils";
 import { Global } from "../Global";
 import Events from "../Events";
+import Stats from "../Stats";
 
 const { r } = Utils;
 
@@ -135,14 +136,35 @@ export default class AllyCommandController extends CommandController {
       return;
     }
 
-    const isSelf = checkerUser.id === checkeeUser.id;
+    const e = Stats.makeEmbed({
+      member: checkeeMember || (i.member as GuildMember),
+      imageURL: "https://s10.gifyu.com/images/RandomDegenz.gif-1.gif",
+      strength: checkeeUser.strength,
+      level: 1,
+      attributes: {
+        strength: "??",
+        charisma: "??",
+        luck: "??",
+      },
+    });
 
-    const e = makeUserStatsEmbed(
-      isSelf ? checkerUser : checkeeUser,
-      (isSelf ? i.member : checkeeMember) as GuildMember
-    );
+    console.log(`${Config.env("WEB_URL")}/icons/info.png`);
 
-    await i.reply({ embeds: [e], ephemeral: true });
+    await i.reply({
+      embeds: [
+        e,
+        {
+          author: {
+            icon_url: `https://stage.degenz.game/info.png`,
+            name: "Info",
+          },
+          color: "BLUE",
+          description:
+            "Your NFT will be your in game character, it's attributes and rarity will grant you special abilities in game.",
+        },
+      ],
+      ephemeral: true,
+    });
 
     if (!checkeeUser.hasAchievement(AchievementEnum.STATS_CHECKED)) {
       await OnboardController.partFour(checkeeUser);
