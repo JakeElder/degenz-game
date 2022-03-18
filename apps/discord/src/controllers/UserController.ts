@@ -145,7 +145,7 @@ export default class UserController {
     const dormChannelAdmin = await admin.getTextChannel(dormId);
 
     await Promise.all([
-      dormChannelAdmin.permissionOverwrites.create(user.discordId, {
+      dormChannelAdmin.permissionOverwrites.create(member, {
         VIEW_CHANNEL: true,
       }),
     ]);
