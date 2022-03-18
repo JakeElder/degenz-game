@@ -278,8 +278,7 @@ export const ChannelHelpOutput = ({
       >
         <Channel id={Config.channelId("TRAINING_DOJO")} /> is where{" "}
         <User id={Config.clientId("SENSEI")} /> will guide you in the ways of
-        **Degen hacker battle**. Press the "Get started" button to begin your
-        training.
+        **Degen hacker battle**. Press the "LFG" button to begin your training.
       </Info>
     );
   }
