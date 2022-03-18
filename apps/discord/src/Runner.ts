@@ -136,14 +136,13 @@ export default class Runner {
     });
 
     Events.on("GAME_ENTERED_APARTMENT", (e) => {
-      WorldNotifier.gameEntered(e);
-      Analytics.gameEntered(e);
+      WorldNotifier.gameEnteredApartment(e);
+      Analytics.gameEnteredApartment(e);
     });
 
     Events.on("GAME_ENTERED_DORMITORY", (e) => {
-      // console.log(e);
-      // WorldNotifier.gameEntered(e);
-      // Analytics.gameEntered(e);
+      WorldNotifier.gameEnteredDormitory(e);
+      Analytics.gameEnteredDormitory(e);
     });
 
     Events.on("FIRST_WORLD_CHOICE", (e) => {

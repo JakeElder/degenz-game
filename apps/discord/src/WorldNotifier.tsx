@@ -212,10 +212,20 @@ export default class WorldNotifier {
     await this.logToHOP("ALLY", e.type, message);
   }
 
-  static async gameEntered(e: PickEvent<"GAME_ENTERED_APARTMENT">) {
+  static async gameEnteredApartment(e: PickEvent<"GAME_ENTERED_APARTMENT">) {
     const message = r(
       <>
         **{e.data.user.displayName}** entered {e.data.district.inactiveEmoji}.
+      </>
+    );
+    await this.logToHOP("BIG_BROTHER", e.type, message);
+  }
+
+  static async gameEnteredDormitory(e: PickEvent<"GAME_ENTERED_DORMITORY">) {
+    const message = r(
+      <>
+        **{e.data.user.displayName}** entered{" "}
+        {channelMention(e.data.dormitory.discordChannelId)}.
       </>
     );
     await this.logToHOP("BIG_BROTHER", e.type, message);
