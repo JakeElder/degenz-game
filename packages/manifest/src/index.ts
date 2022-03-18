@@ -451,6 +451,10 @@ structure.push({
       id: Config.roleId("ALLY_BOT"),
       allow: ["VIEW_CHANNEL"],
     },
+    {
+      id: Config.roleId("TOSSER_BOT"),
+      allow: ["VIEW_CHANNEL"],
+    },
   ],
   channels: [
     {

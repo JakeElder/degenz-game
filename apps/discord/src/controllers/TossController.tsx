@@ -5,7 +5,6 @@ import {
   Message,
   MessageActionRow,
   MessageEmbed,
-  TextChannel,
 } from "discord.js";
 import Config from "config";
 import { Format } from "lib";
@@ -21,6 +20,7 @@ import {
 } from "../legacy/templates";
 import { userMention } from "@discordjs/builders";
 import Events from "../Events";
+import ResidenceController from "./ResidenceController";
 
 const { r } = Utils;
 
@@ -174,22 +174,18 @@ export default class TossController {
     }
 
     // Handle bets agains other players
+    await (async () => {
+      const residence = await ResidenceController.get(g.challengee.user!);
+      await ResidenceController.add(residence, Config.clientId("TOSSER"));
+    })();
 
-    const apt = await admin.getTextChannel(
-      g.challengee.user!.primaryTenancy.discordChannelId
+    const residence = await ResidenceController.get(
+      g.challengee.user!,
+      "TOSSER"
     );
-    await apt.permissionOverwrites.create(Config.roleId("TOSSER_BOT"), {
-      VIEW_CHANNEL: true,
-      SEND_MESSAGES: true,
-      EMBED_LINKS: true,
-    });
-
-    const tedApt = (await i.client.channels.fetch(
-      g.challengee.user!.primaryTenancy.discordChannelId
-    )) as TextChannel;
 
     const [challengeMessage] = await Promise.all([
-      tedApt.send({
+      residence.send({
         content: r(
           <TossChallengeInvitation
             challenger={g.challenger.member}
@@ -319,7 +315,7 @@ export default class TossController {
       getUser(g.challenger.user!.discordId),
     ]);
 
-    Promise.all([
+    await Promise.all([
       i.followUp({
         embeds: [
           TossController.makeTossResultEmbed({ g, player: "CHALLENGER" }),
@@ -337,6 +333,12 @@ export default class TossController {
       challengee: g.challengee.user,
       game: g,
     });
+
+    (async () => {
+      const residence = await ResidenceController.get(g.challengee.user!);
+      await ResidenceController.remove(residence, Config.clientId("TOSSER"));
+    })();
+
     return { success: true, data: { game: g } };
   }
 

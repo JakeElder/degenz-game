@@ -29,9 +29,6 @@ export class AddDormitories1647429722438 implements MigrationInterface {
       `ALTER TABLE "user" ADD CONSTRAINT "UQ_df6585d92231eddbfe01ba5cfb3" UNIQUE ("dormitory_tenancy_id")`
     );
     await queryRunner.query(
-      `ALTER TABLE "mart_item" DROP CONSTRAINT "UQ_65b80781585329c4d6148f7729f"`
-    );
-    await queryRunner.query(
       `ALTER TYPE "public"."persistent_message_symbol_enum" RENAME TO "persistent_message_symbol_enum_old"`
     );
     await queryRunner.query(
@@ -105,9 +102,6 @@ export class AddDormitories1647429722438 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TYPE "public"."persistent_message_symbol_enum_old" RENAME TO "persistent_message_symbol_enum"`
-    );
-    await queryRunner.query(
-      `ALTER TABLE "mart_item" ADD CONSTRAINT "UQ_65b80781585329c4d6148f7729f" UNIQUE ("symbol")`
     );
     await queryRunner.query(
       `ALTER TABLE "user" DROP CONSTRAINT "UQ_df6585d92231eddbfe01ba5cfb3"`

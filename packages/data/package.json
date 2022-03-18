@@ -6,6 +6,12 @@
     "build": "tsc",
     "dev": "node scripts/dev",
     "typecheck": "tsc --noEmit",
+    "migration:show": "typeorm --config dist/ormconfig.js migration:show",
+    "migration:run": "typeorm --config dist/ormconfig.js migration:run",
+    "migration:generate": "typeorm --config dist/ormconfig.js migration:generate",
+    "migration:create": "typeorm --config dist/ormconfig.js migration:create",
+    "schema:log": "typeorm --config dist/ormconfig.js schema:log",
+    "schema:sync": "typeorm --config dist/ormconfig.js schema:sync",
     "orm": "typeorm --config dist/ormconfig.js"
   },
   "devDependencies": {
