@@ -9,6 +9,7 @@ export type StatsViewModel = {
   imageURL: string;
   strength: number;
   level: number;
+  gbt: number;
   attributes: {
     strength: string | number;
     luck: string | number;
@@ -59,9 +60,7 @@ class Stats {
       fields: [
         {
           name: Format.currency(null, { full: true, plural: true }),
-          value: Format.codeBlock(
-            Format.currency(random.int(0, 3000), { bare: true })
-          ),
+          value: Format.codeBlock(Format.currency(model.gbt, { bare: true })),
         },
         {
           name: "Strength",
@@ -78,7 +77,7 @@ class Stats {
         //     .join("\n")}\`\`\``,
         // },
       ],
-      footer: { text: `Rarity: ${random.int(1, 3333)}` },
+      footer: { text: `Rarity: ????` },
     };
   }
 

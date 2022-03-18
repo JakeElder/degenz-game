@@ -22,11 +22,7 @@ import {
 import { Achievement as AchievementEnum, MartItemSymbol } from "data/types";
 import { groupBy } from "lodash";
 import OnboardController from "../controllers/OnboardController";
-import {
-  makeInventoryEmbed,
-  makeLeaderboardEmbed,
-  makeUserStatsEmbed,
-} from "../legacy/utils";
+import { makeInventoryEmbed, makeLeaderboardEmbed } from "../legacy/utils";
 import ChannelHelpOutput from "../legacy/channel-help";
 import Utils from "../Utils";
 import { Global } from "../Global";
@@ -140,6 +136,7 @@ export default class AllyCommandController extends CommandController {
       member: checkeeMember || (i.member as GuildMember),
       imageURL: "https://s10.gifyu.com/images/RandomDegenz.gif-1.gif",
       strength: checkeeUser.strength,
+      gbt: checkeeUser.gbt,
       level: 1,
       attributes: {
         strength: "??",

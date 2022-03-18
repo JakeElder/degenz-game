@@ -41,6 +41,7 @@ export default class WelcomeRoomController {
       member: admin.guild.members.cache.random()!,
       imageURL: Stats.randomColourImage,
       strength,
+      gbt: random.int(1, 3000),
       level: random.int(1, 20),
       emojis: npcs.map((npc) => npc.defaultEmojiId!),
       attributes: {
