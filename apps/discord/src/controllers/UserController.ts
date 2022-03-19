@@ -237,7 +237,7 @@ export default class UserController {
   }
 
   static async eject(memberId: GuildMember["id"]) {
-    const [admin, bb] = Global.bots("ADMIN", "BIG_BROTHER");
+    const admin = Global.bot("ADMIN");
 
     const user = await getUser(memberId);
     const member = await UserController.getMember(memberId);
@@ -255,7 +255,7 @@ export default class UserController {
         await apartment.delete();
       }
     } catch (e) {
-      // this.error(e);
+      // console.error(e)
     }
 
     // Remove dorm tenancy
@@ -272,16 +272,19 @@ export default class UserController {
         user.dormitoryTenancy.remove(),
       ]);
     } catch (e) {
-      console.log(e);
-      // this.error(e);
+      // console.error(e);
     }
 
     // Remove roles
-    await member!.roles.remove([
-      Config.roleId("DEGEN"),
-      Config.roleId("PRISONER"),
-      Config.roleId("VERIFIED"),
-    ]);
+    try {
+      await member.roles.remove([
+        Config.roleId("DEGEN"),
+        Config.roleId("PRISONER"),
+        Config.roleId("VERIFIED"),
+      ]);
+    } catch (e) {
+      // console.error(e);
+    }
 
     // Remove from db
     await User.remove(user);

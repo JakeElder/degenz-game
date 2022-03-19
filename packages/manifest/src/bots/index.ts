@@ -6,6 +6,7 @@ import bigBrother from "./big-brother";
 import devilsAdvocate from "./devils-advocate";
 import martClerk from "./mart-clerk";
 import prisoner from "./prisoner";
+import scout from "./scout";
 import sensei from "./sensei";
 import tosser from "./tosser";
 import warden from "./warden";
@@ -19,6 +20,7 @@ export default [
   devilsAdvocate,
   martClerk,
   prisoner,
+  scout,
   sensei,
   tosser,
   warden,

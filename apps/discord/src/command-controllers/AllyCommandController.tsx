@@ -13,21 +13,23 @@ import { CommandController } from "../CommandController";
 import {
   eatItem,
   getImprisonmentByCellChannelId,
-  getLeaders,
   getMartItems,
   getUser,
   getUserByApartment,
   getUserByBunk,
 } from "../legacy/db";
 import { Achievement as AchievementEnum, MartItemSymbol } from "data/types";
+import { User } from "data/db";
 import { groupBy } from "lodash";
 import OnboardController from "../controllers/OnboardController";
-import { makeInventoryEmbed, makeLeaderboardEmbed } from "../legacy/utils";
+import { makeInventoryEmbed } from "../legacy/utils";
 import ChannelHelpOutput from "../legacy/channel-help";
 import Utils from "../Utils";
 import { Global } from "../Global";
 import Events from "../Events";
 import Stats from "../Stats";
+import { LeaderboardController } from "../controllers/LeaderboardController";
+import { Format } from "lib";
 
 const { r } = Utils;
 
@@ -69,7 +71,7 @@ export default class AllyCommandController extends CommandController {
       return;
     }
 
-    i.reply("`REDPILL_TAKEN`");
+    i.reply({ content: "`REDPILL_TAKEN`", ephemeral: true });
     const user = await getUser(member.id);
     Events.emit("REDPILL_TAKEN", { user });
     await OnboardController.partThree(user);
@@ -145,8 +147,6 @@ export default class AllyCommandController extends CommandController {
       },
     });
 
-    console.log(`${Config.env("WEB_URL")}/icons/info.png`);
-
     await i.reply({
       embeds: [
         e,
@@ -175,13 +175,24 @@ export default class AllyCommandController extends CommandController {
   }
 
   async leaderboard(i: CommandInteraction) {
+    const num = i.options.getNumber("top") || 30;
+    const leaders = await User.find({
+      where: { inGame: true },
+      order: { gbt: -1 },
+      take: num,
+    });
+
     const show = i.options.getBoolean("post");
-    const num = i.options.getNumber("top");
 
-    const leaders = await getLeaders(num || 30);
+    const data = await LeaderboardController.computeData(leaders);
 
-    const m = makeLeaderboardEmbed(leaders);
-    await i.reply({ embeds: [m], ephemeral: !show });
+    if (num === 5) {
+      const embeds = LeaderboardController.makeEmbeds(data);
+      await i.reply({ embeds, ephemeral: !show });
+    } else {
+      const table = LeaderboardController.makeTable(data, 0);
+      await i.reply({ content: Format.codeBlock(table), ephemeral: !show });
+    }
   }
 
   async inventory(i: CommandInteraction) {

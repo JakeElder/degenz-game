@@ -10,6 +10,10 @@ export class PersistentMessageController {
     value: MessageOptions,
     options: { replace?: boolean } = { replace: false }
   ) {
+    if (Config.general("READ_ONLY")) {
+      return;
+    }
+
     const pm = await PersistentMessage.findOneOrFail({ where: { symbol } });
 
     let message: Message;

@@ -23,7 +23,7 @@ const base = {
 
 const env = process.env.NODE_ENV || "development";
 
-if (env === "development") {
+if (env === "development" && !process.env.CA_CERT) {
   config = {
     ...base,
     url: process.env.DATABASE_URL,

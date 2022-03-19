@@ -2,6 +2,7 @@ import {
   CommandInteraction,
   GuildBasedChannel,
   GuildMember,
+  PartialGuildMember,
   TextChannel,
 } from "discord.js";
 import EventEmitter from "events";
@@ -13,6 +14,13 @@ type EnterEvent = {
   type: "ENTER";
   data: {
     member: GuildMember;
+  };
+};
+
+type ExitEvent = {
+  type: "EXIT";
+  data: {
+    member: GuildMember | PartialGuildMember;
   };
 };
 
@@ -181,6 +189,7 @@ export type Event =
   | MartItemBoughtEvent
   | TossCompletedEvent
   | EnterEvent
+  | ExitEvent
   | RedpillTakenEvent
   | HelpRequestedEvent
   | GBTTransferredEvent
@@ -208,6 +217,7 @@ type DegenEmitterEvents = EventHandler<BotReadyEvent> &
   EventHandler<MartItemBoughtEvent> &
   EventHandler<TossCompletedEvent> &
   EventHandler<EnterEvent> &
+  EventHandler<ExitEvent> &
   EventHandler<RedpillTakenEvent> &
   EventHandler<HelpRequestedEvent> &
   EventHandler<GBTTransferredEvent> &

@@ -8,7 +8,10 @@ import {
 const GENERAL = {
   DISTRICT_CAPACITY: 2,
   GUILD_ID: "",
+  PROD_GUILD_ID: "",
+  READ_ONLY: false,
   SKIP_DELAY: false,
+  USE_SCOUT: false,
   WORLD_NAME: "Beautopia",
 };
 
@@ -77,6 +80,7 @@ const ROLE_IDS: Record<RoleSymbol, string> = {
   MART_CLERK_BOT: "",
   PRISONER: "",
   PRISONER_BOT: "",
+  SCOUT_BOT: "",
   SENSEI_BOT: "",
   SERVER_BOOSTER: "",
   TOSSER_BOT: "",
@@ -94,6 +98,7 @@ const CLIENT_IDS: Record<BotSymbol, string> = {
   DEVILS_ADVOCATE: "",
   MART_CLERK: "",
   PRISONER: "",
+  SCOUT: "",
   SENSEI: "",
   TOSSER: "",
   WARDEN: "",

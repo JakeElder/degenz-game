@@ -1,4 +1,9 @@
 import { CommandInteraction, GuildBasedChannel, GuildMember } from "discord.js";
+import { AppState, User } from "data/db";
+import { Format } from "lib";
+import pluralize from "pluralize";
+import { ILike } from "typeorm";
+import prettyjson from "prettyjson";
 import { getUser, issueTokens } from "../legacy/db";
 import UserController from "../controllers/UserController";
 import { CommandController } from "../CommandController";
@@ -6,8 +11,6 @@ import { DistrictSymbol } from "data/types";
 import AppController from "../controllers/AppController";
 import { Global } from "../Global";
 import EnterTheProjectsController from "../controllers/EnterTheProjectsController";
-import { AppState } from "data/db";
-import { Format } from "lib";
 import EnterTheSheltersController from "../controllers/EnterTheSheltersController";
 
 export default class AllyCommandController extends CommandController {
@@ -176,5 +179,54 @@ export default class AllyCommandController extends CommandController {
   async admin_test(i: CommandInteraction) {
     const user = await getUser("931842868694360116");
     await i.reply(Format.codeBlock(JSON.stringify(user, null, 2)));
+  }
+
+  async admin_userSearch(i: CommandInteraction) {
+    const query = i.options.getString("query", true);
+    const users = await User.find({
+      where: { displayName: ILike(`%${query}%`) },
+      relations: ["apartmentTenancies", "dormitoryTenancy"],
+    });
+
+    await i.reply(
+      `Found **${users.length} ${pluralize(
+        "user",
+        users.length
+      )}** matching "**${query}**"`
+    );
+
+    const interaction = i;
+
+    for (let i = 0; i < users.length; i++) {
+      const u = users[i];
+      const apartment = u.apartmentTenancies[0]
+        ? prettyjson.render(
+            { district: u.apartmentTenancies[0].district.symbol },
+            { noColor: true }
+          )
+        : "--none--";
+
+      const dormitory = u.dormitoryTenancy
+        ? prettyjson.render(
+            { dorm: u.dormitoryTenancy.dormitory.symbol },
+            { noColor: true }
+          )
+        : "--none--";
+
+      await interaction.followUp({
+        embeds: [
+          {
+            author: {
+              name: u.displayName,
+            },
+            fields: [
+              { name: "GBT", value: Format.codeBlock(u.gbt) },
+              { name: "Apartment", value: Format.codeBlock(apartment) },
+              { name: "Dormitory", value: Format.codeBlock(dormitory) },
+            ],
+          },
+        ],
+      });
+    }
   }
 }

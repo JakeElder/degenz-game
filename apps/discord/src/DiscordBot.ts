@@ -39,7 +39,12 @@ export default abstract class DiscordBot {
 
   private connect() {
     this.client.once("ready", async () => {
-      this.guild = await this.client.guilds.fetch(Config.general("GUILD_ID"));
+      const guildId =
+        this.manifest.symbol === "SCOUT"
+          ? Config.general("PROD_GUILD_ID")
+          : Config.general("GUILD_ID");
+
+      this.guild = await this.client.guilds.fetch(guildId);
       this.readyResolver();
       Events.emit("BOT_READY", { bot: this.manifest });
     });

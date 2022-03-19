@@ -5,6 +5,7 @@ import Utils from "./Utils";
 import Runner from "./Runner";
 import * as bots from "./bots";
 import { Global } from "./Global";
+import Config from "config";
 
 const pe = new PrettyError();
 
@@ -40,6 +41,10 @@ async function main() {
   Global.bot("PRISONER", new bots.PrisonerBot());
   Global.bot("TOSSER", new bots.TosserBot());
   Global.bot("WARDEN", new bots.WardenBot());
+
+  if (Config.env("NODE_ENV") === "development" && Config.general("USE_SCOUT")) {
+    Global.bot("SCOUT", new bots.ScoutBot());
+  }
 
   runner = new Runner(Global.bots());
 }

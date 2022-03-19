@@ -7,12 +7,13 @@ import {
   User as DiscordUser,
 } from "discord.js";
 import { DistrictSymbol, OperationResult } from "data/types";
-import { District } from "data/db";
+import { District, User } from "data/db";
 import { bots } from "manifest";
 import { Global } from "../Global";
 import Events from "../Events";
 import EnterTheProjectsController from "./EnterTheProjectsController";
 import { PersistentMessageController } from "./PersistentMessageController";
+import UserController from "./UserController";
 
 export default class AppController {
   static reactionCollector: ReactionCollector;
@@ -22,6 +23,12 @@ export default class AppController {
     admin.client.on("guildMemberAdd", async (member) => {
       if (!member.user.bot) {
         Events.emit("ENTER", { member });
+      }
+    });
+    admin.client.on("guildMemberRemove", async (member) => {
+      if (!member.user.bot) {
+        UserController.eject(member.id);
+        Events.emit("EXIT", { member });
       }
     });
   }
@@ -43,6 +50,10 @@ export default class AppController {
     const message = await PersistentMessageController.set("VERIFY", {
       content: instruction,
     });
+
+    if (!message) {
+      return;
+    }
 
     if (this.reactionCollector) {
       this.reactionCollector.off("collect", this.handleReaction);

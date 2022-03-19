@@ -28,6 +28,14 @@ export default class Analytics {
     });
   }
 
+  static exit(e: PickEvent<"EXIT">) {
+    this.generic(
+      capitalCase(e.type),
+      e.data.member.id,
+      e.data.member.displayName
+    );
+  }
+
   static verify(e: PickEvent<"MEMBER_VERIFIED">) {
     this.generic(
       capitalCase("VERIFY"),

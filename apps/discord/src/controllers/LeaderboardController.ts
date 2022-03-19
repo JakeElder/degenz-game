@@ -1,12 +1,11 @@
-import equal from "fast-deep-equal";
 import { User } from "data/db";
-import { getLeaders } from "../legacy/db";
 import { PersistentMessageController } from "./PersistentMessageController";
 import { GuildMember, MessageEmbedOptions } from "discord.js";
 import { Format } from "lib";
 import { table } from "table";
 import truncate from "truncate";
-import UserController from "./UserController";
+import { Global } from "../Global";
+import Config from "config";
 
 type Leader = {
   id: User["id"];
@@ -23,7 +22,7 @@ export class LeaderboardController {
 
   static async init() {
     await this.update();
-    // this.cronInterval = setInterval(() => this.update(), 1000);
+    this.cronInterval = setInterval(() => this.update(), 1000);
   }
 
   static async update() {
@@ -31,68 +30,103 @@ export class LeaderboardController {
   }
 
   static async computeData(leaders: User[]): Promise<LeaderboardData> {
-    let members = await UserController.getMembers(
-      leaders.map((l) => l.discordId)
-    );
-    members = members.filter((m) => m !== null);
+    const bot =
+      Config.env("NODE_ENV") === "development" && Config.general("USE_SCOUT")
+        ? Global.bot("SCOUT")
+        : Global.bot("ADMIN");
 
-    const pruned = leaders.filter((l) =>
-      members.map((m) => m!.id).includes(l.discordId)
-    );
+    await bot.ready;
 
-    return pruned.map((u) => ({
-      id: u.id,
-      displayName: u.displayName,
-      gbt: u.gbt,
-      member: members.find((m) => m!.id === u.discordId)!,
-    }));
+    const members = await bot.guild.members.fetch({
+      user: leaders.map((l) => l.discordId),
+    });
+
+    const data: Leader[] = leaders.map((u) => {
+      return {
+        id: u.id,
+        displayName: u.displayName,
+        gbt: u.gbt,
+        member: members.get(u.discordId)!,
+      };
+    });
+
+    return data;
+  }
+
+  static makeEmbeds(leaders: Leader[]): MessageEmbedOptions[] {
+    return leaders.map((l, idx) => this.makeEmbed(l, idx + 1));
   }
 
   static makeEmbed(l: Leader, position: number): MessageEmbedOptions {
-    const s = [
-      [
-        `${position.toString().padStart(2, " ")}.${truncate(
-          l.displayName,
-          22 - 4 - 1
-        )}`,
-        ` ${Format.token()} ${Format.currency(l.gbt, { bare: true })}`,
-      ],
-    ];
-
-    const row = table(s, {
-      drawVerticalLine: (idx) => [1].includes(idx),
-      columnDefault: { paddingLeft: 0, paddingRight: 0 },
-      drawHorizontalLine: () => false,
-      columns: [{ width: 22 }, { width: 11, alignment: "right" }],
-    });
+    const avatar = (() => {
+      const avatar = l.member.displayAvatarURL({ dynamic: true, size: 64 });
+      return avatar.endsWith("0.png")
+        ? `${Config.env("WEB_URL")}/characters/generic-32px.png?v1`
+        : avatar;
+    })();
 
     return {
+      color: "GOLD",
+      author: {
+        name: l.member.displayName,
+        icon_url: `${Config.env("WEB_URL")}/numbers/number-${position}.png?v1`,
+      },
       thumbnail: {
+        url: avatar,
         height: 32,
         width: 32,
-        url: l.member.displayAvatarURL({ dynamic: true, size: 32 }),
       },
-      description: Format.codeBlock(row),
+      description: Format.codeBlock(
+        `\u{1f4b0} ${`${Format.currency(l.gbt, {
+          bare: true,
+        })} ${Format.token()}`.padEnd(16, " ")}`
+      ),
     };
   }
 
+  static makeTable(leaders: Leader[], offset: number) {
+    const s = [
+      ...leaders.map((l, idx) => [
+        `${(idx + offset + 1).toString().padStart(2, " ")}.${truncate(
+          l.displayName,
+          22 - 5 - 1
+        )}`,
+        ` ${Format.token()} ${Format.currency(l.gbt, { bare: true })}`,
+      ]),
+    ];
+
+    const t = table(s, {
+      drawVerticalLine: (idx) => [1].includes(idx),
+      columnDefault: { paddingLeft: 0, paddingRight: 0 },
+      drawHorizontalLine: () => false,
+      columns: [{ width: 22 }, { width: 12, alignment: "left" }],
+    });
+
+    return t;
+  }
+
   static async setMessage() {
-    const leaders = await getLeaders();
+    const leaders = await User.find({
+      where: { inGame: true },
+      order: { gbt: -1 },
+      take: 30,
+    });
+
     const tableData = [...leaders.map((l) => [l.displayName, l.gbt])];
 
-    if (equal(this.tableData, tableData)) {
-      return;
-    }
+    // if (equal(this.tableData, tableData)) {
+    //   return;
+    // }
 
     const data = await this.computeData(leaders);
 
     await PersistentMessageController.set("GBT_LEADERBOARD_1", {
-      embeds: data.slice(0, 10).map((l, idx) => this.makeEmbed(l, idx + 1)),
+      embeds: this.makeEmbeds(data.slice(0, 10)),
     });
 
-    // PersistentMessageController.set("GBT_LEADERBOARD_2", {
-    //   embeds: [makeLeaderboardEmbed(leaders)],
-    // });
+    await PersistentMessageController.set("GBT_LEADERBOARD_2", {
+      content: Format.codeBlock(this.makeTable(data.slice(10), 10)),
+    });
 
     this.tableData = tableData;
   }

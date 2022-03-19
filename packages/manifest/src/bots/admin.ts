@@ -186,6 +186,17 @@ admin.commands.push({
     .addSubcommand((subcommand) =>
       subcommand.setName("test").setDescription(`Do something.`)
     )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("user-search")
+        .setDescription(`Search for a user by name`)
+        .addStringOption((option) =>
+          option
+            .setName("query")
+            .setRequired(true)
+            .setDescription(`The search string.`)
+        )
+    )
     .toJSON(),
 });
 

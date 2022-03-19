@@ -24,6 +24,10 @@ export default class Runner {
       Analytics.enter(e);
     });
 
+    Events.on("EXIT", (e) => {
+      Analytics.exit(e);
+    });
+
     Events.on("BOT_READY", (e) => {
       Logger.botReady(e);
 

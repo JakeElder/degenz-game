@@ -65,6 +65,10 @@ export default class HallOfAllegianceController {
     const options = await this.makePledgeMessage();
     const message = await PersistentMessageController.set("PLEDGE", options);
 
+    if (!message) {
+      return;
+    }
+
     if (this.buttonCollector) {
       this.buttonCollector.off("collect", this.handleButtonPress);
     }

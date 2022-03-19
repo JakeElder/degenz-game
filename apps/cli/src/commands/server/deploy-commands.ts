@@ -15,6 +15,14 @@ export default class DeployCommands extends Command {
         return {
           title: bot.name,
           task: async (_, task) => {
+            if (
+              ["SENSEI", "SCOUT", "DEVILS_ADVOCATE", "ARMORY_CLERK"].includes(
+                bot.symbol
+              )
+            ) {
+              task.skip(`No commands for ${bot.symbol}`);
+              return;
+            }
             const data = bot.commands.map((command) => ({
               ...command.data,
               default_permission: command.permissions.length === 0,

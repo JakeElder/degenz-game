@@ -23,7 +23,7 @@ export default class WelcomeRoomController {
 
   static async init() {
     await this.updateInfoMessage();
-    this.intervalId = setInterval(() => this.updateInfoMessage(), 6000);
+    this.intervalId = setInterval(() => this.updateInfoMessage(), 20_000);
   }
 
   static async updateInfoMessage() {
