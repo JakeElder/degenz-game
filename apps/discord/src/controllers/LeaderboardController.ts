@@ -4,8 +4,9 @@ import { GuildMember, MessageEmbedOptions } from "discord.js";
 import { Format } from "lib";
 import { table } from "table";
 import truncate from "truncate";
-import { Global } from "../Global";
 import Config from "config";
+import equal from "fast-deep-equal";
+import { Global } from "../Global";
 
 type Leader = {
   id: User["id"];
@@ -114,9 +115,9 @@ export class LeaderboardController {
 
     const tableData = [...leaders.map((l) => [l.displayName, l.gbt])];
 
-    // if (equal(this.tableData, tableData)) {
-    //   return;
-    // }
+    if (equal(this.tableData, tableData)) {
+      return;
+    }
 
     const data = await this.computeData(leaders);
 
