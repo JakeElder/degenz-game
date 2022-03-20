@@ -1,10 +1,16 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import React from "react";
+import {
+  channelMention,
+  SlashCommandBuilder,
+  userMention,
+} from "@discordjs/builders";
 import { Bot } from "data/types";
 import { Intents } from "discord.js";
 import Config from "config";
 import { Format } from "lib";
 
 const { FLAGS } = Intents;
+const { r } = Format;
 
 const banker: Bot = {
   symbol: "BANKER",
@@ -35,6 +41,24 @@ banker.commands.push({
     { id: Config.roleId("DEGEN"), type: 1, permission: true },
     { id: Config.roleId("ADMIN"), type: 1, permission: true },
   ],
+  restrict: async (i, channel) => {
+    if (channel.isBank) {
+      return false;
+    }
+    return {
+      restricted: true,
+      response: {
+        content: r(
+          <>
+            {userMention(i.user.id)}, come to{" "}
+            {channelMention(Config.channelId("BANK"))} if you want to transfer{" "}
+            {Format.token()}.
+          </>
+        ),
+        ephemeral: true,
+      },
+    };
+  },
   data: new SlashCommandBuilder()
     .setName("transfer")
     .setDescription(

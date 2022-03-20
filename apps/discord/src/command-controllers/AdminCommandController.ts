@@ -188,12 +188,13 @@ export default class AllyCommandController extends CommandController {
       relations: ["apartmentTenancies", "dormitoryTenancy"],
     });
 
-    await i.reply(
-      `Found **${users.length} ${pluralize(
+    await i.reply({
+      content: `Found **${users.length} ${pluralize(
         "user",
         users.length
-      )}** matching "**${query}**"`
-    );
+      )}** matching "**${query}**"`,
+      ephemeral: true,
+    });
 
     const interaction = i;
 
@@ -226,6 +227,7 @@ export default class AllyCommandController extends CommandController {
             ],
           },
         ],
+        ephemeral: true,
       });
     }
   }

@@ -1,4 +1,11 @@
-import { ClientOptions, GuildMember, OverwriteResolvable } from "discord.js";
+import {
+  BaseCommandInteraction,
+  ClientOptions,
+  CommandInteraction,
+  GuildMember,
+  OverwriteResolvable,
+  TextChannel,
+} from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { APIApplicationCommandPermission } from "discord-api-types/v9";
 import { SetOptional } from "type-fest";
@@ -126,9 +133,25 @@ export type Role = {
   permissions?: string;
 };
 
+type RestrictedRestrictionCheckResponse = {
+  restricted: true;
+  response: Parameters<BaseCommandInteraction["reply"]>[0];
+};
+
+type UnrestrictedRestrictionCheckResponse = false;
+
+type RestrictionCheckResponse =
+  | RestrictedRestrictionCheckResponse
+  | UnrestrictedRestrictionCheckResponse;
+
 export type Command = {
   symbol: string;
   permissions: APIApplicationCommandPermission[];
+  restrict?: (
+    i: CommandInteraction,
+    channelDescriptor: ChannelDescriptor,
+    user: User
+  ) => Promise<RestrictionCheckResponse>;
   data: ReturnType<SlashCommandBuilder["toJSON"]>;
 };
 
@@ -235,4 +258,18 @@ export type TossResult = {
   winner: "CHALLENGER" | "CHALLENGEE";
   amount: number;
   rake: number;
+};
+
+export type ChannelDescriptor = {
+  id: string;
+  isCommunity: boolean;
+  isApartment: boolean;
+  isDormitory: boolean;
+  isBunk: boolean;
+  isCell: boolean;
+  isInPrison: boolean;
+  isInGame: boolean;
+  isTossHouse: boolean;
+  isMart: boolean;
+  isBank: boolean;
 };

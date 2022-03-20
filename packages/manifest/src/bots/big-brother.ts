@@ -1,4 +1,3 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
 import { Bot } from "data/types";
 import { Intents } from "discord.js";
 
@@ -13,15 +12,5 @@ const bigBrother: Bot = {
   },
   commands: [],
 };
-
-// `obey` command
-bigBrother.commands.push({
-  symbol: "OBEY",
-  permissions: [],
-  data: new SlashCommandBuilder()
-    .setName("obey")
-    .setDescription(`Enter Beautopia`)
-    .toJSON(),
-});
 
 export default bigBrother;

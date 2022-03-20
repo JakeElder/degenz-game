@@ -120,14 +120,21 @@ export class LeaderboardController {
     }
 
     const data = await this.computeData(leaders);
+    const top10 = data.slice(0, 10);
 
-    await PersistentMessageController.set("GBT_LEADERBOARD_1", {
-      embeds: this.makeEmbeds(data.slice(0, 10)),
-    });
+    if (top10.length) {
+      await PersistentMessageController.set("GBT_LEADERBOARD_1", {
+        embeds: this.makeEmbeds(top10),
+      });
+    }
 
-    await PersistentMessageController.set("GBT_LEADERBOARD_2", {
-      content: Format.codeBlock(this.makeTable(data.slice(10), 10)),
-    });
+    const rest = data.slice(10);
+
+    if (rest.length) {
+      await PersistentMessageController.set("GBT_LEADERBOARD_2", {
+        content: Format.codeBlock(this.makeTable(rest, 10)),
+      });
+    }
 
     this.tableData = tableData;
   }

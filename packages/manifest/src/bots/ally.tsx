@@ -1,10 +1,16 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import React from "react";
+import {
+  channelMention,
+  SlashCommandBuilder,
+  userMention,
+} from "@discordjs/builders";
 import { Bot } from "data/types";
 import { Intents } from "discord.js";
 import Config from "config";
 import { Format } from "lib";
 
 const { FLAGS } = Intents;
+const { r } = Format;
 
 const ally: Bot = {
   symbol: "ALLY",

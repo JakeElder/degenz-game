@@ -1,5 +1,7 @@
 import { camelCase, pascalCase } from "change-case";
 import { CommandInteraction, SelectMenuInteraction } from "discord.js";
+import { User } from "data/db";
+import { Channel } from "./Channel";
 import DiscordBot from "./DiscordBot";
 import Events from "./Events";
 
@@ -15,6 +17,18 @@ export abstract class CommandController {
       this.error(i);
       Events.emit("COMMAND_NOT_FOUND", { i });
       return;
+    }
+
+    if (command.restrict) {
+      const [channelDescriptor, user] = await Promise.all([
+        Channel.getDescriptor(i.channel!.id),
+        User.findOneOrFail({ where: { discordId: i.user.id } }),
+      ]);
+      const r = await command.restrict(i, channelDescriptor, user);
+      if (r) {
+        i.replied ? i.editReply(r.response) : i.reply(r.response);
+        return;
+      }
     }
 
     let option;
