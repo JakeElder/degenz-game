@@ -84,8 +84,8 @@ export default class WelcomeRoomController {
       Config.channelId("WELCOME_ROOM")
     );
 
-    const enterTheProjects = channelMention(
-      Config.channelId("ENTER_THE_PROJECTS")
+    const enterTheShelters = channelMention(
+      Config.channelId("ENTER_THE_SHELTERS")
     );
     const generalRoom = channelMention(Config.channelId("GENERAL"));
 
@@ -93,7 +93,7 @@ export default class WelcomeRoomController {
       r(
         <>
           **WELCOME, COMRADE** {userMention(member.id)}. To join the game, go to{" "}
-          {enterTheProjects}, or come and chat in {generalRoom}.
+          {enterTheShelters}, or come and chat in {generalRoom}.
         </>
       )
     );
