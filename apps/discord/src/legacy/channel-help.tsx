@@ -1,10 +1,9 @@
-import { GuildMember, TextBasedChannel } from "discord.js";
+import { GuildMember } from "discord.js";
 import React from "react";
 import Config from "config";
-import { Imprisonment, User as UserType } from "data/db";
-import { capitalCase } from "change-case";
 import { Channel, User } from "./templates";
 import { currency } from "./utils";
+import { ChannelDescriptor } from "data/types";
 
 const Info = ({
   channelName,
@@ -59,20 +58,12 @@ const Info = ({
 export const ChannelHelpOutput = ({
   channel,
   member,
-  type = "WORLD",
-  cellNumber,
-  apartmentUser,
-  bunkUser,
 }: {
-  channel: TextBasedChannel;
+  channel: ChannelDescriptor;
   member: GuildMember;
-  type?: "WORLD" | "APARTMENT" | "CELL" | "BUNK";
-  cellNumber?: Imprisonment["cellNumber"] | null;
-  apartmentUser?: UserType | null;
-  bunkUser?: UserType | null;
 }) => {
-  if (type === "APARTMENT" || type === "BUNK") {
-    const user = type === "APARTMENT" ? apartmentUser : bunkUser;
+  console.log(channel);
+  if (channel.isBunk || channel.isApartment) {
     const commands = [
       <>**`/eat`** - Eat food from your inventory.</>,
       <>**`/stats`** - Check your own or someone elses stats.</>,
@@ -81,7 +72,7 @@ export const ChannelHelpOutput = ({
     let plannedCommands = [
       <>**`/sleep`** - Sleep to replenish your strength.</>,
     ];
-    if (type === "APARTMENT") {
+    if (channel.isApartment) {
       plannedCommands.push(
         <>**`/invite`** - Grant other Degenz access to your apartment.</>,
         <>**`/evict`** - Revoke access to other tenants of your apartment.</>
@@ -89,7 +80,7 @@ export const ChannelHelpOutput = ({
     }
     return (
       <Info
-        channelName={`${user!.displayName}'s ${capitalCase(type)}`}
+        channelName={channel.name}
         commands={commands}
         plannedCommands={plannedCommands}
       >
@@ -101,10 +92,10 @@ export const ChannelHelpOutput = ({
     );
   }
 
-  if (type === "CELL") {
+  if (channel.isCell) {
     return (
       <Info
-        channelName={`Cell ${cellNumber!.toString().padStart(2, "0")}`}
+        channelName={channel.name}
         commands={[
           <>**`/bribe`** - Eat food from your inventory.</>,
           <>**`/escape`** - Check your own or someone elses stats.</>,
@@ -117,7 +108,7 @@ export const ChannelHelpOutput = ({
     );
   }
 
-  if (channel.id === Config.channelId("TOSS_HOUSE")) {
+  if (channel.isTossHouse) {
     return (
       <Info
         channelName="Teds Toss House"
@@ -125,8 +116,8 @@ export const ChannelHelpOutput = ({
           <>**`/toss`** - Toss a coin with another player or Tosser Ted.</>,
         ]}
       >
-        <Channel id={Config.channelId("TOSS_HOUSE")} /> is where you can flip
-        coins with people. Gamble with other Degens or bet against the house,{" "}
+        <Channel id={channel.id} /> is where you can flip coins with people.
+        Gamble with other Degens or bet against the house,{" "}
         <User id={Config.clientId("TOSSER")} />.
       </Info>
     );
@@ -145,14 +136,14 @@ export const ChannelHelpOutput = ({
           <>**`/beg`** - When you're down and out you still need to eat.</>,
         ]}
       >
-        <Channel id={Config.channelId("TOWN_SQUARE")} /> is the Degenz general
-        chat channel. Discuss Degen matters, hang out and eat food. Just
-        remember, <User id={Config.clientId("BIG_BROTHER")} /> is watching.
+        <Channel id={channel.id} /> is the Degenz general chat channel. Discuss
+        Degen matters, hang out and eat food. Just remember,{" "}
+        <User id={Config.clientId("BIG_BROTHER")} /> is watching.
       </Info>
     );
   }
 
-  if (channel.id === Config.channelId("MART")) {
+  if (channel.isMart) {
     return (
       <Info
         channelName="Merris Mart"
@@ -169,14 +160,14 @@ export const ChannelHelpOutput = ({
           </>,
         ]}
       >
-        <Channel id={Config.channelId("MART")} /> is where you can buy state
-        approved items that help you survive in **{Config.general("WORLD_NAME")}
+        <Channel id={channel.id} /> is where you can buy state approved items
+        that help you survive in **{Config.general("WORLD_NAME")}
         **. Make sure you buy items quickly as stock is limited.
       </Info>
     );
   }
 
-  if (channel.id === Config.channelId("BANK")) {
+  if (channel.isBank) {
     return (
       <Info
         channelName="Bank of Beautopia"
@@ -213,7 +204,7 @@ export const ChannelHelpOutput = ({
           </>,
         ]}
       >
-        <Channel id={Config.channelId("ARENA")} /> is{" "}
+        <Channel id={channel.id} /> is{" "}
         <User id={Config.clientId("BIG_BROTHER")} />
         's battle grounds. The Beautopian Elite has a somewhat sadistic idea of
         what is entertaining..
@@ -224,7 +215,7 @@ export const ChannelHelpOutput = ({
     );
   }
 
-  if (channel.id === Config.channelId("BANK")) {
+  if (channel.isBank) {
     return (
       <Info
         channelName="Bank of Beautopia"
@@ -240,8 +231,8 @@ export const ChannelHelpOutput = ({
           </>,
         ]}
       >
-        <Channel id={Config.channelId("BANK")} /> is where you.. *Bank*. Check
-        your balance and transfer {currency()} to other Degens. If{" "}
+        <Channel id={channel.id} /> is where you.. *Bank*. Check your balance
+        and transfer {currency()} to other Degens. If{" "}
         <User id={Config.clientId("BANKER")} /> isn't on the phone that is.
       </Info>
     );
@@ -315,19 +306,7 @@ export const ChannelHelpOutput = ({
     );
   }
 
-  const COMMUNITY_CHANNELS = [
-    Config.channelId("GENERAL"),
-    Config.channelId("ENTER_THE_PROJECTS"),
-    Config.channelId("ENTER_THE_SHELTERS"),
-    Config.channelId("FEEDBACK"),
-    Config.channelId("ANNOUNCEMENTS"),
-    Config.channelId("LEADERBOARD"),
-    Config.channelId("HALL_OF_PRIVACY"),
-    Config.channelId("FAQ"),
-    Config.channelId("COMMANDS"),
-  ];
-
-  if (COMMUNITY_CHANNELS.includes(channel.id)) {
+  if (channel.isCommunity) {
     return (
       <>
         {">>> "}`COMMUNITY CHANNELS`

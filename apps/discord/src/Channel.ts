@@ -9,6 +9,7 @@ import { ChannelDescriptor } from "data/types";
 import { TextBasedChannel } from "discord.js";
 import { structure } from "manifest";
 import memoize from "memoizee";
+import { Global } from "./Global";
 
 const [beautopia, entrance, joinTheGame, commandCenter, community] = [
   structure.find((c) => c.symbol === "BEAUTOPIA")!,
@@ -32,13 +33,20 @@ const gameChannelIds = beautopia.channels.map((c) =>
 export class Channel {
   static getDescriptor = memoize(
     async (channelId: TextBasedChannel["id"]): Promise<ChannelDescriptor> => {
-      const [imprisonment, apartmentTenancy, dormitoryTenancy, dormitory] =
-        await Promise.all([
-          Imprisonment.findOne({ where: { cellDiscordChannelId: channelId } }),
-          ApartmentTenancy.findOne({ where: { discordChannelId: channelId } }),
-          DormitoryTenancy.findOne({ where: { bunkThreadId: channelId } }),
-          Dormitory.findOne({ where: { discordChannelId: channelId } }),
-        ]);
+      const admin = Global.bot("ADMIN");
+      const [
+        imprisonment,
+        apartmentTenancy,
+        dormitoryTenancy,
+        dormitory,
+        channel,
+      ] = await Promise.all([
+        Imprisonment.findOne({ where: { cellDiscordChannelId: channelId } }),
+        ApartmentTenancy.findOne({ where: { discordChannelId: channelId } }),
+        DormitoryTenancy.findOne({ where: { bunkThreadId: channelId } }),
+        Dormitory.findOne({ where: { discordChannelId: channelId } }),
+        admin.getTextChannel(channelId),
+      ]);
 
       const isCommunity = communityChannelIds.includes(channelId);
       const isApartment = !!apartmentTenancy;
@@ -55,6 +63,7 @@ export class Channel {
 
       return {
         id: channelId,
+        name: channel.name,
         isCommunity,
         isApartment,
         isDormitory,

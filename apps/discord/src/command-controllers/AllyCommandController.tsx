@@ -30,6 +30,7 @@ import Events from "../Events";
 import Stats from "../Stats";
 import { LeaderboardController } from "../controllers/LeaderboardController";
 import { Format } from "lib";
+import { Channel } from "../Channel";
 
 const { r } = Utils;
 
@@ -78,37 +79,17 @@ export default class AllyCommandController extends CommandController {
   }
 
   async help(i: CommandInteraction) {
-    const ally = Global.bot("ALLY");
-    const channel = i.channel as TextChannel;
+    const admin = Global.bot("ADMIN");
 
-    const [member, apartmentUser, imprisonment, bunkUser] = await Promise.all([
-      ally.getMember(i.user.id),
-      getUserByApartment(channel.id),
-      getImprisonmentByCellChannelId(channel.id),
-      getUserByBunk(channel.id),
+    const [channelDescriptor, channel, member] = await Promise.all([
+      Channel.getDescriptor(i.channelId),
+      admin.getTextChannel(i.channelId),
+      admin.getMember(i.user.id),
     ]);
-
-    const isApartment = typeof apartmentUser !== "undefined";
-    const isCell = typeof imprisonment !== "undefined";
-    const isBunk = typeof bunkUser !== "undefined";
-
-    let t: React.ComponentProps<typeof ChannelHelpOutput>["type"] = (() => {
-      if (isCell) return "CELL";
-      if (isApartment) return "APARTMENT";
-      if (isBunk) return "BUNK";
-      return "WORLD";
-    })();
 
     await i.reply({
       content: r(
-        <ChannelHelpOutput
-          channel={i.channel as TextBasedChannel}
-          member={member!}
-          type={t}
-          cellNumber={isCell ? imprisonment.cellNumber : undefined}
-          apartmentUser={apartmentUser}
-          bunkUser={bunkUser}
-        />
+        <ChannelHelpOutput channel={channelDescriptor} member={member!} />
       ),
       ephemeral: true,
     });

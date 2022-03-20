@@ -262,6 +262,7 @@ export type TossResult = {
 
 export type ChannelDescriptor = {
   id: string;
+  name: string;
   isCommunity: boolean;
   isApartment: boolean;
   isDormitory: boolean;
