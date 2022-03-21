@@ -10,7 +10,12 @@ const admin: Bot = {
   symbol: "ADMIN",
   name: "Degenz Admin",
   clientOptions: {
-    intents: [FLAGS.GUILDS, FLAGS.GUILD_MEMBERS, FLAGS.GUILD_MESSAGES],
+    intents: [
+      FLAGS.GUILDS,
+      FLAGS.GUILD_MEMBERS,
+      FLAGS.GUILD_MESSAGES,
+      FLAGS.GUILD_PRESENCES,
+    ],
   },
   commands: [],
 };

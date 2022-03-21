@@ -1,5 +1,6 @@
 import Config from "config";
 import {
+  Collection,
   GuildBasedChannel,
   GuildMember,
   MessageReaction,
@@ -20,16 +21,25 @@ export default class AppController {
 
   static async bindEnterListener() {
     const admin = Global.bot("ADMIN");
+
     admin.client.on("guildMemberAdd", async (member) => {
       if (!member.user.bot) {
         Events.emit("ENTER", { member });
       }
     });
+
     admin.client.on("guildMemberRemove", async (member) => {
       if (!member.user.bot) {
         UserController.eject(member.id);
         Events.emit("EXIT", { member });
       }
+    });
+
+    admin.client.on("guildMemberUpdate", async (_, newMember) => {
+      User.update(
+        { discordId: newMember.id },
+        { displayName: newMember.displayName }
+      );
     });
   }
 

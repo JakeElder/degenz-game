@@ -54,54 +54,6 @@ export function currency({
   return currency;
 }
 
-const TROPHY = "\u{1f3c6}";
-
-export function makeUserStatsEmbed(user: User, member: GuildMember) {
-  const c = currency({ bold: false, copyright: false });
-
-  let longestAchievementLength;
-
-  if (user.achievements.length) {
-    longestAchievementLength = [...user.achievements].sort(
-      (a, b) => b.symbol.length - a.symbol.length
-    )[0].symbol.length;
-  } else {
-    longestAchievementLength = 0;
-  }
-
-  const totalWidth = Math.max(longestAchievementLength + 2, 24);
-  const barWidth = totalWidth - `|${user.strength}`.length;
-  const fullPercentage = user.strength;
-  const emptyPercentage = 100 - user.strength;
-
-  const fullChars = Math.ceil(barWidth * (fullPercentage / 100));
-  const emptyChars = Math.ceil(barWidth * (emptyPercentage / 100));
-
-  const strengthBar =
-    "\u2588".repeat(fullChars) + " ".repeat(emptyChars) + `|${user.strength}`;
-
-  const m: MessageEmbedOptions = {
-    color: member.displayColor,
-    author: {
-      name: member.displayName,
-      iconURL: member.displayAvatarURL(),
-    },
-    description: "`Level 1 Degen`",
-    fields: [
-      { name: c, value: `\`\`\`${user.gbt.toLocaleString()}\`\`\`` },
-      { name: "Strength", value: `\`\`\`${strengthBar}\`\`\`` },
-      {
-        name: "Achievements",
-        value: `\`\`\`${user.achievements
-          .map((a) => `${TROPHY} ${a.symbol}`)
-          .join("\n")}\`\`\``,
-      },
-    ],
-  };
-
-  return m;
-}
-
 export function makeInventoryEmbed(
   items: MartItem[],
   user: User,
@@ -169,66 +121,6 @@ export function makeInventoryEmbed(
         value: i,
       },
     ],
-  };
-
-  return m;
-}
-
-export function makeLeaderboardEmbed(users: User[]): MessageEmbedOptions {
-  if (users.length === 0) {
-    return {
-      description: "no users",
-    };
-  }
-
-  const longestNameLength = [...users].sort((a, b) => {
-    return b.displayName.length - a.displayName.length;
-  })[0].displayName.length;
-
-  const highestTokensLength = [...users]
-    .sort((a, b) => b.gbt - a.gbt)[0]
-    .gbt.toLocaleString().length;
-
-  const TKN = currency({ long: false, bold: false });
-
-  const positionWidth = 5;
-  const pad = 4;
-  const WIDTH =
-    positionWidth +
-    longestNameLength +
-    pad +
-    "| ".length +
-    highestTokensLength +
-    1 +
-    ` ${TKN}`.length;
-
-  const format = (number: number, name: string, tokens: number) => {
-    let row = " ";
-    row += number.toString().padStart(2, " ");
-    row += ". ";
-    row += name;
-    row += " ".repeat(longestNameLength - name.length + pad);
-    row += "| ";
-    row += `${tokens.toLocaleString()} ${TKN}`.padStart(
-      highestTokensLength + ` ${TKN}`.length
-    );
-    row += " ";
-    return row;
-  };
-
-  const title = "LEADERS";
-  const headerPad = " ".repeat((WIDTH - title.length) / 2);
-  const header = `${headerPad}${title}${headerPad}`;
-
-  const t = [
-    `${header}`,
-    ` ${"-".repeat(WIDTH - 2)} `,
-    ...users.map((l, idx) => format(idx + 1, l.displayName, l.gbt)),
-  ];
-
-  const m: MessageEmbedOptions = {
-    description: `\`\`\`${t.map((l) => `${l}`).join("\n")}\`\`\``,
-    color: "GOLD",
   };
 
   return m;

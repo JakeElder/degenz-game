@@ -176,10 +176,7 @@ export default class AllyCommandController extends CommandController {
     await this.respond(i, `DORM_CAPACITY_INCREASED: +${amount}`, "SUCCESS");
   }
 
-  async admin_test(i: CommandInteraction) {
-    const user = await getUser("931842868694360116");
-    await i.reply(Format.codeBlock(JSON.stringify(user, null, 2)));
-  }
+  async admin_test(i: CommandInteraction) {}
 
   async admin_userSearch(i: CommandInteraction) {
     const query = i.options.getString("query", true);

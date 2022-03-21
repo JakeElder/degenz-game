@@ -156,7 +156,7 @@ export const FirstActivityReply = ({ choice }: { choice: string }) => {
         If you want to learn to hacker battle, go and see{" "}
         <User id={Config.clientId("SENSEI")} /> in the
         <Channel id={Config.channelId("TRAINING_DOJO")} /> channel. Just press
-        the "Get started" button when you get in there.
+        the "LFG" button when you get in there.
       </>
     );
   }

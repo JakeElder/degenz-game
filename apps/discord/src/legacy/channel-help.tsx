@@ -62,7 +62,6 @@ export const ChannelHelpOutput = ({
   channel: ChannelDescriptor;
   member: GuildMember;
 }) => {
-  console.log(channel);
   if (channel.isBunk || channel.isApartment) {
     const commands = [
       <>**`/eat`** - Eat food from your inventory.</>,

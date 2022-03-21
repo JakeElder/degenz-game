@@ -87,13 +87,12 @@ export default class WelcomeRoomController {
     const enterTheShelters = channelMention(
       Config.channelId("ENTER_THE_SHELTERS")
     );
-    const generalRoom = channelMention(Config.channelId("GENERAL"));
 
     await welcomeChannel.send(
       r(
         <>
           **WELCOME, COMRADE** {userMention(member.id)}. To join the game, go to{" "}
-          {enterTheShelters}, or come and chat in {generalRoom}.
+          {enterTheShelters}.
         </>
       )
     );
