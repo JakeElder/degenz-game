@@ -59,10 +59,27 @@ export default abstract class Command extends OclifCommand {
           }
         }, 1000);
         update();
+      } else {
+        const update = () => {
+          console.log();
+          process.stdout.cursorTo(0);
+          process.stdout.write(
+            `RATE_LIMITED: Waiting ${Math.round(wait - delta)} seconds`
+          );
+        };
+        const i = setInterval(() => {
+          update();
+          delta += 1;
+          if (wait - delta < 1) {
+            clearInterval(i);
+          }
+        }, 1000);
+        update();
       }
 
       this.debug(`RATE_LIMITED: ${Math.round(wait)} seconds`);
       await delay((res.data.retry_after + 2) * 1000);
+      console.log();
       return this.req(route, data, token, method, task);
     }
 

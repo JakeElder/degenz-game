@@ -18,7 +18,9 @@ export default class AddCitizenRoles extends Command {
           ? tenancy.district.citizenRoleSymbol
           : tenancy.dormitory.citizenRoleSymbol;
 
-      process.stdout.write(`${users[i].displayName} - ${symbol}`);
+      process.stdout.write(
+        `${i + 1} of ${users.length} : ${users[i].displayName} - ${symbol}`
+      );
 
       const role = await Role.findOneOrFail({ where: { symbol: symbol } });
 
@@ -32,7 +34,11 @@ export default class AddCitizenRoles extends Command {
         Config.botToken("ADMIN")
       );
       process.stdout.cursorTo(0);
-      console.log(`${users[i].displayName} - ${symbol} : DONE`);
+      console.log(
+        `${i + 1} of ${users.length} : ${
+          users[i].displayName
+        } - ${symbol} : DONE`
+      );
     }
 
     await disconnect();
