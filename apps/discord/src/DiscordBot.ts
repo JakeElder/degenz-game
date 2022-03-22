@@ -3,6 +3,7 @@ import { Bot } from "data/types";
 import Config from "config";
 import Events from "./Events";
 import { CommandController } from "./CommandController";
+import Utils from "./Utils";
 
 export default abstract class DiscordBot {
   protected readyPromise: Promise<void>;
@@ -16,7 +17,6 @@ export default abstract class DiscordBot {
 
   constructor(public manifest: Bot, public controller: CommandController) {
     this.client = new Client(this.manifest.clientOptions);
-
     this.readyPromise = new Promise((resolve) => {
       this.readyResolver = resolve;
     });
@@ -26,6 +26,10 @@ export default abstract class DiscordBot {
   }
 
   bindClientEvents() {
+    this.client.on("rateLimit", (e) => {
+      Utils.rollbar.info("Rate Limited Request", e);
+    });
+
     this.client.on("interactionCreate", async (i) => {
       if (i.isSelectMenu()) {
         this.controller.handleSelect(i);
