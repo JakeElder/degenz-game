@@ -4,7 +4,6 @@ import {
   CommandInteraction,
   GuildMember,
   OverwriteResolvable,
-  TextChannel,
 } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { APIApplicationCommandPermission } from "discord-api-types/v9";
@@ -114,6 +113,12 @@ export enum BotSymbolEnum {
   WARDEN = "WARDEN",
 }
 
+export enum RoleTypeEnum {
+  BASE = "BASE",
+  CITIZEN = "CITIZEN",
+  MANAGED = "MANAGED",
+}
+
 export type BotSymbol = `${BotSymbolEnum}`;
 
 export type RoleSymbol =
@@ -126,12 +131,61 @@ export type RoleSymbol =
   | "TRAINEE"
   | `${BotSymbol}_BOT`;
 
-export type Role = {
+type D = "D1" | "D2" | "D3" | "D4" | "D5" | "D6";
+export type CitizenRoleSymbol = `${D}_CITIZEN` | `${DormitorySymbol}_CITIZEN`;
+
+export enum RoleSymbolEnum {
+  ADMIN = "ADMIN",
+  DEGEN = "DEGEN",
+  EVERYONE = "EVERYONE",
+  PRISONER = "PRISONER",
+  SERVER_BOOSTER = "SERVER_BOOSTER",
+  VERIFIED = "VERIFIED",
+  TRAINEE = "TRAINEE",
+  ADMIN_BOT = "ADMIN_BOT",
+  ALLY_BOT = "ALLY_BOT",
+  ARMORY_CLERK_BOT = "ARMORY_CLERK_BOT",
+  BANKER_BOT = "BANKER_BOT",
+  BIG_BROTHER_BOT = "BIG_BROTHER_BOT",
+  DEVILS_ADVOCATE_BOT = "DEVILS_ADVOCATE_BOT",
+  MART_CLERK_BOT = "MART_CLERK_BOT",
+  PRISONER_BOT = "PRISONER_BOT",
+  SCOUT_BOT = "SCOUT_BOT",
+  SENSEI_BOT = "SENSEI_BOT",
+  TOSSER_BOT = "TOSSER_BOT",
+  WARDEN_BOT = "WARDEN_BOT",
+  D1_CITIZEN = "D1_CITIZEN",
+  D2_CITIZEN = "D2_CITIZEN",
+  D3_CITIZEN = "D3_CITIZEN",
+  D4_CITIZEN = "D4_CITIZEN",
+  D5_CITIZEN = "D5_CITIZEN",
+  D6_CITIZEN = "D6_CITIZEN",
+  THE_LEFT_CITIZEN = "THE_LEFT_CITIZEN",
+  THE_RIGHT_CITIZEN = "THE_RIGHT_CITIZEN",
+  THE_GRID_CITIZEN = "THE_GRID_CITIZEN",
+  BULLSEYE_CITIZEN = "BULLSEYE_CITIZEN",
+  VULTURE_CITIZEN = "VULTURE_CITIZEN",
+}
+
+export type BaseRole = {
   symbol: RoleSymbol;
-  name?: string;
-  managed?: boolean;
-  permissions?: string;
+  name: string;
+  permissions: string;
 };
+
+export type CitizenRole = {
+  symbol: CitizenRoleSymbol;
+  citizen: true;
+  name: string;
+  color: string;
+};
+
+export type ManagedRole = {
+  symbol: RoleSymbol;
+  managed: true;
+};
+
+export type Role = BaseRole | CitizenRole | ManagedRole;
 
 type RestrictedRestrictionCheckResponse = {
   restricted: true;

@@ -2,6 +2,7 @@ import "reflect-metadata";
 import { Connection, ConnectionOptionsReader, createConnection } from "typeorm";
 import findParentDir from "find-parent-dir";
 import { Achievement } from "./entity/Achievement";
+import { ApartmentTenancy } from "./entity/ApartmentTenancy";
 import { AppState } from "./entity/AppState";
 import { District } from "./entity/District";
 import { Dormitory } from "./entity/Dormitory";
@@ -12,7 +13,7 @@ import { MartItemOwnership } from "./entity/MartItemOwnership";
 import { NPC } from "./entity/NPC";
 import { PersistentMessage } from "./entity/PersistentMessage";
 import { Pledge } from "./entity/Pledge";
-import { ApartmentTenancy } from "./entity/ApartmentTenancy";
+import { Role } from "./entity/Role";
 import { User } from "./entity/User";
 
 let connection: Connection;
@@ -47,6 +48,7 @@ export async function disconnect() {
 
 export {
   Achievement,
+  ApartmentTenancy,
   AppState,
   District,
   Dormitory,
@@ -57,6 +59,6 @@ export {
   NPC,
   PersistentMessage,
   Pledge,
-  ApartmentTenancy,
+  Role,
   User,
 };

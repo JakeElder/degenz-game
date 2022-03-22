@@ -10,6 +10,7 @@ import {
   User,
   Dormitory,
   DormitoryTenancy,
+  Role,
 } from "data/db";
 import Utils from "../Utils";
 import {
@@ -102,6 +103,11 @@ export default class UserController {
       }),
     ];
 
+    const role = await Role.findOneOrFail({
+      where: { symbol: district.citizenRoleSymbol },
+    });
+    await Promise.all([user.save(), member.roles.add(role.discordId)]);
+
     await user.save();
 
     EnterTheProjectsController.update();
@@ -168,7 +174,11 @@ export default class UserController {
       bunkThreadId: thread.id,
     });
 
-    await user.save();
+    const role = await Role.findOneOrFail({
+      where: { symbol: dormitory.citizenRoleSymbol },
+    });
+
+    await Promise.all([user.save(), member.roles.add(role.discordId)]);
 
     EnterTheSheltersController.update();
 

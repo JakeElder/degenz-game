@@ -4,10 +4,31 @@ import { READ_ONLY, READ_ONLY_BEAUTOPIA } from "config/dist/constants";
 import bots from "./bots";
 
 const roles: Role[] = [
-  { symbol: "ADMIN", name: "Admin", permissions: "1071698660937" },
-  { symbol: "PRISONER", name: "Prisoner", permissions: "1071698659905" },
-  { symbol: "DEGEN", name: "Degen", permissions: "1071698660929" },
-  { symbol: "VERIFIED", name: "Verified", permissions: "1071698660929" },
+  {
+    symbol: "ADMIN",
+    name: "Admin",
+    permissions: "1071698660937",
+  },
+  {
+    symbol: "PRISONER",
+    name: "Prisoner",
+    permissions: "1071698659905",
+  },
+  {
+    symbol: "DEGEN",
+    name: "Degen",
+    permissions: "1071698660929",
+  },
+  {
+    symbol: "VERIFIED",
+    name: "Verified",
+    permissions: "1071698660929",
+  },
+  {
+    symbol: "TRAINEE",
+    name: "Trainee",
+    permissions: "1071698529856",
+  },
   { symbol: "ADMIN_BOT", managed: true },
   { symbol: "BIG_BROTHER_BOT", managed: true },
   { symbol: "DEVILS_ADVOCATE_BOT", managed: true },
@@ -19,7 +40,42 @@ const roles: Role[] = [
   { symbol: "PRISONER_BOT", managed: true },
   { symbol: "ARMORY_CLERK_BOT", managed: true },
   { symbol: "SENSEI_BOT", managed: true },
-  { symbol: "TRAINEE", name: "Trainee", permissions: "1071698529856" },
+  { symbol: "D1_CITIZEN", citizen: true, name: "D1 Citizen", color: "#edb500" },
+  { symbol: "D2_CITIZEN", citizen: true, name: "D2 Citizen", color: "#9b65e3" },
+  { symbol: "D3_CITIZEN", citizen: true, name: "D3 Citizen", color: "#9b65e3" },
+  { symbol: "D4_CITIZEN", citizen: true, name: "D4 Citizen", color: "#9b65e3" },
+  { symbol: "D5_CITIZEN", citizen: true, name: "D5 Citizen", color: "#9b65e3" },
+  { symbol: "D6_CITIZEN", citizen: true, name: "D6 Citizen", color: "#9b65e3" },
+  {
+    symbol: "BULLSEYE_CITIZEN",
+    citizen: true,
+    name: "Bullseye Citizen",
+    color: "#379de6",
+  },
+  {
+    symbol: "THE_GRID_CITIZEN",
+    citizen: true,
+    name: "The Grid Citizen",
+    color: "#379de6",
+  },
+  {
+    symbol: "THE_LEFT_CITIZEN",
+    citizen: true,
+    name: "The Left Citizen",
+    color: "#379de6",
+  },
+  {
+    symbol: "THE_RIGHT_CITIZEN",
+    citizen: true,
+    name: "The Right Citizen",
+    color: "#379de6",
+  },
+  {
+    symbol: "VULTURE_CITIZEN",
+    citizen: true,
+    name: "Vulture Citizen",
+    color: "#379de6",
+  },
 ];
 
 const structure: Category[] = [];

@@ -68,7 +68,7 @@ export default class DeployEmojis extends Command {
                               Routes.guildEmojis(guildId),
                               {
                                 name: `${name}${variant}`,
-                                image: `data:image/jpeg;base64,${icon}`,
+                                image: `data:image/png;base64,${icon}`,
                                 roles: [Config.roleId("EVERYONE")],
                               },
                               Config.botToken("ADMIN"),

@@ -8,7 +8,7 @@ import {
   OneToMany,
 } from "typeorm";
 import { Exclude } from "class-transformer";
-import { DormitorySymbolEnum } from "../types";
+import { CitizenRoleSymbol, DormitorySymbolEnum } from "../types";
 import { AppState, DormitoryTenancy } from "..";
 import randomItem from "random-item";
 
@@ -62,5 +62,9 @@ export class Dormitory extends BaseEntity {
     }
 
     return randomItem(available);
+  }
+
+  get citizenRoleSymbol(): CitizenRoleSymbol {
+    return `${this.symbol}_CITIZEN`;
   }
 }
