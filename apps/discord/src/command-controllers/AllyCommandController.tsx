@@ -75,7 +75,7 @@ export default class AllyCommandController extends CommandController {
     i.reply({ content: "`REDPILL_TAKEN`", ephemeral: true });
     const user = await getUser(member.id);
     Events.emit("REDPILL_TAKEN", { user });
-    await OnboardController.partThree(user);
+    await OnboardController.sendRedPillTakenResponse(user);
   }
 
   async help(i: CommandInteraction) {
@@ -98,7 +98,7 @@ export default class AllyCommandController extends CommandController {
     Events.emit("HELP_REQUESTED", { user, channel });
 
     if (!user.hasAchievement(AchievementEnum.HELP_REQUESTED)) {
-      await OnboardController.partFive(user);
+      await OnboardController.sendHelpRequestedResponse(user);
     }
   }
 
@@ -145,7 +145,7 @@ export default class AllyCommandController extends CommandController {
     });
 
     if (!checkeeUser.hasAchievement(AchievementEnum.STATS_CHECKED)) {
-      await OnboardController.partFour(checkeeUser);
+      await OnboardController.sendStatsCheckedResponse(checkeeUser);
     }
 
     Events.emit("STATS_CHECKED", {

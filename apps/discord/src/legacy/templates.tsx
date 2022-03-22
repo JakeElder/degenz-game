@@ -149,8 +149,12 @@ export const FailedBribeReply = ({
 //// Ivan 6000
 //////////////////////////////////////////////////////////////////////////////////
 
-export const FirstActivityReply = ({ choice }: { choice: string }) => {
-  if (choice === "fight") {
+export const FirstActivityReply = ({
+  choice,
+}: {
+  choice: "FIGHT" | "GAMBLE" | "SHOP";
+}) => {
+  if (choice === "FIGHT") {
     return (
       <>
         If you want to learn to hacker battle, go and see{" "}
@@ -161,7 +165,7 @@ export const FirstActivityReply = ({ choice }: { choice: string }) => {
     );
   }
 
-  if (choice === "gamble") {
+  if (choice === "GAMBLE") {
     return (
       <>
         If you want to gamble, go and see{" "}
@@ -172,7 +176,7 @@ export const FirstActivityReply = ({ choice }: { choice: string }) => {
     );
   }
 
-  if (choice === "shop") {
+  if (choice === "SHOP") {
     return (
       <>
         If you want to shop, go and see{" "}

@@ -33,6 +33,7 @@ export default class Runner {
 
       if (e.data.bot.symbol === "ADMIN") {
         AppController.bindEnterListener();
+        OnboardController.bindEventListeners();
         WelcomeRoomController.init();
       }
 
@@ -68,7 +69,7 @@ export default class Runner {
 
     Events.on("APARTMENT_ALLOCATED", (e) => {
       if (e.data.onboard) {
-        OnboardController.partOne(e.data.user);
+        OnboardController.sendInitialMessage(e.data.user);
       } else {
         OnboardController.skip(e.data.user);
       }
@@ -76,7 +77,7 @@ export default class Runner {
 
     Events.on("DORMITORY_ALLOCATED", (e) => {
       if (e.data.onboard) {
-        OnboardController.partOne(e.data.user);
+        OnboardController.sendInitialMessage(e.data.user);
       } else {
         OnboardController.skip(e.data.user);
       }

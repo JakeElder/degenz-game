@@ -68,9 +68,7 @@ export default abstract class DiscordBot {
   }
 
   async getTextChannel(id: TextChannel["id"]): Promise<TextChannel> {
-    let channel = this.guild.channels.cache.get(id) as any;
-    if (channel) return channel as TextChannel;
-    channel = await this.guild.channels.fetch(id);
+    const channel = await this.guild.channels.fetch(id);
     if (!channel) throw new Error(`Channel ${id} not found`);
     return channel as TextChannel;
   }

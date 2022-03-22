@@ -1,6 +1,13 @@
 import React from "react";
 import Config from "config";
-import { MessageActionRow, MessageEmbed } from "discord.js";
+import {
+  ButtonInteraction,
+  GuildMember,
+  MessageActionRow,
+  MessageEmbed,
+  Message,
+  TextBasedChannel,
+} from "discord.js";
 import { User, Achievement } from "data/db";
 import { Achievement as AchievementEnum } from "data/types";
 import { OnboardDialogAlly, OnboardDialogBB } from "../legacy/onboard-dialog";
@@ -14,10 +21,89 @@ import { Global } from "../Global";
 import { In } from "typeorm";
 import Events from "../Events";
 import DiscordBot from "../DiscordBot";
+import { userMention } from "@discordjs/builders";
 
 const { r } = Utils;
 
 export default class OnboardController {
+  static async bindEventListeners() {
+    await this.bindButtonListeners();
+  }
+
+  static async getMemberFromInteraction(
+    i: ButtonInteraction
+  ): Promise<GuildMember> {
+    return i.member as GuildMember;
+  }
+
+  static async getMessageFromInteraction(
+    i: ButtonInteraction
+  ): Promise<Message> {
+    if ("edit" in i.message) {
+      return i.message;
+    }
+    const channel = await i.client.channels.fetch(i.channelId);
+    if (!channel?.isText()) {
+      throw new Error("Non text channel");
+    }
+    return channel.messages.fetch(i.message.id);
+  }
+
+  static async getChannelFromInteraction(
+    i: ButtonInteraction
+  ): Promise<TextBasedChannel> {
+    if (i.channel) {
+      return i.channel;
+    }
+    const channel = await i.client.channels.fetch(i.channelId);
+    if (!channel || !channel.isText()) {
+      throw new Error("Channel not found");
+    }
+    return channel;
+  }
+
+  static async getInteractionProps(i: ButtonInteraction): Promise<{
+    member: GuildMember;
+    channel: TextBasedChannel;
+    message: Message;
+  }> {
+    const [member, channel, message] = await Promise.all([
+      await this.getMemberFromInteraction(i),
+      await this.getChannelFromInteraction(i),
+      await this.getMessageFromInteraction(i),
+    ]);
+    return { member, channel, message };
+  }
+
+  static async bindButtonListeners() {
+    const [bb, ally] = Global.bots("BIG_BROTHER", "ALLY");
+    await Promise.all([bb.ready, ally.ready]);
+
+    bb.client.on("interactionCreate", async (i) => {
+      if (!i.isButton()) {
+        return;
+      }
+      const [type] = i.customId.split(":");
+      if (type === "UNDERSTAND_RESPONSE") {
+        this.sendUnderstandResponse(i);
+      }
+    });
+
+    ally.client.on("interactionCreate", async (i) => {
+      if (!i.isButton()) {
+        return;
+      }
+      const [type] = i.customId.split(":");
+      if (type === "IS_HE_GONE_RESPONSE") {
+        this.sendIsHeGoneResponse(i);
+      }
+
+      if (type === "FIRST_WORLD_CHOICE") {
+        this.sendFirstWorldChoiceResponse(i);
+      }
+    });
+  }
+
   static async getChannel(user: User, bot: DiscordBot) {
     const tenancy = user.primaryTenancy;
 
@@ -32,7 +118,7 @@ export default class OnboardController {
     return bunk!;
   }
 
-  static async partOne(user: User) {
+  static async sendInitialMessage(user: User) {
     const bb = Global.bot("BIG_BROTHER");
     const channel = await this.getChannel(user, bb);
     const member = await UserController.getMember(user.discordId);
@@ -55,29 +141,47 @@ export default class OnboardController {
     );
     await Utils.delay(3500);
 
-    const m = await channel.send({
-      content: r(<OnboardDialogBB part={4} member={member!} />),
+    await channel.send({
+      content: r(<OnboardDialogBB part={4} member={member} />),
       components: [
         new MessageActionRow().addComponents(
-          makeButton("yes"),
-          makeButton("no")
+          makeButton(`UNDERSTAND_RESPONSE:YES:${member.id}`, undefined, "Yes"),
+          makeButton(`UNDERSTAND_RESPONSE:NO:${member.id}`, undefined, "No")
         ),
       ],
     });
+  }
 
-    const i = await m.awaitMessageComponent({ componentType: "BUTTON" });
+  static async sendUnderstandResponse(i: ButtonInteraction) {
+    const user = await User.findOneOrFail({ where: { discordId: i.user.id } });
 
-    await m.edit({
-      content: r(<OnboardDialogBB part={4} member={member!} />),
+    const { member, channel, message } = await this.getInteractionProps(i);
+
+    const [_, response, memberId] = i.customId.split(":") as [
+      string,
+      "YES" | "NO",
+      string
+    ];
+
+    if (member.id !== memberId) {
+      await i.reply({
+        content: `${userMention(member.id)} - Go press your own buttons.`,
+        ephemeral: true,
+      });
+      return;
+    }
+
+    await message.edit({
+      content: r(<OnboardDialogBB part={4} member={member} />),
       components: [
         new MessageActionRow().addComponents(
           makeButton("yes", {
             disabled: true,
-            selected: i.customId === "yes",
+            selected: response === "YES",
           }),
           makeButton("no", {
             disabled: true,
-            selected: i.customId === "no",
+            selected: response === "NO",
           })
         ),
       ],
@@ -85,112 +189,119 @@ export default class OnboardController {
 
     await Promise.all([
       i.update({ fetchReply: false }),
-      transactBalance(member!.id, i.customId === "yes" ? 100 : 40),
+      transactBalance(member.id, response === "YES" ? 100 : 40),
     ]);
 
     await channel.send({
       content: r(
-        <OnboardDialogBB
-          member={member!}
-          part={5}
-          response={i.customId as "yes" | "no"}
-        />
+        <OnboardDialogBB member={member} part={5} response={response} />
       ),
     });
 
     await Utils.delay(2500);
     await channel.send({
       content: r(
-        <OnboardDialogBB
-          part={6}
-          member={member!}
-          response={i.customId as "yes" | "no"}
-        />
+        <OnboardDialogBB part={6} member={member} response={response} />
       ),
     });
 
     await Utils.delay(3000);
     await channel.send({
-      content: r(<OnboardDialogBB part={7} member={member!} />),
+      content: r(<OnboardDialogBB part={7} member={member} />),
     });
 
     await Utils.delay(4000);
     await channel.send({
-      content: r(<OnboardDialogBB part={8} member={member!} />),
+      content: r(<OnboardDialogBB part={8} member={member} />),
     });
 
     await Utils.delay(1000);
-
     await OnboardController.switchOnboardNPCs(user);
-
     await Utils.delay(1000);
-
-    await this.partTwo(user);
+    await this.sendAllyIntroduction(user);
   }
 
-  static async partTwo(user: User) {
+  static async sendAllyIntroduction(user: User) {
     const ally = Global.bot("ALLY");
     const channel = await this.getChannel(user, ally);
     const member = await ally.getMember(user.discordId);
 
-    const m = await channel.send({
+    if (channel === null || member === null) {
+      throw new Error("Invalid channel/member");
+    }
+
+    const shruggy = "\u00af\u005c\u005f\u0028\u30c4\u0029\u005f\u002f\u00af";
+    await channel.send({
       content: r(<OnboardDialogAlly part={1} member={member!} />),
       components: [
         new MessageActionRow().addComponents(
-          makeButton("yes"),
-          makeButton("no"),
+          makeButton(`IS_HE_GONE_RESPONSE:YES:${member.id}`, undefined, "Yes"),
+          makeButton(`IS_HE_GONE_RESPONSE:NO:${member.id}`, undefined, "No"),
           makeButton(
-            "unsure",
+            `IS_HE_GONE_RESPONSE:UNSURE:${member.id}`,
             undefined,
-            "\u00af\u005c\u005f\u0028\u30c4\u0029\u005f\u002f\u00af"
+            shruggy
           )
         ),
       ],
     });
+  }
 
-    const i = await m.awaitMessageComponent({ componentType: "BUTTON" });
+  static async sendIsHeGoneResponse(i: ButtonInteraction) {
+    const { member, channel, message } = await this.getInteractionProps(i);
 
-    await m.edit({
-      content: r(<OnboardDialogAlly part={1} member={member!} />),
+    const [_key, response, memberId] = i.customId.split(":") as [
+      string,
+      "YES" | "NO" | "UNSURE",
+      string
+    ];
+
+    if (member.id !== memberId) {
+      await i.reply({
+        content: `${userMention(member.id)} - Go press your own buttons.`,
+        ephemeral: true,
+      });
+      return;
+    }
+
+    const shruggy = "\u00af\u005c\u005f\u0028\u30c4\u0029\u005f\u002f\u00af";
+
+    await message.edit({
+      content: r(<OnboardDialogAlly part={1} member={member} />),
       components: [
         new MessageActionRow().addComponents(
           makeButton("yes", {
             disabled: true,
-            selected: i.customId === "yes",
+            selected: response === "YES",
           }),
           makeButton("no", {
             disabled: true,
-            selected: i.customId === "no",
+            selected: i.customId === "NO",
           }),
           makeButton(
             "unsure",
             {
               disabled: true,
-              selected: i.customId === "unsure",
+              selected: i.customId === "UNSURE",
             },
-            "\u00af\u005c\u005f\u0028\u30c4\u0029\u005f\u002f\u00af"
+            shruggy
           )
         ),
       ],
     });
+
     i.update({ fetchReply: false });
 
     await channel.send(
-      r(
-        <OnboardDialogAlly
-          part={2}
-          member={member!}
-          response={i.customId as "yes" | "no" | "unsure"}
-        />
-      )
+      r(<OnboardDialogAlly part={2} member={member} response={response} />)
     );
     await Utils.delay(3000);
 
-    await channel.send(r(<OnboardDialogAlly member={member!} part={3} />));
+    await channel.send(r(<OnboardDialogAlly member={member} part={3} />));
     await Utils.delay(4000);
 
     await channel.send({
-      content: r(<OnboardDialogAlly member={member!} part={4} />),
+      content: r(<OnboardDialogAlly member={member} part={4} />),
       embeds: [
         new MessageEmbed().setImage(
           "https://s10.gifyu.com/images/red-pill.gif"
@@ -199,10 +310,10 @@ export default class OnboardController {
     });
     await Utils.delay(1000);
 
-    await channel.send(r(<OnboardDialogAlly member={member!} part={5} />));
+    await channel.send(r(<OnboardDialogAlly member={member} part={5} />));
   }
 
-  static async partThree(user: User) {
+  static async sendRedPillTakenResponse(user: User) {
     const ally = Global.bot("ALLY");
 
     await AchievementController.award(user, AchievementEnum.JOINED_THE_DEGENZ);
@@ -223,7 +334,7 @@ export default class OnboardController {
     await channel.send(r(<OnboardDialogAlly member={member!} part={8} />));
   }
 
-  static async partFour(user: User) {
+  static async sendStatsCheckedResponse(user: User) {
     const ally = Global.bot("ALLY");
     const channel = await this.getChannel(user, ally);
     const member = await ally.getMember(user.discordId);
@@ -242,75 +353,101 @@ export default class OnboardController {
     await Utils.delay(2500);
 
     await channel.send(r(<OnboardDialogAlly member={member!} part={12} />));
-    await Utils.delay(3000);
-
-    await channel.send(r(<OnboardDialogAlly member={member!} part={13} />));
   }
 
-  static async partFive(user: User) {
+  static async sendHelpRequestedResponse(user: User) {
     const ally = Global.bot("ALLY");
     const channel = await this.getChannel(user, ally);
     const member = await ally.getMember(user.discordId);
 
     await Utils.delay(2000);
 
-    await AchievementController.award(user!, AchievementEnum.HELP_REQUESTED);
+    await AchievementController.award(user, AchievementEnum.HELP_REQUESTED);
     await Utils.delay(2000);
 
-    await channel.send(r(<OnboardDialogAlly member={member!} part={14} />));
+    await channel.send(r(<OnboardDialogAlly member={member!} part={13} />));
     await Utils.delay(2000);
 
     await OnboardController.sendNextPrompt(user);
     await Utils.delay(3000);
 
-    await channel.send(r(<OnboardDialogAlly member={member!} part={15} />));
+    await channel.send(r(<OnboardDialogAlly member={member!} part={14} />));
     await Utils.delay(2500);
 
-    await channel.send(r(<OnboardDialogAlly member={member!} part={16} />));
+    await channel.send(r(<OnboardDialogAlly member={member!} part={15} />));
   }
 
   static async sendNextPrompt(user: User) {
     const ally = Global.bot("ALLY");
     const channel = await this.getChannel(user, ally);
 
-    const m = await channel.send({
+    await channel.send({
       content:
         "There's lots to see and do here, so what do you feel like doing?",
       components: [
         new MessageActionRow().addComponents(
-          makeButton("fight"),
-          makeButton("gamble"),
-          makeButton("shop")
+          makeButton(
+            `FIRST_WORLD_CHOICE:FIGHT:${user.discordId}`,
+            undefined,
+            "Fight"
+          ),
+          makeButton(
+            `FIRST_WORLD_CHOICE:GAMBLE:${user.discordId}`,
+            undefined,
+            "Gamble"
+          ),
+          makeButton(
+            `FIRST_WORLD_CHOICE:SHOP:${user.discordId}`,
+            undefined,
+            "Shop"
+          )
         ),
       ],
     });
+  }
 
-    const i = await m.awaitMessageComponent({ componentType: "BUTTON" });
+  static async sendFirstWorldChoiceResponse(i: ButtonInteraction) {
+    const { member, channel, message } = await this.getInteractionProps(i);
 
-    await m.edit({
+    const [_key, response, memberId] = i.customId.split(":") as [
+      string,
+      "FIGHT" | "GAMBLE" | "SHOP",
+      string
+    ];
+
+    if (member.id !== memberId) {
+      await i.reply({
+        content: `${userMention(member.id)} - Go press your own buttons.`,
+        ephemeral: true,
+      });
+      return;
+    }
+
+    await message.edit({
       content: "So what are you gonna do now you're a Degen?",
       components: [
         new MessageActionRow().addComponents(
           makeButton("fight", {
             disabled: true,
-            selected: i.customId === "fight",
+            selected: response === "FIGHT",
           }),
           makeButton("gamble", {
             disabled: true,
-            selected: i.customId === "gamble",
+            selected: response === "GAMBLE",
           }),
           makeButton("shop", {
             disabled: true,
-            selected: i.customId === "shop",
+            selected: response === "SHOP",
           })
         ),
       ],
     });
     i.update({ fetchReply: false });
 
-    Events.emit("FIRST_WORLD_CHOICE", { user, choice: i.customId });
+    await channel.send(r(<FirstActivityReply choice={response} />));
 
-    await channel.send(r(<FirstActivityReply choice={i.customId} />));
+    const user = await User.findOneOrFail({ where: { discordId: memberId } });
+    Events.emit("FIRST_WORLD_CHOICE", { user, choice: i.customId });
   }
 
   static async switchOnboardNPCs(user: User) {
@@ -330,15 +467,10 @@ export default class OnboardController {
       });
     }
 
-    if (
-      channel.type === "GUILD_PRIVATE_THREAD" ||
-      channel.type === "GUILD_PUBLIC_THREAD"
-    ) {
-      if (channel.isThread()) {
-        await channel.members.remove(Config.clientId("BIG_BROTHER"));
-        await Utils.delay(2000);
-        await channel.members.add(Config.clientId("ALLY"));
-      }
+    if (channel.isThread()) {
+      await channel.members.remove(Config.clientId("BIG_BROTHER"));
+      await Utils.delay(2000);
+      await channel.members.add(Config.clientId("ALLY"));
     }
   }
 

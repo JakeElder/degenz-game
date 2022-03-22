@@ -14,7 +14,7 @@ export const OnboardDialogBB = ({
 }: {
   part: number;
   member: GuildMember;
-  response?: "yes" | "no";
+  response?: "YES" | "NO";
   channelId?: string;
   type?: "APARTMENT" | "DORMITORY";
 }) => {
@@ -54,16 +54,16 @@ export const OnboardDialogBB = ({
         </>
       );
     case 5:
-      if (response === "yes") {
+      if (response === "YES") {
         return <>There's a good citizen.</>;
       } else {
         return <>**No?..** Very funny.</>;
       }
     case 6:
-      if (response === "yes") {
+      if (response === "YES") {
         return (
           <>
-            Because I am the benevloent leader, I have issued you with{" "}
+            Because I am the benevolent leader, I have issued you with{" "}
             {emoji.get("moneybag")}**100** {currency()}, the currency of{" "}
             {Config.general("WORLD_NAME")}.
           </>
@@ -105,20 +105,20 @@ export const OnboardDialogAlly = ({
 }: {
   part: number;
   member: GuildMember;
-  response?: "yes" | "no" | "unsure";
+  response?: "YES" | "NO" | "UNSURE";
 }) => {
   switch (part) {
     case 1:
       return <>Is he gone?</>;
     case 2:
-      if (response === "yes") {
+      if (response === "YES") {
         return (
           <>
             Right, I can see in the room list he's not in here any more. It's
             safe for us to talk.
           </>
         );
-      } else if (response === "no") {
+      } else if (response === "NO") {
         return (
           <>
             What do you mean no? He's left the room, I can see from the user
@@ -187,21 +187,21 @@ export const OnboardDialogAlly = ({
         <>
           If you ever get stuck in any room, at any time, just type `/help` and
           I'll explain the area to you.
+          <br />
+          Try it now, **type `/help`**
         </>
       );
     case 13:
-      return <>Try it now, **type `/help`**</>;
-    case 14:
       return (
         <>Alright Degen, go and explore **{Config.general("WORLD_NAME")}**.</>
       );
-    case 15:
+    case 14:
       return (
         <>
           And remember, if you need info just type `/help` or ask a moderator.
         </>
       );
-    case 16:
+    case 15:
       return <>See you around {Config.general("WORLD_NAME")}!</>;
   }
 

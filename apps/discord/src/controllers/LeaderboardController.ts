@@ -61,7 +61,7 @@ export class LeaderboardController {
   static makeEmbed(l: Leader, position: number): MessageEmbedOptions {
     const avatar = (() => {
       const avatar = l.member.displayAvatarURL({ dynamic: true, size: 64 });
-      return avatar.endsWith("0.png")
+      return /\/\d\d?\.png$/.test(avatar)
         ? `${Config.env("WEB_URL")}/characters/generic-32px.png?v1`
         : avatar;
     })();
