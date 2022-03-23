@@ -349,7 +349,7 @@ export class Help {
     const commands = [
       <>**`/hack`** - Hack another Degen for fun and profit.</>,
       <>
-        **`/defend`** - Use one of your shields to defend yourself from attacks.
+        **`/shield`** - Use one of your shields to defend yourself from attacks.
       </>,
     ];
 
@@ -405,7 +405,7 @@ export class Help {
     const commands = [
       <>**`/hack`** - Hack another Degen for fun and profit.</>,
       <>
-        **`/defend`** - Use one of your shields to defend yourself from attacks.
+        **`/shield`** - Use one of your shields to defend yourself from attacks.
       </>,
     ];
 
@@ -422,7 +422,7 @@ export class Help {
       fields: [
         { name: "Commands", value: commands.map((c) => r(c)).join("\n") },
       ],
-      // image: { url: "" },
+      image: { url: "https://s10.gifyu.com/images/Sensei-Trainer.gif" },
     });
   }
 
