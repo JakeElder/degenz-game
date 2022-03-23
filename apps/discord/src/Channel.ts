@@ -72,7 +72,13 @@ export class Channel {
         isInPrison,
         isInGame,
         isTossHouse: channelId === Config.channelId("TOSS_HOUSE"),
+        isTownSquare: channelId === Config.channelId("TOWN_SQUARE"),
+        isArena: channelId === Config.channelId("ARENA"),
         isMart: channelId === Config.channelId("MART"),
+        isArmory: channelId === Config.channelId("ARMORY"),
+        isTrainingDojo: channelId === Config.channelId("TRAINING_DOJO"),
+        isVerification: channelId === Config.channelId("VERIFICATION"),
+        isGenPop: channelId === Config.channelId("GEN_POP"),
         isBank: channelId === Config.channelId("BANK"),
       };
     },

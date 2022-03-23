@@ -21,6 +21,7 @@ import {
 import { Global } from "../Global";
 import EnterTheProjectsController from "./EnterTheProjectsController";
 import EnterTheSheltersController from "./EnterTheSheltersController";
+import ResidenceController from "./ResidenceController";
 
 export default class UserController {
   static async add(member: GuildMember) {
@@ -365,7 +366,7 @@ export default class UserController {
         cellNumber: number,
         entryRoleIds,
       }),
-      residence.permissionOverwrites.delete(user.discordId),
+      ResidenceController.remove(residence, user.discordId),
       member!.roles.remove(entryRoleIds),
     ]);
 

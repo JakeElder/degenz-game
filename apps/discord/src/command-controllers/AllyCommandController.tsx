@@ -1,38 +1,26 @@
-import React from "react";
 import {
   CommandInteraction,
   GuildMember,
   MessageActionRow,
   MessageSelectMenu,
   SelectMenuInteraction,
-  TextBasedChannel,
   TextChannel,
 } from "discord.js";
 import Config from "config";
 import { CommandController } from "../CommandController";
-import {
-  eatItem,
-  getImprisonmentByCellChannelId,
-  getMartItems,
-  getUser,
-  getUserByApartment,
-  getUserByBunk,
-} from "../legacy/db";
+import { eatItem, getMartItems, getUser } from "../legacy/db";
 import { Achievement as AchievementEnum, MartItemSymbol } from "data/types";
-import { User } from "data/db";
+import { Dormitory, User } from "data/db";
 import { groupBy } from "lodash";
 import OnboardController from "../controllers/OnboardController";
 import { makeInventoryEmbed } from "../legacy/utils";
-import ChannelHelpOutput from "../legacy/channel-help";
-import Utils from "../Utils";
 import { Global } from "../Global";
 import Events from "../Events";
 import Stats from "../Stats";
 import { LeaderboardController } from "../controllers/LeaderboardController";
 import { Format } from "lib";
 import { Channel } from "../Channel";
-
-const { r } = Utils;
+import { Help } from "../Help";
 
 export default class AllyCommandController extends CommandController {
   async eat(i: CommandInteraction) {
@@ -81,16 +69,21 @@ export default class AllyCommandController extends CommandController {
   async help(i: CommandInteraction) {
     const admin = Global.bot("ADMIN");
 
-    const [channelDescriptor, channel, member] = await Promise.all([
-      Channel.getDescriptor(i.channelId),
-      admin.getTextChannel(i.channelId),
-      admin.getMember(i.user.id),
-    ]);
+    const [channelDescriptor, channel, member, dormitories] = await Promise.all(
+      [
+        Channel.getDescriptor(i.channelId),
+        admin.getTextChannel(i.channelId),
+        admin.getMember(i.user.id),
+        Dormitory.find({ relations: ["tenancies"] }),
+      ]
+    );
 
     await i.reply({
-      content: r(
-        <ChannelHelpOutput channel={channelDescriptor} member={member!} />
-      ),
+      ...Help.generate({
+        channel: channelDescriptor,
+        member: member!,
+        dormitories,
+      }),
       ephemeral: true,
     });
 

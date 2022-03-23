@@ -325,6 +325,12 @@ export type ChannelDescriptor = {
   isInPrison: boolean;
   isInGame: boolean;
   isTossHouse: boolean;
+  isTownSquare: boolean;
   isMart: boolean;
+  isArena: boolean;
+  isArmory: boolean;
+  isTrainingDojo: boolean;
+  isVerification: boolean;
+  isGenPop: boolean;
   isBank: boolean;
 };
