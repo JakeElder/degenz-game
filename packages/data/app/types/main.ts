@@ -333,4 +333,5 @@ export type ChannelDescriptor = {
   isVerification: boolean;
   isGenPop: boolean;
   isBank: boolean;
+  isTavern: boolean;
 };

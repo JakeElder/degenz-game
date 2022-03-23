@@ -80,6 +80,7 @@ export class Channel {
         isVerification: channelId === Config.channelId("VERIFICATION"),
         isGenPop: channelId === Config.channelId("GEN_POP"),
         isBank: channelId === Config.channelId("BANK"),
+        isTavern: channelId === Config.channelId("TAVERN"),
       };
     },
     { promise: true, maxAge: 1000 * 60 * 10 }

@@ -72,6 +72,10 @@ export class Help {
       return this.makeCommunityMessage(params);
     }
 
+    if (channel.isTavern) {
+      return this.makeTavernMessage(params);
+    }
+
     return this.makeWIPMessage();
   }
   static makeMessageOptions({
@@ -275,6 +279,7 @@ export class Help {
         {userMention(Config.clientId("MART_CLERK"))} has in stock.
       </>,
       <>**`/buy`** - Buy something that remains in stock.</>,
+      <>**`/eat`** - Eat food from your inventory.</>,
     ];
 
     const plannedCommands = [
@@ -364,7 +369,7 @@ export class Help {
       fields: [
         { name: "Commands", value: commands.map((c) => r(c)).join("\n") },
       ],
-      image: { url: "" },
+      // image: { url: "" },
     });
   }
 
@@ -372,6 +377,8 @@ export class Help {
     const commands = [
       <>**`/buy-shield`** - Buy a shield.</>,
       <>**`/buy-hack`** - Buy a hack.</>,
+      <>**`/sell-hack`** - Sell a shield.</>,
+      <>**`/sell-shield`** - Sell a hack.</>,
     ];
 
     return this.makeMessageOptions({
@@ -388,7 +395,9 @@ export class Help {
       fields: [
         { name: "Commands", value: commands.map((c) => r(c)).join("\n") },
       ],
-      // image: { url: "" },
+      image: {
+        url: "https://s10.gifyu.com/images/ezgif.com-gif-maker-1696ae238f96d4dfc1.gif",
+      },
     });
   }
 
@@ -494,7 +503,10 @@ export class Help {
       description: r(
         <>
           The community area is outside of {Config.general("WORLD_NAME")}. Come
-          here to to learn more about the Degenz game.
+          here to to learn more about the Degenz game. **If you're not in game
+          already**, go to{" "}
+          {channelMention(Config.channelId("ENTER_THE_SHELTERS"))} to get a
+          space in one of our **luxury dormitories**.
           <br />
         </>
       ),
@@ -502,6 +514,31 @@ export class Help {
         { name: "Channels", value: channels.map((c) => r(c)).join("\n") },
       ],
       image: { url: "https://s10.gifyu.com/images/header-smaller.gif" },
+    });
+  }
+
+  static makeTavernMessage({ channel }: Params): MessageOptions {
+    const plannedCommands = [
+      <>**`/drink`** - Enjoy a Degenz Brew.</>,
+      <>**`/gift`** - Gift a fellow Degen a brew.</>,
+    ];
+
+    return this.makeMessageOptions({
+      title: channel.name,
+      description: r(
+        <>
+          {channelMention(channel.id)} is where the Degenz hang out. The owner,
+          "Rumer" has been known to post insider tips from popular DAOs across
+          the scene.
+        </>
+      ),
+      fields: [
+        {
+          name: "Planned Commands",
+          value: plannedCommands.map((c) => r(c)).join("\n"),
+        },
+      ],
+      image: { url: "https://s1.gifyu.com/images/final-tavern-gif.gif" },
     });
   }
 }
