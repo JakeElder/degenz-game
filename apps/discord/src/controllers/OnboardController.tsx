@@ -369,12 +369,6 @@ export default class OnboardController {
     await Utils.delay(2000);
 
     await OnboardController.sendNextPrompt(user);
-    await Utils.delay(3000);
-
-    await channel.send(r(<OnboardDialogAlly member={member!} part={14} />));
-    await Utils.delay(2500);
-
-    await channel.send(r(<OnboardDialogAlly member={member!} part={15} />));
   }
 
   static async sendNextPrompt(user: User) {
@@ -424,7 +418,8 @@ export default class OnboardController {
     }
 
     await message.edit({
-      content: "So what are you gonna do now you're a Degen?",
+      content:
+        "There's lots to see and do here, so what do you feel like doing?",
       components: [
         new MessageActionRow().addComponents(
           makeButton("fight", {
@@ -445,9 +440,15 @@ export default class OnboardController {
     i.update({ fetchReply: false });
 
     await channel.send(r(<FirstActivityReply choice={response} />));
+    await Utils.delay(3000);
+
+    await channel.send(r(<OnboardDialogAlly member={member!} part={14} />));
+    await Utils.delay(2500);
+
+    await channel.send(r(<OnboardDialogAlly member={member!} part={15} />));
 
     const user = await User.findOneOrFail({ where: { discordId: memberId } });
-    Events.emit("FIRST_WORLD_CHOICE", { user, choice: i.customId });
+    Events.emit("FIRST_WORLD_CHOICE", { user, choice: response });
   }
 
   static async switchOnboardNPCs(user: User) {
