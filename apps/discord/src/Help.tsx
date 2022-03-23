@@ -340,7 +340,7 @@ export class Help {
         },
       ],
       image: {
-        url: "https://s1.gifyu.com/images/Draft1-1.gif",
+        url: "https://s1.gifyu.com/images/bank-2.gif",
       },
     });
   }
