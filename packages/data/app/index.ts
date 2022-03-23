@@ -15,6 +15,8 @@ import { PersistentMessage } from "./entity/PersistentMessage";
 import { Pledge } from "./entity/Pledge";
 import { Role } from "./entity/Role";
 import { User } from "./entity/User";
+import { Invite } from "./entity/Invite";
+import { InvitedUser } from "./entity/InvitedUser";
 
 let connection: Connection;
 
@@ -54,6 +56,8 @@ export {
   Dormitory,
   DormitoryTenancy,
   Imprisonment,
+  Invite,
+  InvitedUser,
   MartItem,
   MartItemOwnership,
   NPC,
