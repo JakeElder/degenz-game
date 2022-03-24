@@ -17,6 +17,9 @@ export class AppState extends BaseEntity {
   @Column({ default: 1 })
   dormitoryCapacity: number;
 
+  @Column({ default: true })
+  sheltersOpen: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

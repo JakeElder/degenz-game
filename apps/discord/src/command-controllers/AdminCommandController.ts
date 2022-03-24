@@ -178,6 +178,26 @@ export default class AllyCommandController extends CommandController {
 
   async admin_test(i: CommandInteraction) {}
 
+  async admin_openShelters(i: CommandInteraction) {
+    await this.setSheltersOpenState(i, true);
+  }
+
+  async admin_closeShelters(i: CommandInteraction) {
+    await this.setSheltersOpenState(i, false);
+  }
+
+  async setSheltersOpenState(i: CommandInteraction, areOpen: boolean) {
+    const state = await AppState.fetch();
+    state.sheltersOpen = areOpen;
+    await state.save();
+    EnterTheSheltersController.update();
+    await this.respond(
+      i,
+      `SHELTERS_${areOpen ? "OPENED" : "CLOSED"}`,
+      "SUCCESS"
+    );
+  }
+
   async admin_userSearch(i: CommandInteraction) {
     const query = i.options.getString("query", true);
     const users = await User.find({

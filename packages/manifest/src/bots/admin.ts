@@ -202,6 +202,12 @@ admin.commands.push({
             .setDescription(`The search string.`)
         )
     )
+    .addSubcommand((subcommand) =>
+      subcommand.setName("open-shelters").setDescription(`Open the shelters.`)
+    )
+    .addSubcommand((subcommand) =>
+      subcommand.setName("close-shelters").setDescription(`Close the shelters.`)
+    )
     .toJSON(),
 });
 

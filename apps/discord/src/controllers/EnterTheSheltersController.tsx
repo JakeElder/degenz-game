@@ -74,14 +74,15 @@ export default class EnterTheProjectsController {
           capacity: state.dormitoryCapacity - d.tenancies.length,
           tenancies: d.tenancies.length,
           available,
-          tableEmoji: available ? d.activeEmoji : d.inactiveEmoji,
+          tableEmoji:
+            state.sheltersOpen && available ? d.activeEmoji : d.inactiveEmoji,
         };
       }
     );
 
     return {
       dormitoryCapacity: state.dormitoryCapacity,
-      open: computedDormitories.some((d) => d.available),
+      open: state.sheltersOpen && computedDormitories.some((d) => d.available),
       dormitories: computedDormitories,
     };
   }
@@ -105,6 +106,12 @@ export default class EnterTheProjectsController {
       })
       .join("\n");
 
+    const closedMessage = data.open
+      ? ""
+      : `\n\n \u{1f6b7} **THE SHELTERS ARE TEMPORARILY CLOSED**. Keep an eye on ${channelMention(
+          Config.channelId("ANNOUNCEMENTS")
+        )} to see when new spaces are available.`;
+
     const message: MessageOptions = {
       content: `If no apartments are available, you may join one of our **LUXURY DORMITORIES**.\n**Press the button below to join the shelters.**`,
       embeds: [
@@ -113,7 +120,7 @@ export default class EnterTheProjectsController {
             iconURL: "https://s10.gifyu.com/images/VPN-Degenz.gif",
             name: "Join The Shelters",
           },
-          description: `Securing a space in a dormitory will grant you entry to the game. New dormitories and bunks are being added all the time, so check back often to secure your space in ${Format.worldName()}.\n\n${dormitoryTable}`,
+          description: `Securing a space in a dormitory will grant you entry to the game. New dormitories and bunks are being added all the time, so check back often to secure your space in ${Format.worldName()}.${closedMessage}\n\n${dormitoryTable}`,
           footer: {
             text: "Pressing the button below will have you randomly assigned to a dormitory that has capacity.",
           },
