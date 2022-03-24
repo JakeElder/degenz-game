@@ -1,5 +1,9 @@
 import { camelCase, pascalCase } from "change-case";
-import { CommandInteraction, SelectMenuInteraction } from "discord.js";
+import {
+  CommandInteraction,
+  GuildMember,
+  SelectMenuInteraction,
+} from "discord.js";
 import { User } from "data/db";
 import { Channel } from "./Channel";
 import DiscordBot from "./DiscordBot";
@@ -24,10 +28,20 @@ export abstract class CommandController {
         Channel.getDescriptor(i.channelId),
         User.findOneOrFail({
           where: { discordId: i.user.id },
-          relations: ["achievements"],
+          relations: ["achievements", "apartmentTenancies", "dormitoryTenancy"],
         }),
       ]);
-      const r = await command.restrict(i, channelDescriptor, user);
+
+      let interactee: User | null = null;
+      if (command.symbol === "TRANSFER") {
+        const recipient = i.options.getMember("recipient", true) as GuildMember;
+        interactee = await User.findOneOrFail({
+          where: { discordId: recipient.user.id },
+          relations: ["achievements"],
+        });
+      }
+
+      const r = await command.restrict(i, channelDescriptor, user, interactee);
       if (r) {
         i.replied ? i.editReply(r.response) : i.reply(r.response);
         return;

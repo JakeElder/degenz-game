@@ -204,7 +204,8 @@ export type Command = {
   restrict?: (
     i: CommandInteraction,
     channelDescriptor: ChannelDescriptor,
-    user: User
+    user: User,
+    interactee: User | null
   ) => Promise<RestrictionCheckResponse>;
   data: ReturnType<SlashCommandBuilder["toJSON"]>;
 };

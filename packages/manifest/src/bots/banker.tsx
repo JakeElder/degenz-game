@@ -41,7 +41,7 @@ banker.commands.push({
     { id: Config.roleId("DEGEN"), type: 1, permission: true },
     { id: Config.roleId("ADMIN"), type: 1, permission: true },
   ],
-  restrict: async (i, channel, user) => {
+  restrict: async (i, channel, user, recipient) => {
     if (!channel.isBank) {
       return {
         restricted: true,
@@ -51,6 +51,26 @@ banker.commands.push({
               {userMention(i.user.id)}, come to{" "}
               {channelMention(Config.channelId("BANK"))} if you want to transfer{" "}
               {Format.token()}.
+            </>
+          ),
+          ephemeral: true,
+        },
+      };
+    }
+
+    if (!recipient!.hasAchievement(Achievement.FINISHED_TRAINER)) {
+      return {
+        restricted: true,
+        response: {
+          content: r(
+            <>
+              {"\u{1f6b7}"} {userMention(recipient!.discordId)} **isn't in the
+              game**.
+              <br />
+              {"\u{1f6b7}"} It looks like you're trying to **CHEAT**, citizen.
+              <br />
+              {"\u{1f6b7}"} If we suspect you're not obeying the rules, you will
+              be **BANNED** and **REMOVED FROM THE WHITELIST**.
             </>
           ),
           ephemeral: true,

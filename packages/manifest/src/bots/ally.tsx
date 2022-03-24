@@ -35,6 +35,25 @@ ally.commands.push({
 // `redpill` command
 ally.commands.push({
   symbol: "RED_PILL",
+  restrict: async (i, channel, user) => {
+    if (channel.isApartment || channel.isBunk) {
+      return false;
+    }
+
+    return {
+      restricted: true,
+      response: {
+        content: r(
+          <>
+            {userMention(i.user.id)} - Here? come back to{" "}
+            {channelMention(user.primaryTenancy.discordChannelId)} if you want
+            to join the Degenz.
+          </>
+        ),
+        ephemeral: true,
+      },
+    };
+  },
   permissions: [],
   data: new SlashCommandBuilder()
     .setName("redpill")
