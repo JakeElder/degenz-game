@@ -4,7 +4,7 @@ import {
   SlashCommandBuilder,
   userMention,
 } from "@discordjs/builders";
-import { Bot } from "data/types";
+import { Achievement, Bot } from "data/types";
 import { Intents } from "discord.js";
 import Config from "config";
 import { Format } from "lib";
@@ -41,23 +41,41 @@ banker.commands.push({
     { id: Config.roleId("DEGEN"), type: 1, permission: true },
     { id: Config.roleId("ADMIN"), type: 1, permission: true },
   ],
-  restrict: async (i, channel) => {
-    if (channel.isBank) {
-      return false;
+  restrict: async (i, channel, user) => {
+    if (!channel.isBank) {
+      return {
+        restricted: true,
+        response: {
+          content: r(
+            <>
+              {userMention(i.user.id)}, come to{" "}
+              {channelMention(Config.channelId("BANK"))} if you want to transfer{" "}
+              {Format.token()}.
+            </>
+          ),
+          ephemeral: true,
+        },
+      };
     }
-    return {
-      restricted: true,
-      response: {
-        content: r(
-          <>
-            {userMention(i.user.id)}, come to{" "}
-            {channelMention(Config.channelId("BANK"))} if you want to transfer{" "}
-            {Format.token()}.
-          </>
-        ),
-        ephemeral: true,
-      },
-    };
+
+    if (!user.hasAchievement(Achievement.FINISHED_TRAINER)) {
+      return {
+        restricted: true,
+        response: {
+          content: r(
+            <>
+              {userMention(i.user.id)}, you need to complete your hacker battle
+              training before you can `/transfer` $GBT . Go to{" "}
+              {channelMention(Config.channelId("TRAINING_DOJO"))} and press the
+              "LFG" button to get started.
+            </>
+          ),
+          ephemeral: true,
+        },
+      };
+    }
+
+    return false;
   },
   data: new SlashCommandBuilder()
     .setName("transfer")

@@ -21,8 +21,11 @@ export abstract class CommandController {
 
     if (command.restrict) {
       const [channelDescriptor, user] = await Promise.all([
-        Channel.getDescriptor(i.channel!.id),
-        User.findOneOrFail({ where: { discordId: i.user.id } }),
+        Channel.getDescriptor(i.channelId),
+        User.findOneOrFail({
+          where: { discordId: i.user.id },
+          relations: ["achievements"],
+        }),
       ]);
       const r = await command.restrict(i, channelDescriptor, user);
       if (r) {
