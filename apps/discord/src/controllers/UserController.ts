@@ -290,11 +290,7 @@ export default class UserController {
 
     // Remove roles
     try {
-      await member.roles.remove([
-        Config.roleId("DEGEN"),
-        Config.roleId("PRISONER"),
-        Config.roleId("VERIFIED"),
-      ]);
+      await member.roles.remove(member.roles.valueOf());
     } catch (e) {
       // console.error(e);
     }
