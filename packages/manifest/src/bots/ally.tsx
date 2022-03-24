@@ -8,6 +8,7 @@ import { Bot } from "data/types";
 import { Intents } from "discord.js";
 import Config from "config";
 import { Format } from "lib";
+import { Achievement } from "data/types";
 
 const { FLAGS } = Intents;
 const { r } = Format;
@@ -38,6 +39,13 @@ ally.commands.push({
   restrict: async (i, channel, user) => {
     if (channel.isApartment || channel.isBunk) {
       return false;
+    }
+
+    if (user.hasAchievement(Achievement.JOINED_THE_DEGENZ)) {
+      return {
+        restricted: true,
+        response: { content: "What.. Again?", ephemeral: true },
+      };
     }
 
     return {

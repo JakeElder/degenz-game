@@ -55,11 +55,6 @@ export default class AllyCommandController extends CommandController {
   async redpill(i: CommandInteraction) {
     const member = i.member as GuildMember;
 
-    if (member.roles.cache.has(Config.roleId("DEGEN"))) {
-      await i.reply({ content: "What.. Again?", ephemeral: true });
-      return;
-    }
-
     i.reply({ content: "`REDPILL_TAKEN`", ephemeral: true });
     const user = await getUser(member.id);
     Events.emit("REDPILL_TAKEN", { user });
