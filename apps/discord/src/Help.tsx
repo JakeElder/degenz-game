@@ -538,7 +538,7 @@ export class Help {
           value: plannedCommands.map((c) => r(c)).join("\n"),
         },
       ],
-      image: { url: "https://s1.gifyu.com/images/final-tavern-gif.gif" },
+      image: { url: "https://s1.gifyu.com/images/final-tavern-b.gif" },
     });
   }
 }
