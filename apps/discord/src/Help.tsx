@@ -340,7 +340,7 @@ export class Help {
         },
       ],
       image: {
-        url: "https://s1.gifyu.com/images/bank-2.gif",
+        url: "https://s1.gifyu.com/images/bank-29240c53376fa766b.gif",
       },
     });
   }
@@ -377,8 +377,8 @@ export class Help {
     const commands = [
       <>**`/buy-shield`** - Buy a shield.</>,
       <>**`/buy-hack`** - Buy a hack.</>,
-      <>**`/sell-hack`** - Sell a shield.</>,
-      <>**`/sell-shield`** - Sell a hack.</>,
+      <>**`/sell-hack`** - Sell a hack.</>,
+      <>**`/sell-shield`** - Sell a shield.</>,
     ];
 
     return this.makeMessageOptions({
