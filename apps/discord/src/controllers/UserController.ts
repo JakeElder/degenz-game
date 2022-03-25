@@ -250,11 +250,8 @@ export default class UserController {
   }
 
   static async eject(memberId: GuildMember["id"]) {
-    console.log("ejecting 2");
     const admin = Global.bot("ADMIN");
-
     const user = await getUser(memberId);
-    const member = await UserController.getMember(memberId);
 
     // Check user exists in db
     if (user === null) {
@@ -291,6 +288,7 @@ export default class UserController {
 
     // Remove roles
     try {
+      const member = await UserController.getMember(memberId);
       await member.roles.remove(member.roles.valueOf());
     } catch (e) {
       // console.error(e);
@@ -298,8 +296,6 @@ export default class UserController {
 
     // Remove from db
     await User.remove(user);
-
-    console.log("removed from db");
 
     // Update entry persistent messages
     EnterTheProjectsController.update();
