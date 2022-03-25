@@ -250,6 +250,7 @@ export default class UserController {
   }
 
   static async eject(memberId: GuildMember["id"]) {
+    console.log("ejecting 2");
     const admin = Global.bot("ADMIN");
 
     const user = await getUser(memberId);
@@ -297,6 +298,8 @@ export default class UserController {
 
     // Remove from db
     await User.remove(user);
+
+    console.log("removed from db");
 
     // Update entry persistent messages
     EnterTheProjectsController.update();
