@@ -167,9 +167,8 @@ export default class EnterTheProjectsController {
       await i.editReply(
         r(
           <>
-            {um} - You have been assigned your own bunk in {prefix}
-            {dorm} dormitory. Go to {bunk}, your own private area to receive
-            further instructions.
+            {um} - You have been assigned a space in {prefix}
+            {dorm} dormitory. **GO TO** {bunk} to receive further instructions.
           </>
         )
       );

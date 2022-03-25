@@ -173,6 +173,14 @@ type GameEnteredDormitoryEvent = {
   };
 };
 
+type OrientationCompletedEvent = {
+  type: "ORIENTATION_COMPLETED";
+  data: {
+    user: User;
+    dormitory: Dormitory;
+  };
+};
+
 export type Event =
   | BotReadyEvent
   | CommandNotFoundEvent
@@ -196,7 +204,8 @@ export type Event =
   | FirstWorldChoiceEvent
   | GameEnteredApartmentEvent
   | GameEnteredDormitoryEvent
-  | DormitoryAllocatedEvent;
+  | DormitoryAllocatedEvent
+  | OrientationCompletedEvent;
 
 type EventHandler<E extends Event> = {
   [P in E["type"]]: (e: { type: E["type"]; data: E["data"] }) => void;
@@ -224,7 +233,8 @@ type DegenEmitterEvents = EventHandler<BotReadyEvent> &
   EventHandler<FirstWorldChoiceEvent> &
   EventHandler<GameEnteredApartmentEvent> &
   EventHandler<GameEnteredDormitoryEvent> &
-  EventHandler<DormitoryAllocatedEvent>;
+  EventHandler<DormitoryAllocatedEvent> &
+  EventHandler<OrientationCompletedEvent>;
 
 export type PickEvent<T extends keyof DegenEmitterEvents> = Parameters<
   DegenEmitterEvents[T]

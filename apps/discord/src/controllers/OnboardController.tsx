@@ -10,7 +10,34 @@ import {
 } from "discord.js";
 import { User, Achievement } from "data/db";
 import { Achievement as AchievementEnum } from "data/types";
-import { OnboardDialogAlly, OnboardDialogBB } from "../legacy/onboard-dialog";
+import {
+  AllyIntro,
+  ApartmentIssuance,
+  BBExit,
+  BBIntro,
+  ChannelListTraining,
+  DormAssignment,
+  GoExplore,
+  GoodBadTraining,
+  HelpPrompt,
+  InitiationCongrats,
+  IsHeGone,
+  MeetYourDormMates,
+  MoneyIssuance,
+  NarkCheck,
+  OneMoreThing,
+  ReadyForDormResponse,
+  RedpillPrompt,
+  RememberHelp,
+  SeeYa,
+  StatsPrompt,
+  StatsPromptPrep,
+  StatsRewardMessage,
+  UnderstandPrompt,
+  UnderstandResponse,
+  WelcomeComrade,
+  WorldIntro,
+} from "../legacy/onboard-dialog";
 import Utils from "../Utils";
 import { makeButton } from "../legacy/utils";
 import { transactBalance } from "../legacy/db";
@@ -21,7 +48,10 @@ import { Global } from "../Global";
 import { In } from "typeorm";
 import Events from "../Events";
 import DiscordBot from "../DiscordBot";
-import { userMention } from "@discordjs/builders";
+import { channelMention, userMention } from "@discordjs/builders";
+import delay from "delay";
+import { Format } from "lib";
+import WorldNotifier from "../WorldNotifier";
 
 const { r } = Utils;
 
@@ -101,6 +131,10 @@ export default class OnboardController {
       if (type === "FIRST_WORLD_CHOICE") {
         this.sendFirstWorldChoiceResponse(i);
       }
+
+      if (type === "READY_DORM_CHOICE") {
+        this.sendAreYouReadyResponse(i);
+      }
     });
   }
 
@@ -123,26 +157,21 @@ export default class OnboardController {
     const channel = await this.getChannel(user, bb);
     const member = await UserController.getMember(user.discordId);
 
-    await channel.send(r(<OnboardDialogBB part={1} member={member!} />));
+    await channel.send(r(<WelcomeComrade member={member} />));
     await Utils.delay(2500);
 
-    await channel.send(r(<OnboardDialogBB part={2} member={member!} />));
+    await channel.send(r(<BBIntro />));
     await Utils.delay(3000);
 
     await channel.send(
-      r(
-        <OnboardDialogBB
-          part={3}
-          member={member!}
-          channelId={channel.id}
-          type={user.primaryTenancy.type}
-        />
-      )
+      user.primaryTenancy.type === "APARTMENT"
+        ? r(<ApartmentIssuance channelId={channel.id} />)
+        : r(<DormAssignment channelId={channel.id} />)
     );
     await Utils.delay(3500);
 
     await channel.send({
-      content: r(<OnboardDialogBB part={4} member={member} />),
+      content: r(<UnderstandPrompt />),
       components: [
         new MessageActionRow().addComponents(
           makeButton(`UNDERSTAND_RESPONSE:YES:${member.id}`, undefined, "Yes"),
@@ -172,7 +201,6 @@ export default class OnboardController {
     }
 
     await message.edit({
-      content: r(<OnboardDialogBB part={4} member={member} />),
       components: [
         new MessageActionRow().addComponents(
           makeButton("yes", {
@@ -193,27 +221,21 @@ export default class OnboardController {
     ]);
 
     await channel.send({
-      content: r(
-        <OnboardDialogBB member={member} part={5} response={response} />
-      ),
+      content: r(<UnderstandResponse response={response} />),
     });
 
     await Utils.delay(2500);
     await channel.send({
-      content: r(
-        <OnboardDialogBB part={6} member={member} response={response} />
-      ),
+      content: r(<MoneyIssuance response={response} />),
     });
 
     await Utils.delay(3000);
     await channel.send({
-      content: r(<OnboardDialogBB part={7} member={member} />),
+      content: r(<GoodBadTraining />),
     });
 
     await Utils.delay(4000);
-    await channel.send({
-      content: r(<OnboardDialogBB part={8} member={member} />),
-    });
+    await channel.send({ content: r(<BBExit />) });
 
     await Utils.delay(1000);
     await OnboardController.switchOnboardNPCs(user);
@@ -232,7 +254,7 @@ export default class OnboardController {
 
     const shruggy = "\u00af\u005c\u005f\u0028\u30c4\u0029\u005f\u002f\u00af";
     await channel.send({
-      content: r(<OnboardDialogAlly part={1} member={member!} />),
+      content: r(<IsHeGone />),
       components: [
         new MessageActionRow().addComponents(
           makeButton(`IS_HE_GONE_RESPONSE:YES:${member.id}`, undefined, "Yes"),
@@ -267,7 +289,6 @@ export default class OnboardController {
     const shruggy = "\u00af\u005c\u005f\u0028\u30c4\u0029\u005f\u002f\u00af";
 
     await message.edit({
-      content: r(<OnboardDialogAlly part={1} member={member} />),
       components: [
         new MessageActionRow().addComponents(
           makeButton("yes", {
@@ -276,13 +297,13 @@ export default class OnboardController {
           }),
           makeButton("no", {
             disabled: true,
-            selected: i.customId === "NO",
+            selected: response === "NO",
           }),
           makeButton(
             "unsure",
             {
               disabled: true,
-              selected: i.customId === "UNSURE",
+              selected: response === "UNSURE",
             },
             shruggy
           )
@@ -292,16 +313,14 @@ export default class OnboardController {
 
     i.update({ fetchReply: false });
 
-    await channel.send(
-      r(<OnboardDialogAlly part={2} member={member} response={response} />)
-    );
+    await channel.send(r(<ChannelListTraining response={response} />));
     await Utils.delay(3000);
 
-    await channel.send(r(<OnboardDialogAlly member={member} part={3} />));
+    await channel.send(r(<AllyIntro />));
     await Utils.delay(4000);
 
     await channel.send({
-      content: r(<OnboardDialogAlly member={member} part={4} />),
+      content: r(<NarkCheck />),
       embeds: [
         new MessageEmbed().setImage(
           "https://s10.gifyu.com/images/red-pill.gif"
@@ -310,74 +329,80 @@ export default class OnboardController {
     });
     await Utils.delay(1000);
 
-    await channel.send(r(<OnboardDialogAlly member={member} part={5} />));
+    await channel.send(r(<RedpillPrompt />));
   }
 
   static async sendRedPillTakenResponse(user: User) {
     const ally = Global.bot("ALLY");
-
     await AchievementController.award(user, AchievementEnum.JOINED_THE_DEGENZ);
-
     await UserController.openWorld(user);
-
     await Utils.delay(3000);
 
     const channel = await this.getChannel(user, ally);
-    const member = await ally.getMember(user.discordId);
 
-    await channel.send(r(<OnboardDialogAlly member={member!} part={6} />));
+    await channel.send(r(<InitiationCongrats />));
     await Utils.delay(3000);
 
-    await channel.send(r(<OnboardDialogAlly member={member!} part={7} />));
+    await channel.send(r(<StatsPromptPrep />));
     await Utils.delay(2500);
 
-    await channel.send(r(<OnboardDialogAlly member={member!} part={8} />));
+    await channel.send(r(<StatsPrompt />));
   }
 
   static async sendStatsCheckedResponse(user: User) {
     const ally = Global.bot("ALLY");
     const channel = await this.getChannel(user, ally);
-    const member = await ally.getMember(user.discordId);
 
-    await channel.send(r(<OnboardDialogAlly member={member!} part={9} />));
+    await channel.send(r(<StatsRewardMessage />));
     await Utils.delay(2000);
 
-    await AchievementController.award(user!, AchievementEnum.STATS_CHECKED);
+    await AchievementController.award(user, AchievementEnum.STATS_CHECKED);
 
     await Utils.delay(3000);
 
-    await channel.send(r(<OnboardDialogAlly member={member!} part={10} />));
+    await channel.send(r(<OneMoreThing />));
     await Utils.delay(2000);
 
-    await channel.send(r(<OnboardDialogAlly member={member!} part={11} />));
+    await channel.send(r(<WorldIntro />));
     await Utils.delay(2500);
 
-    await channel.send(r(<OnboardDialogAlly member={member!} part={12} />));
+    await channel.send(r(<HelpPrompt />));
   }
 
   static async sendHelpRequestedResponse(user: User) {
     const ally = Global.bot("ALLY");
     const channel = await this.getChannel(user, ally);
-    const member = await ally.getMember(user.discordId);
 
     await Utils.delay(2000);
 
     await AchievementController.award(user, AchievementEnum.HELP_REQUESTED);
     await Utils.delay(2000);
 
-    await channel.send(r(<OnboardDialogAlly member={member!} part={13} />));
-    await Utils.delay(2000);
-
-    await OnboardController.sendNextPrompt(user);
+    if (user.primaryTenancy.type === "APARTMENT") {
+      await channel.send(r(<GoExplore />));
+      await Utils.delay(2000);
+      await OnboardController.sendNextPrompt(user);
+    } else {
+      await OnboardController.sendThreadDestructPrompt(user);
+    }
   }
 
   static async sendNextPrompt(user: User) {
     const ally = Global.bot("ALLY");
-    const channel = await this.getChannel(user, ally);
+    const channel = await ally.guild.channels.fetch(
+      user.primaryTenancy.discordChannelId
+    );
+
+    if (!channel || !channel.isText()) {
+      throw new Error("Channel not found");
+    }
 
     await channel.send({
-      content:
-        "There's lots to see and do here, so what do you feel like doing?",
+      content: `${
+        user.primaryTenancy.type === "DORMITORY"
+          ? `${userMention(user.discordId)} - `
+          : ""
+      }There's lots to see and do here in ${Format.worldName()}, so what do you feel like doing?`,
       components: [
         new MessageActionRow().addComponents(
           makeButton(
@@ -400,6 +425,116 @@ export default class OnboardController {
     });
   }
 
+  static async sendThreadDestructPrompt(user: User) {
+    const ally = Global.bot("ALLY");
+    const channel = await this.getChannel(user, ally);
+
+    await Utils.delay(1000);
+
+    await channel.send({
+      content: r(
+        <MeetYourDormMates
+          emoji={user.dormitoryTenancy.dormitory.activeEmoji}
+        />
+      ),
+      components: [
+        new MessageActionRow().addComponents(
+          makeButton(
+            `READY_DORM_CHOICE:YES:${user.discordId}`,
+            undefined,
+            "Yea"
+          ),
+          makeButton(`READY_DORM_CHOICE:NO:${user.discordId}`, undefined, "No")
+        ),
+      ],
+    });
+  }
+
+  static async sendAreYouReadyResponse(i: ButtonInteraction) {
+    const { member, message, channel } = await this.getInteractionProps(i);
+    const user = await User.findOneOrFail({ where: { discordId: i.user.id } });
+
+    const [_key, response, memberId] = i.customId.split(":") as [
+      string,
+      "YES" | "NO",
+      string
+    ];
+
+    if (member.id !== memberId) {
+      await i.reply({
+        content: `${userMention(member.id)} - Go press your own buttons.`,
+        ephemeral: true,
+      });
+      return;
+    }
+
+    await message.edit({
+      components: [
+        new MessageActionRow().addComponents(
+          makeButton("yes", {
+            disabled: true,
+            selected: response === "YES",
+          }),
+          makeButton("no", {
+            disabled: true,
+            selected: response === "NO",
+          })
+        ),
+      ],
+    });
+
+    i.update({ fetchReply: false });
+
+    const m = await channel.send(
+      r(
+        <ReadyForDormResponse
+          response={response}
+          dormChannelId={user.dormitoryTenancy.dormitory.discordChannelId}
+          seconds={10}
+        />
+      )
+    );
+
+    for (let i = 1; i < 10; i++) {
+      await delay(1000);
+      await m.edit(
+        r(
+          <ReadyForDormResponse
+            response={response}
+            dormChannelId={user.dormitoryTenancy.dormitory.discordChannelId}
+            seconds={10 - i}
+          />
+        )
+      );
+    }
+
+    await this.completeDormOnboarding(user);
+  }
+
+  static async completeDormOnboarding(user: User) {
+    await WorldNotifier.logToChannel(
+      user.dormitoryTenancy.dormitory.symbol,
+      "ALLY",
+      "ORIENTATION_COMPLETED",
+      r(
+        <>
+          {userMention(user.discordId)}Completed onboarding {"\u{1f389}"}.
+          **WELCOME** to our new{" "}
+          {channelMention(user.primaryTenancy.discordChannelId)} dormitory
+          **DEGEN** {"\u{1f44a}\u{1f44a}"}.
+        </>
+      )
+    );
+    const admin = Global.bot("ADMIN");
+    const thread = await admin.guild.channels.fetch(
+      user.dormitoryTenancy.bunkThreadId
+    );
+    if (thread && thread.isText()) {
+      await thread.delete();
+    }
+    await this.sendNextPrompt(user);
+  }
+
   static async sendFirstWorldChoiceResponse(i: ButtonInteraction) {
     const { member, channel, message } = await this.getInteractionProps(i);
 
@@ -418,8 +553,6 @@ export default class OnboardController {
     }
 
     await message.edit({
-      content:
-        "There's lots to see and do here, so what do you feel like doing?",
       components: [
         new MessageActionRow().addComponents(
           makeButton("fight", {
@@ -437,17 +570,31 @@ export default class OnboardController {
         ),
       ],
     });
-    i.update({ fetchReply: false });
-
-    await channel.send(r(<FirstActivityReply choice={response} />));
-    await Utils.delay(3000);
-
-    await channel.send(r(<OnboardDialogAlly member={member!} part={14} />));
-    await Utils.delay(2500);
-
-    await channel.send(r(<OnboardDialogAlly member={member!} part={15} />));
 
     const user = await User.findOneOrFail({ where: { discordId: memberId } });
+
+    if (user.dormitoryTenancy) {
+      await i.reply({
+        content: r(<FirstActivityReply choice={response} />),
+        ephemeral: true,
+      });
+      await Utils.delay(3000);
+
+      await i.followUp({ content: r(<RememberHelp />), ephemeral: true });
+      await Utils.delay(2500);
+
+      await i.followUp({ content: r(<SeeYa />), ephemeral: true });
+    } else {
+      i.update({ fetchReply: false });
+      await channel.send(r(<FirstActivityReply choice={response} />));
+      await Utils.delay(3000);
+
+      await channel.send(r(<RememberHelp />));
+      await Utils.delay(2500);
+
+      await channel.send(r(<SeeYa />));
+    }
+
     Events.emit("FIRST_WORLD_CHOICE", { user, choice: response });
   }
 

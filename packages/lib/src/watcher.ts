@@ -85,9 +85,11 @@ function reportDiagnostic(dir: string, diagnostic: ts.Diagnostic) {
     console.log(
       `${chalk.red("[error]")} ${chalk.blue(file)}:${chalk.yellow(
         line
-      )}:${chalk.yellow(character)} ${chalk.gray("\u21db")} ${
-        diagnostic.messageText
-      }`
+      )}:${chalk.yellow(character)} ${chalk.gray("\u21db")} ${JSON.stringify(
+        diagnostic.messageText,
+        null,
+        2
+      )}`
     );
     // console.log(line, character);
     // console.log("file");
