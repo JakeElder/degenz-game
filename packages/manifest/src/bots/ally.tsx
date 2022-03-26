@@ -37,7 +37,7 @@ ally.commands.push({
 ally.commands.push({
   symbol: "RED_PILL",
   restrict: async (i, channel, user) => {
-    if (channel.isApartment || channel.isBunk) {
+    if (channel.isApartment || channel.isOnboardingThread) {
       return false;
     }
 

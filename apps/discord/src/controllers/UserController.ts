@@ -21,7 +21,21 @@ import {
 import { Global } from "../Global";
 import EnterTheProjectsController from "./EnterTheProjectsController";
 import EnterTheSheltersController from "./EnterTheSheltersController";
-import ResidenceController from "./ResidenceController";
+
+type FailedApartmentInitResult = {
+  success: false;
+  code: string;
+};
+
+type SuccessfulApartmentInitResult = {
+  success: true;
+  code: string;
+  user: User;
+};
+
+type ApartmentInitResult =
+  | SuccessfulApartmentInitResult
+  | FailedApartmentInitResult;
 
 export default class UserController {
   static async add(member: GuildMember) {
@@ -37,7 +51,7 @@ export default class UserController {
     memberId: GuildMember["id"],
     onboard: boolean = true,
     districtSymbol: DistrictSymbol
-  ) {
+  ): Promise<ApartmentInitResult> {
     let [member, user] = await Promise.all([
       UserController.getMember(memberId),
       User.findOne({ where: { discordId: memberId } }),
@@ -172,7 +186,7 @@ export default class UserController {
     user.inGame = true;
     user.dormitoryTenancy = DormitoryTenancy.create({
       dormitory,
-      bunkThreadId: thread.id,
+      onboardingThreadId: thread.id,
     });
 
     const role = await Role.findOneOrFail({
@@ -281,16 +295,20 @@ export default class UserController {
     // Remove dorm tenancy
     try {
       const tenancy = user.dormitoryTenancy;
-      const { bunkThreadId } = tenancy;
-      const discordChannelId = tenancy.dormitory.discordChannelId;
-      const dormChannel = await admin.getTextChannel(discordChannelId);
-      const thread = await dormChannel.threads.fetch(bunkThreadId);
 
-      await Promise.all([
-        thread?.delete(),
-        dormChannel.permissionOverwrites.delete(user.discordId),
-        user.dormitoryTenancy.remove(),
-      ]);
+      if (tenancy) {
+        const { onboardingThreadId } = tenancy;
+        const discordChannelId = tenancy.dormitory.discordChannelId;
+        const dormChannel = await admin.getTextChannel(discordChannelId);
+        const thread = await dormChannel.threads.fetch(onboardingThreadId!);
+
+        try {
+          thread!.delete();
+        } catch (e) {}
+
+        dormChannel.permissionOverwrites.delete(user.discordId);
+        await tenancy.remove();
+      }
     } catch (e) {
       // console.error(e);
     }
@@ -359,18 +377,13 @@ export default class UserController {
       }
     );
 
-    const primaryTenancy = user.primaryTenancy;
-    const residence = await admin.getTextChannel(
-      primaryTenancy.discordChannelId
-    );
-
     await Promise.all([
       user.imprison({
         cellDiscordChannelId: cell.id,
         cellNumber: number,
         entryRoleIds,
       }),
-      ResidenceController.remove(residence, user.discordId),
+      this.hideResidencies(user),
       member!.roles.remove(entryRoleIds),
     ]);
 
@@ -419,37 +432,51 @@ export default class UserController {
     );
   }
 
+  static async hideResidencies(user: User) {
+    const admin = Global.bot("ADMIN");
+    if (user.primaryTenancy.type === "APARTMENT") {
+      const residence = await admin.getTextChannel(
+        user.primaryTenancy.discordChannelId
+      );
+      residence.permissionOverwrites.delete(user.discordId);
+    }
+  }
+
+  static async showResidencies(user: User) {
+    const admin = Global.bot("ADMIN");
+    if (user.primaryTenancy.type === "APARTMENT") {
+      const residence = await admin.getTextChannel(
+        user.primaryTenancy.discordChannelId
+      );
+      residence.permissionOverwrites.create(user.discordId, {
+        VIEW_CHANNEL: true,
+      });
+    }
+  }
+
   static async release(memberId: GuildMember["id"]) {
     const admin = Global.bot("ADMIN");
-
     const member = await UserController.getMember(memberId);
-    const user = await getUser(member!.id);
+    const user = await getUser(member.id);
+
+    if (!member) {
+      throw new Error("Member not found");
+    }
 
     if (!user.imprisoned) {
       return { success: false, code: "NOT_IMPRISONED" };
     }
 
-    const community = await admin.getTextChannel(
-      Config.categoryId("COMMUNITY")
-    );
-
-    const residence = await admin.getTextChannel(
-      user.primaryTenancy.discordChannelId
-    );
-
     await Promise.all([
-      residence.permissionOverwrites.create(member!.id, { VIEW_CHANNEL: true }),
-      community.permissionOverwrites.create(member!.id, { VIEW_CHANNEL: null }),
-      member!.roles.add(user.imprisonment.entryRoleIds),
+      this.showResidencies(user),
+      member.roles.add(user.imprisonment.entryRoleIds),
     ]);
 
-    await member!.roles.remove(Config.roleId("PRISONER"));
+    const { imprisonment } = user;
 
-    const cellChannel = await admin.getTextChannel(
-      user.imprisonment.cellDiscordChannelId
-    );
-    await cellChannel.delete();
-    await user.imprisonment.softRemove();
+    await member.roles.remove(Config.roleId("PRISONER"));
+    const cell = await admin.getTextChannel(imprisonment.cellDiscordChannelId);
+    await Promise.all([cell.delete(), imprisonment.softRemove()]);
 
     return { success: true, code: "USER_RELEASED" };
   }

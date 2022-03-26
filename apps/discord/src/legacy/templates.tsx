@@ -2,7 +2,6 @@ import React from "react";
 import { Channel as DiscordChannel, GuildMember } from "discord.js";
 import { channelMention, userMention } from "@discordjs/builders";
 import emoji from "node-emoji";
-import Config from "config";
 import { Format } from "lib";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -144,63 +143,3 @@ export const FailedBribeReply = ({
     </>
   );
 };
-
-//////////////////////////////////////////////////////////////////////////////////
-//// Ivan 6000
-//////////////////////////////////////////////////////////////////////////////////
-
-export const FirstActivityReply = ({
-  choice,
-}: {
-  choice: "FIGHT" | "GAMBLE" | "SHOP";
-}) => {
-  if (choice === "FIGHT") {
-    return (
-      <>
-        If you want to learn to hacker battle, go and see{" "}
-        <User id={Config.clientId("SENSEI")} /> in the
-        <Channel id={Config.channelId("TRAINING_DOJO")} /> channel. Just press
-        the "LFG" button when you get in there.
-      </>
-    );
-  }
-
-  if (choice === "GAMBLE") {
-    return (
-      <>
-        If you want to gamble, go and see{" "}
-        <User id={Config.clientId("TOSSER")} /> in{" "}
-        <Channel id={Config.channelId("TOSS_HOUSE")} /> channel. Remember to
-        type the `/help` command when you get there.
-      </>
-    );
-  }
-
-  if (choice === "SHOP") {
-    return (
-      <>
-        If you want to shop, go and see{" "}
-        <User id={Config.clientId("MART_CLERK")} /> in{" "}
-        <Channel id={Config.channelId("MART")} /> channel. Remember to type the
-        `/help` command when you get there.
-      </>
-    );
-  }
-
-  return null;
-};
-
-//////////////////////////////////////////////////////////////////////////////////
-//// Big Brother
-//////////////////////////////////////////////////////////////////////////////////
-
-//export const TokenIssuanceAnnouncement = ({ amount }: { amount: number }) => {
-//  return (
-//    <>
-//      {emoji.get("moneybag")} **ATTENTION @everyone **. Big Brother has been
-//      gracious enough to issue everyone with **`{amount}`{" "}
-//      {currency({ bold: false })}**. Check your balance by using the `/stats`
-//      command now. Spend them wisely, won't you.
-//    </>
-//  );
-//};

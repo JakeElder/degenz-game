@@ -25,8 +25,8 @@ export class DormitoryTenancy extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true })
-  bunkThreadId: string;
+  @Column({ type: "varchar", nullable: true })
+  onboardingThreadId: string | null;
 
   @ManyToOne(() => Dormitory, (dormitory) => dormitory.tenancies, {
     eager: true,

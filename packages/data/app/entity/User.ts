@@ -150,12 +150,34 @@ export class User extends BaseEntity {
     return this.imprisonments[0].cellDiscordChannelId;
   }
 
-  public get primaryTenancy() {
-    if (!this.apartmentTenancies) {
+  public get notificationChannelId() {
+    if (
+      this.dormitoryTenancy === undefined ||
+      this.apartmentTenancies === undefined
+    ) {
       throw new Error("Tenancies not loaded");
     }
 
-    if (this.apartmentTenancies.length) {
+    if (this.apartmentTenancies.length > 0) {
+      return this.apartmentTenancies[0].discordChannelId;
+    }
+
+    if (this.dormitoryTenancy.onboardingThreadId) {
+      return this.dormitoryTenancy.onboardingThreadId;
+    }
+
+    return this.dormitoryTenancy.dormitory.discordChannelId;
+  }
+
+  public get primaryTenancy() {
+    if (
+      this.dormitoryTenancy === undefined ||
+      this.apartmentTenancies === undefined
+    ) {
+      throw new Error("Tenancies not loaded");
+    }
+
+    if (this.apartmentTenancies.length > 0) {
       return this.apartmentTenancies[0];
     }
 

@@ -43,7 +43,7 @@ export class Channel {
       ] = await Promise.all([
         Imprisonment.findOne({ where: { cellDiscordChannelId: channelId } }),
         ApartmentTenancy.findOne({ where: { discordChannelId: channelId } }),
-        DormitoryTenancy.findOne({ where: { bunkThreadId: channelId } }),
+        DormitoryTenancy.findOne({ where: { onboardingThreadId: channelId } }),
         Dormitory.findOne({ where: { discordChannelId: channelId } }),
         admin.getTextChannel(channelId),
       ]);
@@ -51,13 +51,13 @@ export class Channel {
       const isCommunity = communityChannelIds.includes(channelId);
       const isApartment = !!apartmentTenancy;
       const isDormitory = !!dormitory;
-      const isBunk = !!dormitoryTenancy;
+      const isOnboardingThread = !!dormitoryTenancy;
       const isCell = !!imprisonment;
       const isInPrison = isCell || channelId === Config.channelId("GEN_POP");
       const isInGame =
         isApartment ||
         isDormitory ||
-        isBunk ||
+        isOnboardingThread ||
         isInPrison ||
         gameChannelIds.includes(channelId);
 
@@ -67,7 +67,7 @@ export class Channel {
         isCommunity,
         isApartment,
         isDormitory,
-        isBunk,
+        isOnboardingThread,
         isCell,
         isInPrison,
         isInGame,

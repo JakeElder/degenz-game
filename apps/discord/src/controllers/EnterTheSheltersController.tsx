@@ -159,7 +159,9 @@ export default class EnterTheProjectsController {
       const dorm = channelMention(
         Config.channelId(user.dormitoryTenancy.dormitory.symbol)
       );
-      const bunk = channelMention(user.dormitoryTenancy.bunkThreadId);
+      const onboardingThread = channelMention(
+        user.dormitoryTenancy.onboardingThreadId!
+      );
       const prefix = user.dormitoryTenancy.dormitory.symbol.startsWith("THE")
         ? ""
         : "the ";
@@ -168,7 +170,8 @@ export default class EnterTheProjectsController {
         r(
           <>
             {um} - You have been assigned a space in {prefix}
-            {dorm} dormitory. **GO TO** {bunk} to receive further instructions.
+            {dorm} dormitory. **GO TO** {onboardingThread} to receive further
+            instructions.
           </>
         )
       );

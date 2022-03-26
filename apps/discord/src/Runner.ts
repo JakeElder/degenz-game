@@ -13,6 +13,7 @@ import UserController from "./controllers/UserController";
 import WelcomeRoomController from "./controllers/WelcomeRoomController";
 import { LeaderboardController } from "./controllers/LeaderboardController";
 import MartClerkCommandController from "./command-controllers/MartClerkCommandController";
+import NextStepController from "./controllers/NextStepsController";
 
 export default class Runner {
   constructor(private bots: DiscordBot[]) {
@@ -46,6 +47,11 @@ export default class Runner {
       }
 
       if (e.data.bot.symbol === "MART_CLERK") {
+        MartClerkCommandController.init();
+      }
+
+      if (e.data.bot.symbol === "ALLY") {
+        NextStepController.init();
         MartClerkCommandController.init();
       }
     });

@@ -63,14 +63,6 @@ export async function getUserByApartment(id: string) {
   return t?.user;
 }
 
-export async function getUserByBunk(id: string) {
-  const t = await DormitoryTenancy.findOne({
-    relations: ["user"],
-    where: { bunkThreadId: id },
-  });
-  return t?.user;
-}
-
 export async function eatItem(
   itemSymbol: MartItem["symbol"],
   memberId: User["discordId"]

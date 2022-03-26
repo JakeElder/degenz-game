@@ -23,9 +23,7 @@ export default class AchievementController {
       return;
     }
 
-    const apartment = await admin.getTextChannel(
-      user.primaryTenancy.discordChannelId
-    );
+    const residence = await admin.getTextChannel(user.notificationChannelId);
     const member = await admin.getMember(user.discordId);
 
     await Promise.all([
@@ -53,6 +51,6 @@ export default class AchievementController {
       );
     }
 
-    await apartment.send({ embeds: [embed] });
+    await residence.send({ embeds: [embed] });
   }
 }

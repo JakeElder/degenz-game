@@ -26,8 +26,7 @@ export const ApartmentIssuance = (props: { channelId: string }) => (
 
 export const DormAssignment = (props: { channelId: string }) => (
   <>
-    This thread, <Channel id={props.channelId} /> is your orientation, so **PAY
-    ATTENTION**.
+    This thread - <Channel id={props.channelId} /> is your orientation.
   </>
 );
 
@@ -76,8 +75,8 @@ export const GoodBadTraining = () => (
 
 export const BBExit = () => (
   <>
-    Now, I'm leaving your private apartment, but *remember*.. I'll be keeping an
-    eye on you {emoji.get("eye")}.
+    Now, I'm **leaving** this channel, but *remember*.. I'll be keeping an eye
+    on you citizen {emoji.get("eye")}.
   </>
 );
 

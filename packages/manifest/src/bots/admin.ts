@@ -208,6 +208,14 @@ admin.commands.push({
     .addSubcommand((subcommand) =>
       subcommand.setName("close-shelters").setDescription(`Close the shelters.`)
     )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("send-next-steps")
+        .setDescription(`Sends the next steps message.`)
+        .addUserOption((option) =>
+          option.setName("member").setDescription("The member to address")
+        )
+    )
     .toJSON(),
 });
 

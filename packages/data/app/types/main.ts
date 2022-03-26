@@ -321,7 +321,7 @@ export type ChannelDescriptor = {
   isCommunity: boolean;
   isApartment: boolean;
   isDormitory: boolean;
-  isBunk: boolean;
+  isOnboardingThread: boolean;
   isCell: boolean;
   isInPrison: boolean;
   isInGame: boolean;

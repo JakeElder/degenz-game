@@ -24,7 +24,7 @@ export class Help {
       return this.makeDormitoryMessage(params);
     }
 
-    if (channel.isBunk || channel.isApartment) {
+    if (channel.isOnboardingThread || channel.isApartment) {
       return this.makeTenancyMessage(params);
     }
 
@@ -169,15 +169,26 @@ export class Help {
       );
     }
 
+    const description = channel.isApartment
+      ? r(
+          <>
+            {channelMention(channel.id)} is your own personal space.. *For
+            now*.. Safe from Big Brother.. **Most** of the time. He's been known
+            to occasionally make surprise appearances and shake Degenz down.
+          </>
+        )
+      : r(
+          <>
+            {channelMention(channel.id)} is your onboarding thread. Now you're a
+            Degen, once you've finished learning about the game you'll be
+            greeted in to your dormitory and start working your way up the Degen
+            ranks.
+          </>
+        );
+
     return this.makeMessageOptions({
       title: channel.name,
-      description: r(
-        <>
-          {channelMention(channel.id)} is your own personal space.. *For now*..
-          Safe from Big Brother.. **Most** of the time. He's been known to
-          occasionally make surprise appearances and shake Degenz down.
-        </>
-      ),
+      description,
       fields: [
         { name: "Commands", value: commands.map((c) => r(c)).join("\n") },
         {

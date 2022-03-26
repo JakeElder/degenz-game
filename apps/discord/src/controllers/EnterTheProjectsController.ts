@@ -151,12 +151,13 @@ export default class EnterTheProjectsController {
     );
 
     if (res.success) {
+      const tenancy = res.user.primaryTenancy as ApartmentTenancy;
       Events.emit("GAME_ENTERED_APARTMENT", {
         user: res.user!,
-        district: (res.user!.primaryTenancy as ApartmentTenancy).district,
+        district: tenancy.district,
       });
       const user = userMention(i.user.id);
-      const channel = channelMention(res.user!.primaryTenancy.discordChannelId);
+      const channel = channelMention(res.user.primaryTenancy.discordChannelId);
 
       await i.editReply({
         content: `${user} - Go to ${channel}, your new *private* apartment to receive further instructions.`,

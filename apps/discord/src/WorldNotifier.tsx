@@ -39,7 +39,7 @@ export default class WorldNotifier {
     message: string
   ) {
     const channel = await this.getChannel(botSymbol, channelSymbol);
-    await channel.send(`\`${e}\` ${message}`);
+    return channel.send(`\`${e}\` ${message}`);
   }
 
   static async balanceChecked(e: PickEvent<"BALANCE_CHECKED">) {

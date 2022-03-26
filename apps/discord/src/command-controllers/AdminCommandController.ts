@@ -1,10 +1,15 @@
-import { CommandInteraction, GuildBasedChannel, GuildMember } from "discord.js";
+import {
+  CommandInteraction,
+  GuildBasedChannel,
+  GuildMember,
+  TextBasedChannel,
+} from "discord.js";
 import { AppState, User } from "data/db";
 import { Format } from "lib";
 import pluralize from "pluralize";
 import { ILike } from "typeorm";
 import prettyjson from "prettyjson";
-import { getUser, issueTokens } from "../legacy/db";
+import { issueTokens } from "../legacy/db";
 import UserController from "../controllers/UserController";
 import { CommandController } from "../CommandController";
 import { DistrictSymbol } from "data/types";
@@ -12,6 +17,7 @@ import AppController from "../controllers/AppController";
 import { Global } from "../Global";
 import EnterTheProjectsController from "../controllers/EnterTheProjectsController";
 import EnterTheSheltersController from "../controllers/EnterTheSheltersController";
+import NextStepController from "../controllers/NextStepsController";
 
 export default class AllyCommandController extends CommandController {
   async respond(
@@ -184,6 +190,16 @@ export default class AllyCommandController extends CommandController {
 
   async admin_closeShelters(i: CommandInteraction) {
     await this.setSheltersOpenState(i, false);
+  }
+
+  async admin_sendNextSteps(i: CommandInteraction) {
+    const member =
+      i.options.getUser("member", false) || (i.member as GuildMember);
+    const user = await User.findOneOrFail({ where: { discordId: member.id } });
+    this.respond(i, `MESSAGE_SENT`, "SUCCESS");
+    const ally = Global.bot("ALLY");
+    const channel = await ally.guild.channels.fetch(i.channelId);
+    await NextStepController.send(channel as TextBasedChannel, user);
   }
 
   async setSheltersOpenState(i: CommandInteraction, areOpen: boolean) {

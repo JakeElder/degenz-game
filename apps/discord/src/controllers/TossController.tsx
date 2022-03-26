@@ -66,11 +66,12 @@ export default class TossController {
 
     // Handle insufficient balance
     if (!g.challenger.balanceAvailable || !g.challengee.balanceAvailable) {
-      await i.reply(
-        !g.challenger.balanceAvailable
+      await i.reply({
+        content: !g.challenger.balanceAvailable
           ? `You don't have ${g.amount} to bet.`
-          : `**${g.challengee.member.displayName}** doesn't have ${g.amount} to gamble with. \u{1f62d} \u{1f602}`
-      );
+          : `**${g.challengee.member.displayName}** doesn't have ${g.amount} to gamble with. \u{1f62d} \u{1f602}`,
+        ephemeral: true,
+      });
       return {
         success: false,
         error: "INSUFFICIENT_BALANCE_INIT",
@@ -173,7 +174,7 @@ export default class TossController {
       return { success: true, data: { game: g } };
     }
 
-    // Handle bets agains other players
+    // Handle bets against other players
     await (async () => {
       const residence = await ResidenceController.get(g.challengee.user!);
       await ResidenceController.add(residence, Config.clientId("TOSSER"));
@@ -233,7 +234,7 @@ export default class TossController {
       await acceptedResponse.update({ fetchReply: false });
 
       if (!g.accepted) {
-        challengeMessage.reply("You chickened out!");
+        challengeMessage.reply({ content: "You chickened out!" });
       }
     } catch (e) {
       await challengeMessage.edit({
@@ -283,11 +284,12 @@ export default class TossController {
     g.challengee.balanceAvailable = g.challengee.user!.gbt >= g.amount;
 
     if (!g.challenger.balanceAvailable || !g.challengee.balanceAvailable) {
-      await i.reply(
-        !g.challenger.balanceAvailable
+      await i.reply({
+        content: !g.challenger.balanceAvailable
           ? `You don't have ${g.amount} to bet.`
-          : `**${g.challengee.member.displayName}** doesn't have ${g.amount} to gamble with. \u{1f62d} \u{1f602}`
-      );
+          : `**${g.challengee.member.displayName}** doesn't have ${g.amount} to gamble with. \u{1f62d} \u{1f602}`,
+        ephemeral: true,
+      });
       return {
         success: false,
         error: "INSUFFICIENT_BALANCE_INIT",
