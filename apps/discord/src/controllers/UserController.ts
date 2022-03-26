@@ -251,7 +251,16 @@ export default class UserController {
 
   static async eject(memberId: GuildMember["id"]) {
     const admin = Global.bot("ADMIN");
-    const user = await getUser(memberId);
+    const user = await User.findOne({
+      where: { discordId: memberId },
+      relations: [
+        "apartmentTenancies",
+        "dormitoryTenancy",
+        "imprisonments",
+        "achievements",
+        "martItemOwnerships",
+      ],
+    });
 
     // Check user exists in db
     if (user === null) {
