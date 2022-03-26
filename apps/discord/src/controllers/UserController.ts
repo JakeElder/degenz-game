@@ -263,7 +263,7 @@ export default class UserController {
     });
 
     // Check user exists in db
-    if (user === null) {
+    if (!user) {
       return { success: false, code: "USER_NOT_FOUND" };
     }
 
