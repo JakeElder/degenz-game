@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import { Bot, TossGame } from "data/types";
+import { Achievement, Bot, TossGame } from "data/types";
 import { User, MartItem, District, Dormitory } from "data/db";
 
 type EnterEvent = {
@@ -181,6 +181,30 @@ type OrientationCompletedEvent = {
   };
 };
 
+type AchievementAwardedEvent = {
+  type: "ACHIEVEMENT_AWARDED";
+  data: {
+    user: User;
+    achievement: Achievement;
+  };
+};
+
+type DormReadyButtonPressedEvent = {
+  type: "DORM_READY_BUTTON_PRESSED";
+  data: {
+    user: User;
+    response: "YES" | "NO";
+  };
+};
+
+type OnboardingThreadPurgedEvent = {
+  type: "ONBOARDING_THREAD_PURGED";
+  data: {
+    user: User;
+    redpilled: "YES" | "NO";
+  };
+};
+
 export type Event =
   | BotReadyEvent
   | CommandNotFoundEvent
@@ -205,7 +229,10 @@ export type Event =
   | GameEnteredApartmentEvent
   | GameEnteredDormitoryEvent
   | DormitoryAllocatedEvent
-  | OrientationCompletedEvent;
+  | OrientationCompletedEvent
+  | AchievementAwardedEvent
+  | DormReadyButtonPressedEvent
+  | OnboardingThreadPurgedEvent;
 
 type EventHandler<E extends Event> = {
   [P in E["type"]]: (e: { type: E["type"]; data: E["data"] }) => void;
@@ -234,7 +261,10 @@ type DegenEmitterEvents = EventHandler<BotReadyEvent> &
   EventHandler<GameEnteredApartmentEvent> &
   EventHandler<GameEnteredDormitoryEvent> &
   EventHandler<DormitoryAllocatedEvent> &
-  EventHandler<OrientationCompletedEvent>;
+  EventHandler<OrientationCompletedEvent> &
+  EventHandler<AchievementAwardedEvent> &
+  EventHandler<DormReadyButtonPressedEvent> &
+  EventHandler<OnboardingThreadPurgedEvent>;
 
 export type PickEvent<T extends keyof DegenEmitterEvents> = Parameters<
   DegenEmitterEvents[T]

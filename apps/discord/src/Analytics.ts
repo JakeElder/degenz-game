@@ -174,4 +174,28 @@ export default class Analytics {
       district: e.data.dormitory.symbol,
     });
   }
+
+  static achievementAwarded(e: PickEvent<"ACHIEVEMENT_AWARDED">) {
+    this.mixpanel.track(capitalCase(e.type), {
+      distinct_id: e.data.user.discordId,
+      user_display_name: e.data.user.displayName,
+      achievement: e.data.achievement,
+    });
+  }
+
+  static dormReadyButtonPressed(e: PickEvent<"DORM_READY_BUTTON_PRESSED">) {
+    this.mixpanel.track(capitalCase(e.type), {
+      distinct_id: e.data.user.discordId,
+      user_display_name: e.data.user.displayName,
+      response: e.data.response,
+    });
+  }
+
+  static onboardingThreadPurged(e: PickEvent<"ONBOARDING_THREAD_PURGED">) {
+    this.mixpanel.track(capitalCase(e.type), {
+      distinct_id: e.data.user.discordId,
+      user_display_name: e.data.user.displayName,
+      redpilled: e.data.redpilled,
+    });
+  }
 }

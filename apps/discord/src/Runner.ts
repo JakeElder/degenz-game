@@ -159,6 +159,18 @@ export default class Runner {
     Events.on("FIRST_WORLD_CHOICE", (e) => {
       Analytics.firstWorldChoice(e);
     });
+
+    Events.on("ACHIEVEMENT_AWARDED", (e) => {
+      Analytics.achievementAwarded(e);
+    });
+
+    Events.on("DORM_READY_BUTTON_PRESSED", (e) => {
+      Analytics.dormReadyButtonPressed(e);
+    });
+
+    Events.on("ONBOARDING_THREAD_PURGED", (e) => {
+      Analytics.onboardingThreadPurged(e);
+    });
   }
 
   get(symbol: BotSymbol) {

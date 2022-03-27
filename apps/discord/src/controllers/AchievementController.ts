@@ -4,6 +4,7 @@ import { Achievement } from "data/types";
 import { addAchievement, transactBalance } from "../legacy/db";
 import { currency } from "../legacy/utils";
 import { Global } from "../Global";
+import Events from "../Events";
 
 export default class AchievementController {
   static descriptions: Record<Achievement, string> = {
@@ -52,5 +53,6 @@ export default class AchievementController {
     }
 
     await residence.send({ embeds: [embed] });
+    Events.emit("ACHIEVEMENT_AWARDED", { user, achievement });
   }
 }

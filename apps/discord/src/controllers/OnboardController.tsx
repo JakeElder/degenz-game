@@ -49,6 +49,7 @@ import WorldNotifier from "../WorldNotifier";
 import NextStepController from "./NextStepsController";
 import Interaction from "../Interaction";
 import random from "random";
+import Events from "../Events";
 
 const { r } = Utils;
 
@@ -378,6 +379,8 @@ export default class OnboardController {
       string
     ];
 
+    Events.emit("DORM_READY_BUTTON_PRESSED", { user, response });
+
     if (member.id !== memberId) {
       await i.reply({
         content: `${userMention(member.id)} - Go press your own buttons.`,
@@ -414,7 +417,6 @@ export default class OnboardController {
     );
 
     const { dormitory } = user.dormitoryTenancy;
-
     const prefix = dormitory.symbol.startsWith("THE") ? "" : "the ";
 
     await Promise.all([
@@ -524,8 +526,10 @@ export default class OnboardController {
     const { user } = tenancy;
 
     if (user.hasAchievement(AchievementEnum.JOINED_THE_DEGENZ)) {
+      Events.emit("ONBOARDING_THREAD_PURGED", { user, redpilled: "YES" });
       await thread.delete();
     } else {
+      Events.emit("ONBOARDING_THREAD_PURGED", { user, redpilled: "NO" });
       await UserController.eject(user.discordId);
     }
   }
