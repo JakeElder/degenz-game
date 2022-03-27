@@ -18,6 +18,8 @@ import { Global } from "../Global";
 import EnterTheProjectsController from "../controllers/EnterTheProjectsController";
 import EnterTheSheltersController from "../controllers/EnterTheSheltersController";
 import NextStepController from "../controllers/NextStepsController";
+import { Channel } from "../Channel";
+import OnboardController from "../controllers/OnboardController";
 
 export default class AllyCommandController extends CommandController {
   async respond(
@@ -212,6 +214,16 @@ export default class AllyCommandController extends CommandController {
       `SHELTERS_${areOpen ? "OPENED" : "CLOSED"}`,
       "SUCCESS"
     );
+  }
+
+  async admin_purge(i: CommandInteraction) {
+    const c = await Channel.getDescriptor(i.channelId);
+    if (!c.isOnboardingThread || !c.channel.isThread()) {
+      await this.respond(i, `NOT_A_THREAD`, "FAIL");
+      return;
+    }
+    await OnboardController.purgeThread(c.channel);
+    await this.respond(i, `PURGED`, "SUCCESS");
   }
 
   async admin_userSearch(i: CommandInteraction) {

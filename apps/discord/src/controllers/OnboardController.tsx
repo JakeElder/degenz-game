@@ -5,8 +5,9 @@ import {
   MessageActionRow,
   MessageEmbed,
   TextBasedChannel,
+  ThreadChannel,
 } from "discord.js";
-import { User, Achievement } from "data/db";
+import { User, Achievement, DormitoryTenancy } from "data/db";
 import { Achievement as AchievementEnum } from "data/types";
 import {
   AllyIntro,
@@ -512,5 +513,20 @@ export default class OnboardController {
     user.achievements = achievements;
 
     await user.save();
+  }
+
+  static async purgeThread(thread: ThreadChannel) {
+    const tenancy = await DormitoryTenancy.findOneOrFail({
+      where: { onboardingThreadId: thread.id },
+      relations: ["user", "user.achievements"],
+    });
+
+    const { user } = tenancy;
+
+    if (user.hasAchievement(AchievementEnum.JOINED_THE_DEGENZ)) {
+      await thread.delete();
+    } else {
+      await UserController.eject(user.discordId);
+    }
   }
 }

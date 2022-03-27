@@ -5,6 +5,7 @@ import {
   GuildMember,
   MessageReaction,
   ReactionCollector,
+  ThreadChannel,
   User as DiscordUser,
 } from "discord.js";
 import { DistrictSymbol, OperationResult } from "data/types";
@@ -15,6 +16,8 @@ import Events from "../Events";
 import EnterTheProjectsController from "./EnterTheProjectsController";
 import { PersistentMessageController } from "./PersistentMessageController";
 import UserController from "./UserController";
+import { Channel } from "../Channel";
+import OnboardController from "./OnboardController";
 
 export default class AppController {
   static reactionCollector: ReactionCollector;
@@ -41,6 +44,15 @@ export default class AppController {
         { displayName: newMember.displayName }
       );
     });
+
+    admin.client.on("threadUpdate", async (oldThread, newThread) => {
+      if (!oldThread.archived && newThread.archived) {
+        const c = await Channel.getDescriptor(newThread.id);
+        if (c.isOnboardingThread) {
+          OnboardController.purgeThread(newThread);
+        }
+      }
+    });
   }
 
   static async openDistrict(districtSymbol: DistrictSymbol) {
@@ -52,6 +64,8 @@ export default class AppController {
     await District.close(districtSymbol);
     await EnterTheProjectsController.update();
   }
+
+  static async purgeArchived(thread: ThreadChannel) {}
 
   static async setVerifyMessage() {
     const instruction =

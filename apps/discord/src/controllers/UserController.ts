@@ -174,8 +174,7 @@ export default class UserController {
     const thread = await dormChannelBB.threads.create({
       name: `\u2331\uFF5C${paramCase(member!.displayName)}s-orientation`,
       invitable: false,
-      autoArchiveDuration:
-        Config.env("NODE_ENV") === "development" ? 1440 : 10080,
+      autoArchiveDuration: 1440,
       type: ["production", "stage"].includes(Config.env("NODE_ENV"))
         ? "GUILD_PRIVATE_THREAD"
         : "GUILD_PUBLIC_THREAD",

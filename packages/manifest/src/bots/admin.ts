@@ -209,6 +209,9 @@ admin.commands.push({
       subcommand.setName("close-shelters").setDescription(`Close the shelters.`)
     )
     .addSubcommand((subcommand) =>
+      subcommand.setName("purge").setDescription(`Purge an onboarding thread.`)
+    )
+    .addSubcommand((subcommand) =>
       subcommand
         .setName("send-next-steps")
         .setDescription(`Sends the next steps message.`)

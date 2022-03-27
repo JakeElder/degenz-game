@@ -64,6 +64,7 @@ export class Channel {
       return {
         id: channelId,
         name: channel.name,
+        channel,
         isCommunity,
         isApartment,
         isDormitory,

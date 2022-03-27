@@ -4,6 +4,7 @@ import {
   CommandInteraction,
   GuildMember,
   OverwriteResolvable,
+  TextBasedChannel,
 } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { APIApplicationCommandPermission } from "discord-api-types/v9";
@@ -318,6 +319,7 @@ export type TossResult = {
 export type ChannelDescriptor = {
   id: string;
   name: string;
+  channel: TextBasedChannel;
   isCommunity: boolean;
   isApartment: boolean;
   isDormitory: boolean;
