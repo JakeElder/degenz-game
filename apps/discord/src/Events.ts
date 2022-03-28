@@ -205,6 +205,15 @@ type OnboardingThreadPurgedEvent = {
   };
 };
 
+type TokensIssuedEvent = {
+  type: "TOKENS_ISSUED";
+  data: {
+    issuerId: string;
+    recipient: User | null;
+    amount: number;
+  };
+};
+
 export type Event =
   | BotReadyEvent
   | CommandNotFoundEvent
@@ -232,7 +241,8 @@ export type Event =
   | OrientationCompletedEvent
   | AchievementAwardedEvent
   | DormReadyButtonPressedEvent
-  | OnboardingThreadPurgedEvent;
+  | OnboardingThreadPurgedEvent
+  | TokensIssuedEvent;
 
 type EventHandler<E extends Event> = {
   [P in E["type"]]: (e: { type: E["type"]; data: E["data"] }) => void;
@@ -264,7 +274,8 @@ type DegenEmitterEvents = EventHandler<BotReadyEvent> &
   EventHandler<OrientationCompletedEvent> &
   EventHandler<AchievementAwardedEvent> &
   EventHandler<DormReadyButtonPressedEvent> &
-  EventHandler<OnboardingThreadPurgedEvent>;
+  EventHandler<OnboardingThreadPurgedEvent> &
+  EventHandler<TokensIssuedEvent>;
 
 export type PickEvent<T extends keyof DegenEmitterEvents> = Parameters<
   DegenEmitterEvents[T]

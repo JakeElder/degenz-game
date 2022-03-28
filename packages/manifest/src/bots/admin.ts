@@ -133,6 +133,12 @@ admin.commands.push({
               `The amount of ${Format.currency(null, { bold: false })} send`
             )
         )
+        .addUserOption((option) =>
+          option
+            .setName("member")
+            .setDescription("The member to issue GBT to.")
+            .setRequired(false)
+        )
     )
     .addSubcommand((subcommand) =>
       subcommand

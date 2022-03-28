@@ -20,6 +20,7 @@ import EnterTheSheltersController from "../controllers/EnterTheSheltersControlle
 import NextStepController from "../controllers/NextStepsController";
 import { Channel } from "../Channel";
 import OnboardController from "../controllers/OnboardController";
+import Events from "../Events";
 
 export default class AllyCommandController extends CommandController {
   async respond(
@@ -131,14 +132,34 @@ export default class AllyCommandController extends CommandController {
 
   async admin_issue(i: CommandInteraction) {
     const amount = i.options.getNumber("amount", true);
+    const member = i.options.getUser("member");
 
     try {
-      await issueTokens(amount);
-      // this.emit("TOKENS_ISSUED", { amount });
-      await this.respond(i, "TOKENS_ISSUED", "SUCCESS");
+      let user: User | undefined;
+      if (member) {
+        user = await User.findOne({
+          where: { discordId: member.id },
+        });
+        if (!user || !user.inGame) {
+          await this.respond(i, "USER_NOT_FOUND", "FAIL");
+          return;
+        }
+        user.gbt += amount;
+        await user.save();
+      } else {
+        await issueTokens(amount);
+      }
+      Events.emit("TOKENS_ISSUED", {
+        issuerId: i.user.id,
+        recipient: user || null,
+        amount,
+      });
     } catch (e) {
       await this.respond(i, "DIDNT_ISSUE_TOKENS", "FAIL");
+      return;
     }
+
+    await this.respond(i, "TOKENS_ISSUED", "SUCCESS");
   }
 
   async admin_open(i: CommandInteraction) {

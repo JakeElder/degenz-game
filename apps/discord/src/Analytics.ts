@@ -198,4 +198,12 @@ export default class Analytics {
       redpilled: e.data.redpilled,
     });
   }
+
+  static tokensIssued(e: PickEvent<"TOKENS_ISSUED">) {
+    this.mixpanel.track(capitalCase(e.type), {
+      distinct_id: e.data.issuerId,
+      recipient: e.data.recipient?.discordId || null,
+      amount: e.data.amount,
+    });
+  }
 }

@@ -171,6 +171,10 @@ export default class Runner {
     Events.on("ONBOARDING_THREAD_PURGED", (e) => {
       Analytics.onboardingThreadPurged(e);
     });
+
+    Events.on("TOKENS_ISSUED", (e) => {
+      Analytics.tokensIssued(e);
+    });
   }
 
   get(symbol: BotSymbol) {
