@@ -455,7 +455,7 @@ export class Help {
     const commands = [
       <>
         **`/bribe`** - Occasionally {userMention(Config.clientId("WARDEN"))} has
-        been known to reveal the cell release pin in exchange for
+        been known to reveal the cell release pin in exchange for{" "}
         {Format.token()}.
       </>,
       <>
