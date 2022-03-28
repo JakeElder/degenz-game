@@ -375,6 +375,10 @@ export default class UserController {
             allow: ["VIEW_CHANNEL"],
           },
           {
+            id: Config.roleId("THOUGHT_POLICE"),
+            allow: ["VIEW_CHANNEL"],
+          },
+          {
             id: Config.roleId("PRISONER_BOT"),
             allow: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
           },

@@ -68,34 +68,6 @@ admin.commands.push({
     )
     .addSubcommand((subcommand) =>
       subcommand
-        .setName("imprison")
-        .setDescription(`Imprison a member`)
-        .addUserOption((option) =>
-          option
-            .setName("member")
-            .setRequired(true)
-            .setDescription("The member to imprison")
-        )
-        .addStringOption((option) =>
-          option
-            .setName("reason")
-            .setRequired(true)
-            .setDescription("The reason for imprisonment.")
-        )
-    )
-    .addSubcommand((subcommand) =>
-      subcommand
-        .setName("release")
-        .setDescription(`Release a prisoner`)
-        .addUserOption((option) =>
-          option
-            .setName("member")
-            .setRequired(true)
-            .setDescription("The member to release")
-        )
-    )
-    .addSubcommand((subcommand) =>
-      subcommand
         .setName("clear")
         .setDescription(`Clear a channels messages`)
         .addChannelOption((option) =>

@@ -33,4 +33,46 @@ warden.commands.push({
     .toJSON(),
 });
 
+warden.commands.push({
+  symbol: "IMPRISON",
+  permissions: [
+    { id: Config.roleId("THOUGHT_POLICE"), type: 1, permission: true },
+    { id: Config.roleId("ADMIN"), type: 1, permission: true },
+  ],
+  data: new SlashCommandBuilder()
+    .setName("imprison")
+    .setDescription(`Imprison a member.`)
+    .addUserOption((option) =>
+      option
+        .setName("member")
+        .setRequired(true)
+        .setDescription("The member to imprison")
+    )
+    .addStringOption((option) =>
+      option
+        .setName("reason")
+        .setRequired(true)
+        .setDescription("The reason for imprisonment.")
+    )
+    .toJSON(),
+});
+
+warden.commands.push({
+  symbol: "RELEASE",
+  permissions: [
+    { id: Config.roleId("THOUGHT_POLICE"), type: 1, permission: true },
+    { id: Config.roleId("ADMIN"), type: 1, permission: true },
+  ],
+  data: new SlashCommandBuilder()
+    .setName("release")
+    .setDescription(`Release a prisoner`)
+    .addUserOption((option) =>
+      option
+        .setName("member")
+        .setRequired(true)
+        .setDescription("The member to release")
+    )
+    .toJSON(),
+});
+
 export default warden;

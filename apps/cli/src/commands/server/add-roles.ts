@@ -7,6 +7,7 @@ import {
   CitizenRole,
   CitizenRoleSymbol,
   RoleSymbol,
+  SupplementaryRole,
 } from "data/types";
 import { connect, disconnect, Role } from "data/db";
 import { Flags } from "@oclif/core";
@@ -29,8 +30,10 @@ export default class AddRoles extends Command {
   static description = "Add citizen roles";
 
   static flags = {
-    base: Flags.boolean({ default: async (o) => !o.flags.citizen }),
-    citizen: Flags.boolean({ default: false }),
+    type: Flags.string({
+      required: true,
+      options: ["base", "citizen", "supplementary"],
+    }),
   };
 
   async run(): Promise<void> {
@@ -39,11 +42,10 @@ export default class AddRoles extends Command {
     const ROLE_IDS: Partial<Record<RoleSymbol | CitizenRoleSymbol, string>> =
       {};
 
-    if (flags.base) {
-      await connect();
-      const baseRoles = roles.filter(
-        (r): r is BaseRole => !("managed" in r) && !("citizen" in r)
-      );
+    await connect();
+
+    if (flags.type === "base") {
+      const baseRoles = roles.filter((r): r is BaseRole => r.type === "BASE");
       const listr = new Listr(
         baseRoles.map<Listr.ListrTask>((role) => {
           return {
@@ -64,11 +66,13 @@ export default class AddRoles extends Command {
       );
       await listr.run();
       this.log(json({ ROLE_IDS }));
-    } else {
-      const baseRoles = roles.filter((r): r is CitizenRole => "citizen" in r);
+    } else if (flags.type === "citizen") {
+      const citizenRoles = roles.filter(
+        (r): r is CitizenRole => r.type === "CITIZEN"
+      );
 
       const listr = new Listr(
-        baseRoles.map<Listr.ListrTask>((role) => {
+        citizenRoles.map<Listr.ListrTask>((role) => {
           return {
             title: role.name,
             task: async () => {
@@ -89,7 +93,7 @@ export default class AddRoles extends Command {
                 {
                   name: role.name,
                   color: Color(role.color).rgbNumber(),
-                  ...(Config.env("NODE_ENV") !== "development"
+                  ...(Config.env("NODE_ENV") === "production"
                     ? {
                         icon: `data:image/png;base64,${icon}`,
                       }
@@ -108,9 +112,55 @@ export default class AddRoles extends Command {
         })
       );
 
-      await connect();
       await listr.run();
-      await disconnect();
+    } else if (flags.type === "supplementary") {
+      const supplementaryRoles = roles.filter(
+        (r): r is SupplementaryRole => r.type === "SUPPLEMENTARY"
+      );
+
+      const listr = new Listr(
+        supplementaryRoles.map<Listr.ListrTask>((role) => {
+          return {
+            title: role.name,
+            task: async () => {
+              const file = path.join(
+                __dirname,
+                `../../images/roles/${role.symbol}.png`
+              );
+              const iconExists = await exists(file);
+
+              if (!iconExists) {
+                throw new Error(`No icon for ${role.symbol}`);
+              }
+
+              const icon = await fs.readFile(file, { encoding: "base64" });
+
+              const res = await this.post(
+                Routes.guildRoles(Config.general("GUILD_ID")),
+                {
+                  name: role.name,
+                  ...(Config.env("NODE_ENV") === "production"
+                    ? {
+                        icon: `data:image/png;base64,${icon}`,
+                      }
+                    : {}),
+                },
+                Config.botToken("ADMIN")
+              );
+
+              await Role.insert({
+                type: "CITIZEN",
+                symbol: role.symbol,
+                discordId: res.data.id,
+              });
+            },
+          };
+        })
+      );
+
+      await listr.run();
     }
+
+    await disconnect();
   }
 }

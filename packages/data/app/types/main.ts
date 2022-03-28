@@ -117,6 +117,7 @@ export enum BotSymbolEnum {
 export enum RoleTypeEnum {
   BASE = "BASE",
   CITIZEN = "CITIZEN",
+  SUPPLEMENTARY = "SUPPLEMENTARY",
   MANAGED = "MANAGED",
 }
 
@@ -130,10 +131,13 @@ export type RoleSymbol =
   | "SERVER_BOOSTER"
   | "VERIFIED"
   | "TRAINEE"
-  | `${BotSymbol}_BOT`;
+  | `${BotSymbol}_BOT`
+  | "THOUGHT_POLICE";
 
 type D = "D1" | "D2" | "D3" | "D4" | "D5" | "D6";
 export type CitizenRoleSymbol = `${D}_CITIZEN` | `${DormitorySymbol}_CITIZEN`;
+
+export type SupplementaryRoleSymbol = "THOUGHT_POLICE";
 
 export enum RoleSymbolEnum {
   ADMIN = "ADMIN",
@@ -166,27 +170,35 @@ export enum RoleSymbolEnum {
   THE_GRID_CITIZEN = "THE_GRID_CITIZEN",
   BULLSEYE_CITIZEN = "BULLSEYE_CITIZEN",
   VULTURE_CITIZEN = "VULTURE_CITIZEN",
+  THOUGHT_POLICE = "THOUGHT_POLICE",
 }
 
 export type BaseRole = {
+  type: "BASE";
   symbol: RoleSymbol;
   name: string;
   permissions: string;
 };
 
 export type CitizenRole = {
+  type: "CITIZEN";
   symbol: CitizenRoleSymbol;
-  citizen: true;
   name: string;
   color: string;
 };
 
 export type ManagedRole = {
+  type: "MANAGED";
   symbol: RoleSymbol;
-  managed: true;
 };
 
-export type Role = BaseRole | CitizenRole | ManagedRole;
+export type SupplementaryRole = {
+  type: "SUPPLEMENTARY";
+  symbol: SupplementaryRoleSymbol;
+  name: string;
+};
+
+export type Role = BaseRole | CitizenRole | ManagedRole | SupplementaryRole;
 
 type RestrictedRestrictionCheckResponse = {
   restricted: true;

@@ -89,29 +89,6 @@ export default class AllyCommandController extends CommandController {
     );
   }
 
-  async admin_imprison(i: CommandInteraction) {
-    const member = i.options.getMember("member", true) as GuildMember;
-    const reason = i.options.getString("reason", true);
-
-    const [_, res] = await Promise.all([
-      i.deferReply({ ephemeral: true }),
-      UserController.imprison(i.user.id, member.id, reason),
-    ]);
-
-    await this.respond(i, res.code, res.success ? "SUCCESS" : "FAIL");
-  }
-
-  async admin_release(i: CommandInteraction) {
-    const member = i.options.getMember("member", true) as GuildMember;
-
-    const [_, res] = await Promise.all([
-      i.deferReply({ ephemeral: true }),
-      UserController.release(member.id, i.user.id, "RELEASE"),
-    ]);
-
-    await this.respond(i, res.code, res.success ? "SUCCESS" : "FAIL");
-  }
-
   async admin_clear(i: CommandInteraction) {
     const admin = Global.bot("ADMIN");
     let channel = i.options.getChannel("channel");
@@ -297,5 +274,6 @@ export default class AllyCommandController extends CommandController {
         ephemeral: true,
       });
     }
+    { id: Config.roleId("ADMIN"), type: 1, permission: true },
   }
 }

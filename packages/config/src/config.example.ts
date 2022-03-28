@@ -83,6 +83,7 @@ const ROLE_IDS: Record<RoleSymbol, string> = {
   SCOUT_BOT: "",
   SENSEI_BOT: "",
   SERVER_BOOSTER: "",
+  THOUGHT_POLICE: "",
   TOSSER_BOT: "",
   TRAINEE: "",
   VERIFIED: "",
