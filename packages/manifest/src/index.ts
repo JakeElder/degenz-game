@@ -519,6 +519,14 @@ structure.push({
       id: Config.roleId("SENSEI_BOT"),
       allow: ["VIEW_CHANNEL"],
     },
+    {
+      id: Config.roleId("WARDEN_BOT"),
+      allow: ["VIEW_CHANNEL"],
+    },
+    {
+      id: Config.roleId("PRISONER_BOT"),
+      allow: ["VIEW_CHANNEL"],
+    },
   ],
   channels: [
     {

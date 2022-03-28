@@ -35,6 +35,9 @@ export class Imprisonment extends BaseEntity {
   @Column({ unique: true })
   cellDiscordChannelId: string;
 
+  @Column({ default: "2345" })
+  releaseCode: string;
+
   @ManyToOne(() => User, (user) => user.imprisonments, { onDelete: "CASCADE" })
   user: User;
 

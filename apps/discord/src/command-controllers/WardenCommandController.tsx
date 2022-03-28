@@ -19,7 +19,11 @@ export default class PrisonerCommandController extends CommandController {
     if (amount >= 30) {
       i.reply({
         content: r(
-          <SuccessfulBribeReply amount={amount} citizenId={user.discordId} />
+          <SuccessfulBribeReply
+            amount={amount}
+            citizenId={user.discordId}
+            releaseCode={user.imprisonment.releaseCode}
+          />
         ),
         ephemeral: true,
       });

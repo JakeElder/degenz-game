@@ -112,16 +112,26 @@ export class User extends BaseEntity {
     cellNumber,
     cellDiscordChannelId,
     entryRoleIds,
+    releaseCode,
+    reason,
   }: {
     cellNumber: Imprisonment["cellNumber"];
     cellDiscordChannelId: TextChannel["id"];
     entryRoleIds: Role["id"][];
+    releaseCode: Imprisonment["releaseCode"];
+    reason: Imprisonment["reason"];
   }) {
     if (!this.imprisonments) {
       throw new Error("Imprisonments not loaded");
     }
     this.imprisonments.push(
-      Imprisonment.create({ cellNumber, cellDiscordChannelId, entryRoleIds })
+      Imprisonment.create({
+        cellNumber,
+        cellDiscordChannelId,
+        entryRoleIds,
+        releaseCode,
+        reason,
+      })
     );
     await this.save();
   }

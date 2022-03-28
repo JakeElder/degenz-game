@@ -214,6 +214,30 @@ type TokensIssuedEvent = {
   };
 };
 
+type CitizenImprisonedEvent = {
+  type: "CITIZEN_IMPRISONED";
+  data: {
+    captor: User;
+    prisoner: User;
+    reason: string;
+  };
+};
+
+type CitizenEscapedEvent = {
+  type: "CITIZEN_ESCAPED";
+  data: {
+    prisoner: User;
+  };
+};
+
+type CitizenReleasedEvent = {
+  type: "CITIZEN_RELEASED";
+  data: {
+    captor: User;
+    prisoner: User;
+  };
+};
+
 export type Event =
   | BotReadyEvent
   | CommandNotFoundEvent
@@ -242,7 +266,10 @@ export type Event =
   | AchievementAwardedEvent
   | DormReadyButtonPressedEvent
   | OnboardingThreadPurgedEvent
-  | TokensIssuedEvent;
+  | TokensIssuedEvent
+  | CitizenImprisonedEvent
+  | CitizenEscapedEvent
+  | CitizenReleasedEvent;
 
 type EventHandler<E extends Event> = {
   [P in E["type"]]: (e: { type: E["type"]; data: E["data"] }) => void;
@@ -275,7 +302,10 @@ type DegenEmitterEvents = EventHandler<BotReadyEvent> &
   EventHandler<AchievementAwardedEvent> &
   EventHandler<DormReadyButtonPressedEvent> &
   EventHandler<OnboardingThreadPurgedEvent> &
-  EventHandler<TokensIssuedEvent>;
+  EventHandler<TokensIssuedEvent> &
+  EventHandler<CitizenImprisonedEvent> &
+  EventHandler<CitizenEscapedEvent> &
+  EventHandler<CitizenReleasedEvent>;
 
 export type PickEvent<T extends keyof DegenEmitterEvents> = Parameters<
   DegenEmitterEvents[T]

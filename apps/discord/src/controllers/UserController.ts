@@ -13,14 +13,11 @@ import {
   Role,
 } from "data/db";
 import Utils from "../Utils";
-import {
-  getAvailableCellNumber,
-  getTenanciesInDistrict,
-  getUser,
-} from "../legacy/db";
+import { getAvailableCellNumber, getTenanciesInDistrict } from "../legacy/db";
 import { Global } from "../Global";
 import EnterTheProjectsController from "./EnterTheProjectsController";
 import EnterTheSheltersController from "./EnterTheSheltersController";
+import random from "random";
 
 type FailedApartmentInitResult = {
   success: false;
@@ -305,11 +302,14 @@ export default class UserController {
           thread!.delete();
         } catch (e) {}
 
-        dormChannel.permissionOverwrites.delete(user.discordId);
+        try {
+          dormChannel.permissionOverwrites.delete(user.discordId);
+        } catch (e) {}
+
         await tenancy.remove();
       }
     } catch (e) {
-      // console.error(e);
+      console.error(e);
     }
 
     // Remove roles
@@ -330,13 +330,23 @@ export default class UserController {
     return { success: true, code: "USER_EJECTED" };
   }
 
-  static async imprison(memberId: GuildMember["id"]) {
+  static async imprison(
+    captorId: GuildMember["id"],
+    prisonerId: GuildMember["id"],
+    reason: string
+  ) {
     const admin = Global.bot("ADMIN");
 
-    const member = await UserController.getMember(memberId);
-    const user = await getUser(member!.id);
+    const member = await UserController.getMember(prisonerId);
+    const [captor, prisoner] = await Promise.all([
+      User.findOne({ where: { discordId: captorId } }),
+      User.findOne({
+        where: { discordId: prisonerId },
+        relations: ["apartmentTenancies", "dormitoryTenancy", "imprisonments"],
+      }),
+    ]);
 
-    if (user === null) {
+    if (!captor || !prisoner) {
       return { success: false, code: "USER_NOT_FOUND" };
     }
 
@@ -376,13 +386,17 @@ export default class UserController {
       }
     );
 
+    const releaseCode = `${random.int(0, 9999)}`.padEnd(4, "0");
+
     await Promise.all([
-      user.imprison({
+      prisoner.imprison({
         cellDiscordChannelId: cell.id,
         cellNumber: number,
         entryRoleIds,
+        releaseCode,
+        reason,
       }),
-      this.hideResidencies(user),
+      this.hideResidencies(prisoner),
       member!.roles.remove(entryRoleIds),
     ]);
 
@@ -390,7 +404,9 @@ export default class UserController {
 
     Utils.delay(1000);
 
-    UserController.onboardPrisoner(user);
+    UserController.onboardPrisoner(prisoner);
+
+    Events.emit("CITIZEN_IMPRISONED", { captor, prisoner, reason });
 
     return { success: true, code: "USER_IMPRISONED" };
   }
@@ -453,29 +469,49 @@ export default class UserController {
     }
   }
 
-  static async release(memberId: GuildMember["id"]) {
+  static async release(
+    prisonerId: GuildMember["id"],
+    captorId: GuildMember["id"] | null,
+    type: "ESCAPE" | "RELEASE"
+  ) {
     const admin = Global.bot("ADMIN");
-    const member = await UserController.getMember(memberId);
-    const user = await getUser(member.id);
+    const member = await UserController.getMember(prisonerId);
+    const [captor, prisoner] = await Promise.all([
+      User.findOne({ where: { discordId: captorId } }),
+      User.findOne({
+        where: { discordId: prisonerId },
+        relations: ["apartmentTenancies", "dormitoryTenancy", "imprisonments"],
+      }),
+    ]);
+
+    if (!prisoner) {
+      return { success: false, code: "USER_NOT_FOUND" };
+    }
 
     if (!member) {
       throw new Error("Member not found");
     }
 
-    if (!user.imprisoned) {
+    if (!prisoner.imprisoned) {
       return { success: false, code: "NOT_IMPRISONED" };
     }
 
     await Promise.all([
-      this.showResidencies(user),
-      member.roles.add(user.imprisonment.entryRoleIds),
+      this.showResidencies(prisoner),
+      member.roles.add(prisoner.imprisonment.entryRoleIds),
     ]);
 
-    const { imprisonment } = user;
+    const { imprisonment } = prisoner;
 
     await member.roles.remove(Config.roleId("PRISONER"));
     const cell = await admin.getTextChannel(imprisonment.cellDiscordChannelId);
     await Promise.all([cell.delete(), imprisonment.softRemove()]);
+
+    if (type === "ESCAPE") {
+      Events.emit("CITIZEN_ESCAPED", { prisoner });
+    } else {
+      Events.emit("CITIZEN_RELEASED", { captor: captor!, prisoner });
+    }
 
     return { success: true, code: "USER_RELEASED" };
   }

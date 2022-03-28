@@ -76,6 +76,12 @@ admin.commands.push({
             .setRequired(true)
             .setDescription("The member to imprison")
         )
+        .addStringOption((option) =>
+          option
+            .setName("reason")
+            .setRequired(true)
+            .setDescription("The reason for imprisonment.")
+        )
     )
     .addSubcommand((subcommand) =>
       subcommand

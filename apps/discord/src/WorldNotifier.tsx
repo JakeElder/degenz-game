@@ -230,4 +230,59 @@ export default class WorldNotifier {
     );
     await this.logToHOP("BIG_BROTHER", e.type, message);
   }
+
+  static async citizenImprisoned(e: PickEvent<"CITIZEN_IMPRISONED">) {
+    const message = r(
+      <>
+        **{e.data.captor.displayName}** imprisoned **
+        {e.data.prisoner.displayName}
+        ** for `{e.data.reason}`.
+      </>
+    );
+    await this.logToHOP("WARDEN", e.type, message);
+
+    if (e.data.prisoner.primaryTenancy.type === "DORMITORY") {
+      await this.logToChannel(
+        e.data.prisoner.dormitoryTenancy.dormitory.symbol,
+        "WARDEN",
+        e.type,
+        message
+      );
+    }
+  }
+
+  static async citizenReleased(e: PickEvent<"CITIZEN_RELEASED">) {
+    const message = r(
+      <>
+        **{e.data.captor.displayName}** released **{" "}
+        {e.data.prisoner.displayName} ** from prison.
+      </>
+    );
+    await this.logToHOP("WARDEN", e.type, message);
+
+    if (e.data.prisoner.primaryTenancy.type === "DORMITORY") {
+      await this.logToChannel(
+        e.data.prisoner.dormitoryTenancy.dormitory.symbol,
+        "WARDEN",
+        e.type,
+        message
+      );
+    }
+  }
+
+  static async citizenEscaped(e: PickEvent<"CITIZEN_ESCAPED">) {
+    const message = r(
+      <>**{e.data.prisoner.displayName}** escaped from prison.</>
+    );
+    await this.logToHOP("PRISONER", e.type, message);
+
+    if (e.data.prisoner.primaryTenancy.type === "DORMITORY") {
+      await this.logToChannel(
+        e.data.prisoner.dormitoryTenancy.dormitory.symbol,
+        "PRISONER",
+        e.type,
+        message
+      );
+    }
+  }
 }

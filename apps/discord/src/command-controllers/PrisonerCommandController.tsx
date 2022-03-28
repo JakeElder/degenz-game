@@ -19,7 +19,7 @@ export default class PrisonerCommandController extends CommandController {
     const code = i.options.getString("code", true);
 
     // Handle correct code
-    if (code === "2345") {
+    if (code === user.imprisonment.releaseCode) {
       await i.reply({
         content: r(<SuccessfulEscapeMessage code={code} />),
         ephemeral: true,
@@ -33,6 +33,6 @@ export default class PrisonerCommandController extends CommandController {
 
     await Utils.delay(2000);
 
-    await UserController.release(user.discordId);
+    await UserController.release(user.discordId, null, "ESCAPE");
   }
 }

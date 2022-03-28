@@ -116,14 +116,16 @@ export const FailedEscapeMessage = ({ code }: { code: string }) => {
 export const SuccessfulBribeReply = ({
   amount,
   citizenId,
+  releaseCode,
 }: {
   amount: number;
   citizenId: string;
+  releaseCode: string;
 }) => {
   return (
     <>
       Ok, <User id={citizenId} /> {Format.currency(amount)} will do. The door
-      code is `2345`. I'm sure you'll be back, degenerate.
+      code is `{releaseCode}`. I'm sure you'll be back, degenerate.
     </>
   );
 };

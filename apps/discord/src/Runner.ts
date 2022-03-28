@@ -175,6 +175,21 @@ export default class Runner {
     Events.on("TOKENS_ISSUED", (e) => {
       Analytics.tokensIssued(e);
     });
+
+    Events.on("CITIZEN_IMPRISONED", (e) => {
+      Analytics.citizenImprisoned(e);
+      WorldNotifier.citizenImprisoned(e);
+    });
+
+    Events.on("CITIZEN_ESCAPED", (e) => {
+      Analytics.citizenEscaped(e);
+      WorldNotifier.citizenEscaped(e);
+    });
+
+    Events.on("CITIZEN_RELEASED", (e) => {
+      Analytics.citizenReleased(e);
+      WorldNotifier.citizenReleased(e);
+    });
   }
 
   get(symbol: BotSymbol) {

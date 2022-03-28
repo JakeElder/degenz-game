@@ -91,10 +91,11 @@ export default class AllyCommandController extends CommandController {
 
   async admin_imprison(i: CommandInteraction) {
     const member = i.options.getMember("member", true) as GuildMember;
+    const reason = i.options.getString("reason", true);
 
     const [_, res] = await Promise.all([
       i.deferReply({ ephemeral: true }),
-      UserController.imprison(member.id),
+      UserController.imprison(i.user.id, member.id, reason),
     ]);
 
     await this.respond(i, res.code, res.success ? "SUCCESS" : "FAIL");
@@ -105,7 +106,7 @@ export default class AllyCommandController extends CommandController {
 
     const [_, res] = await Promise.all([
       i.deferReply({ ephemeral: true }),
-      UserController.release(member.id),
+      UserController.release(member.id, i.user.id, "RELEASE"),
     ]);
 
     await this.respond(i, res.code, res.success ? "SUCCESS" : "FAIL");

@@ -206,4 +206,25 @@ export default class Analytics {
       amount: e.data.amount,
     });
   }
+
+  static citizenImprisoned(e: PickEvent<"CITIZEN_IMPRISONED">) {
+    this.mixpanel.track(capitalCase(e.type), {
+      distinct_id: e.data.prisoner.discordId,
+      captor: e.data.captor.discordId,
+      reason: e.data.reason,
+    });
+  }
+
+  static citizenEscaped(e: PickEvent<"CITIZEN_ESCAPED">) {
+    this.mixpanel.track(capitalCase(e.type), {
+      distinct_id: e.data.prisoner.discordId,
+    });
+  }
+
+  static citizenReleased(e: PickEvent<"CITIZEN_RELEASED">) {
+    this.mixpanel.track(capitalCase(e.type), {
+      distinct_id: e.data.prisoner.discordId,
+      captor: e.data.captor.discordId,
+    });
+  }
 }
