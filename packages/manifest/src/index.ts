@@ -511,6 +511,14 @@ structure.push({
       id: Config.roleId("TOSSER_BOT"),
       allow: ["VIEW_CHANNEL"],
     },
+    {
+      id: Config.roleId("MART_CLERK_BOT"),
+      allow: ["VIEW_CHANNEL"],
+    },
+    {
+      id: Config.roleId("SENSEI_BOT"),
+      allow: ["VIEW_CHANNEL"],
+    },
   ],
   channels: [
     {
