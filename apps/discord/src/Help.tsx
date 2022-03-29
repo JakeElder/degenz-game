@@ -147,7 +147,9 @@ export class Help {
         { name: "Dormitories", value: d.map((c) => r(c)).join("\n") },
         { name: "Commands", value: commands.map((c) => r(c)).join("\n") },
       ],
-      // image: { url: "" },
+      image: {
+        url: "https://s7.gifyu.com/images/ezgif.com-gif-maker-2044e60da18b84319b.gif",
+      },
     });
   }
 
@@ -179,10 +181,10 @@ export class Help {
         )
       : r(
           <>
-            {channelMention(channel.id)} is your onboarding thread. Now you're a
-            Degen, once you've finished learning about the game you'll be
-            greeted in to your dormitory and start working your way up the Degen
-            ranks.
+            {channelMention(channel.id)} is your dormitory onboarding thread.
+            Now you're a Degen, once you've finished learning about the game
+            you'll be greeted in to your dormitory and start working your way up
+            the Degen ranks.
           </>
         );
 
@@ -196,7 +198,9 @@ export class Help {
           value: plannedCommands.map((c) => r(c)).join("\n"),
         },
       ],
-      // image: { url: "", },
+      image: {
+        url: "https://s7.gifyu.com/images/ezgif.com-gif-maker-2044e60da18b84319b.gif",
+      },
     });
   }
 
