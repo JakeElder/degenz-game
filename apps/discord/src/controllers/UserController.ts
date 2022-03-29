@@ -2,7 +2,11 @@ import { GuildMember } from "discord.js";
 import Config from "config";
 import { paramCase } from "change-case";
 import { userMention } from "@discordjs/builders";
-import { DistrictSymbol, ApartmentTenancyLevelEnum } from "data/types";
+import {
+  DistrictSymbol,
+  ApartmentTenancyLevelEnum,
+  Achievement as AchievementEnum,
+} from "data/types";
 import Events from "../Events";
 import {
   District,
@@ -11,6 +15,8 @@ import {
   Dormitory,
   DormitoryTenancy,
   Role,
+  Achievement,
+  Imprisonment,
 } from "data/db";
 import Utils from "../Utils";
 import { getAvailableCellNumber, getTenanciesInDistrict } from "../legacy/db";
@@ -336,18 +342,33 @@ export default class UserController {
     reason: string
   ) {
     const admin = Global.bot("ADMIN");
-
     const member = await UserController.getMember(prisonerId);
+
     const [captor, prisoner] = await Promise.all([
       User.findOne({ where: { discordId: captorId } }),
       User.findOne({
         where: { discordId: prisonerId },
-        relations: ["apartmentTenancies", "dormitoryTenancy", "imprisonments"],
+        relations: [
+          "apartmentTenancies",
+          "dormitoryTenancy",
+          "imprisonments",
+          "achievements",
+        ],
       }),
     ]);
 
+    const imprisonments = await Imprisonment.count();
+
+    if (imprisonments >= 40) {
+      return { success: false, code: "CAPACITY_REACHED" };
+    }
+
     if (!captor || !prisoner) {
       return { success: false, code: "USER_NOT_FOUND" };
+    }
+
+    if (prisoner.hasAchievement(AchievementEnum.JOINED_THE_DEGENZ)) {
+      return { success: false, code: "USER_NOT_REDPILLED" };
     }
 
     const entryRoleIds = member!.roles.cache
