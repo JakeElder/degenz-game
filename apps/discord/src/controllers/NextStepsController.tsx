@@ -18,7 +18,7 @@ import Config from "config";
 
 const { r } = Format;
 
-type TabOption = "FIGHT" | "GAMBLE" | "SHOP";
+type TabOption = "FIGHT" | "GAMBLE" | "SHOP" | "WHITELIST";
 
 type StepMessageData = {
   user: User;
@@ -102,8 +102,7 @@ export default class NextStepController {
       embeds.push({
         author: {
           name: "Training Dojo",
-          icon_url:
-            "https://cdn.discordapp.com/app-icons/937151182504362055/3eabbeb86b5c7df2b8d375520f6f121d.png?size=128",
+          icon_url: `${Config.env("WEB_URL")}/characters/npcs/SENSEI.png`,
         },
         description: r(
           <>
@@ -118,8 +117,7 @@ export default class NextStepController {
       embeds.push({
         author: {
           name: "Teds Toss House",
-          icon_url:
-            "https://cdn.discordapp.com/app-icons/931854952618426398/7ca6b043d27ee1644484744c7bb132dd.png?size=64",
+          icon_url: `${Config.env("WEB_URL")}/characters/npcs/TOSSER.png`,
         },
         thumbnail: {},
         description: r(
@@ -135,8 +133,7 @@ export default class NextStepController {
       embeds.push({
         author: {
           name: "Merris Mart",
-          icon_url:
-            "https://cdn.discordapp.com/app-icons/934793761366618152/976dc856aeb598aea36b3c8aabeccd33.png?size=64",
+          icon_url: `${Config.env("WEB_URL")}/characters/npcs/MART_CLERK.png`,
         },
         description: r(
           <>
@@ -147,7 +144,25 @@ export default class NextStepController {
           </>
         ),
       });
+    } else if (data.active === "WHITELIST") {
+      embeds.push({
+        author: {
+          name: "Whitelist",
+          icon_url: `${Config.env(
+            "WEB_URL"
+          )}/characters/npcs/RESISTANCE_LEADER.png`,
+        },
+        description: r(
+          <>
+            If you want Whitelist, go to the{" "}
+            {channelMention(Config.channelId("WHITELIST"))} channel.
+            <br />
+            And press the **"Give Me Whitelist"** button.
+          </>
+        ),
+      });
     }
+
     return {
       embeds,
       components: [
@@ -174,6 +189,14 @@ export default class NextStepController {
             .setStyle(
               data.active === null || data.active === "SHOP"
                 ? "PRIMARY"
+                : "SECONDARY"
+            ),
+          new MessageButton()
+            .setCustomId(`FIRST_WORLD_CHOICE:WHITELIST:${user.discordId}`)
+            .setLabel("Get Whitelist")
+            .setStyle(
+              data.active === null || data.active === "WHITELIST"
+                ? "DANGER"
                 : "SECONDARY"
             )
         ),

@@ -65,6 +65,7 @@ const CHANNEL_IDS: Record<ChannelSymbol, string> = {
   VULTURE: "",
   WAITING_ROOM: "",
   WELCOME_ROOM: "",
+  WHITELIST: "",
 };
 
 const ROLE_IDS: Record<RoleSymbol, string> = {
@@ -80,6 +81,7 @@ const ROLE_IDS: Record<RoleSymbol, string> = {
   MART_CLERK_BOT: "",
   PRISONER: "",
   PRISONER_BOT: "",
+  RESISTANCE_LEADER_BOT: "",
   SCOUT_BOT: "",
   SENSEI_BOT: "",
   SERVER_BOOSTER: "",
@@ -99,6 +101,7 @@ const CLIENT_IDS: Record<BotSymbol, string> = {
   DEVILS_ADVOCATE: "",
   MART_CLERK: "",
   PRISONER: "",
+  RESISTANCE_LEADER: "",
   SCOUT: "",
   SENSEI: "",
   TOSSER: "",

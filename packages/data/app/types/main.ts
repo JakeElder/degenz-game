@@ -43,6 +43,7 @@ export enum ChannelSymbolEnum {
   ANNOUNCEMENTS = "ANNOUNCEMENTS",
   LEADERBOARD = "LEADERBOARD",
   COMMANDS = "COMMANDS",
+  WHITELIST = "WHITELIST",
   FAQ = "FAQ",
 
   GENERAL = "GENERAL",
@@ -112,6 +113,7 @@ export enum BotSymbolEnum {
   SENSEI = "SENSEI",
   TOSSER = "TOSSER",
   WARDEN = "WARDEN",
+  RESISTANCE_LEADER = "RESISTANCE_LEADER",
 }
 
 export enum RoleTypeEnum {
