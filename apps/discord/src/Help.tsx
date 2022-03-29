@@ -32,8 +32,12 @@ export class Help {
       return this.makeDormitoryMessage(params);
     }
 
-    if (channel.isOnboardingThread || channel.isApartment) {
-      return this.makeTenancyMessage(params);
+    if (channel.isApartment) {
+      return this.makeApartmentMessage(params);
+    }
+
+    if (channel.isOnboardingThread) {
+      return this.makeOnboardingMessage(params);
     }
 
     if (channel.isCell) {
@@ -157,36 +161,22 @@ export class Help {
     });
   }
 
-  static makeTenancyMessage({ channel }: Params): MessageOptions {
+  static makeApartmentMessage({ channel }: Params): MessageOptions {
     const commands = globalCommands;
 
     let plannedCommands = [
       <>**`/sleep`** - Sleep to replenish your strength.</>,
+      <>**`/invite`** - Grant other Degenz access to your apartment.</>,
+      <>**`/evict`** - Revoke access to other tenants of your apartment.</>,
     ];
 
-    if (channel.isApartment) {
-      plannedCommands.push(
-        <>**`/invite`** - Grant other Degenz access to your apartment.</>,
-        <>**`/evict`** - Revoke access to other tenants of your apartment.</>
-      );
-    }
-
-    const description = channel.isApartment
-      ? r(
-          <>
-            {channelMention(channel.id)} is your own personal space.. *For
-            now*.. Safe from Big Brother.. **Most** of the time. He's been known
-            to occasionally make surprise appearances and shake Degenz down.
-          </>
-        )
-      : r(
-          <>
-            {channelMention(channel.id)} is your dormitory onboarding thread.
-            Now you're a Degen, once you've finished learning about the game
-            you'll be greeted in to your dormitory and start working your way up
-            the Degen ranks.
-          </>
-        );
+    const description = r(
+      <>
+        {channelMention(channel.id)} is your own personal space.. *For now*..
+        Safe from Big Brother.. **Most** of the time. He's been known to
+        occasionally make surprise appearances and shake Degenz down.
+      </>
+    );
 
     return this.makeMessageOptions({
       title: channel.name,
@@ -202,6 +192,36 @@ export class Help {
         url: "https://s7.gifyu.com/images/ezgif.com-gif-maker-2044e60da18b84319b.gif",
       },
     });
+  }
+
+  static makeOnboardingMessage({ channel }: Params): MessageOptions {
+    const commands = [
+      <>**`/stats`** - Check your own or someone elses stats.</>,
+      <>**`/help`** - See this help message.</>,
+    ];
+
+    return {
+      embeds: [
+        {
+          title: channel.name,
+          color: "DARK_BLUE",
+          description: r(
+            <>
+              {channelMention(channel.id)} is your dormitory onboarding thread.
+              Now you're a Degen, once you've finished learning about the game
+              you'll be greeted in to your dormitory and start working your way
+              up the Degen ranks.
+            </>
+          ),
+          fields: [
+            { name: "Commands", value: commands.map((c) => r(c)).join("\n") },
+          ],
+          image: {
+            url: "https://s7.gifyu.com/images/ezgif.com-gif-maker-2044e60da18b84319b.gif",
+          },
+        },
+      ],
+    };
   }
 
   static makeCellMessage({ channel }: Params): MessageOptions {

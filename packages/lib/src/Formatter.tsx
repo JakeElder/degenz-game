@@ -25,14 +25,16 @@ export default class Formatter {
       full?: boolean;
       plural?: boolean;
       bare?: boolean;
+      symbolCode?: boolean;
     } = {}
   ) {
-    const { symbol, emoji, bold, full, plural, bare } = {
+    const { symbol, emoji, bold, full, plural, bare, symbolCode } = {
       symbol: true,
       emoji: true,
       bold: true,
       full: false,
       bare: false,
+      symbolCode: true,
       ...props,
     };
 
@@ -47,6 +49,9 @@ export default class Formatter {
     }
 
     if (amount === null) {
+      if (emoji) {
+        return `\`\u{1f4b0}${base}\``;
+      }
       return base;
     }
 
@@ -57,7 +62,7 @@ export default class Formatter {
     }
 
     if (symbol) {
-      t += ` \`${base}\``;
+      t += symbolCode ? ` \`${base}\`` : ` ${base}`;
     }
 
     if (emoji) {
@@ -81,7 +86,13 @@ export default class Formatter {
         {this.currency(initial, { symbol: false })} **{"\u22d9"}**{" "}
         {this.currency(initial + net, { symbol: false })} `(
         {net > 0 ? "+" : ""}
-        {this.currency(net, { emoji: false, symbol: false, bold: false })})`
+        {this.currency(net, {
+          emoji: false,
+          symbol: true,
+          symbolCode: false,
+          bold: false,
+        })}
+        )`
       </>
     );
   }

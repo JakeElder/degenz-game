@@ -7,7 +7,7 @@ import {
   TextBasedChannel,
   ThreadChannel,
 } from "discord.js";
-import { User, Achievement, DormitoryTenancy } from "data/db";
+import { User, Achievement, DormitoryTenancy, Role } from "data/db";
 import { Achievement as AchievementEnum } from "data/types";
 import {
   AllyIntro,
@@ -21,11 +21,10 @@ import {
   HelpPrompt,
   InitiationCongrats,
   IsHeGone,
-  MeetYourDormMates,
   MoneyIssuance,
   NarkCheck,
   OneMoreThing,
-  ReadyForDormResponse,
+  SelfDestructMessage,
   RedpillPrompt,
   StatsPrompt,
   StatsPromptPrep,
@@ -43,7 +42,7 @@ import UserController from "./UserController";
 import { Global } from "../Global";
 import { In } from "typeorm";
 import DiscordBot from "../DiscordBot";
-import { channelMention, userMention } from "@discordjs/builders";
+import { channelMention, roleMention, userMention } from "@discordjs/builders";
 import delay from "delay";
 import WorldNotifier from "../WorldNotifier";
 import NextStepController from "./NextStepsController";
@@ -79,10 +78,6 @@ export default class OnboardController {
       const [type] = i.customId.split(":");
       if (type === "IS_HE_GONE_RESPONSE") {
         this.sendIsHeGoneResponse(i);
-      }
-
-      if (type === "READY_DORM_CHOICE") {
-        this.sendAreYouReadyResponse(i);
       }
     });
   }
@@ -327,7 +322,7 @@ export default class OnboardController {
       await OnboardController.sendNextPrompt(user);
     } else {
       await Utils.delay(2000);
-      await OnboardController.sendThreadDestructPrompt(user);
+      await OnboardController.sendSelfDestructMessage(user);
     }
   }
 
@@ -344,79 +339,52 @@ export default class OnboardController {
     await NextStepController.send(channel, user);
   }
 
-  static async sendThreadDestructPrompt(user: User) {
+  static async sendSelfDestructMessage(user: User) {
     const ally = Global.bot("ALLY");
     const channel = await this.getOnboardingChannel(user, ally);
 
+    const { dormitory } = user.dormitoryTenancy;
+
+    const role = await Role.findOneOrFail({
+      where: { symbol: `${dormitory.symbol}_CITIZEN` },
+    });
+
+    await channel.send(
+      r(
+        <>
+          Ok {roleMention(role.discordId)} {dormitory.activeEmoji} **
+          {user.displayName}**, that's everything I have to tell you for now.
+        </>
+      )
+    );
     await Utils.delay(1000);
 
-    await channel.send({
-      content: r(
-        <MeetYourDormMates
-          emoji={user.dormitoryTenancy.dormitory.activeEmoji}
-        />
-      ),
-      components: [
-        new MessageActionRow().addComponents(
-          makeButton(
-            `READY_DORM_CHOICE:YES:${user.discordId}`,
-            undefined,
-            "Yes"
-          ),
-          makeButton(`READY_DORM_CHOICE:NO:${user.discordId}`, undefined, "No")
-        ),
-      ],
-    });
-  }
-
-  static async sendAreYouReadyResponse(i: ButtonInteraction) {
-    const { member, channel, message } = await Interaction.getProps(i);
-    const user = await User.findOneOrFail({ where: { discordId: i.user.id } });
-
-    const [_key, response, memberId] = i.customId.split(":") as [
-      string,
-      "YES" | "NO",
-      string
-    ];
-
-    Events.emit("DORM_READY_BUTTON_PRESSED", { user, response });
-
-    if (member.id !== memberId) {
-      await i.reply({
-        content: `${userMention(member.id)} - Go press your own buttons.`,
-        ephemeral: true,
-      });
-      return;
-    }
-
-    await message.edit({
-      components: [
-        new MessageActionRow().addComponents(
-          makeButton("yes", {
-            disabled: true,
-            selected: response === "YES",
-          }),
-          makeButton("no", {
-            disabled: true,
-            selected: response === "NO",
-          })
-        ),
-      ],
-    });
-
-    i.update({ fetchReply: false });
-
-    const m = await channel.send(
+    await channel.send(
       r(
-        <ReadyForDormResponse
-          response={response}
-          dormChannelId={user.dormitoryTenancy.dormitory.discordChannelId}
-          seconds={10}
-        />
+        <>
+          You should **go to your assigned dormitory,**{" "}
+          {channelMention(dormitory.discordChannelId)} and meet your fellow
+          degenz.
+        </>
       )
     );
 
-    const { dormitory } = user.dormitoryTenancy;
+    await Utils.delay(2000);
+
+    const m = await channel.send({
+      embeds: [
+        {
+          color: "RED",
+          description: r(
+            <SelfDestructMessage
+              dormChannelId={dormitory.discordChannelId}
+              seconds={30}
+            />
+          ),
+        },
+      ],
+    });
+
     const prefix = dormitory.symbol.startsWith("THE") ? "" : "the ";
 
     await Promise.all([
@@ -436,9 +404,11 @@ export default class OnboardController {
         );
         await message.react(dormitory.activeEmoji);
         await delay(random.int(300, 800));
+
         // Celebrate
         await message.react("\u{1f389}");
         await delay(random.int(300, 800));
+
         // Fist bump
         await message.react("\u{1f44a}");
         await delay(1000);
@@ -446,17 +416,21 @@ export default class OnboardController {
         await this.sendNextPrompt(user);
       })(),
       (async () => {
-        for (let i = 1; i < 10; i++) {
+        for (let i = 1; i < 30; i++) {
           await delay(1000);
-          await m.edit(
-            r(
-              <ReadyForDormResponse
-                response={response}
-                dormChannelId={dormitory.discordChannelId}
-                seconds={10 - i}
-              />
-            )
-          );
+          await m.edit({
+            embeds: [
+              {
+                color: "RED",
+                description: r(
+                  <SelfDestructMessage
+                    dormChannelId={dormitory.discordChannelId}
+                    seconds={30 - i}
+                  />
+                ),
+              },
+            ],
+          });
         }
       })(),
     ]);

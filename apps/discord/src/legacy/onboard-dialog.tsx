@@ -3,7 +3,6 @@ import emoji from "node-emoji";
 import React from "react";
 import Config from "config";
 import { User, Channel } from "./templates";
-import { currency } from "./utils";
 import { Format } from "lib";
 import pluralize from "pluralize";
 
@@ -50,16 +49,15 @@ export const MoneyIssuance = (props: { response: "YES" | "NO" }) => {
     return (
       <>
         Because I am the benevolent leader, I have issued you with{" "}
-        {emoji.get("moneybag")}**100** {Format.token()}, the currency of{" "}
-        {Config.general("WORLD_NAME")}.
+        {Format.currency(100)}, the currency of {Config.general("WORLD_NAME")}.
       </>
     );
   } else {
     return (
       <>
-        Normally I'd issue you 100 {emoji.get("moneybag")} {Format.token()}, the
-        currency of {Config.general("WORLD_NAME")}. Because of your poor humour,
-        I'm only assigning you **50** tokens.
+        Normally I'd issue you {Format.currency(100)}, the currency of{" "}
+        {Config.general("WORLD_NAME")}. Because of your poor humour, I'm only
+        assigning you {Format.currency(50)} tokens.
       </>
     );
   }
@@ -137,19 +135,15 @@ export const InitiationCongrats = () => (
 
 export const StatsPromptPrep = () => (
   <>
-    **BUT WAIT..** Before you go, you can type `/stats` any time to check your
-    {emoji.get("moneybag")}
-    {currency({ long: false })} balance and strength.
+    **BUT WAIT..** Before you go, you can type `/stats` any time to check your{" "}
+    {Format.currency(null)} balance and strength.
   </>
 );
 
 export const StatsPrompt = () => <>**Type `/stats` now** for a bonus.</>;
 
 export const StatsRewardMessage = () => (
-  <>
-    **Nice!**.. You got another **{emoji.get("moneybag")}10
-    {currency({ long: false, bold: false })}**.
-  </>
+  <>**Nice!**.. You got another {Format.currency(10)}.</>
 );
 
 export const OneMoreThing = () => <>Ok, one more thing.</>;
@@ -177,28 +171,12 @@ export const RememberHelp = () => (
 
 export const SeeYa = () => <>See you around {Config.general("WORLD_NAME")}!</>;
 
-export const MeetYourDormMates = (props: { emoji: string }) => (
-  <>
-    Alright Degen, that's it. You should go and meet your dorm mates.{" "}
-    {props.emoji}. Are you ready?
-  </>
-);
-
-export const ReadyForDormResponse = (props: {
-  response: "YES" | "NO";
+export const SelfDestructMessage = (props: {
   dormChannelId: string;
   seconds: number;
 }) => {
-  const first =
-    props.response === "YES" ? (
-      <>Ok great!</>
-    ) : (
-      <>Well.. Ready or not, you have to get out of here.</>
-    );
   return (
     <>
-      {first}. Head over to <Channel id={props.dormChannelId} /> and say hi.
-      <br />
       **This thread will self destruct in `{props.seconds}`{" "}
       {pluralize("second", props.seconds)}!**
     </>

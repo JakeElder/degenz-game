@@ -5,6 +5,7 @@ import { addAchievement, transactBalance } from "../legacy/db";
 import { currency } from "../legacy/utils";
 import { Global } from "../Global";
 import Events from "../Events";
+import { Format } from "lib";
 
 export default class AchievementController {
   static descriptions: Record<Achievement, string> = {
@@ -27,6 +28,8 @@ export default class AchievementController {
     const residence = await admin.getTextChannel(user.notificationChannelId);
     const member = await admin.getMember(user.discordId);
 
+    const startBalance = user.gbt;
+
     await Promise.all([
       transactBalance(user.discordId, 10),
       addAchievement(user.discordId, achievement),
@@ -38,13 +41,9 @@ export default class AchievementController {
         name: member!.displayName,
       })
       .setTitle("Achievement Unlocked!")
-      .setDescription(AchievementController.descriptions[achievement])
+      .setDescription(`\`${achievement}\``)
       .setColor("GOLD")
-      .addField("Achievement", achievement)
-      .addField(
-        "Reward",
-        `10 ${currency()} have been deposited to your account`
-      );
+      .addField("Reward", Format.transaction(startBalance, 10));
 
     if (achievement === Achievement.JOINED_THE_DEGENZ) {
       embed = embed.setImage(

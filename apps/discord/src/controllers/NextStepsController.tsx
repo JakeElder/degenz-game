@@ -83,19 +83,23 @@ export default class NextStepController {
   static makeMessage(data: StepMessageData): MessageOptions {
     const { user } = data;
 
-    const content = r(
-      <>
-        {userMention(user.discordId)} - There's lots to see and do here in **
-        {Format.worldName()}**
-        <br />
-        So what do you want to do?
-      </>
-    );
+    const content =
+      data.active === null
+        ? r(
+            <>
+              {userMention(user.discordId)} - There's lots to see and do here in
+              **
+              {Format.worldName()}**
+              <br />
+              So what do you want to do?
+            </>
+          )
+        : `${userMention(user.discordId)} - what next?`;
 
-    let embed: MessageEmbedOptions;
+    let embeds: MessageEmbedOptions[] = [{ description: content }];
 
     if (data.active === "FIGHT") {
-      embed = {
+      embeds.push({
         author: {
           name: "Training Dojo",
           icon_url:
@@ -103,15 +107,15 @@ export default class NextStepController {
         },
         description: r(
           <>
-            If you want to learn to hacker battle, go and see{" "}
-            {userMention(Config.clientId("SENSEI"))} in the
+            {userMention(user.discordId)} - If you want to learn to hacker
+            battle, go and see {userMention(Config.clientId("SENSEI"))} in the
             {channelMention(Config.channelId("TRAINING_DOJO"))}. Just press the
             **LFG** button when you get there.
           </>
         ),
-      };
+      });
     } else if (data.active === "GAMBLE") {
-      embed = {
+      embeds.push({
         author: {
           name: "Teds Toss House",
           icon_url:
@@ -126,9 +130,9 @@ export default class NextStepController {
             the `/help` command when you get there.
           </>
         ),
-      };
+      });
     } else if (data.active === "SHOP") {
-      embed = {
+      embeds.push({
         author: {
           name: "Merris Mart",
           icon_url:
@@ -142,13 +146,10 @@ export default class NextStepController {
             the `/help` command when you get there.
           </>
         ),
-      };
-    } else {
-      embed = { description: content };
+      });
     }
-
     return {
-      embeds: [embed],
+      embeds,
       components: [
         new MessageActionRow().addComponents(
           new MessageButton()
