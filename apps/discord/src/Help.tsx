@@ -16,6 +16,14 @@ type Params = {
   dormitories: Dormitory[];
 };
 
+const globalCommands = [
+  <>**`/eat`** - Eat food from your inventory.</>,
+  <>**`/stats`** - Check your own or someone elses stats.</>,
+  <>**`/inventory`** - Check your own or someone elses inventory.</>,
+  <>**`/recruit`** - Invite Degenz into the server.</>,
+  <>**`/recruited`** - Check how many Degenz you've invited.</>,
+];
+
 export class Help {
   static generate(params: Params): MessageOptions {
     const { channel } = params;
@@ -120,11 +128,7 @@ export class Help {
     dormitories,
     channel,
   }: Params): MessageOptions {
-    const commands = [
-      <>**`/eat`** - Eat food from your inventory.</>,
-      <>**`/stats`** - Check your own or someone elses stats.</>,
-      <>**`/inventory`** - Check your own or someone elses inventory.</>,
-    ];
+    const commands = globalCommands;
 
     const d = dormitories.map((dorm) => (
       <>
@@ -154,11 +158,7 @@ export class Help {
   }
 
   static makeTenancyMessage({ channel }: Params): MessageOptions {
-    const commands = [
-      <>**`/eat`** - Eat food from your inventory.</>,
-      <>**`/stats`** - Check your own or someone elses stats.</>,
-      <>**`/inventory`** - Check your own or someone elses inventory.</>,
-    ];
+    const commands = globalCommands;
 
     let plannedCommands = [
       <>**`/sleep`** - Sleep to replenish your strength.</>,
@@ -257,11 +257,7 @@ export class Help {
   }
 
   static makeTownSquareMessage({ channel }: Params): MessageOptions {
-    const commands = [
-      <>**`/eat`** - Eat food from your inventory.</>,
-      <>**`/stats`** - Check your own or someone elses stats.</>,
-      <>**`/inventory`** - Check your own or someone elses inventory.</>,
-    ];
+    const commands = globalCommands;
 
     const plannedCommands = [
       <>**`/beg`** - When you're down and out you still need to eat.</>,
