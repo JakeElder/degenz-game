@@ -132,7 +132,6 @@ export type RoleSymbol =
   | "VERIFIED"
   | "TRAINEE"
   | `${BotSymbol}_BOT`
-  | `${CitizenRoleSymbol}`
   | "THOUGHT_POLICE";
 
 type D = "D1" | "D2" | "D3" | "D4" | "D5" | "D6";
