@@ -172,7 +172,7 @@ export default class UserController {
       name: `\u2331\uFF5C${paramCase(member!.displayName)}s-orientation`,
       invitable: false,
       autoArchiveDuration: 1440,
-      type: ["production", "stage"].includes(Config.env("NODE_ENV"))
+      type: ["production"].includes(Config.env("NODE_ENV"))
         ? "GUILD_PRIVATE_THREAD"
         : "GUILD_PUBLIC_THREAD",
     });
