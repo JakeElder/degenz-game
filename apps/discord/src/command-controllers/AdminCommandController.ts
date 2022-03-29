@@ -21,6 +21,7 @@ import NextStepController from "../controllers/NextStepsController";
 import { Channel } from "../Channel";
 import OnboardController from "../controllers/OnboardController";
 import Events from "../Events";
+import Config from "config";
 
 export default class AllyCommandController extends CommandController {
   async respond(
@@ -274,6 +275,5 @@ export default class AllyCommandController extends CommandController {
         ephemeral: true,
       });
     }
-    { id: Config.roleId("ADMIN"), type: 1, permission: true },
   }
 }
