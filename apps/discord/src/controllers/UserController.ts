@@ -367,7 +367,7 @@ export default class UserController {
       return { success: false, code: "USER_NOT_FOUND" };
     }
 
-    if (prisoner.hasAchievement(AchievementEnum.JOINED_THE_DEGENZ)) {
+    if (!prisoner.hasAchievement(AchievementEnum.JOINED_THE_DEGENZ)) {
       return { success: false, code: "USER_NOT_REDPILLED" };
     }
 
