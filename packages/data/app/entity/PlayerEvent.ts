@@ -40,9 +40,9 @@ export class PlayerEvent extends BaseEntity {
   @ManyToOne(() => User, (user) => user.playerEvents, { onDelete: "CASCADE" })
   user: User;
 
-  @CreateDateColumn({default: () => "now() at time zone 'utc'"})
+  @CreateDateColumn({default: () => "(now() at time zone 'utc')"})
   createdAt: Date;
 
-  @UpdateDateColumn({default: () => "now() at time zone 'utc'"})
+  @UpdateDateColumn({default: () => "(now() at time zone 'utc')"})
   updatedAt: Date;
 }

@@ -17,17 +17,14 @@ export class Invite extends BaseEntity {
     code: string;
 
     @Column()
-    discordId: string;
+    inviter: string;
 
     @Column({default: 0})
     count: number;
 
-    @CreateDateColumn({default: () => "now() at time zone 'utc'"})
+    @CreateDateColumn({default: () => "(now() at time zone 'utc')"})
     createdAt: Date;
 
-    @UpdateDateColumn({default: () => "now() at time zone 'utc'"})
+    @UpdateDateColumn({default: () => "(now() at time zone 'utc')"})
     updatedAt: Date;
-
-    @DeleteDateColumn({default: () => "now() at time zone 'utc'"})
-    deletedAt: Date;
 }

@@ -4,7 +4,7 @@ import {
     PrimaryGeneratedColumn,
     Column,
     BaseEntity,
-    CreateDateColumn, DeleteDateColumn,
+    CreateDateColumn, UpdateDateColumn,
     ManyToOne, Index
 } from "typeorm";
 import { Invite } from "./Invite";
@@ -25,9 +25,9 @@ export class InvitedUser extends BaseEntity {
     @Column({default: false})
     accepted: boolean;
 
-    @CreateDateColumn({default: () => "now() at time zone 'utc'"})
+    @CreateDateColumn({default: () => "(now() at time zone 'utc')"})
     createdAt: Date;
 
-    @DeleteDateColumn({default: () => "now() at time zone 'utc'"})
-    deletedAt: Date;
+    @UpdateDateColumn({default: () => "(now() at time zone 'utc')"})
+    updatedAt: Date;
 }
