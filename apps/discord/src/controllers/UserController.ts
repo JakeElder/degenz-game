@@ -57,7 +57,10 @@ export default class UserController {
   ): Promise<ApartmentInitResult> {
     let [member, user] = await Promise.all([
       UserController.getMember(memberId),
-      User.findOne({ where: { discordId: memberId } }),
+      User.findOne({
+        where: { discordId: memberId },
+        relations: ["apartmentTenancies", "dormitoryTenancy"],
+      }),
     ]);
 
     if (member === null) {
