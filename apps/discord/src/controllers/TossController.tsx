@@ -21,6 +21,7 @@ import {
 import { userMention } from "@discordjs/builders";
 import Events from "../Events";
 import ResidenceController from "./ResidenceController";
+import { NPC } from "data/db";
 
 const { r } = Utils;
 
@@ -63,6 +64,36 @@ export default class TossController {
         },
       };
     })();
+
+    const bb = await NPC.findOneOrFail({ where: { symbol: "BIG_BROTHER" } });
+
+    // Handle negative amount
+    if (g.amount < 0) {
+      await i.reply({
+        content: `${bb.defaultEmojiId} **MINUS** ${Math.abs(
+          g.amount
+        )}? BIG BROTHER HAS BEEN NOTIFIED. CHEATERS WILL NOT BE TOLERATED.`,
+        ephemeral: true,
+      });
+      return {
+        success: false,
+        error: "NEGATIVE_AMOUNT",
+        data: { game: g },
+      };
+    }
+
+    // Handle 0
+    if (g.amount === 0) {
+      await i.reply({
+        content: `You want to toss *nothing*? **You can do that anywhere**. Don't come around here with your nothing tosses.`,
+        ephemeral: true,
+      });
+      return {
+        success: false,
+        error: "ZERO_AMOUNT",
+        data: { game: g },
+      };
+    }
 
     // Handle insufficient balance
     if (!g.challenger.balanceAvailable || !g.challengee.balanceAvailable) {
