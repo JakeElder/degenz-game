@@ -101,6 +101,7 @@ export default class Analytics {
 
   static martItemBought(e: PickEvent<"MART_ITEM_BOUGHT">) {
     this.mixpanel.track(capitalCase("MART_ITEM_PURCHASED"), {
+      ...this.common,
       distinct_id: e.data.user.discordId,
       user_display_name: e.data.user.displayName,
       item: e.data.item.name,
@@ -110,6 +111,7 @@ export default class Analytics {
 
   static itemEaten(e: PickEvent<"ITEM_EATEN">) {
     this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
       distinct_id: e.data.user.discordId,
       user_display_name: e.data.user.displayName,
       item: e.data.item.name,
@@ -118,6 +120,7 @@ export default class Analytics {
 
   static inventoryChecked(e: PickEvent<"INVENTORY_CHECKED">) {
     this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
       distinct_id: e.data.checker.discordId,
       user_display_name: e.data.checker.displayName,
       checkee_id: e.data.checkee.discordId,
@@ -133,6 +136,7 @@ export default class Analytics {
         : [e.data.challengee.discordId, e.data.challengee.displayName];
 
     this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
       distinct_id: e.data.challenger.discordId,
       user_display_name: e.data.challenger.displayName,
       challengee_id,
@@ -145,6 +149,7 @@ export default class Analytics {
 
   static firstWorldChoice(e: PickEvent<"FIRST_WORLD_CHOICE">) {
     this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
       distinct_id: e.data.user.discordId,
       user_display_name: e.data.user.displayName,
       choice: e.data.choice,
@@ -153,6 +158,7 @@ export default class Analytics {
 
   static allegiancePledged(e: PickEvent<"ALLEGIANCE_PLEDGED">) {
     this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
       distinct_id: e.data.user.discordId,
       user_display_name: e.data.user.displayName,
       yld: e.data.yld,
@@ -161,6 +167,7 @@ export default class Analytics {
 
   static gameEnteredApartment(e: PickEvent<"GAME_ENTERED_APARTMENT">) {
     this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
       distinct_id: e.data.user.discordId,
       user_display_name: e.data.user.displayName,
       district: e.data.district.symbol,
@@ -169,6 +176,7 @@ export default class Analytics {
 
   static gameEnteredDormitory(e: PickEvent<"GAME_ENTERED_DORMITORY">) {
     this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
       distinct_id: e.data.user.discordId,
       user_display_name: e.data.user.displayName,
       district: e.data.dormitory.symbol,
@@ -177,6 +185,7 @@ export default class Analytics {
 
   static achievementAwarded(e: PickEvent<"ACHIEVEMENT_AWARDED">) {
     this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
       distinct_id: e.data.user.discordId,
       user_display_name: e.data.user.displayName,
       achievement: e.data.achievement,
@@ -185,6 +194,7 @@ export default class Analytics {
 
   static dormReadyButtonPressed(e: PickEvent<"DORM_READY_BUTTON_PRESSED">) {
     this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
       distinct_id: e.data.user.discordId,
       user_display_name: e.data.user.displayName,
       response: e.data.response,
@@ -193,6 +203,7 @@ export default class Analytics {
 
   static onboardingThreadPurged(e: PickEvent<"ONBOARDING_THREAD_PURGED">) {
     this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
       distinct_id: e.data.user.discordId,
       user_display_name: e.data.user.displayName,
       redpilled: e.data.redpilled,
@@ -201,6 +212,7 @@ export default class Analytics {
 
   static tokensIssued(e: PickEvent<"TOKENS_ISSUED">) {
     this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
       distinct_id: e.data.issuerId,
       recipient: e.data.recipient?.discordId || null,
       amount: e.data.amount,
@@ -209,6 +221,7 @@ export default class Analytics {
 
   static citizenImprisoned(e: PickEvent<"CITIZEN_IMPRISONED">) {
     this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
       distinct_id: e.data.prisoner.discordId,
       captor: e.data.captor.discordId,
       reason: e.data.reason,
@@ -217,12 +230,14 @@ export default class Analytics {
 
   static citizenEscaped(e: PickEvent<"CITIZEN_ESCAPED">) {
     this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
       distinct_id: e.data.prisoner.discordId,
     });
   }
 
   static citizenReleased(e: PickEvent<"CITIZEN_RELEASED">) {
     this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
       distinct_id: e.data.prisoner.discordId,
       captor: e.data.captor.discordId,
     });
