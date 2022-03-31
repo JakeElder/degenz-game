@@ -371,6 +371,10 @@ export default class UserController {
       return { success: false, code: "USER_NOT_REDPILLED" };
     }
 
+    if (prisoner.imprisoned) {
+      return { success: false, code: "USER_ALREADY_IMPRISONED" };
+    }
+
     const entryRoleIds = member!.roles.cache
       .map((r) => r.id)
       .filter(

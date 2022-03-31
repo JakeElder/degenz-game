@@ -24,15 +24,14 @@ export default class PrisonerCommandController extends CommandController {
         content: r(<SuccessfulEscapeMessage code={code} />),
         ephemeral: true,
       });
+
+      await Utils.delay(2000);
+      await UserController.release(user.discordId, null, "ESCAPE");
     } else {
       i.reply({
         content: r(<FailedEscapeMessage code={code} />),
         ephemeral: true,
       });
     }
-
-    await Utils.delay(2000);
-
-    await UserController.release(user.discordId, null, "ESCAPE");
   }
 }
