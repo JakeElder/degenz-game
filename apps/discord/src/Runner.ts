@@ -52,7 +52,6 @@ export default class Runner {
 
       if (e.data.bot.symbol === "ALLY") {
         NextStepController.init();
-        MartClerkCommandController.init();
       }
     });
 
