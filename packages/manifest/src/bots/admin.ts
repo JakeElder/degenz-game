@@ -120,6 +120,25 @@ admin.commands.push({
     )
     .addSubcommand((subcommand) =>
       subcommand
+        .setName("confiscate")
+        .setDescription(`Confiscate ${Format.currency(null, { bold: false })}`)
+        .addNumberOption((option) =>
+          option
+            .setName("amount")
+            .setRequired(true)
+            .setDescription(
+              `The amount of ${Format.currency(null, { bold: false })} send`
+            )
+        )
+        .addUserOption((option) =>
+          option
+            .setName("member")
+            .setDescription("The member to issue GBT to.")
+            .setRequired(true)
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
         .setName("open")
         .setDescription(`Open a district`)
         .addStringOption((option) =>

@@ -219,6 +219,15 @@ export default class Analytics {
     });
   }
 
+  static tokensConfiscated(e: PickEvent<"TOKENS_CONFISCATED">) {
+    this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
+      distinct_id: e.data.confiscaterId,
+      user: e.data.user,
+      amount: e.data.amount,
+    });
+  }
+
   static citizenImprisoned(e: PickEvent<"CITIZEN_IMPRISONED">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,

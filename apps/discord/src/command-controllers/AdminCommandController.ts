@@ -109,6 +109,41 @@ export default class AllyCommandController extends CommandController {
     }
   }
 
+  async admin_confiscate(i: CommandInteraction) {
+    const amount = i.options.getNumber("amount", true);
+    const member = i.options.getUser("member", true);
+
+    try {
+      let user: User | undefined;
+      if (member) {
+        user = await User.findOne({
+          where: { discordId: member.id },
+        });
+        if (!user || !user.inGame) {
+          await this.respond(i, "USER_NOT_FOUND", "FAIL");
+          return;
+        }
+        if (amount <= 0) {
+          await this.respond(i, "INVALID_AMOUNT", "FAIL");
+          return;
+        }
+        user.gbt -= amount;
+        await user.save();
+
+        Events.emit("TOKENS_CONFISCATED", {
+          confiscaterId: i.user.id,
+          user,
+          amount,
+        });
+      }
+    } catch (e) {
+      await this.respond(i, "DIDNT_CONFISCATE_TOKENS", "FAIL");
+      return;
+    }
+
+    await this.respond(i, "TOKENS_CONFISCATED", "SUCCESS");
+  }
+
   async admin_issue(i: CommandInteraction) {
     const amount = i.options.getNumber("amount", true);
     const member = i.options.getUser("member");
@@ -123,16 +158,20 @@ export default class AllyCommandController extends CommandController {
           await this.respond(i, "USER_NOT_FOUND", "FAIL");
           return;
         }
+        if (amount <= 0) {
+          await this.respond(i, "INVALID_AMOUNT", "FAIL");
+          return;
+        }
         user.gbt += amount;
         await user.save();
+        Events.emit("TOKENS_ISSUED", {
+          issuerId: i.user.id,
+          recipient: user || null,
+          amount,
+        });
       } else {
         await issueTokens(amount);
       }
-      Events.emit("TOKENS_ISSUED", {
-        issuerId: i.user.id,
-        recipient: user || null,
-        amount,
-      });
     } catch (e) {
       await this.respond(i, "DIDNT_ISSUE_TOKENS", "FAIL");
       return;

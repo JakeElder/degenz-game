@@ -172,6 +172,10 @@ export default class Runner {
       Analytics.onboardingThreadPurged(e);
     });
 
+    Events.on("TOKENS_CONFISCATED", (e) => {
+      Analytics.tokensConfiscated(e);
+    });
+
     Events.on("TOKENS_ISSUED", (e) => {
       Analytics.tokensIssued(e);
     });

@@ -214,6 +214,15 @@ type TokensIssuedEvent = {
   };
 };
 
+type TokensConfiscatedEvent = {
+  type: "TOKENS_CONFISCATED";
+  data: {
+    confiscaterId: string;
+    user: User;
+    amount: number;
+  };
+};
+
 type CitizenImprisonedEvent = {
   type: "CITIZEN_IMPRISONED";
   data: {
@@ -267,6 +276,7 @@ export type Event =
   | DormReadyButtonPressedEvent
   | OnboardingThreadPurgedEvent
   | TokensIssuedEvent
+  | TokensConfiscatedEvent
   | CitizenImprisonedEvent
   | CitizenEscapedEvent
   | CitizenReleasedEvent;
@@ -303,6 +313,7 @@ type DegenEmitterEvents = EventHandler<BotReadyEvent> &
   EventHandler<DormReadyButtonPressedEvent> &
   EventHandler<OnboardingThreadPurgedEvent> &
   EventHandler<TokensIssuedEvent> &
+  EventHandler<TokensConfiscatedEvent> &
   EventHandler<CitizenImprisonedEvent> &
   EventHandler<CitizenEscapedEvent> &
   EventHandler<CitizenReleasedEvent>;
