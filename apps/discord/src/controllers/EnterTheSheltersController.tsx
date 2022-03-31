@@ -140,6 +140,7 @@ export default class EnterTheProjectsController {
   static async handleButtonPress(i: ButtonInteraction) {
     await i.deferReply({ ephemeral: true });
     const user = await User.findOneOrFail({ where: { discordId: i.user.id } });
+
     if (user.inGame) {
       await i.editReply({
         content: `${userMention(user.discordId)} - You're already a Degen.`,
@@ -148,10 +149,10 @@ export default class EnterTheProjectsController {
     }
 
     const res = await UserController.initShelters(i.user.id, true);
-    const tenancy = user.dormitoryTenancy;
 
     if (res.success) {
       const user = res.user!;
+      const tenancy = user.dormitoryTenancy;
       Events.emit("GAME_ENTERED_DORMITORY", {
         user,
         dormitory: tenancy.dormitory,
