@@ -27,7 +27,9 @@ export default abstract class DiscordBot {
 
   bindClientEvents() {
     this.client.on("rateLimit", (e) => {
-      Utils.rollbar.info("Rate Limited Request", e);
+      Utils.rollbar.info(
+        `Rate Limited Request: \n\`\`\`${JSON.stringify(e, null, 2)}\`\`\``
+      );
     });
 
     this.client.on("interactionCreate", async (i) => {
