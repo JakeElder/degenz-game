@@ -15,6 +15,7 @@ const admin: Bot = {
       FLAGS.GUILD_MEMBERS,
       FLAGS.GUILD_MESSAGES,
       FLAGS.GUILD_PRESENCES,
+      FLAGS.GUILD_INVITES,
     ],
   },
   commands: [],
@@ -220,6 +221,19 @@ admin.commands.push({
         .setDescription(`Sends the next steps message.`)
         .addUserOption((option) =>
           option.setName("member").setDescription("The member to address")
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("create-invite-link")
+        .setDescription(`Create an invite link.`)
+        .addStringOption((option) =>
+          option
+            .setName("campaign")
+            .setRequired(true)
+            .setDescription(
+              `A memorable word or short phrase to associate the link with.`
+            )
         )
     )
     .toJSON(),

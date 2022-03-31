@@ -4,7 +4,7 @@ import {
   GuildMember,
   TextBasedChannel,
 } from "discord.js";
-import { AppState, User } from "data/db";
+import { AppState, CampaignInvite, User } from "data/db";
 import { Format } from "lib";
 import pluralize from "pluralize";
 import { ILike } from "typeorm";
@@ -263,6 +263,24 @@ export default class AllyCommandController extends CommandController {
     }
     await OnboardController.purgeThread(c.channel);
     await this.respond(i, `PURGED`, "SUCCESS");
+  }
+
+  async admin_createInviteLink(i: CommandInteraction) {
+    const admin = Global.bot("ADMIN");
+    const campaign = i.options.getString("campaign", true) as DistrictSymbol;
+    try {
+      const invite = await admin.guild.invites.create(
+        Config.channelId("VERIFICATION"),
+        { unique: true }
+      );
+      await CampaignInvite.insert({ campaign, discordCode: invite.code });
+      await i.reply({ content: "`\u2705 SUCCESS`", ephemeral: true });
+      await i.followUp({ content: invite.url, ephemeral: true });
+    } catch (e) {
+      await this.respond(i, "DISCORD_ERROR", "FAIL");
+      console.error(e);
+      await i.followUp(Format.codeBlock(JSON.stringify(e, null, 2)));
+    }
   }
 
   async admin_userSearch(i: CommandInteraction) {

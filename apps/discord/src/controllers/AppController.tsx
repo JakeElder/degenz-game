@@ -3,13 +3,14 @@ import {
   Collection,
   GuildBasedChannel,
   GuildMember,
+  Invite,
   MessageReaction,
   ReactionCollector,
   ThreadChannel,
   User as DiscordUser,
 } from "discord.js";
 import { DistrictSymbol, OperationResult } from "data/types";
-import { District, User } from "data/db";
+import { CampaignInvite, District, User } from "data/db";
 import { bots } from "manifest";
 import { Global } from "../Global";
 import Events from "../Events";
@@ -21,14 +22,48 @@ import OnboardController from "./OnboardController";
 
 export default class AppController {
   static reactionCollector: ReactionCollector;
+  static invites: Collection<string, Invite>;
 
   static async bindEnterListener() {
     const admin = Global.bot("ADMIN");
+    this.invites = await admin.guild.invites.fetch({ cache: false });
 
     admin.client.on("guildMemberAdd", async (member) => {
-      if (!member.user.bot) {
-        Events.emit("ENTER", { member });
+      if (member.user.bot) {
+        return;
       }
+
+      const newInvites = await admin.guild.invites.fetch({ cache: false });
+      const used = this.invites.find((i) => {
+        const ni = newInvites.get(i.code)!;
+        if (i.uses === null) {
+          return ni.uses === 1;
+        }
+        return ni.uses !== null && ni.uses > i.uses;
+      });
+
+      if (used) {
+        const ci = await CampaignInvite.findOne({
+          where: { discordCode: used.code },
+        });
+        Events.emit("ENTER", {
+          member,
+          inviteCode: used.code,
+          campaign: ci?.campaign || null,
+        });
+      } else {
+        Events.emit("ENTER", { member, inviteCode: null, campaign: null });
+      }
+
+      this.invites = newInvites;
+    });
+
+    admin.client.on("inviteDelete", (invite) => {
+      this.invites.delete(invite.code);
+    });
+
+    admin.client.on("inviteCreate", (invite) => {
+      this.invites.set(invite.code, invite);
     });
 
     admin.client.on("guildMemberRemove", async (member) => {

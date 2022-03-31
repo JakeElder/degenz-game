@@ -26,6 +26,13 @@ export default class Analytics {
       $name: e.data.member.displayName,
       $avatar: e.data.member.displayAvatarURL({ size: 256, format: "png" }),
     });
+
+    this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
+      distinct_id: e.data.member.id,
+      invite_code: e.data.inviteCode,
+      campaign: e.data.campaign,
+    });
   }
 
   static exit(e: PickEvent<"EXIT">) {

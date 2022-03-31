@@ -14,6 +14,8 @@ type EnterEvent = {
   type: "ENTER";
   data: {
     member: GuildMember;
+    inviteCode: string | null;
+    campaign: string | null;
   };
 };
 

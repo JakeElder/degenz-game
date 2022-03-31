@@ -4,6 +4,7 @@ import findParentDir from "find-parent-dir";
 import { Achievement } from "./entity/Achievement";
 import { ApartmentTenancy } from "./entity/ApartmentTenancy";
 import { AppState } from "./entity/AppState";
+import { CampaignInvite } from "./entity/CampaignInvite";
 import { District } from "./entity/District";
 import { Dormitory } from "./entity/Dormitory";
 import { DormitoryTenancy } from "./entity/DormitoryTenancy";
@@ -50,6 +51,7 @@ export {
   Achievement,
   ApartmentTenancy,
   AppState,
+  CampaignInvite,
   District,
   Dormitory,
   DormitoryTenancy,
