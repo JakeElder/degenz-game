@@ -243,7 +243,7 @@ export default class WorldNotifier {
 
     if (e.data.prisoner.primaryTenancy.type === "DORMITORY") {
       await this.logToChannel(
-        e.data.prisoner.dormitoryTenancy.dormitory.symbol,
+        e.data.prisoner.primaryTenancy.dormitory.symbol,
         "WARDEN",
         e.type,
         message
@@ -262,7 +262,7 @@ export default class WorldNotifier {
 
     if (e.data.prisoner.primaryTenancy.type === "DORMITORY") {
       await this.logToChannel(
-        e.data.prisoner.dormitoryTenancy.dormitory.symbol,
+        e.data.prisoner.primaryTenancy.dormitory.symbol,
         "WARDEN",
         e.type,
         message
@@ -278,7 +278,7 @@ export default class WorldNotifier {
 
     if (e.data.prisoner.primaryTenancy.type === "DORMITORY") {
       await this.logToChannel(
-        e.data.prisoner.dormitoryTenancy.dormitory.symbol,
+        e.data.prisoner.primaryTenancy.dormitory.symbol,
         "PRISONER",
         e.type,
         message

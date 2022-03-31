@@ -440,12 +440,13 @@ export default class OnboardController {
 
   static async completeDormOnboarding(user: User) {
     const admin = Global.bot("ADMIN");
+    const tenancy = user.dormitoryTenancy;
     const thread = await admin.guild.channels.fetch(
-      user.dormitoryTenancy.onboardingThreadId!
+      tenancy.onboardingThreadId!
     );
     if (thread && thread.isText()) {
-      user.dormitoryTenancy.onboardingThreadId = null;
-      await Promise.all([thread.delete(), user.dormitoryTenancy.save()]);
+      tenancy.onboardingThreadId = null;
+      await Promise.all([thread.delete(), tenancy.save()]);
     }
   }
 

@@ -148,23 +148,18 @@ export default class EnterTheProjectsController {
     }
 
     const res = await UserController.initShelters(i.user.id, true);
+    const tenancy = user.dormitoryTenancy;
 
     if (res.success) {
       const user = res.user!;
       Events.emit("GAME_ENTERED_DORMITORY", {
         user,
-        dormitory: user.dormitoryTenancy.dormitory,
+        dormitory: tenancy.dormitory,
       });
       const um = userMention(i.user.id);
-      const dorm = channelMention(
-        Config.channelId(user.dormitoryTenancy.dormitory.symbol)
-      );
-      const onboardingThread = channelMention(
-        user.dormitoryTenancy.onboardingThreadId!
-      );
-      const prefix = user.dormitoryTenancy.dormitory.symbol.startsWith("THE")
-        ? ""
-        : "the ";
+      const dorm = channelMention(Config.channelId(tenancy.dormitory.symbol));
+      const onboardingThread = channelMention(tenancy.onboardingThreadId!);
+      const prefix = tenancy.dormitory.symbol.startsWith("THE") ? "" : "the ";
 
       await i.editReply(
         r(

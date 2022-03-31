@@ -161,13 +161,6 @@ export class User extends BaseEntity {
   }
 
   public get notificationChannelId() {
-    if (
-      this.dormitoryTenancy === undefined ||
-      this.apartmentTenancies === undefined
-    ) {
-      throw new Error("Tenancies not loaded");
-    }
-
     if (this.apartmentTenancies.length > 0) {
       return this.apartmentTenancies[0].discordChannelId;
     }
@@ -180,13 +173,6 @@ export class User extends BaseEntity {
   }
 
   public get primaryTenancy() {
-    if (
-      this.dormitoryTenancy === undefined ||
-      this.apartmentTenancies === undefined
-    ) {
-      throw new Error("Tenancies not loaded");
-    }
-
     if (this.apartmentTenancies.length > 0) {
       return this.apartmentTenancies[0];
     }
