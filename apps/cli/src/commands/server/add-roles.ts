@@ -1,4 +1,4 @@
-import { roles } from "manifest";
+import Manifest from "manifest";
 import Listr from "listr";
 import { Routes } from "discord-api-types/v9";
 import Config from "config";
@@ -9,7 +9,7 @@ import {
   RoleSymbol,
   SupplementaryRole,
 } from "data/types";
-import { connect, disconnect, Role } from "data/db";
+import { Role } from "data/db";
 import { Flags } from "@oclif/core";
 import path from "path";
 import { promises as fs } from "fs";
@@ -37,12 +37,11 @@ export default class AddRoles extends Command {
   };
 
   async run(): Promise<void> {
+    const roles = await Manifest.roles();
     const { flags } = await this.parse(AddRoles);
 
     const ROLE_IDS: Partial<Record<RoleSymbol | CitizenRoleSymbol, string>> =
       {};
-
-    await connect();
 
     if (flags.type === "base") {
       const baseRoles = roles.filter((r): r is BaseRole => r.type === "BASE");
@@ -160,7 +159,5 @@ export default class AddRoles extends Command {
 
       await listr.run();
     }
-
-    await disconnect();
   }
 }

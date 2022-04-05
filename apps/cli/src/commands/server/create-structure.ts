@@ -1,6 +1,6 @@
 import { Routes, ChannelType } from "discord-api-types/v9";
 import Listr from "listr";
-import { structure } from "manifest";
+import Manifest from "manifest";
 import { CategorySymbol, ChannelSymbol } from "data/types";
 import Config from "config";
 import { Command } from "../../lib";
@@ -10,6 +10,8 @@ export default class CreateStructure extends Command {
   static description = "Create categories and channels";
 
   async run(): Promise<void> {
+    const structure = await Manifest.structure();
+
     const CATEGORY_IDS: Partial<Record<CategorySymbol, string>> = {};
     const CHANNEL_IDS: Partial<Record<ChannelSymbol, string>> = {};
 

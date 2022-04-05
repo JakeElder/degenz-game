@@ -1,5 +1,7 @@
 import { Command as OclifCommand } from "@oclif/core";
 import axios, { AxiosResponse } from "axios";
+import Config from "config";
+import { connect, disconnect } from "data/db";
 import delay from "delay";
 import Listr from "Listr";
 import { json } from "../utils";
@@ -10,6 +12,16 @@ const http = axios.create({
 });
 
 export default abstract class Command extends OclifCommand {
+  async init() {
+    await connect();
+    await Config.load();
+  }
+
+  async finally(err?: Error) {
+    disconnect();
+    return super.finally(err);
+  }
+
   async get(route: string, token: string) {
     try {
       return http({

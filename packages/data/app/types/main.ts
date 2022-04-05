@@ -27,18 +27,8 @@ export type EnvVars = SetOptional<
 >;
 
 export enum ChannelSymbolEnum {
-  VERIFICATION = "VERIFICATION",
-  ADMIN_GENERAL = "ADMIN_GENERAL",
-  ADMIN_SANDBOX = "ADMIN_SANDBOX",
-
-  WELCOME_ROOM = "WELCOME_ROOM",
-  ORIENTATION = "ORIENTATION",
-
-  // TODO: Delete WAITING_ROOM
-  WAITING_ROOM = "WAITING_ROOM",
-
-  ENTER_THE_PROJECTS = "ENTER_THE_PROJECTS",
-  ENTER_THE_SHELTERS = "ENTER_THE_SHELTERS",
+  ENTRANCE = "ENTRANCE",
+  QUESTS = "QUESTS",
 
   ANNOUNCEMENTS = "ANNOUNCEMENTS",
   LEADERBOARD = "LEADERBOARD",
@@ -47,6 +37,7 @@ export enum ChannelSymbolEnum {
   FAQ = "FAQ",
 
   GENERAL = "GENERAL",
+  WELCOME_ROOM = "WELCOME_ROOM",
   FEEDBACK = "FEEDBACK",
   HALL_OF_PRIVACY = "HALL_OF_PRIVACY",
 
@@ -82,10 +73,7 @@ export enum MartItemSymbolEnum {
 export type MartItemSymbol = `${MartItemSymbolEnum}`;
 
 export type CategorySymbol =
-  | "OUTSIDE_WORLD"
-  | "ADMIN"
-  | "ENTRANCE"
-  | "JOIN_THE_GAME"
+  | "THE_GAME"
   | "COMMAND_CENTER"
   | "COMMUNITY"
   | "BEAUTOPIA"
@@ -117,6 +105,7 @@ export enum BotSymbolEnum {
 }
 
 export enum RoleTypeEnum {
+  EVERYONE = "EVERYONE",
   BASE = "BASE",
   CITIZEN = "CITIZEN",
   SUPPLEMENTARY = "SUPPLEMENTARY",
@@ -125,30 +114,18 @@ export enum RoleTypeEnum {
 
 export type BotSymbol = `${BotSymbolEnum}`;
 
-export type RoleSymbol =
-  | "ADMIN"
-  | "DEGEN"
-  | "EVERYONE"
-  | "PRISONER"
-  | "SERVER_BOOSTER"
-  | "VERIFIED"
-  | "TRAINEE"
-  | `${BotSymbol}_BOT`
-  | "THOUGHT_POLICE";
-
-type D = "D1" | "D2" | "D3" | "D4" | "D5" | "D6";
-export type CitizenRoleSymbol = `${D}_CITIZEN` | `${DormitorySymbol}_CITIZEN`;
-
-export type SupplementaryRoleSymbol = "THOUGHT_POLICE";
-
-export enum RoleSymbolEnum {
-  ADMIN = "ADMIN",
-  DEGEN = "DEGEN",
+export enum EveryoneRoleSymbolEnum {
   EVERYONE = "EVERYONE",
-  PRISONER = "PRISONER",
-  SERVER_BOOSTER = "SERVER_BOOSTER",
+}
+
+export enum BaseRoleSymbolEnum {
   VERIFIED = "VERIFIED",
-  TRAINEE = "TRAINEE",
+  DEGEN = "DEGEN",
+  PRISONER = "PRISONER",
+  ESTABLISHMENT = "ESTABLISHMENT",
+}
+
+export enum ManagedRoleSymbolEnum {
   ADMIN_BOT = "ADMIN_BOT",
   ALLY_BOT = "ALLY_BOT",
   ARMORY_CLERK_BOT = "ARMORY_CLERK_BOT",
@@ -157,10 +134,21 @@ export enum RoleSymbolEnum {
   DEVILS_ADVOCATE_BOT = "DEVILS_ADVOCATE_BOT",
   MART_CLERK_BOT = "MART_CLERK_BOT",
   PRISONER_BOT = "PRISONER_BOT",
+  RESISTANCE_LEADER_BOT = "RESISTANCE_LEADER_BOT",
   SCOUT_BOT = "SCOUT_BOT",
   SENSEI_BOT = "SENSEI_BOT",
   TOSSER_BOT = "TOSSER_BOT",
   WARDEN_BOT = "WARDEN_BOT",
+}
+
+export enum SupplementaryRoleSymbolEnum {
+  ADMIN = "ADMIN",
+  SERVER_BOOSTER = "SERVER_BOOSTER",
+  TRAINEE = "TRAINEE",
+  THOUGHT_POLICE = "THOUGHT_POLICE",
+}
+
+export enum CitizenRoleSymbolEnum {
   D1_CITIZEN = "D1_CITIZEN",
   D2_CITIZEN = "D2_CITIZEN",
   D3_CITIZEN = "D3_CITIZEN",
@@ -172,35 +160,61 @@ export enum RoleSymbolEnum {
   THE_GRID_CITIZEN = "THE_GRID_CITIZEN",
   BULLSEYE_CITIZEN = "BULLSEYE_CITIZEN",
   VULTURE_CITIZEN = "VULTURE_CITIZEN",
-  THOUGHT_POLICE = "THOUGHT_POLICE",
 }
+
+export type CitizenRoleSymbol = `${CitizenRoleSymbolEnum}`;
+
+const RoleSymbolEnum = {
+  ...EveryoneRoleSymbolEnum,
+  ...BaseRoleSymbolEnum,
+  ...ManagedRoleSymbolEnum,
+  ...SupplementaryRoleSymbolEnum,
+  ...CitizenRoleSymbolEnum,
+};
+
+export { RoleSymbolEnum };
+
+export type RoleSymbol = keyof typeof RoleSymbolEnum;
+
+export type EveryoneRole = {
+  type: "EVERYONE";
+  symbol: "EVERYONE";
+  permissions: string;
+};
 
 export type BaseRole = {
   type: "BASE";
-  symbol: RoleSymbol;
+  symbol: `${BaseRoleSymbolEnum}`;
   name: string;
   permissions: string;
 };
 
 export type CitizenRole = {
   type: "CITIZEN";
-  symbol: CitizenRoleSymbol;
+  symbol: `${CitizenRoleSymbolEnum}`;
   name: string;
   color: string;
 };
 
 export type ManagedRole = {
   type: "MANAGED";
-  symbol: RoleSymbol;
+  symbol: `${ManagedRoleSymbolEnum}`;
+  permissions?: string;
 };
 
 export type SupplementaryRole = {
   type: "SUPPLEMENTARY";
-  symbol: SupplementaryRoleSymbol;
+  symbol: `${SupplementaryRoleSymbolEnum}`;
   name: string;
+  permissions?: string;
 };
 
-export type Role = BaseRole | CitizenRole | ManagedRole | SupplementaryRole;
+export type Role =
+  | EveryoneRole
+  | BaseRole
+  | CitizenRole
+  | ManagedRole
+  | SupplementaryRole;
 
 type RestrictedRestrictionCheckResponse = {
   restricted: true;
@@ -269,16 +283,10 @@ export enum Achievement {
 }
 
 export enum PersistentMessageSymbolEnum {
-  // TODO: Delete ENTRY
-  ENTRY = "ENTRY",
+  ENTRANCE = "ENTRANCE",
   GBT_LEADERBOARD_1 = "GBT_LEADERBOARD_1",
   GBT_LEADERBOARD_2 = "GBT_LEADERBOARD_2",
   PLEDGE = "PLEDGE",
-  THE_PROJECTS_ENTRY = "THE_PROJECTS_ENTRY",
-  THE_SHELTERS_ENTRY = "THE_SHELTERS_ENTRY",
-  VERIFY = "VERIFY",
-  WELCOME_INFO = "WELCOME_INFO",
-  WELCOME_NOTIFICATION = "WELCOME_NOTIFICATION",
 }
 
 export type PersistentMessageSymbol = `${PersistentMessageSymbolEnum}`;
@@ -347,7 +355,6 @@ export type ChannelDescriptor = {
   isArena: boolean;
   isArmory: boolean;
   isTrainingDojo: boolean;
-  isVerification: boolean;
   isGenPop: boolean;
   isBank: boolean;
   isTavern: boolean;

@@ -7,32 +7,32 @@ import {
 } from "data/db";
 import { ChannelDescriptor } from "data/types";
 import { TextBasedChannel } from "discord.js";
-import { structure } from "manifest";
+import Manifest from "manifest";
 import memoize from "memoizee";
 import { Global } from "./Global";
-
-const [beautopia, entrance, joinTheGame, commandCenter, community] = [
-  structure.find((c) => c.symbol === "BEAUTOPIA")!,
-  structure.find((c) => c.symbol === "ENTRANCE")!,
-  structure.find((c) => c.symbol === "JOIN_THE_GAME")!,
-  structure.find((c) => c.symbol === "COMMAND_CENTER")!,
-  structure.find((c) => c.symbol === "COMMUNITY")!,
-];
-
-const communityChannelIds = [
-  ...entrance.channels,
-  ...joinTheGame.channels,
-  ...commandCenter.channels,
-  ...community.channels,
-].map((c) => Config.channelId(c.symbol));
-
-const gameChannelIds = beautopia.channels.map((c) =>
-  Config.channelId(c.symbol)
-);
 
 export class Channel {
   static getDescriptor = memoize(
     async (channelId: TextBasedChannel["id"]): Promise<ChannelDescriptor> => {
+      const structure = await Manifest.structure();
+
+      const [beautopia, theGame, commandCenter, community] = [
+        structure.find((c) => c.symbol === "BEAUTOPIA")!,
+        structure.find((c) => c.symbol === "THE_GAME")!,
+        structure.find((c) => c.symbol === "COMMAND_CENTER")!,
+        structure.find((c) => c.symbol === "COMMUNITY")!,
+      ];
+
+      const communityChannelIds = [
+        ...theGame.channels,
+        ...commandCenter.channels,
+        ...community.channels,
+      ].map((c) => Config.channelId(c.symbol));
+
+      const gameChannelIds = beautopia.channels.map((c) =>
+        Config.channelId(c.symbol)
+      );
+
       const admin = Global.bot("ADMIN");
       const [
         imprisonment,
@@ -78,7 +78,6 @@ export class Channel {
         isMart: channelId === Config.channelId("MART"),
         isArmory: channelId === Config.channelId("ARMORY"),
         isTrainingDojo: channelId === Config.channelId("TRAINING_DOJO"),
-        isVerification: channelId === Config.channelId("VERIFICATION"),
         isGenPop: channelId === Config.channelId("GEN_POP"),
         isBank: channelId === Config.channelId("BANK"),
         isTavern: channelId === Config.channelId("TAVERN"),

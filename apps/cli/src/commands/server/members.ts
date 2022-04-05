@@ -2,7 +2,7 @@ import { Routes } from "discord-api-types/v9";
 import { Command } from "../../lib";
 import Config from "config";
 import { Flags } from "@oclif/core";
-import { User, connect, disconnect } from "data/db";
+import { User } from "data/db";
 
 export default class Members extends Command {
   static description = "Members";
@@ -21,7 +21,6 @@ export default class Members extends Command {
     );
 
     if (flags.sync) {
-      await connect();
       const users = await User.find();
 
       if (flags.dry) {
@@ -48,8 +47,6 @@ export default class Members extends Command {
           })
         );
       }
-
-      disconnect();
     } else {
       console.log(JSON.stringify(res.data, null, 2));
     }

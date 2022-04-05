@@ -72,10 +72,6 @@ export class Help {
       return this.makeTrainingDojoMessage(params);
     }
 
-    if (channel.isVerification) {
-      return this.makeVerificationMessage(params);
-    }
-
     if (channel.isGenPop) {
       return this.makeGenPopMessage(params);
     }
@@ -457,20 +453,6 @@ export class Help {
     });
   }
 
-  static makeVerificationMessage({ channel }: Params): MessageOptions {
-    return this.makeMessageOptions({
-      title: channel.name,
-      description: r(
-        <>
-          {channelMention(channel.id)} - React to the message so we know you're
-          not a bot.{" "}
-        </>
-      ),
-      fields: [],
-      // image: { url: "" },
-    });
-  }
-
   static makeGenPopMessage({ channel }: Params): MessageOptions {
     const commands = [
       <>
@@ -500,7 +482,7 @@ export class Help {
     });
   }
 
-  static makeCommunityMessage({ channel }: Params): MessageOptions {
+  static makeCommunityMessage(_props: Params): MessageOptions {
     const channels = [
       <>
         {channelMention(Config.channelId("GENERAL"))} - For general chat about
@@ -534,11 +516,7 @@ export class Help {
       description: r(
         <>
           The community area is outside of {Config.general("WORLD_NAME")}. Come
-          here to to learn more about the Degenz game. **If you're not in game
-          already**, go to{" "}
-          {channelMention(Config.channelId("ENTER_THE_SHELTERS"))} to get a
-          space in one of our **luxury dormitories**.
-          <br />
+          here to chat with other members of the community.
         </>
       ),
       fields: [

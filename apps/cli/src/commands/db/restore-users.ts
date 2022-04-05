@@ -1,20 +1,11 @@
 // @ts-nocheck
-import {
-  connect,
-  disconnect,
-  District,
-  MartItem,
-  User,
-  Achievement,
-} from "data/db";
+import { District, MartItem, User, Achievement } from "data/db";
 import { Command } from "../../lib";
 
 export default class Seed extends Command {
   static description = "Seeds the database";
 
   async run(): Promise<void> {
-    await connect();
-
     const [allMartItems, allDistricts, allAchievements] = await Promise.all([
       MartItem.find(),
       District.find(),
@@ -87,7 +78,5 @@ export default class Seed extends Command {
       await prime(member, i);
       i++;
     }
-
-    await disconnect();
   }
 }

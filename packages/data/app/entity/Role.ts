@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
 } from "typeorm";
-import { RoleSymbolEnum, RoleTypeEnum } from "../types";
+import { RoleSymbol, RoleSymbolEnum, RoleTypeEnum } from "../types";
 
 @Entity()
 export class Role extends BaseEntity {
@@ -17,12 +17,12 @@ export class Role extends BaseEntity {
   id: number;
 
   @Column({ type: "enum", enum: RoleSymbolEnum, unique: true })
-  symbol: `${RoleSymbolEnum}`;
+  symbol: RoleSymbol;
 
   @Column({ type: "enum", enum: RoleTypeEnum })
   type: `${RoleTypeEnum}`;
 
-  @Column()
+  @Column({ nullable: true })
   discordId: string;
 
   @CreateDateColumn()

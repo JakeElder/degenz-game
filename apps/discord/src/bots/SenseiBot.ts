@@ -1,10 +1,9 @@
-import { bots } from "manifest";
+import { Bot } from "data/types";
 import SenseiCommandController from "../command-controllers/SenseiCommandController";
 import DiscordBot from "../DiscordBot";
 
 export default class SenseiBot extends DiscordBot {
-  constructor() {
-    const bot = bots.find((bot) => bot.symbol === "SENSEI");
-    super(bot!, new SenseiCommandController());
+  constructor(descriptor: Bot) {
+    super(descriptor, new SenseiCommandController());
   }
 }

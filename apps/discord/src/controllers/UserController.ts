@@ -15,15 +15,13 @@ import {
   Dormitory,
   DormitoryTenancy,
   Role,
-  Achievement,
   Imprisonment,
 } from "data/db";
 import Utils from "../Utils";
 import { getAvailableCellNumber, getTenanciesInDistrict } from "../legacy/db";
 import { Global } from "../Global";
-import EnterTheProjectsController from "./EnterTheProjectsController";
-import EnterTheSheltersController from "./EnterTheSheltersController";
 import random from "random";
+import EntranceController from "./EntranceController";
 
 type FailedApartmentInitResult = {
   success: false;
@@ -45,6 +43,7 @@ export default class UserController {
     const user = User.create({
       discordId: member.id,
       displayName: member.displayName,
+      apartmentTenancies: [],
     });
     await user.save();
     return user;
@@ -126,10 +125,7 @@ export default class UserController {
     });
     await Promise.all([user.save(), member.roles.add(role.discordId)]);
 
-    await user.save();
-
-    EnterTheProjectsController.update();
-
+    EntranceController.update();
     Events.emit("APARTMENT_ALLOCATED", { user, onboard });
 
     return { success: true, code: "USER_INITIATED", user };
@@ -194,11 +190,9 @@ export default class UserController {
     const role = await Role.findOneOrFail({
       where: { symbol: dormitory.citizenRoleSymbol },
     });
-
     await Promise.all([user.save(), member.roles.add(role.discordId)]);
 
-    EnterTheSheltersController.update();
-
+    EntranceController.update();
     Events.emit("DORMITORY_ALLOCATED", { user, onboard });
 
     return { success: true, code: "USER_INITIATED", user };
@@ -330,8 +324,7 @@ export default class UserController {
     await User.remove(user);
 
     // Update entry persistent messages
-    EnterTheProjectsController.update();
-    EnterTheSheltersController.update();
+    EntranceController.update();
 
     return { success: true, code: "USER_EJECTED" };
   }

@@ -1,12 +1,13 @@
 import { Routes } from "discord-api-types/v9";
-import { bots } from "manifest";
+import Manifest from "manifest";
 import Listr from "listr";
 import Config from "config";
 import { promises as fs } from "fs";
 import path from "path";
 import { snakeCase } from "change-case";
-import { NPC, connect, disconnect, District, Dormitory } from "data/db";
+import { NPC, District, Dormitory } from "data/db";
 import { Command } from "../../lib";
+import { Flags } from "@oclif/core";
 
 async function exists(path: string) {
   try {
@@ -20,10 +21,16 @@ async function exists(path: string) {
 export default class DeployEmojis extends Command {
   static description = "Deploy emojis";
 
+  static flags = {
+    force: Flags.boolean({ default: false }),
+  };
+
   async run(): Promise<void> {
+    const bots = await Manifest.bots();
+    const { flags } = await this.parse(DeployEmojis);
+
     const guildId = Config.general("GUILD_ID");
 
-    await connect();
     const districts = await District.find({ order: { symbol: 1 } });
     const dormitories = await Dormitory.find({ order: { symbol: 1 } });
 
@@ -42,7 +49,11 @@ export default class DeployEmojis extends Command {
                         return {
                           title: i,
                           task: async (_, task) => {
-                            if (d.inactiveEmoji && d.activeEmoji) {
+                            if (
+                              !flags["force"] &&
+                              d.inactiveEmoji &&
+                              d.activeEmoji
+                            ) {
                               task.skip(
                                 `Emojis already uploaded for ${d.symbol}`
                               );
@@ -69,7 +80,7 @@ export default class DeployEmojis extends Command {
                               {
                                 name: `${name}${variant}`,
                                 image: `data:image/png;base64,${icon}`,
-                                roles: [Config.roleId("EVERYONE")],
+                                roles: [Config.general("GUILD_ID")],
                               },
                               Config.botToken("ADMIN"),
                               task
@@ -109,7 +120,11 @@ export default class DeployEmojis extends Command {
                         return {
                           title: i,
                           task: async (_, task) => {
-                            if (d.inactiveEmoji && d.activeEmoji) {
+                            if (
+                              !flags["force"] &&
+                              d.inactiveEmoji &&
+                              d.activeEmoji
+                            ) {
                               task.skip(
                                 `Emojis already uploaded for ${d.symbol}`
                               );
@@ -137,7 +152,7 @@ export default class DeployEmojis extends Command {
                               {
                                 name: `${name}${variant}`,
                                 image: `data:image/jpeg;base64,${icon}`,
-                                roles: [Config.roleId("EVERYONE")],
+                                roles: [Config.general("GUILD_ID")],
                               },
                               Config.botToken("ADMIN"),
                               task
@@ -173,7 +188,7 @@ export default class DeployEmojis extends Command {
                   title: bot.name,
                   task: async (_, task) => {
                     const npc = await NPC.findOneOrFail({ symbol: bot.symbol });
-                    if (npc.defaultEmojiId) {
+                    if (!flags["force"] && npc.defaultEmojiId) {
                       task.skip(`Emojis already uploaded for ${npc.symbol}`);
                       return;
                     }
@@ -196,7 +211,7 @@ export default class DeployEmojis extends Command {
                       {
                         name,
                         image: `data:image/jpeg;base64,${c}`,
-                        roles: [Config.roleId("EVERYONE")],
+                        roles: [Config.general("GUILD_ID")],
                       },
                       Config.botToken("ADMIN"),
                       task
@@ -220,6 +235,5 @@ export default class DeployEmojis extends Command {
     );
 
     await listr.run();
-    await disconnect();
   }
 }

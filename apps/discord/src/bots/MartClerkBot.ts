@@ -1,10 +1,9 @@
-import { bots } from "manifest";
+import { Bot } from "data/types";
 import MartClerkCommandController from "../command-controllers/MartClerkCommandController";
 import DiscordBot from "../DiscordBot";
 
 export default class MartClerkBot extends DiscordBot {
-  constructor() {
-    const bot = bots.find((bot) => bot.symbol === "MART_CLERK");
-    super(bot!, new MartClerkCommandController());
+  constructor(descriptor: Bot) {
+    super(descriptor, new MartClerkCommandController());
   }
 }

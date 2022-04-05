@@ -1,4 +1,4 @@
-import { connect, disconnect, MartItemOwnership, User } from "data/db";
+import { MartItemOwnership, User } from "data/db";
 import { Command } from "../../lib";
 import { classToPlain } from "class-transformer";
 
@@ -6,8 +6,6 @@ export default class Seed extends Command {
   static description = "Seeds the database";
 
   async run(): Promise<void> {
-    await connect();
-
     const users = await User.find({
       relations: [
         "tenancies",
@@ -28,6 +26,5 @@ export default class Seed extends Command {
     );
 
     console.log(JSON.stringify(withItems, null, 2));
-    await disconnect();
   }
 }

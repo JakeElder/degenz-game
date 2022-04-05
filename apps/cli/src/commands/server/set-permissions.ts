@@ -1,7 +1,7 @@
 import { Routes } from "discord-api-types/v9";
 import Listr from "listr";
 import { Command } from "../../lib";
-import { structure } from "manifest";
+import Manifest from "manifest";
 import Config from "config";
 import { resolvableToOverwrite } from "../../utils";
 
@@ -9,6 +9,8 @@ export default class SetPermissions extends Command {
   static description = "Set category and channel permissions";
 
   async run(): Promise<void> {
+    const structure = await Manifest.structure();
+
     const token = Config.botToken("ADMIN");
 
     const listr = new Listr(

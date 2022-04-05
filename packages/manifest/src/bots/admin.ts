@@ -2,20 +2,17 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { Bot, DistrictSymbol } from "data/types";
 import Config from "config";
 import { Format } from "lib";
-import { Intents } from "discord.js";
-
-const { FLAGS } = Intents;
 
 const admin: Bot = {
   symbol: "ADMIN",
   name: "Degenz Admin",
   clientOptions: {
     intents: [
-      FLAGS.GUILDS,
-      FLAGS.GUILD_MEMBERS,
-      FLAGS.GUILD_MESSAGES,
-      FLAGS.GUILD_PRESENCES,
-      FLAGS.GUILD_INVITES,
+      "GUILDS",
+      "GUILD_MEMBERS",
+      "GUILD_MESSAGES",
+      "GUILD_PRESENCES",
+      "GUILD_INVITES",
     ],
   },
   commands: [],
@@ -234,6 +231,23 @@ admin.commands.push({
             .setDescription(
               `A memorable word or short phrase to associate the link with.`
             )
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("set-nickname")
+        .setDescription(`Set a members nickname`)
+        .addUserOption((option) =>
+          option
+            .setName("member")
+            .setRequired(true)
+            .setDescription("The user to eject")
+        )
+        .addStringOption((option) =>
+          option
+            .setName("name")
+            .setRequired(true)
+            .setDescription(`The nickname to give`)
         )
     )
     .toJSON(),

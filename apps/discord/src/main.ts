@@ -3,9 +3,11 @@ import PrettyError from "pretty-error";
 import { connect, disconnect } from "data/db";
 import Utils from "./Utils";
 import Runner from "./Runner";
-import * as bots from "./bots";
+import * as Bots from "./bots";
 import { Global } from "./Global";
 import Config from "config";
+import Manifest from "manifest";
+import { Bot, BotSymbol } from "data/types";
 
 const pe = new PrettyError();
 
@@ -30,20 +32,27 @@ cleanup((_, signal) => {
 
 let runner: Runner;
 
+function d(descriptors: Bot[], symbol: BotSymbol) {
+  return descriptors.find((bot) => bot.symbol === symbol)!;
+}
+
 async function main() {
   await connect();
+  await Config.load();
 
-  Global.bot("ADMIN", new bots.AdminBot());
-  Global.bot("ALLY", new bots.AllyBot());
-  Global.bot("BANKER", new bots.BankerBot());
-  Global.bot("BIG_BROTHER", new bots.BigBrotherBot());
-  Global.bot("MART_CLERK", new bots.MartClerkBot());
-  Global.bot("PRISONER", new bots.PrisonerBot());
-  Global.bot("TOSSER", new bots.TosserBot());
-  Global.bot("WARDEN", new bots.WardenBot());
+  const ds = await Manifest.bots();
+
+  Global.bot("ADMIN", new Bots.AdminBot(d(ds, "ADMIN")));
+  Global.bot("ALLY", new Bots.AllyBot(d(ds, "ALLY")));
+  Global.bot("BANKER", new Bots.BankerBot(d(ds, "BANKER")));
+  Global.bot("BIG_BROTHER", new Bots.BigBrotherBot(d(ds, "BIG_BROTHER")));
+  Global.bot("MART_CLERK", new Bots.MartClerkBot(d(ds, "MART_CLERK")));
+  Global.bot("PRISONER", new Bots.PrisonerBot(d(ds, "PRISONER")));
+  Global.bot("TOSSER", new Bots.TosserBot(d(ds, "TOSSER")));
+  Global.bot("WARDEN", new Bots.WardenBot(d(ds, "WARDEN")));
 
   if (Config.env("NODE_ENV") === "development" && Config.general("USE_SCOUT")) {
-    Global.bot("SCOUT", new bots.ScoutBot());
+    Global.bot("SCOUT", new Bots.ScoutBot(d(ds, "SCOUT")));
   }
 
   runner = new Runner(Global.bots());

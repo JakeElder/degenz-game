@@ -1,6 +1,6 @@
 import { Routes } from "discord-api-types/v9";
 import Config from "config";
-import { connect, disconnect, User } from "data/db";
+import { User } from "data/db";
 import { CliUx, Flags } from "@oclif/core";
 import Listr from "Listr";
 import { Command } from "../../lib";
@@ -15,8 +15,6 @@ export default class AbsentUsers extends Command {
 
   async run(): Promise<void> {
     const { flags } = await this.parse(AbsentUsers);
-
-    await connect();
 
     let m: any[] = [];
     let res: AxiosResponse | null = null;
@@ -56,7 +54,5 @@ export default class AbsentUsers extends Command {
       console.log(absentUsers.map((u) => u.displayName).join("\n"));
       console.log(absentUsers.length, "/", m.length);
     }
-
-    await disconnect();
   }
 }

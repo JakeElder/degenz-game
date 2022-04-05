@@ -1,27 +1,16 @@
 import Config from "config";
-import {
-  Collection,
-  GuildBasedChannel,
-  GuildMember,
-  Invite,
-  MessageReaction,
-  ReactionCollector,
-  ThreadChannel,
-  User as DiscordUser,
-} from "discord.js";
+import { Collection, GuildBasedChannel, GuildMember, Invite } from "discord.js";
 import { DistrictSymbol, OperationResult } from "data/types";
 import { CampaignInvite, District, User } from "data/db";
-import { bots } from "manifest";
 import { Global } from "../Global";
 import Events from "../Events";
-import EnterTheProjectsController from "./EnterTheProjectsController";
-import { PersistentMessageController } from "./PersistentMessageController";
 import UserController from "./UserController";
 import { Channel } from "../Channel";
 import OnboardController from "./OnboardController";
+import EntranceController from "./EntranceController";
+import Manifest from "manifest";
 
 export default class AppController {
-  static reactionCollector: ReactionCollector;
   static invites: Collection<string, Invite>;
 
   static async bindEnterListener() {
@@ -92,47 +81,12 @@ export default class AppController {
 
   static async openDistrict(districtSymbol: DistrictSymbol) {
     await District.open(districtSymbol);
-    await EnterTheProjectsController.update();
+    await EntranceController.update();
   }
 
   static async closeDistrict(districtSymbol: DistrictSymbol) {
     await District.close(districtSymbol);
-    await EnterTheProjectsController.update();
-  }
-
-  static async purgeArchived(thread: ThreadChannel) {}
-
-  static async setVerifyMessage() {
-    const instruction =
-      "Welcome. `REACT` to this message to prove you're not a bot.";
-
-    const message = await PersistentMessageController.set("VERIFY", {
-      content: instruction,
-    });
-
-    if (!message) {
-      return;
-    }
-
-    if (this.reactionCollector) {
-      this.reactionCollector.off("collect", this.handleReaction);
-    }
-
-    this.reactionCollector = message.createReactionCollector();
-    this.reactionCollector.on("collect", this.handleReaction);
-  }
-
-  static async handleReaction(_: MessageReaction, user: DiscordUser) {
-    const admin = Global.bot("ADMIN");
-    const member = await admin.getMember(user.id);
-    if (
-      !member!.roles.cache.some((r) =>
-        [Config.roleId("DEGEN"), Config.roleId("VERIFIED")].includes(r.id)
-      )
-    ) {
-      await member!.roles.add(Config.roleId("VERIFIED"));
-      Events.emit("MEMBER_VERIFIED", { member: member! });
-    }
+    await EntranceController.update();
   }
 
   static async sendMessageFromBot({
@@ -149,9 +103,12 @@ export default class AppController {
     }
 
     const botId = Config.reverseClientId(as.id);
+
     if (!botId) {
       return { success: false, code: "BOT_NOT_FOUND" };
     }
+
+    const bots = await Manifest.bots();
 
     const botData = bots.find((bot) => bot.symbol === botId);
     if (!botData) {

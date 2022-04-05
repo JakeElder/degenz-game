@@ -1,9 +1,4 @@
-import {
-  BotSymbol,
-  CategorySymbol,
-  ChannelSymbol,
-  RoleSymbol,
-} from "data/types";
+import { BotSymbol, CategorySymbol, ChannelSymbol } from "data/types";
 
 const GENERAL = {
   DISTRICT_CAPACITY: 2,
@@ -16,14 +11,11 @@ const GENERAL = {
 };
 
 const CATEGORY_IDS: Record<CategorySymbol, string> = {
-  ADMIN: "",
   BEAUTOPIA: "",
   COMMAND_CENTER: "",
   COMMUNITY: "",
-  ENTRANCE: "",
-  JOIN_THE_GAME: "",
-  OUTSIDE_WORLD: "",
   PRISON: "",
+  THE_GAME: "",
   THE_PROJECTS_D1: "",
   THE_PROJECTS_D2: "",
   THE_PROJECTS_D3: "",
@@ -34,16 +26,13 @@ const CATEGORY_IDS: Record<CategorySymbol, string> = {
 };
 
 const CHANNEL_IDS: Record<ChannelSymbol, string> = {
-  ADMIN_GENERAL: "",
-  ADMIN_SANDBOX: "",
   ANNOUNCEMENTS: "",
   ARENA: "",
   ARMORY: "",
   BANK: "",
   BULLSEYE: "",
   COMMANDS: "",
-  ENTER_THE_PROJECTS: "",
-  ENTER_THE_SHELTERS: "",
+  ENTRANCE: "",
   FAQ: "",
   FEEDBACK: "",
   GENERAL: "",
@@ -53,7 +42,7 @@ const CHANNEL_IDS: Record<ChannelSymbol, string> = {
   LEADERBOARD: "",
   MART: "",
   METRO: "",
-  ORIENTATION: "",
+  QUESTS: "",
   TAVERN: "",
   THE_GRID: "",
   THE_LEFT: "",
@@ -61,35 +50,9 @@ const CHANNEL_IDS: Record<ChannelSymbol, string> = {
   TOSS_HOUSE: "",
   TOWN_SQUARE: "",
   TRAINING_DOJO: "",
-  VERIFICATION: "",
   VULTURE: "",
-  WAITING_ROOM: "",
   WELCOME_ROOM: "",
   WHITELIST: "",
-};
-
-const ROLE_IDS: Record<RoleSymbol, string> = {
-  ADMIN: "",
-  ADMIN_BOT: "",
-  ALLY_BOT: "",
-  ARMORY_CLERK_BOT: "",
-  BANKER_BOT: "",
-  BIG_BROTHER_BOT: "",
-  DEGEN: "",
-  DEVILS_ADVOCATE_BOT: "",
-  EVERYONE: GENERAL.GUILD_ID,
-  MART_CLERK_BOT: "",
-  PRISONER: "",
-  PRISONER_BOT: "",
-  RESISTANCE_LEADER_BOT: "",
-  SCOUT_BOT: "",
-  SENSEI_BOT: "",
-  SERVER_BOOSTER: "",
-  THOUGHT_POLICE: "",
-  TOSSER_BOT: "",
-  TRAINEE: "",
-  VERIFIED: "",
-  WARDEN_BOT: "",
 };
 
 const CLIENT_IDS: Record<BotSymbol, string> = {
@@ -113,5 +76,4 @@ export default {
   CHANNEL_IDS,
   CLIENT_IDS,
   GENERAL,
-  ROLE_IDS,
 };

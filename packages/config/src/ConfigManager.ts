@@ -10,6 +10,7 @@ import {
   EnvVars,
   RoleSymbol,
 } from "data/types";
+import { Role } from "data/db";
 import chalk from "chalk";
 
 const envFile = process.env.ENV_FILE || ".env";
@@ -67,6 +68,12 @@ const ENV = {
 };
 
 export default class ConfigManager {
+  static roles: Role[];
+
+  static async load() {
+    this.roles = await Role.find();
+  }
+
   static general<T extends keyof typeof configs["development"]["GENERAL"]>(
     k: T,
     { env }: { env: keyof typeof configs } = { env: NODE_ENV }
@@ -92,22 +99,22 @@ export default class ConfigManager {
     return configs[env].CHANNEL_IDS[k];
   }
 
-  static roleId(
-    k: RoleSymbol,
-    { env }: { env: keyof typeof configs } = { env: NODE_ENV }
-  ) {
-    return configs[env].ROLE_IDS[k];
+  static roleId(k: RoleSymbol) {
+    const role = this.roles.find((r) => r.symbol === k);
+    if (!role) {
+      const e = new Error(`${k} role not found`);
+      console.log(e.stack);
+      throw e;
+    }
+    return role.discordId;
   }
 
-  static reverseRoleId = (
-    id: string,
-    { env }: { env: keyof typeof configs } = { env: NODE_ENV }
-  ) => {
-    for (const [key, value] of Object.entries(configs[env].ROLE_IDS)) {
-      if (value === id) {
-        return key as RoleSymbol;
-      }
+  static reverseRoleId = (id: string) => {
+    const role = this.roles.find((r) => r.discordId === id);
+    if (!role) {
+      throw new Error(`${id} role not found`);
     }
+    return role.discordId;
   };
 
   static clientId(

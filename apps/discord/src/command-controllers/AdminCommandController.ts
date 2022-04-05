@@ -15,13 +15,12 @@ import { CommandController } from "../CommandController";
 import { DistrictSymbol } from "data/types";
 import AppController from "../controllers/AppController";
 import { Global } from "../Global";
-import EnterTheProjectsController from "../controllers/EnterTheProjectsController";
-import EnterTheSheltersController from "../controllers/EnterTheSheltersController";
 import NextStepController from "../controllers/NextStepsController";
 import { Channel } from "../Channel";
 import OnboardController from "../controllers/OnboardController";
 import Events from "../Events";
 import Config from "config";
+import EntranceController from "../controllers/EntranceController";
 
 export default class AllyCommandController extends CommandController {
   async respond(
@@ -209,7 +208,7 @@ export default class AllyCommandController extends CommandController {
   }
 
   async admin_setEntryMessage(i: CommandInteraction) {
-    await EnterTheProjectsController.update();
+    EntranceController.update();
     await this.respond(i, "MESSAGE_SENT", "SUCCESS");
   }
 
@@ -219,7 +218,7 @@ export default class AllyCommandController extends CommandController {
       await this.respond(i, "50_MAXIMUM_EXCEEDED", "FAIL");
     }
     await AppState.increaseDormitoryCapacity(amount);
-    EnterTheSheltersController.update();
+    EntranceController.update();
     await this.respond(i, `DORM_CAPACITY_INCREASED: +${amount}`, "SUCCESS");
   }
 
@@ -233,21 +232,33 @@ export default class AllyCommandController extends CommandController {
     await this.setSheltersOpenState(i, false);
   }
 
+  async admin_setNickname(i: CommandInteraction) {
+    const member = i.options.getUser("member", true);
+    const name = i.options.getString("name", true);
+    // const user = await User.findOneOrFail({ where: { discordId: member.id } });
+
+    const admin = Global.bot("ADMIN");
+
+    const m = await admin.guild.members.fetch(member.id);
+    await m.edit({ nick: name });
+    this.respond(i, `NICK_SET`, "SUCCESS");
+  }
+
   async admin_sendNextSteps(i: CommandInteraction) {
     const member =
       i.options.getUser("member", false) || (i.member as GuildMember);
     const user = await User.findOneOrFail({ where: { discordId: member.id } });
-    this.respond(i, `MESSAGE_SENT`, "SUCCESS");
     const ally = Global.bot("ALLY");
     const channel = await ally.guild.channels.fetch(i.channelId);
     await NextStepController.send(channel as TextBasedChannel, user);
+    this.respond(i, `MESSAGE_SENT`, "SUCCESS");
   }
 
   async setSheltersOpenState(i: CommandInteraction, areOpen: boolean) {
     const state = await AppState.fetch();
     state.sheltersOpen = areOpen;
     await state.save();
-    EnterTheSheltersController.update();
+    EntranceController.update();
     await this.respond(
       i,
       `SHELTERS_${areOpen ? "OPENED" : "CLOSED"}`,
@@ -270,7 +281,7 @@ export default class AllyCommandController extends CommandController {
     const campaign = i.options.getString("campaign", true) as DistrictSymbol;
     try {
       const invite = await admin.guild.invites.create(
-        Config.channelId("VERIFICATION"),
+        Config.channelId("ENTRANCE"),
         { unique: true }
       );
       await CampaignInvite.insert({ campaign, discordCode: invite.code });

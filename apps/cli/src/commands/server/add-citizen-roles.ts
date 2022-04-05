@@ -1,14 +1,12 @@
 import { Routes } from "discord-api-types/v9";
 import Config from "config";
-import { connect, disconnect, Role, User } from "data/db";
+import { Role, User } from "data/db";
 import { Command } from "../../lib";
 
 export default class AddCitizenRoles extends Command {
   static description = "Add's citizen role to existing users.";
 
   async run(): Promise<void> {
-    await connect();
-
     const users = await User.find({ where: { inGame: true } });
 
     for (let i = 0; i < users.length; i++) {
@@ -40,7 +38,5 @@ export default class AddCitizenRoles extends Command {
         } - ${symbol} : DONE`
       );
     }
-
-    await disconnect();
   }
 }

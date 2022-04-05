@@ -1,7 +1,5 @@
 import Listr from "listr";
 import {
-  connect,
-  disconnect,
   AppState,
   Achievement,
   District,
@@ -16,8 +14,6 @@ export default class Seed extends Command {
   static description = "Seeds the database";
 
   async run(): Promise<void> {
-    await connect();
-
     const listr = new Listr([
       {
         title: "User",
@@ -64,6 +60,5 @@ export default class Seed extends Command {
     ]);
 
     await listr.run();
-    await disconnect();
   }
 }

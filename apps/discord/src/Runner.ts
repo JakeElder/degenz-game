@@ -5,8 +5,6 @@ import WorldNotifier from "./WorldNotifier";
 import DiscordBot from "./DiscordBot";
 import OnboardController from "./controllers/OnboardController";
 import AppController from "./controllers/AppController";
-import EnterTheProjectsController from "./controllers/EnterTheProjectsController";
-import EnterTheSheltersController from "./controllers/EnterTheSheltersController";
 import HallOfAllegianceController from "./controllers/HallOfAllegianceController";
 import Analytics from "./Analytics";
 import UserController from "./controllers/UserController";
@@ -14,6 +12,7 @@ import WelcomeRoomController from "./controllers/WelcomeRoomController";
 import { LeaderboardController } from "./controllers/LeaderboardController";
 import MartClerkCommandController from "./command-controllers/MartClerkCommandController";
 import NextStepController from "./controllers/NextStepsController";
+import EntranceController from "./controllers/EntranceController";
 
 export default class Runner {
   constructor(private bots: DiscordBot[]) {
@@ -35,15 +34,12 @@ export default class Runner {
       if (e.data.bot.symbol === "ADMIN") {
         AppController.bindEnterListener();
         OnboardController.bindEventListeners();
-        WelcomeRoomController.init();
       }
 
       if (e.data.bot.symbol === "BIG_BROTHER") {
-        EnterTheProjectsController.init();
-        EnterTheSheltersController.init();
         HallOfAllegianceController.init();
-        AppController.setVerifyMessage();
         LeaderboardController.init();
+        EntranceController.init();
       }
 
       if (e.data.bot.symbol === "MART_CLERK") {

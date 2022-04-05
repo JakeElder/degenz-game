@@ -1,7 +1,5 @@
 import Listr from "listr";
 import {
-  connect,
-  disconnect,
   AppState,
   Achievement,
   District,
@@ -21,8 +19,6 @@ export default class Seed extends Command {
   static description = "Seeds the database";
 
   async run(): Promise<void> {
-    await connect();
-
     const listr = new Listr([
       {
         title: "Achievements",
@@ -131,16 +127,6 @@ export default class Seed extends Command {
         task: async () => {
           await PersistentMessage.insert([
             {
-              symbol: "WELCOME_INFO",
-              channelSymbol: "ORIENTATION",
-              maintainerSymbol: "BIG_BROTHER",
-            },
-            {
-              symbol: "WELCOME_NOTIFICATION",
-              channelSymbol: "WELCOME_ROOM",
-              maintainerSymbol: "BIG_BROTHER",
-            },
-            {
               symbol: "GBT_LEADERBOARD_1",
               channelSymbol: "LEADERBOARD",
               maintainerSymbol: "BIG_BROTHER",
@@ -148,16 +134,6 @@ export default class Seed extends Command {
             {
               symbol: "GBT_LEADERBOARD_2",
               channelSymbol: "LEADERBOARD",
-              maintainerSymbol: "BIG_BROTHER",
-            },
-            {
-              symbol: "ENTRY",
-              channelSymbol: "WAITING_ROOM",
-              maintainerSymbol: "BIG_BROTHER",
-            },
-            {
-              symbol: "VERIFY",
-              channelSymbol: "VERIFICATION",
               maintainerSymbol: "BIG_BROTHER",
             },
             {
@@ -171,6 +147,5 @@ export default class Seed extends Command {
     ]);
 
     await listr.run();
-    await disconnect();
   }
 }

@@ -1,37 +1,34 @@
 import React from "react";
 import Config from "config";
-import { AppState, Dormitory, User } from "data/db";
+import { NPC, User } from "data/db";
 import {
   ButtonInteraction,
   MessageActionRow,
   MessageButton,
   MessageOptions,
 } from "discord.js";
-import { Format } from "lib";
-import { DormitorySymbol } from "data/types";
 import axios from "axios";
 import { Global } from "../Global";
 import { PersistentMessageController } from "./PersistentMessageController";
-import { channelMention, userMention } from "@discordjs/builders";
+import { channelMention, roleMention, userMention } from "@discordjs/builders";
 import Events from "../Events";
 import UserController from "./UserController";
 import Utils from "../Utils";
+import TheProjects, { ProjectsEntryData } from "../TheProjects";
+import TheShelters, { SheltersEntryData } from "../TheShelters";
 
 const { r } = Utils;
 
 type EntryData = {
   open: boolean;
-  dormitoryCapacity: number;
-  dormitories: {
-    symbol: DormitorySymbol;
-    capacity: number;
-    tenancies: number;
-    available: boolean;
-    tableEmoji: string;
-  }[];
+  emoji: {
+    bb: string;
+  };
+  projects: ProjectsEntryData;
+  shelters: SheltersEntryData;
 };
 
-export default class EnterTheProjectsController {
+export default class EntranceController {
   static messageEntryData: EntryData | null;
   static rateLimited = false;
 
@@ -42,10 +39,9 @@ export default class EnterTheProjectsController {
 
   static async bindButtonListeners() {
     const bb = Global.bot("BIG_BROTHER");
-    await bb.ready;
 
     bb.client.on("interactionCreate", async (i) => {
-      if (i.isButton() && i.customId === "ENTER_GAME_DORMITORY") {
+      if (i.isButton() && i.customId === "ENTER_SERVER") {
         this.handleButtonPress(i);
       }
     });
@@ -58,72 +54,84 @@ export default class EnterTheProjectsController {
   }
 
   static async computeEntryData(): Promise<EntryData> {
-    const [state, dormitories] = await Promise.all([
-      AppState.fetch(),
-      Dormitory.find({
-        relations: ["tenancies"],
-        order: { symbol: 1 },
-      }),
+    const [projects, shelters, bb] = await Promise.all([
+      TheProjects.computeEntryData(),
+      TheShelters.computeEntryData(),
+      NPC.findOneOrFail({ where: { symbol: "BIG_BROTHER" } }),
     ]);
 
-    const computedDormitories: EntryData["dormitories"] = dormitories.map(
-      (d) => {
-        const available = state.dormitoryCapacity > d.tenancies.length;
-        return {
-          symbol: d.symbol,
-          capacity: state.dormitoryCapacity - d.tenancies.length,
-          tenancies: d.tenancies.length,
-          available,
-          tableEmoji:
-            state.sheltersOpen && available ? d.activeEmoji : d.inactiveEmoji,
-        };
-      }
-    );
-
     return {
-      dormitoryCapacity: state.dormitoryCapacity,
-      open: state.sheltersOpen && computedDormitories.some((d) => d.available),
-      dormitories: computedDormitories,
+      open: true,
+      emoji: { bb: bb.defaultEmojiId! },
+      projects,
+      shelters,
     };
   }
 
-  static makeEntryMessage(data: EntryData) {
+  static makeEntryMessage(data: EntryData): MessageOptions {
     const button = new MessageButton()
-      .setLabel("JOIN THE SHELTERS")
+      .setLabel("ENTER THE SERVER")
       .setStyle(data.open ? "SUCCESS" : "SECONDARY")
       .setDisabled(!data.open)
-      .setCustomId("ENTER_GAME_DORMITORY");
+      .setCustomId("ENTER_SERVER");
 
-    const l = data.dormitories
-      .slice()
-      .sort((a, b) => b.symbol.length - a.symbol.length)[0].symbol.length;
+    const m = r(
+      <>
+        Welcome to the **DEGENZ GAME** server, A P2E game that takes place
+        entirely in discord!
+      </>
+    );
 
-    const dormitoryTable = data.dormitories
-      .map((d) => {
-        const symbol = d.symbol.padEnd(l);
-        const availability = `\`${d.capacity}/${data.dormitoryCapacity} available\``;
-        return `${d.tableEmoji} \`${symbol}\` => ${availability}`;
-      })
-      .join("\n");
-
-    const closedMessage = data.open
-      ? ""
-      : `\n\n \u{1f6b7} **THE SHELTERS ARE TEMPORARILY CLOSED**. Keep an eye on ${channelMention(
-          Config.channelId("ANNOUNCEMENTS")
-        )} to see when new spaces are available.`;
+    const intro = r(
+      <>
+        The totalitarian state of **Beautopia** is ruled by{" "}
+        {userMention(Config.clientId("BIG_BROTHER"))} {data.emoji.bb}.
+        <br />
+        A strict class system exists, dictating your value to society.
+        <br />
+        <br />
+        `/hack`,{"\u200e"}`/steal`{"\u200e"}and{"\u200e"}`/toss` your way up the
+        Ranks, while taking on the{" "}
+        {roleMention(Config.roleId("THOUGHT_POLICE"))} and{" "}
+        {userMention(Config.clientId("BIG_BROTHER"))}.
+        <br />
+        {"\u200e"}
+      </>
+    );
 
     const message: MessageOptions = {
-      content: `If no apartments are available, you may join one of our **LUXURY DORMITORIES**.\n**Press the button below to join the shelters.**`,
+      content: m,
       embeds: [
         {
           author: {
             iconURL: "https://s10.gifyu.com/images/VPN-Degenz.gif",
-            name: "Join The Shelters",
+            name: "Enter Beautopia",
           },
-          description: `Securing a space in a dormitory will grant you entry to the game. New dormitories and bunks are being added all the time, so check back often to secure your space in ${Format.worldName()}.${closedMessage}\n\n${dormitoryTable}`,
-          footer: {
-            text: "Pressing the button below will have you randomly assigned to a dormitory that has capacity.",
-          },
+          description: intro,
+          fields: [
+            {
+              name: "The Elite",
+              value: TheProjects.makeTableRow(
+                data.projects.capacity,
+                data.projects.districts[0]
+              ),
+            },
+            {
+              name: "The Projects",
+              value: data.projects.districts
+                .slice(1)
+                .map((d) => TheProjects.makeTableRow(data.projects.capacity, d))
+                .join("\n"),
+            },
+            {
+              name: "The Shelters",
+              value: TheShelters.makeTableRows(data.shelters).join("\n"),
+            },
+          ],
+          image: { url: "https://s10.gifyu.com/images/header-smaller.gif" },
+          // footer: {
+          //   text: "Pressing the button below will have you randomly assigned to a dormitory with capacity.",
+          // },
         },
       ],
       components: [new MessageActionRow().addComponents(button)],
@@ -133,15 +141,15 @@ export default class EnterTheProjectsController {
   }
 
   static async setEnterMessages(data: EntryData) {
-    const entryOptions = this.makeEntryMessage(data);
-    await PersistentMessageController.set("THE_SHELTERS_ENTRY", entryOptions);
+    const message = this.makeEntryMessage(data);
+    await PersistentMessageController.set("ENTRANCE", message);
   }
 
   static async handleButtonPress(i: ButtonInteraction) {
     await i.deferReply({ ephemeral: true });
-    const user = await User.findOneOrFail({ where: { discordId: i.user.id } });
+    const user = await User.findOne({ where: { discordId: i.user.id } });
 
-    if (user.inGame) {
+    if (user && user.inGame) {
       await i.editReply({
         content: `${userMention(user.discordId)} - You're already a Degen.`,
       });
@@ -162,17 +170,21 @@ export default class EnterTheProjectsController {
       const onboardingThread = channelMention(tenancy.onboardingThreadId!);
       const prefix = tenancy.dormitory.symbol.startsWith("THE") ? "" : "the ";
 
-      await i.editReply(
-        r(
-          <>
-            {um} - You have been assigned a space in {prefix}
-            {dorm} dormitory. **GO TO** {onboardingThread} to receive further
-            instructions.
-          </>
-        )
-      );
+      await i.editReply({
+        embeds: [
+          {
+            description: r(
+              <>
+                {um} - You have been assigned a space in {prefix}
+                {dorm} dormitory. **GO TO** {onboardingThread} to receive
+                further instructions.
+              </>
+            ),
+          },
+        ],
+      });
 
-      EnterTheProjectsController.update();
+      EntranceController.update();
     }
   }
 
@@ -182,12 +194,10 @@ export default class EnterTheProjectsController {
     }
 
     const admin = Global.bot("ADMIN");
-    const room = await admin.getTextChannel(
-      Config.channelId("ENTER_THE_SHELTERS")
-    );
+    const room = await admin.getTextChannel(Config.channelId("ENTRANCE"));
 
-    const disabled = `\u{1f510}\uff5cthe-shelters`;
-    const enabled = `\u{1f513}\uff5cthe-shelters`;
+    const disabled = `\u{1f02b}\uff5centrance`;
+    const enabled = `\u{1f006}\uff5centrance`;
 
     const newName = open ? enabled : disabled;
 
@@ -198,7 +208,7 @@ export default class EnterTheProjectsController {
     const res = await axios({
       method: "PATCH",
       baseURL: "https://discord.com/api/v9",
-      url: `/channels/${Config.channelId("ENTER_THE_SHELTERS")}`,
+      url: `/channels/${Config.channelId("ENTRANCE")}`,
       data: { name: newName },
       headers: {
         Accept: "application/json",
