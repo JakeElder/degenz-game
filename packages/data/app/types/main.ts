@@ -369,10 +369,7 @@ export enum ChannelTypeEnum {
 
 export enum QuestSymbolEnum {
   PLEDGE = "PLEDGE",
+  LEARN_TO_HACKER_BATTLE = "LEARN_TO_HACKER_BATTLE",
 }
 
 export type QuestSymbol = `${QuestSymbolEnum}`;
-
-export type Quest = {
-  symbol: `${QuestSymbolEnum}`;
-};
