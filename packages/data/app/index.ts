@@ -5,6 +5,7 @@ import { Achievement } from "./entity/Achievement";
 import { ApartmentTenancy } from "./entity/ApartmentTenancy";
 import { AppState } from "./entity/AppState";
 import { CampaignInvite } from "./entity/CampaignInvite";
+import { Channel } from "./entity/Channel";
 import { District } from "./entity/District";
 import { Dormitory } from "./entity/Dormitory";
 import { DormitoryTenancy } from "./entity/DormitoryTenancy";
@@ -14,6 +15,8 @@ import { MartItemOwnership } from "./entity/MartItemOwnership";
 import { NPC } from "./entity/NPC";
 import { PersistentMessage } from "./entity/PersistentMessage";
 import { Pledge } from "./entity/Pledge";
+import { QuestLogChannel } from "./entity/QuestLogChannel";
+import { QuestLogMessage } from "./entity/QuestLogMessage";
 import { Role } from "./entity/Role";
 import { User } from "./entity/User";
 
@@ -52,6 +55,7 @@ export {
   ApartmentTenancy,
   AppState,
   CampaignInvite,
+  Channel,
   District,
   Dormitory,
   DormitoryTenancy,
@@ -61,6 +65,8 @@ export {
   NPC,
   PersistentMessage,
   Pledge,
+  QuestLogChannel,
+  QuestLogMessage,
   Role,
   User,
 };

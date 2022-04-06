@@ -4,7 +4,8 @@ import {
   CommandInteraction,
   GuildMember,
   OverwriteResolvable,
-  TextBasedChannel,
+  TextChannel,
+  ThreadChannel,
 } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { APIApplicationCommandPermission } from "discord-api-types/v9";
@@ -280,6 +281,7 @@ export enum Achievement {
   FINISHED_TRAINER = "FINISHED_TRAINER",
   MART_STOCK_CHECKED = "MART_STOCK_CHECKED",
   MART_ITEM_BOUGHT = "MART_ITEM_BOUGHT",
+  ALLEGIANCE_PLEDGED = "ALLEGIANCE_PLEDGED",
 }
 
 export enum PersistentMessageSymbolEnum {
@@ -287,6 +289,7 @@ export enum PersistentMessageSymbolEnum {
   GBT_LEADERBOARD_1 = "GBT_LEADERBOARD_1",
   GBT_LEADERBOARD_2 = "GBT_LEADERBOARD_2",
   PLEDGE = "PLEDGE",
+  SHOW_QUESTS = "SHOW_QUESTS",
 }
 
 export type PersistentMessageSymbol = `${PersistentMessageSymbolEnum}`;
@@ -341,7 +344,7 @@ export type TossResult = {
 export type ChannelDescriptor = {
   id: string;
   name: string;
-  channel: TextBasedChannel;
+  channel: TextChannel | ThreadChannel;
   isCommunity: boolean;
   isApartment: boolean;
   isDormitory: boolean;
@@ -358,4 +361,18 @@ export type ChannelDescriptor = {
   isGenPop: boolean;
   isBank: boolean;
   isTavern: boolean;
+};
+
+export enum ChannelTypeEnum {
+  QUEST_LOG_THREAD = "QUEST_LOG_THREAD",
+}
+
+export enum QuestSymbolEnum {
+  PLEDGE = "PLEDGE",
+}
+
+export type QuestSymbol = `${QuestSymbolEnum}`;
+
+export type Quest = {
+  symbol: `${QuestSymbolEnum}`;
 };

@@ -49,6 +49,7 @@ import NextStepController from "./NextStepsController";
 import Interaction from "../Interaction";
 import random from "random";
 import Events from "../Events";
+import { Channel } from "../Channel";
 
 const { r } = Utils;
 
@@ -387,6 +388,8 @@ export default class OnboardController {
 
     const prefix = dormitory.symbol.startsWith("THE") ? "" : "the ";
 
+    const c = await Channel.getDescriptor(user.primaryTenancy.discordChannelId);
+
     await Promise.all([
       (async () => {
         await delay(1000);
@@ -396,9 +399,10 @@ export default class OnboardController {
           "ORIENTATION_COMPLETED",
           r(
             <>
-              {userMention(user.discordId)} joined {prefix}
-              {channelMention(user.primaryTenancy.discordChannelId)} dormitory
-              **DEGEN CREW**,
+              {userMention(user.discordId)} joined {prefix} {c.channel.name}{" "}
+              dormitory **DEGEN CREW**. **GO TO**{" "}
+              {channelMention(Config.channelId("QUESTS"))} to see what to do
+              next.
             </>
           )
         );
@@ -413,7 +417,7 @@ export default class OnboardController {
         await message.react("\u{1f44a}");
         await delay(1000);
 
-        await this.sendNextPrompt(user);
+        // await this.sendNextPrompt(user);
       })(),
       (async () => {
         for (let i = 1; i < 30; i++) {

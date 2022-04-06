@@ -171,17 +171,13 @@ export default class EntranceController {
       const prefix = tenancy.dormitory.symbol.startsWith("THE") ? "" : "the ";
 
       await i.editReply({
-        embeds: [
-          {
-            description: r(
-              <>
-                {um} - You have been assigned a space in {prefix}
-                {dorm} dormitory. **GO TO** {onboardingThread} to receive
-                further instructions.
-              </>
-            ),
-          },
-        ],
+        content: r(
+          <>
+            {um} - You have been assigned a space in {prefix}
+            {dorm} dormitory. **GO TO** {onboardingThread} to receive further
+            instructions.
+          </>
+        ),
       });
 
       EntranceController.update();

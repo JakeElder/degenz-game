@@ -2,7 +2,6 @@ import { MessageEmbed } from "discord.js";
 import { User } from "data/db";
 import { Achievement } from "data/types";
 import { addAchievement, transactBalance } from "../legacy/db";
-import { currency } from "../legacy/utils";
 import { Global } from "../Global";
 import Events from "../Events";
 import { Format } from "lib";
@@ -13,6 +12,7 @@ export default class AchievementController {
     HELP_REQUESTED: "You used the `/help` command.",
     STATS_CHECKED: "You used the `/stats` command.",
     SUPER_OBEDIENT: "You typed the `/obey` command twice. Such a good citizen.",
+    ALLEGIANCE_PLEDGED: "You pledged your allegiance to Big Brother.",
     FINISHED_TRAINER: "-",
     MART_ITEM_BOUGHT: "-",
     MART_STOCK_CHECKED: "-",

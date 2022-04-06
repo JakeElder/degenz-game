@@ -10,7 +10,10 @@ import { Format } from "lib";
 import { DateTime } from "luxon";
 import pluralize from "pluralize";
 import Events from "../Events";
+import AchievementController from "./AchievementController";
 import { PersistentMessageController } from "./PersistentMessageController";
+import { Achievement as AchievementEnum } from "data/types";
+import QuestLogController from "./QuestLogController";
 
 export default class HallOfAllegianceController {
   static buttonCollector: InteractionCollector<ButtonInteraction>;
@@ -81,7 +84,11 @@ export default class HallOfAllegianceController {
   static async handleButtonPress(i: ButtonInteraction) {
     const user = await User.findOneOrFail({
       where: { discordId: i.user.id },
-      relations: ["apartmentTenancies", "apartmentTenancies.district"],
+      relations: [
+        "apartmentTenancies",
+        "apartmentTenancies.district",
+        "achievements",
+      ],
     });
 
     const pledge = await Pledge.findOne({
@@ -104,6 +111,15 @@ export default class HallOfAllegianceController {
         ],
         ephemeral: true,
       });
+
+      if (!user.hasAchievement(AchievementEnum.ALLEGIANCE_PLEDGED)) {
+        await AchievementController.award(
+          user,
+          AchievementEnum.ALLEGIANCE_PLEDGED
+        );
+        QuestLogController.refresh(user);
+      }
+
       return;
     }
 

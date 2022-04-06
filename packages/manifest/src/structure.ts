@@ -51,10 +51,17 @@ const DISCOVERABLE: OverwriteResolvable[] = [
   },
 ];
 
+const ESTABLISHMENT: OverwriteResolvable[] = [
+  {
+    id: Config.roleId("ESTABLISHMENT"),
+    allow: ["VIEW_CHANNEL"],
+  },
+];
+
 structure.push({
   symbol: "THE_GAME",
   name: "The Game",
-  permissionOverwrites: [],
+  permissionOverwrites: [...ESTABLISHMENT],
   channels: [
     {
       symbol: "ENTRANCE",
@@ -66,7 +73,7 @@ structure.push({
       symbol: "QUESTS",
       name: "\u2658\uff5cquests",
       lockPermissions: true,
-      permissionOverwrites: DISCOVERABLE,
+      permissionOverwrites: [...DISCOVERABLE, ...READ_ONLY],
     },
   ],
 });
@@ -74,7 +81,7 @@ structure.push({
 structure.push({
   symbol: "COMMAND_CENTER",
   name: "Command Center",
-  permissionOverwrites: DISCOVERABLE,
+  permissionOverwrites: [...DISCOVERABLE, ...ESTABLISHMENT],
   channels: [
     {
       symbol: "ANNOUNCEMENTS",
@@ -106,7 +113,7 @@ structure.push({
 structure.push({
   symbol: "COMMUNITY",
   name: "Community",
-  permissionOverwrites: DISCOVERABLE,
+  permissionOverwrites: [...DISCOVERABLE, ...ESTABLISHMENT],
   channels: [
     {
       symbol: "WELCOME_ROOM",
@@ -138,7 +145,7 @@ structure.push({
 structure.push({
   symbol: "BEAUTOPIA",
   name: "Beautopia",
-  permissionOverwrites: DISCOVERABLE,
+  permissionOverwrites: [...DISCOVERABLE, ...ESTABLISHMENT],
   channels: [
     {
       symbol: "TOWN_SQUARE",
@@ -236,49 +243,49 @@ structure.push({
 structure.push({
   symbol: "THE_PROJECTS_D1",
   name: "The Projects D1",
-  permissionOverwrites: [],
+  permissionOverwrites: [...ESTABLISHMENT],
   channels: [],
 });
 
 structure.push({
   symbol: "THE_PROJECTS_D2",
   name: "The Projects D2",
-  permissionOverwrites: [],
+  permissionOverwrites: [...ESTABLISHMENT],
   channels: [],
 });
 
 structure.push({
   symbol: "THE_PROJECTS_D3",
   name: "The Projects D3",
-  permissionOverwrites: [],
+  permissionOverwrites: [...ESTABLISHMENT],
   channels: [],
 });
 
 structure.push({
   symbol: "THE_PROJECTS_D4",
   name: "The Projects D4",
-  permissionOverwrites: [],
+  permissionOverwrites: [...ESTABLISHMENT],
   channels: [],
 });
 
 structure.push({
   symbol: "THE_PROJECTS_D5",
   name: "The Projects D5",
-  permissionOverwrites: [],
+  permissionOverwrites: [...ESTABLISHMENT],
   channels: [],
 });
 
 structure.push({
   symbol: "THE_PROJECTS_D6",
   name: "The Projects D6",
-  permissionOverwrites: [],
+  permissionOverwrites: [...ESTABLISHMENT],
   channels: [],
 });
 
 structure.push({
   symbol: "THE_SHELTERS",
   name: "The Shelters",
-  permissionOverwrites: DISCOVERABLE,
+  permissionOverwrites: [...DISCOVERABLE, ...ESTABLISHMENT],
   channels: [
     {
       symbol: "BULLSEYE",

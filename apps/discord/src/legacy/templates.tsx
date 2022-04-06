@@ -8,11 +8,11 @@ import { Format } from "lib";
 // General
 ////////////////////////////////////////////////////////////////////////////////
 
-export const User = ({ id }: { id: GuildMember["id"] }) => (
+export const UserMention = ({ id }: { id: GuildMember["id"] }) => (
   <>{userMention(id)}</>
 );
 
-export const Channel = ({ id }: { id: DiscordChannel["id"] }) => (
+export const ChannelMention = ({ id }: { id: DiscordChannel["id"] }) => (
   <>{channelMention(id)}</>
 );
 
@@ -34,17 +34,17 @@ export const TossChallengeInvitation = ({
   if (timeout) {
     return (
       <>
-        <User id={challengee.id} /> - <User id={challenger.id} /> challenged you
-        to a coin flip for {Format.currency(amount)}. But you didn't respond in
-        time.
+        <UserMention id={challengee.id} /> - <UserMention id={challenger.id} />{" "}
+        challenged you to a coin flip for {Format.currency(amount)}. But you
+        didn't respond in time.
       </>
     );
   }
   return (
     <>
-      <User id={challengee.id} /> - <User id={challenger.id} /> has challenged
-      you to a coin flip for {Format.currency(amount)}. Do you accept? Or are
-      you {emoji.get("chicken")}?
+      <UserMention id={challengee.id} /> - <UserMention id={challenger.id} />{" "}
+      has challenged you to a coin flip for {Format.currency(amount)}. Do you
+      accept? Or are you {emoji.get("chicken")}?
     </>
   );
 };
@@ -73,7 +73,7 @@ export const InsufficientFundsTransferReply = ({
 }) => (
   <>
     You don't *have* {Format.currency(amount)} to send to{" "}
-    <User id={recipient.id} />, dumb dumb.
+    <UserMention id={recipient.id} />, dumb dumb.
   </>
 );
 
@@ -87,8 +87,8 @@ export const TransferSuccessfulReply = ({
   balance: number;
 }) => (
   <>
-    Transferred {Format.currency(amount)} to <User id={recipient.id} />. How
-    nice of you. {Format.transaction(balance + amount, -amount)}
+    Transferred {Format.currency(amount)} to <UserMention id={recipient.id} />.
+    How nice of you. {Format.transaction(balance + amount, -amount)}
   </>
 );
 
@@ -124,8 +124,8 @@ export const SuccessfulBribeReply = ({
 }) => {
   return (
     <>
-      Ok, <User id={citizenId} /> {Format.currency(amount)} will do. The door
-      code is `{releaseCode}`. I'm sure you'll be back, degenerate.
+      Ok, <UserMention id={citizenId} /> {Format.currency(amount)} will do. The
+      door code is `{releaseCode}`. I'm sure you'll be back, degenerate.
     </>
   );
 };
@@ -139,8 +139,8 @@ export const FailedBribeReply = ({
 }) => {
   return (
     <>
-      I'm insulted, <User id={citizenId} />. You think I can be bought for{" "}
-      {Format.currency(amount)}? Just for that, I'll be keeping your{" "}
+      I'm insulted, <UserMention id={citizenId} />. You think I can be bought
+      for {Format.currency(amount)}? Just for that, I'll be keeping your{" "}
       {Format.currency(null)} and you **won't** be getting the exit code.
     </>
   );

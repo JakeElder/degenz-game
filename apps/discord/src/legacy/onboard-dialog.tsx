@@ -2,13 +2,13 @@ import { GuildMember } from "discord.js";
 import emoji from "node-emoji";
 import React from "react";
 import Config from "config";
-import { User, Channel } from "./templates";
+import { UserMention, ChannelMention } from "./templates";
 import { Format } from "lib";
 import pluralize from "pluralize";
 
 export const WelcomeComrade = (props: { member: GuildMember }) => (
   <>
-    **Welcome**, comrade <User id={props.member.id} />.
+    **Welcome**, comrade <UserMention id={props.member.id} />.
   </>
 );
 
@@ -18,14 +18,14 @@ export const BBIntro = () => (
 
 export const ApartmentIssuance = (props: { channelId: string }) => (
   <>
-    I have issued you with your own apartment, <Channel id={props.channelId} />!
-    *Beautiful*, isn't it?
+    I have issued you with your own apartment,{" "}
+    <ChannelMention id={props.channelId} />! *Beautiful*, isn't it?
   </>
 );
 
 export const DormAssignment = (props: { channelId: string }) => (
   <>
-    This thread - <Channel id={props.channelId} /> is your orientation.
+    This thread - <ChannelMention id={props.channelId} /> is your orientation.
   </>
 );
 

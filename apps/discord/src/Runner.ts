@@ -9,10 +9,12 @@ import HallOfAllegianceController from "./controllers/HallOfAllegianceController
 import Analytics from "./Analytics";
 import UserController from "./controllers/UserController";
 import WelcomeRoomController from "./controllers/WelcomeRoomController";
+import QuestsController from "./controllers/QuestsController";
 import { LeaderboardController } from "./controllers/LeaderboardController";
 import MartClerkCommandController from "./command-controllers/MartClerkCommandController";
 import NextStepController from "./controllers/NextStepsController";
 import EntranceController from "./controllers/EntranceController";
+import QuestLogController from "./controllers/QuestLogController";
 
 export default class Runner {
   constructor(private bots: DiscordBot[]) {
@@ -34,6 +36,8 @@ export default class Runner {
       if (e.data.bot.symbol === "ADMIN") {
         AppController.bindEnterListener();
         OnboardController.bindEventListeners();
+        QuestsController.init();
+        QuestLogController.init();
       }
 
       if (e.data.bot.symbol === "BIG_BROTHER") {

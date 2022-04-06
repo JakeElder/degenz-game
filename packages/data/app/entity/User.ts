@@ -15,7 +15,12 @@ import {
 } from "typeorm";
 import { Role, TextChannel } from "discord.js";
 import { Achievement as AchievementEnum } from "../types";
-import { ApartmentTenancy, MartItemOwnership, Pledge } from "..";
+import {
+  ApartmentTenancy,
+  MartItemOwnership,
+  Pledge,
+  QuestLogChannel,
+} from "..";
 import { Achievement } from "./Achievement";
 import { Imprisonment } from "./Imprisonment";
 import { PlayerEvent } from "./PlayerEvent";
@@ -69,6 +74,11 @@ export class User extends BaseEntity {
   })
   @JoinColumn()
   dormitoryTenancy: DormitoryTenancy;
+
+  @OneToOne(() => QuestLogChannel, (questLogChannel) => questLogChannel.user, {
+    cascade: true,
+  })
+  questLogChannel: QuestLogChannel;
 
   @OneToMany(() => PlayerEvent, (playerEvent) => playerEvent.user, {
     cascade: true,

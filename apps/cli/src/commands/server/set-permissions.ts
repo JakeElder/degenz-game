@@ -4,6 +4,7 @@ import { Command } from "../../lib";
 import Manifest from "manifest";
 import Config from "config";
 import { resolvableToOverwrite } from "../../utils";
+import { OverwriteResolvable } from "discord.js";
 
 export default class SetPermissions extends Command {
   static description = "Set category and channel permissions";
@@ -34,35 +35,23 @@ export default class SetPermissions extends Command {
               category.channels.map<Listr.ListrTask>((channel) => {
                 return {
                   title: channel.name,
-                  task: async (_, ctx) => {
+                  task: async (_, task) => {
                     const channelId = Config.channelId(channel.symbol);
+
+                    const o: OverwriteResolvable[] = [
+                      ...channel.permissionOverwrites,
+                    ];
+
+                    if (channel.lockPermissions) {
+                      o.unshift(...category.permissionOverwrites);
+                    }
 
                     await this.patch(
                       Routes.channel(channelId),
-                      {
-                        permission_overwrites: (channel.lockPermissions
-                          ? category
-                          : channel
-                        ).permissionOverwrites.map(resolvableToOverwrite),
-                      },
+                      { permission_overwrites: o.map(resolvableToOverwrite) },
                       token,
                       task
                     );
-
-                    if (channel.lockPermissions) {
-                      await Promise.all(
-                        channel.permissionOverwrites.map((o) => {
-                          const { id, type, deny, allow } =
-                            resolvableToOverwrite(o);
-                          return this.put(
-                            Routes.channelPermission(channelId, id),
-                            { type, deny, allow },
-                            token,
-                            task
-                          );
-                        })
-                      );
-                    }
                   },
                 };
               })
