@@ -1,14 +1,13 @@
 import { MessageEmbed } from "discord.js";
-import { User } from "data/db";
-import { Achievement } from "data/types";
-import { addAchievement, transactBalance } from "../legacy/db";
+import { User, Achievement } from "data/db";
+import { Achievement as AchievementEnum } from "data/types";
 import { Global } from "../Global";
 import Events from "../Events";
 import { Format } from "lib";
 import QuestLogController from "./QuestLogController";
 
 export default class AchievementController {
-  static descriptions: Record<Achievement, string> = {
+  static descriptions: Record<AchievementEnum, string> = {
     JOINED_THE_DEGENZ: "You took the `/redpill` and joined the Degenz army.",
     HELP_REQUESTED: "You used the `/help` command.",
     STATS_CHECKED: "You used the `/stats` command.",
@@ -20,41 +19,54 @@ export default class AchievementController {
     MART_STOCK_CHECKED: "-",
   };
 
-  static async checkAndAward(user: User, achievement: Achievement) {
+  static async checkAndAward(user: User, achievement: AchievementEnum) {
     if (!user.hasAchievement(achievement)) {
       await this.award(user, achievement);
       QuestLogController.refresh(user);
     }
   }
 
-  static async award(user: User, achievement: Achievement) {
+  static async award(user: User, achievement: AchievementEnum) {
     const admin = Global.bot("ADMIN");
 
     if (user.hasAchievement(achievement)) {
       return;
     }
 
-    const residence = await admin.getTextChannel(user.notificationChannelId);
-    const member = await admin.getMember(user.discordId);
+    const [residence, member, achievementData] = await Promise.all([
+      admin.getTextChannel(user.notificationChannelId),
+      admin.guild.members.fetch(user.discordId),
+      Achievement.findOne({ where: { symbol: achievement } }),
+    ]);
+
+    if (!achievementData) {
+      throw new Error(`Achievement ${achievement} not found`);
+    }
+
+    if (!member) {
+      throw new Error(`Member ${user.displayName} not found`);
+    }
 
     const startBalance = user.gbt;
 
-    await Promise.all([
-      transactBalance(user.discordId, 10),
-      addAchievement(user.discordId, achievement),
-    ]);
+    user.achievements.push(achievementData);
+    user.gbt += achievementData.reward;
+    await user.save();
 
     let embed = new MessageEmbed()
       .setAuthor({
-        iconURL: member!.displayAvatarURL(),
-        name: member!.displayName,
+        iconURL: member.displayAvatarURL(),
+        name: member.displayName,
       })
       .setTitle("Achievement Unlocked!")
       .setDescription(`\`${achievement}\``)
       .setColor("GOLD")
-      .addField("Reward", Format.transaction(startBalance, 10));
+      .addField(
+        "Reward",
+        Format.transaction(startBalance, achievementData.reward)
+      );
 
-    if (achievement === Achievement.JOINED_THE_DEGENZ) {
+    if (achievement === AchievementEnum.JOINED_THE_DEGENZ) {
       embed = embed.setImage(
         "https://s10.gifyu.com/images/HeaderCryptoDegenz-min.gif"
       );

@@ -18,6 +18,9 @@ export class Achievement extends BaseEntity {
   @Column({ type: "enum", enum: AchievementEnum, unique: true })
   symbol: AchievementEnum;
 
+  @Column({ default: 100 })
+  reward: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

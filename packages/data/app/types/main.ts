@@ -372,6 +372,7 @@ export enum QuestSymbolEnum {
   PLEDGE = "PLEDGE",
   LEARN_TO_HACKER_BATTLE = "LEARN_TO_HACKER_BATTLE",
   TOSS_WITH_TED = "TOSS_WITH_TED",
+  SHOP_AT_MERRIS_MART = "SHOP_AT_MERRIS_MART",
 }
 
 export type QuestSymbol = `${QuestSymbolEnum}`;

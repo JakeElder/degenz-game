@@ -39,7 +39,7 @@ export default abstract class Quest {
   }) {
     return new MessageButton()
       .setLabel(expanded ? "Hide Details" : "Show Details")
-      .setStyle(complete ? "SUCCESS" : "DANGER")
+      .setStyle(complete ? "SUCCESS" : "PRIMARY")
       .setCustomId(`TOGGLE_QUEST_DETAILS:${this.symbol}:${userDiscordId}`);
   }
 
@@ -61,8 +61,8 @@ export default abstract class Quest {
       complete,
     });
     const color = complete
-      ? Util.resolveColor("GREEN")
-      : Util.resolveColor("RED");
+      ? Util.resolveColor("DARK_GREEN")
+      : Util.resolveColor("BLUE");
 
     return {
       embeds: [

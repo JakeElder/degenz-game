@@ -139,22 +139,6 @@ export async function getAvailableCellNumber() {
   return num;
 }
 
-export async function addAchievement(
-  memberId: string,
-  symbol: AchievementEnum
-) {
-  const user = await User.findOneOrFail({
-    where: { discordId: memberId },
-    relations: ["achievements"],
-  });
-  const achievement = await Achievement.findOne({ where: { symbol } });
-  if (!achievement) {
-    throw new Error(`Achievement ${symbol} not found`);
-  }
-  user.achievements.push(achievement);
-  await user.save();
-}
-
 export async function transactBalance(memberId: string, amount: number) {
   const user = await User.findOne({ where: { discordId: memberId } });
   user!.gbt += amount;

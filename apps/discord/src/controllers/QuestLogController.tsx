@@ -8,13 +8,15 @@ import {
   ThreadChannel,
 } from "discord.js";
 import { REST } from "@discordjs/rest";
-import { Global } from "../Global";
 import { QuestSymbol } from "data/types";
+import equal from "fast-deep-equal";
 import { Routes } from "discord-api-types/v10";
 import PledgeQuest from "../quests/PledgeQuest";
 import Quest from "../Quest";
+import { Global } from "../Global";
 import LearnToHackerBattleQuest from "../quests/LearnToHackerBattleQuest";
 import TossWithTedQuest from "../quests/TossWithTedQuest";
+import ShopAtMerrisMartQuest from "../quests/ShopAtMerrisMartQuest";
 
 const rest = new REST({ version: "10", rejectOnRateLimit: ["/"] }).setToken(
   Config.botToken("ADMIN")
@@ -27,6 +29,7 @@ export default class QuestLogController {
       new PledgeQuest(),
       new LearnToHackerBattleQuest(),
       new TossWithTedQuest(),
+      new ShopAtMerrisMartQuest(),
     ];
     await this.bindEventListeners();
     await this.refresh();
@@ -86,6 +89,11 @@ export default class QuestLogController {
     return thread;
   }
 
+  static async purgeThreadForUser(user: User) {
+    const thread = await this.fetchExistingThread(user);
+    await this.purgeThread(thread);
+  }
+
   static async purgeThread(thread: ThreadChannel) {
     const c = await QuestLogChannel.findOne({
       where: { channel: { discordId: thread.id } },
@@ -116,8 +124,10 @@ export default class QuestLogController {
         }
 
         if (
-          this.quests.map((q) => q.symbol).sort() !==
-          c.questLogMessages.map((m) => m.quest).sort()
+          !equal(
+            this.quests.map((q) => q.symbol).sort(),
+            c.questLogMessages.map((m) => m.quest).sort()
+          )
         ) {
           if (c.questLogMessages.length) {
             await Promise.all([

@@ -1,22 +1,24 @@
 import Config from "config";
-import { User } from "data/db";
-import { Achievement } from "data/types";
+import { MartItemOwnership, User } from "data/db";
 import { EmbedFieldData } from "discord.js";
 import React from "react";
 import { ChannelMention, UserMention } from "../legacy/templates";
 import Quest from "../Quest";
 import Utils from "../Utils";
 
-export default class LearnToHackerBattleQuest extends Quest {
+export default class ShopAtMerrisMartQuest extends Quest {
   constructor() {
     super();
-    this.symbol = "LEARN_TO_HACKER_BATTLE";
+    this.symbol = "SHOP_AT_MERRIS_MART";
   }
 
   async getProgress(user: User) {
-    let progress: number = user.hasAchievement(Achievement.FINISHED_TRAINER)
-      ? 1
-      : 0;
+    const items = await MartItemOwnership.count({
+      where: { user },
+      withDeleted: true,
+    });
+
+    let progress: number = items > 0 ? 1 : 0;
     return progress;
   }
 
@@ -29,23 +31,22 @@ export default class LearnToHackerBattleQuest extends Quest {
         name: "Details",
         value: Utils.r(
           <>
-            If you want to learn to hacker battle, go and see{" "}
-            <UserMention id={Config.clientId("SENSEI")} /> in the{" "}
-            <ChannelMention id={Config.channelId("TRAINING_DOJO")} />. Just
-            press the **LFG** button when you get there.
+            If you want to shop, go to the{" "}
+            <ChannelMention id={Config.channelId("MART")} /> channel. Remember
+            to type the `/help` command when you get there.
           </>
         ),
       });
     }
 
     return this.format({
-      title: "Learn to Hacker Battle",
-      thumbnail: `${Config.env("WEB_URL")}/characters/npcs/SENSEI.png`,
+      title: "Shop at Merris Mart",
+      thumbnail: `${Config.env("WEB_URL")}/characters/npcs/MART_CLERK.png`,
       progress,
       description: (
         <>
-          **All** Degenz must learn to hacker battle with{" "}
-          <UserMention id={Config.clientId("SENSEI")} />.
+          Check out <ChannelMention id={Config.channelId("MART")} /> and buy
+          some of her products.
         </>
       ),
       expanded,

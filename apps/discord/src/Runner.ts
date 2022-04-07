@@ -119,6 +119,7 @@ export default class Runner {
     Events.on("MART_ITEM_BOUGHT", (e) => {
       WorldNotifier.martItemBought(e);
       Analytics.martItemBought(e);
+      QuestLogController.refresh(e.data.user);
     });
 
     Events.on("TOSS_COMPLETED", (e) => {

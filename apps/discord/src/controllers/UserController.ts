@@ -22,6 +22,7 @@ import { getAvailableCellNumber, getTenanciesInDistrict } from "../legacy/db";
 import { Global } from "../Global";
 import random from "random";
 import EntranceController from "./EntranceController";
+import QuestLogController from "./QuestLogController";
 
 type FailedApartmentInitResult = {
   success: false;
@@ -269,6 +270,9 @@ export default class UserController {
         "imprisonments",
         "achievements",
         "martItemOwnerships",
+        "questLogChannel",
+        "questLogChannel.channel",
+        "questLogChannel.questLogMessages",
       ],
     });
 
@@ -276,6 +280,9 @@ export default class UserController {
     if (!user) {
       return { success: false, code: "USER_NOT_FOUND" };
     }
+
+    // Remove quest log stuff
+    await QuestLogController.purgeThreadForUser(user);
 
     // Remove apartment
     try {
