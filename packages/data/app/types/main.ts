@@ -282,6 +282,7 @@ export enum Achievement {
   MART_STOCK_CHECKED = "MART_STOCK_CHECKED",
   MART_ITEM_BOUGHT = "MART_ITEM_BOUGHT",
   ALLEGIANCE_PLEDGED = "ALLEGIANCE_PLEDGED",
+  TOSS_COMPLETED = "TOSS_COMPLETED",
 }
 
 export enum PersistentMessageSymbolEnum {
@@ -370,6 +371,7 @@ export enum ChannelTypeEnum {
 export enum QuestSymbolEnum {
   PLEDGE = "PLEDGE",
   LEARN_TO_HACKER_BATTLE = "LEARN_TO_HACKER_BATTLE",
+  TOSS_WITH_TED = "TOSS_WITH_TED",
 }
 
 export type QuestSymbol = `${QuestSymbolEnum}`;

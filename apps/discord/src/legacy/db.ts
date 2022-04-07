@@ -6,7 +6,6 @@ import {
   ApartmentTenancy,
   User,
   District,
-  DormitoryTenancy,
 } from "data/db";
 import { DistrictSymbol, Achievement as AchievementEnum } from "data/types";
 import { In } from "typeorm";
@@ -144,13 +143,16 @@ export async function addAchievement(
   memberId: string,
   symbol: AchievementEnum
 ) {
-  const user = await User.findOne({
+  const user = await User.findOneOrFail({
     where: { discordId: memberId },
     relations: ["achievements"],
   });
   const achievement = await Achievement.findOne({ where: { symbol } });
-  user!.achievements.push(achievement!);
-  user!.save();
+  if (!achievement) {
+    throw new Error(`Achievement ${symbol} not found`);
+  }
+  user.achievements.push(achievement);
+  await user.save();
 }
 
 export async function transactBalance(memberId: string, amount: number) {

@@ -1,40 +1,33 @@
-import React from "react";
 import { paramCase } from "change-case";
 import Config from "config";
-import {
-  QuestLogChannel,
-  User,
-  Channel,
-  QuestLogMessage,
-  Pledge,
-} from "data/db";
+import { QuestLogChannel, User, Channel, QuestLogMessage } from "data/db";
 import {
   ButtonInteraction,
   GuildMember,
-  MessageActionRow,
-  MessageButton,
-  MessageEmbedOptions,
-  MessageOptions,
+  Message,
   ThreadChannel,
-  Util,
 } from "discord.js";
 import { REST } from "@discordjs/rest";
 import { Global } from "../Global";
-import Utils from "../Utils";
-import { ChannelMention, UserMention } from "../legacy/templates";
-import { Format } from "lib";
 import { QuestSymbol } from "data/types";
 import { Routes } from "discord-api-types/v10";
-import { channelMention, userMention } from "@discordjs/builders";
+import PledgeQuest from "../quests/PledgeQuest";
+import Quest from "../Quest";
+import LearnToHackerBattleQuest from "../quests/LearnToHackerBattleQuest";
+import TossWithTedQuest from "../quests/TossWithTedQuest";
 
 const rest = new REST({ version: "10", rejectOnRateLimit: ["/"] }).setToken(
   Config.botToken("ADMIN")
 );
 
-const { r } = Utils;
-
 export default class QuestLogController {
+  static quests: Quest[];
   static async init() {
+    this.quests = [
+      new PledgeQuest(),
+      new LearnToHackerBattleQuest(),
+      new TossWithTedQuest(),
+    ];
     await this.bindEventListeners();
     await this.refresh();
   }
@@ -57,6 +50,40 @@ export default class QuestLogController {
         await this.purgeThread(thread);
       }
     });
+  }
+
+  static async createThread(user: User) {
+    const admin = Global.bot("ADMIN");
+
+    const questsChannel = await admin.guild.channels.fetch(
+      Config.channelId("QUESTS")
+    );
+
+    if (!questsChannel || questsChannel.type !== "GUILD_TEXT") {
+      throw new Error("Quests channel not found");
+    }
+
+    const thread = await questsChannel.threads.create({
+      name: `\u2658\uFF5C${paramCase(user.displayName)}s-quest-log`,
+      invitable: false,
+      autoArchiveDuration: 60,
+      type: ["production"].includes(Config.env("NODE_ENV"))
+        ? "GUILD_PRIVATE_THREAD"
+        : "GUILD_PUBLIC_THREAD",
+    });
+
+    await thread.members.add(user.discordId);
+
+    user.questLogChannel = QuestLogChannel.create({
+      user,
+      channel: Channel.create({
+        type: "QUEST_LOG_THREAD",
+        discordId: thread.id,
+      }),
+    });
+
+    await user.save();
+    return thread;
   }
 
   static async purgeThread(thread: ThreadChannel) {
@@ -82,14 +109,41 @@ export default class QuestLogController {
       channels.map(async (c) => {
         c.user.questLogChannel = c;
         const thread = await this.fetchExistingThread(c.user);
+
         if (thread.archived) {
           await this.purgeThread(thread);
           return;
         }
-        await Promise.all([
-          this.updateQuestMessage(c, "PLEDGE"),
-          this.updateQuestMessage(c, "LEARN_TO_HACKER_BATTLE"),
-        ]);
+
+        if (
+          this.quests.map((q) => q.symbol).sort() !==
+          c.questLogMessages.map((m) => m.quest).sort()
+        ) {
+          if (c.questLogMessages.length) {
+            await Promise.all([
+              c.questLogMessages.map((m) =>
+                thread.messages.delete(m.discordId)
+              ),
+            ]);
+            await QuestLogMessage.remove(c.questLogMessages);
+          }
+
+          const user = await User.findOneOrFail({
+            where: { id: c.user.id },
+            relations: [
+              "achievements",
+              "questLogChannel",
+              "questLogChannel.channel",
+              "questLogChannel.questLogMessages",
+            ],
+          });
+          await this.sendQuestMessages(user, thread);
+          return;
+        }
+
+        await Promise.all(
+          this.quests.map((q) => this.updateQuestMessage(c, q.symbol))
+        );
       })
     );
   }
@@ -99,42 +153,29 @@ export default class QuestLogController {
     questSymbol: QuestSymbol
   ) {
     const qlm = qlc.questLogMessages.find((m) => m.quest === questSymbol);
-
     if (!qlm) {
-      throw new Error(`Quest ${questSymbol} not recognised`);
+      throw new Error(
+        `No db message for ${qlc.user.displayName}${questSymbol}`
+      );
     }
 
     const thread = await this.fetchExistingThread(qlc.user);
     const message = await thread.messages.fetch(qlm.discordId);
-
     if (!message) {
       throw new Error(
         `Message for ${qlc.user.displayName}:${questSymbol} not found`
       );
     }
 
-    const options = await this.makeQuestMessage(
-      questSymbol,
-      qlc.user,
-      qlm.expanded
-    );
+    const quest = this.quests.find((q) => q.symbol === questSymbol);
+    if (!quest) {
+      throw new Error(`Quest ${questSymbol} not found`);
+    }
 
+    const options = await quest.message(qlc.user, qlm.expanded);
     await rest.patch(Routes.channelMessage(qlc.channel.discordId, message.id), {
       body: options,
     });
-  }
-
-  static async makeQuestMessage(
-    questSymbol: QuestSymbol,
-    user: User,
-    expanded: boolean
-  ) {
-    if (questSymbol === "PLEDGE") {
-      return this.makePledgeQuestMessage(user, expanded);
-    } else if (questSymbol === "LEARN_TO_HACKER_BATTLE") {
-      return this.makeLearnToHackQuestMessage(user, expanded);
-    }
-    throw new Error(`Quest ${questSymbol} not recognised`);
   }
 
   static async toggleQuestDetails(i: ButtonInteraction) {
@@ -198,29 +239,20 @@ export default class QuestLogController {
   }
 
   static async sendQuestMessages(user: User, thread: ThreadChannel) {
-    const pledgeMessageOptions = await this.makePledgeQuestMessage(user);
-    const pledgeMessage = await thread.send(pledgeMessageOptions);
+    const messages: Message[] = [];
 
-    const learnToHackOptions = await this.makeLearnToHackQuestMessage(
-      user,
-      false
-    );
-    const learnToHackMessage = await thread.send(learnToHackOptions);
+    for (let i = 0; i < this.quests.length; i++) {
+      const options = await this.quests[i].message(user, false);
+      messages.push(await thread.send(options));
+    }
 
-    user.questLogChannel.questLogMessages ??= [];
-
-    user.questLogChannel.questLogMessages.push(
-      QuestLogMessage.create({
-        quest: "PLEDGE",
+    user.questLogChannel.questLogMessages = this.quests.map((q, idx) => {
+      return QuestLogMessage.create({
+        quest: q.symbol,
         questLogChannel: user.questLogChannel,
-        discordId: pledgeMessage.id,
-      }),
-      QuestLogMessage.create({
-        quest: "LEARN_TO_HACKER_BATTLE",
-        questLogChannel: user.questLogChannel,
-        discordId: learnToHackMessage.id,
-      })
-    );
+        discordId: messages[idx].id,
+      });
+    });
 
     await user.save();
   }
@@ -245,171 +277,12 @@ export default class QuestLogController {
 
   static async getQuestLogChannel(user: User) {
     if (!user.questLogChannel) {
-      const thread = await this.createQuestLogChannel(user);
+      const thread = await this.createThread(user);
       return { thread, isNew: true };
     }
 
     const thread = await this.fetchExistingThread(user);
 
     return { thread, isNew: false };
-  }
-
-  static async createQuestLogChannel(user: User) {
-    const admin = Global.bot("ADMIN");
-
-    const questsChannel = await admin.guild.channels.fetch(
-      Config.channelId("QUESTS")
-    );
-
-    if (!questsChannel || questsChannel.type !== "GUILD_TEXT") {
-      throw new Error("Quests channel not found");
-    }
-
-    const thread = await questsChannel.threads.create({
-      name: `\u2658\uFF5C${paramCase(user.displayName)}s-quest-log`,
-      invitable: false,
-      autoArchiveDuration: 60,
-      type: ["production"].includes(Config.env("NODE_ENV"))
-        ? "GUILD_PRIVATE_THREAD"
-        : "GUILD_PUBLIC_THREAD",
-    });
-
-    await thread.members.add(user.discordId);
-
-    user.questLogChannel = QuestLogChannel.create({
-      user,
-      channel: Channel.create({
-        type: "QUEST_LOG_THREAD",
-        discordId: thread.id,
-      }),
-    });
-
-    await user.save();
-    return thread;
-  }
-
-  static async makePledgeQuestMessage(
-    user: User,
-    expanded: boolean = false
-  ): Promise<MessageOptions> {
-    const pledges = await Pledge.count({ where: { user } });
-    const complete = pledges > 0;
-
-    const button = this.makeToggleButton("PLEDGE", user, expanded);
-    const color = this.getEmbedColor(complete);
-
-    const options: MessageOptions = {
-      embeds: [
-        {
-          title: "Pledge Allegiance to Big Brother",
-          thumbnail: {
-            url: `${Config.env("WEB_URL")}/characters/npcs/BIG_BROTHER.png`,
-          },
-          color,
-          description: r(
-            <>
-              Pledge your allegiance to{" "}
-              <UserMention id={Config.clientId("BIG_BROTHER")} /> and receive **
-              {Format.token()}**.
-            </>
-          ),
-          fields: [
-            {
-              name: "Progress",
-              value: complete ? "\u2705 Complete" : "\u274c Incomplete",
-            },
-          ],
-          image: {
-            url: `${Config.env("WEB_URL")}/blank-row.png`,
-          },
-        },
-      ],
-      components: [new MessageActionRow().addComponents(button)],
-    };
-
-    if (expanded) {
-      options.embeds![0].fields!.push({
-        name: "Details",
-        inline: false,
-        value: r(
-          <>
-            Go to <ChannelMention id={Config.channelId("HALL_OF_ALLEIGANCE")} />{" "}
-            and press the **PLEDGE** button to receive your first allowance.
-          </>
-        ),
-      });
-    }
-
-    return options;
-  }
-
-  static makeToggleButton(
-    questSymbol: QuestSymbol,
-    user: User,
-    expanded: boolean
-  ) {
-    return new MessageButton()
-      .setLabel(expanded ? "Hide Details" : "Show Details")
-      .setStyle("SUCCESS")
-      .setCustomId(`TOGGLE_QUEST_DETAILS:${questSymbol}:${user.discordId}`);
-  }
-
-  static getEmbedColor(complete: boolean): MessageEmbedOptions["color"] {
-    return complete ? Util.resolveColor("GREEN") : Util.resolveColor("RED");
-  }
-
-  static async makeLearnToHackQuestMessage(
-    user: User,
-    expanded: boolean
-  ): Promise<MessageOptions> {
-    const complete = false;
-
-    const button = this.makeToggleButton(
-      "LEARN_TO_HACKER_BATTLE",
-      user,
-      expanded
-    );
-
-    const color = this.getEmbedColor(complete);
-
-    const options: MessageOptions = {
-      embeds: [
-        {
-          title: "Learn to Hacker Battle",
-          thumbnail: {
-            url: `${Config.env("WEB_URL")}/characters/npcs/SENSEI.png`,
-          },
-          color,
-          description: r(<>All **Degenz** must learn to hacker battle.</>),
-          fields: [
-            {
-              name: "Progress",
-              value: complete ? "\u2705 Complete" : "\u274c Incomplete",
-            },
-          ],
-          image: {
-            url: `${Config.env("WEB_URL")}/blank-row.png`,
-          },
-        },
-      ],
-      components: [new MessageActionRow().addComponents(button)],
-    };
-
-    if (expanded) {
-      options.embeds![0].fields!.push({
-        name: "Details",
-        inline: false,
-        value: r(
-          <>
-            If you want to learn to hacker battle, go and see{" "}
-            <UserMention id={Config.clientId("SENSEI")} /> in the{" "}
-            <ChannelMention id={Config.channelId("TRAINING_DOJO")} />. Just
-            press the **LFG** button when you get there.
-          </>
-        ),
-      });
-    }
-
-    return options;
   }
 }

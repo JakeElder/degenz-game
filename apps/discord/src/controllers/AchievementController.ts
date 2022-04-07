@@ -5,6 +5,7 @@ import { addAchievement, transactBalance } from "../legacy/db";
 import { Global } from "../Global";
 import Events from "../Events";
 import { Format } from "lib";
+import QuestLogController from "./QuestLogController";
 
 export default class AchievementController {
   static descriptions: Record<Achievement, string> = {
@@ -13,10 +14,18 @@ export default class AchievementController {
     STATS_CHECKED: "You used the `/stats` command.",
     SUPER_OBEDIENT: "You typed the `/obey` command twice. Such a good citizen.",
     ALLEGIANCE_PLEDGED: "You pledged your allegiance to Big Brother.",
+    TOSS_COMPLETED: "You gambled at Teds Toss House",
     FINISHED_TRAINER: "-",
     MART_ITEM_BOUGHT: "-",
     MART_STOCK_CHECKED: "-",
   };
+
+  static async checkAndAward(user: User, achievement: Achievement) {
+    if (!user.hasAchievement(achievement)) {
+      await this.award(user, achievement);
+      QuestLogController.refresh(user);
+    }
+  }
 
   static async award(user: User, achievement: Achievement) {
     const admin = Global.bot("ADMIN");

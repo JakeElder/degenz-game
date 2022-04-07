@@ -1,4 +1,4 @@
-import { BotSymbol } from "data/types";
+import { BotSymbol, Achievement } from "data/types";
 import Events from "./Events";
 import Logger from "./Logger";
 import WorldNotifier from "./WorldNotifier";
@@ -15,6 +15,7 @@ import MartClerkCommandController from "./command-controllers/MartClerkCommandCo
 import NextStepController from "./controllers/NextStepsController";
 import EntranceController from "./controllers/EntranceController";
 import QuestLogController from "./controllers/QuestLogController";
+import AchievementController from "./controllers/AchievementController";
 
 export default class Runner {
   constructor(private bots: DiscordBot[]) {
@@ -123,6 +124,10 @@ export default class Runner {
     Events.on("TOSS_COMPLETED", (e) => {
       WorldNotifier.tossCompleted(e);
       Analytics.tossCompleted(e);
+      AchievementController.checkAndAward(
+        e.data.challenger,
+        Achievement.TOSS_COMPLETED
+      );
     });
 
     Events.on("REDPILL_TAKEN", (e) => {
