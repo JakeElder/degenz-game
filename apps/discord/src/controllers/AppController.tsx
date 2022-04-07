@@ -9,6 +9,7 @@ import { Channel } from "../Channel";
 import OnboardController from "./OnboardController";
 import EntranceController from "./EntranceController";
 import Manifest from "manifest";
+import QuestLogController from "./QuestLogController";
 
 export default class AppController {
   static invites: Collection<string, Invite>;
@@ -62,10 +63,19 @@ export default class AppController {
       }
     });
 
-    admin.client.on("guildMemberUpdate", async (_, newMember) => {
+    admin.client.on("guildMemberUpdate", async (prevMember, member) => {
+      if (
+        prevMember.roles.cache.has(Config.roleId("WHITELIST")) !==
+        member.roles.cache.has(Config.roleId("WHITELIST"))
+      ) {
+        const user = await User.findOneOrFail({
+          where: { discordId: member.id },
+        });
+        QuestLogController.refresh(user);
+      }
       User.update(
-        { discordId: newMember.id },
-        { displayName: newMember.displayName }
+        { discordId: member.id },
+        { displayName: member.displayName }
       );
     });
 

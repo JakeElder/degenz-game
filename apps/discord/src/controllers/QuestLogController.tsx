@@ -17,6 +17,7 @@ import { Global } from "../Global";
 import LearnToHackerBattleQuest from "../quests/LearnToHackerBattleQuest";
 import TossWithTedQuest from "../quests/TossWithTedQuest";
 import ShopAtMerrisMartQuest from "../quests/ShopAtMerrisMartQuest";
+import GetWhitelistQuest from "../quests/GetWhitelistQuest";
 
 const rest = new REST({ version: "10", rejectOnRateLimit: ["/"] }).setToken(
   Config.botToken("ADMIN")
@@ -27,6 +28,7 @@ export default class QuestLogController {
   static async init() {
     this.quests = [
       new PledgeQuest(),
+      new GetWhitelistQuest(),
       new LearnToHackerBattleQuest(),
       new TossWithTedQuest(),
       new ShopAtMerrisMartQuest(),
@@ -186,6 +188,7 @@ export default class QuestLogController {
     await rest.patch(Routes.channelMessage(qlc.channel.discordId, message.id), {
       body: options,
     });
+    // await message.edit(options);
   }
 
   static async toggleQuestDetails(i: ButtonInteraction) {

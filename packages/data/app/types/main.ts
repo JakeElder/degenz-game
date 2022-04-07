@@ -147,6 +147,7 @@ export enum SupplementaryRoleSymbolEnum {
   SERVER_BOOSTER = "SERVER_BOOSTER",
   TRAINEE = "TRAINEE",
   THOUGHT_POLICE = "THOUGHT_POLICE",
+  WHITELIST = "WHITELIST",
 }
 
 export enum CitizenRoleSymbolEnum {
@@ -373,6 +374,7 @@ export enum QuestSymbolEnum {
   LEARN_TO_HACKER_BATTLE = "LEARN_TO_HACKER_BATTLE",
   TOSS_WITH_TED = "TOSS_WITH_TED",
   SHOP_AT_MERRIS_MART = "SHOP_AT_MERRIS_MART",
+  GET_WHITELIST = "GET_WHITELIST",
 }
 
 export type QuestSymbol = `${QuestSymbolEnum}`;
