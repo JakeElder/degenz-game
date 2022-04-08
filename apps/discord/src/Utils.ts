@@ -20,7 +20,7 @@ export default class Utils {
     if (Config.general("SKIP_DELAY")) {
       return;
     }
-    return delay(ms * 0.6);
+    return delay(ms * 0.4);
   }
 
   static db(connection?: Connection) {

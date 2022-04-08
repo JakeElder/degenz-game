@@ -92,8 +92,10 @@ export default class QuestLogController {
   }
 
   static async purgeThreadForUser(user: User) {
-    const thread = await this.fetchExistingThread(user);
-    await this.purgeThread(thread);
+    if (user.questLogChannel) {
+      const thread = await this.fetchExistingThread(user);
+      await this.purgeThread(thread);
+    }
   }
 
   static async purgeThread(thread: ThreadChannel) {
