@@ -46,8 +46,10 @@ export default class ListChannels extends Command {
       const cat = arranged.categories.find(
         (c) => c.id === arranged.channels[i].parent_id
       );
-      cat.channels ??= [];
-      cat.channels.push(arranged.channels[i]);
+      if (cat) {
+        cat.channels ??= [];
+        cat.channels.push(arranged.channels[i]);
+      }
     }
 
     const sortedCategories = arranged.categories.sort(

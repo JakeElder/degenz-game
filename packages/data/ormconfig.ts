@@ -4,7 +4,12 @@ import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 import pg from "pg-connection-string";
 import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 
-const envFile = process.env.ENV_FILE || ".env";
+const envFile = {
+  development: ".env",
+  stage: ".env.stage",
+  production: ".env.prod",
+}[process.env.NODE_ENV || "development"];
+
 dotenv.config({ path: findConfig(envFile)! });
 
 let config: PostgresConnectionOptions;
