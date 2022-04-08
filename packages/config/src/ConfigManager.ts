@@ -12,30 +12,29 @@ import {
 } from "data/types";
 import { Role } from "data/db";
 import chalk from "chalk";
-import fs from "fs";
 
-type Env = "development" | "stage" | "production";
+const NODE_ENV =
+  (process.env.NODE_ENV as "development" | "stage" | "production") ||
+  "development";
 
-const envs: Record<Env, EnvVars> = {
-  development: dotenv.parse(fs.readFileSync(findConfig(".env")!)) as EnvVars,
-  stage: dotenv.parse(fs.readFileSync(findConfig(".env.stage")!)) as EnvVars,
-  production: dotenv.parse(
-    fs.readFileSync(findConfig(".env.prod")!)
-  ) as EnvVars,
-};
+const envFile = {
+  development: ".env",
+  stage: ".env.stage",
+  production: ".env.prod",
+}[NODE_ENV];
 
-const NODE_ENV = (process.env.NODE_ENV as Env | undefined) || "development";
+dotenv.config({ path: findConfig(envFile)! });
 
-if (NODE_ENV !== "development") {
+if (envFile !== ".env") {
   const colour = chalk.hex("#ffc53d");
   const log = (s: string) => console.log(`  ${s}`);
-  process.stdout.write("\n");
+  console.log("");
   const n = ` NODE_ENV: ${NODE_ENV}   `;
   const l = n.length;
   log(colour("-".repeat(l)));
   log(colour(n));
   log(colour("-".repeat(l)));
-  process.stdout.write("\n");
+  console.log("");
 }
 
 const configs = {
@@ -43,6 +42,8 @@ const configs = {
   stage: STAGE_CONFIG,
   production: PROD_CONFIG,
 };
+
+const env = process.env as EnvVars;
 
 export default class ConfigManager {
   static roles: Role[];
@@ -52,31 +53,21 @@ export default class ConfigManager {
   }
 
   static general<T extends keyof typeof configs["development"]["GENERAL"]>(
-    k: T,
-    { env }: { env: keyof typeof configs } = { env: NODE_ENV }
+    k: T
   ): typeof configs["development"]["GENERAL"][T] {
-    return configs[env].GENERAL[k];
+    return configs[NODE_ENV].GENERAL[k];
   }
 
-  static env<T extends keyof EnvVars>(
-    k: T,
-    { env }: { env: keyof typeof configs } = { env: NODE_ENV }
-  ): EnvVars[T] {
-    return envs[env][k];
+  static env<T extends keyof EnvVars>(k: T): EnvVars[T] {
+    return env[k];
   }
 
-  static categoryId(
-    k: CategorySymbol,
-    { env }: { env: keyof typeof configs } = { env: NODE_ENV }
-  ) {
-    return configs[env].CATEGORY_IDS[k];
+  static categoryId(k: CategorySymbol) {
+    return configs[NODE_ENV].CATEGORY_IDS[k];
   }
 
-  static channelId(
-    k: ChannelSymbol,
-    { env }: { env: keyof typeof configs } = { env: NODE_ENV }
-  ) {
-    return configs[env].CHANNEL_IDS[k];
+  static channelId(k: ChannelSymbol) {
+    return configs[NODE_ENV].CHANNEL_IDS[k];
   }
 
   static roleId(k: RoleSymbol) {
@@ -94,32 +85,23 @@ export default class ConfigManager {
     if (!role) {
       throw new Error(`${id} role not found`);
     }
-    return role.symbol;
+    return role.discordId;
   };
 
-  static clientId(
-    k: BotSymbol,
-    { env }: { env: keyof typeof configs } = { env: NODE_ENV }
-  ) {
-    return configs[env].CLIENT_IDS[k];
+  static clientId(k: BotSymbol) {
+    return configs[NODE_ENV].CLIENT_IDS[k];
   }
 
-  static botToken(
-    k: BotSymbol,
-    { env }: { env: keyof typeof configs } = { env: NODE_ENV }
-  ) {
-    return envs[env][`${k}_BOT_TOKEN`];
+  static botToken(k: BotSymbol) {
+    return env[`${k}_BOT_TOKEN`];
   }
 
-  static clientIds({ env }: { env: keyof typeof configs } = { env: NODE_ENV }) {
-    return configs[env].CLIENT_IDS;
+  static clientIds() {
+    return configs[NODE_ENV].CLIENT_IDS;
   }
 
-  static reverseClientId = (
-    id: string,
-    { env }: { env: keyof typeof configs } = { env: NODE_ENV }
-  ) => {
-    for (const [key, value] of Object.entries(configs[env].CLIENT_IDS)) {
+  static reverseClientId = (id: string) => {
+    for (const [key, value] of Object.entries(configs[NODE_ENV].CLIENT_IDS)) {
       if (value === id) {
         return key as BotSymbol;
       }

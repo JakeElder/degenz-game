@@ -22,8 +22,8 @@ export default class ListChannels extends Command {
   async run(): Promise<void> {
     const { flags } = await this.parse(ListChannels);
 
-    const guild = Config.general("GUILD_ID", { env: flags.env as EnvSymbol });
-    const token = Config.botToken("ADMIN", { env: flags.env as EnvSymbol });
+    const guild = Config.general("GUILD_ID");
+    const token = Config.botToken("ADMIN");
 
     const res = await this.get(Routes.guildChannels(guild), token);
 
