@@ -12,59 +12,36 @@ import {
 } from "data/types";
 import { Role } from "data/db";
 import chalk from "chalk";
+import fs from "fs";
 
-const envFile = process.env.ENV_FILE || ".env";
-dotenv.config({ path: findConfig(envFile)! });
+type Env = "development" | "stage" | "production";
 
-const NODE_ENV =
-  (process.env.NODE_ENV as "development" | "stage" | "production") ||
-  "development";
+const envs: Record<Env, EnvVars> = {
+  development: dotenv.parse(fs.readFileSync(findConfig(".env")!)) as EnvVars,
+  stage: dotenv.parse(fs.readFileSync(findConfig(".env.stage")!)) as EnvVars,
+  production: dotenv.parse(
+    fs.readFileSync(findConfig(".env.prod")!)
+  ) as EnvVars,
+};
 
-if (envFile !== ".env") {
+const NODE_ENV = (process.env.NODE_ENV as Env | undefined) || "development";
+
+if (NODE_ENV !== "development") {
   const colour = chalk.hex("#ffc53d");
   const log = (s: string) => console.log(`  ${s}`);
-  console.log("");
-  const e = ` ENV_FILE: ${envFile}   `;
+  process.stdout.write("\n");
   const n = ` NODE_ENV: ${NODE_ENV}   `;
-  const l = Math.max(e.length, n.length);
+  const l = n.length;
   log(colour("-".repeat(l)));
-  log(colour(e));
   log(colour(n));
   log(colour("-".repeat(l)));
-  console.log("");
+  process.stdout.write("\n");
 }
 
 const configs = {
   development: DEV_CONFIG,
   stage: STAGE_CONFIG,
   production: PROD_CONFIG,
-};
-
-const env = process.env as EnvVars;
-
-const BOT_TOKENS: Record<BotSymbol, string> = {
-  ADMIN: env.ADMIN_BOT_TOKEN,
-  ALLY: env.ALLY_BOT_TOKEN,
-  ARMORY_CLERK: env.ARMORY_CLERK_BOT_TOKEN,
-  BANKER: env.BANKER_BOT_TOKEN,
-  BIG_BROTHER: env.BIG_BROTHER_BOT_TOKEN,
-  DEVILS_ADVOCATE: env.DEVILS_ADVOCATE_BOT_TOKEN,
-  MART_CLERK: env.MART_CLERK_BOT_TOKEN,
-  PRISONER: env.PRISONER_BOT_TOKEN,
-  RESISTANCE_LEADER: env.RESISTANCE_LEADER_BOT_TOKEN,
-  SCOUT: env.SCOUT_BOT_TOKEN,
-  SENSEI: env.SENSEI_BOT_TOKEN,
-  TOSSER: env.TOSSER_BOT_TOKEN,
-  WARDEN: env.WARDEN_BOT_TOKEN,
-};
-
-const ENV = {
-  CA_CERT: env.CA_CERT,
-  DATABASE_URL: env.DATABASE_URL,
-  MIXPANEL_PROJECT_TOKEN: env.MIXPANEL_PROJECT_TOKEN,
-  NODE_ENV,
-  WEB_URL: env.WEB_URL,
-  ROLLBAR_TOKEN: env.ROLLBAR_TOKEN,
 };
 
 export default class ConfigManager {
@@ -81,8 +58,11 @@ export default class ConfigManager {
     return configs[env].GENERAL[k];
   }
 
-  static env<T extends keyof typeof ENV>(k: T): typeof ENV[T] {
-    return ENV[k];
+  static env<T extends keyof EnvVars>(
+    k: T,
+    { env }: { env: keyof typeof configs } = { env: NODE_ENV }
+  ): EnvVars[T] {
+    return envs[env][k];
   }
 
   static categoryId(
@@ -114,7 +94,7 @@ export default class ConfigManager {
     if (!role) {
       throw new Error(`${id} role not found`);
     }
-    return role.discordId;
+    return role.symbol;
   };
 
   static clientId(
@@ -124,8 +104,11 @@ export default class ConfigManager {
     return configs[env].CLIENT_IDS[k];
   }
 
-  static botToken(k: BotSymbol) {
-    return BOT_TOKENS[k];
+  static botToken(
+    k: BotSymbol,
+    { env }: { env: keyof typeof configs } = { env: NODE_ENV }
+  ) {
+    return envs[env][`${k}_BOT_TOKEN`];
   }
 
   static clientIds({ env }: { env: keyof typeof configs } = { env: NODE_ENV }) {

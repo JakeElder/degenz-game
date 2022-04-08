@@ -144,9 +144,9 @@ const roles: Role[] = [
     name: "Trainee",
   },
   {
-    type: "WHITELIST",
-    symbol: "THOUGHT_POLICE",
-    name: "Thought Police",
+    type: "SUPPLEMENTARY",
+    symbol: "WHITELIST",
+    name: "Whitelist",
   },
   {
     type: "SUPPLEMENTARY",
