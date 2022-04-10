@@ -1,5 +1,5 @@
 import Config from "config";
-import { District } from "data/db";
+import { District, Emoji } from "data/db";
 import { DistrictSymbol } from "data/types";
 
 type DistrictViewModel = {
@@ -8,8 +8,7 @@ type DistrictViewModel = {
   capacity: number;
   open: boolean;
   available: boolean;
-  tableEmoji: string;
-  buttonEmoji: string;
+  emoji: Emoji;
 };
 
 export type ProjectsEntryData = {
@@ -36,8 +35,7 @@ export default class TheProjects {
           tenancies: d.tenancies.length,
           capacity: capacity - d.tenancies.length,
           available,
-          tableEmoji: d.open ? d.activeEmoji : d.inactiveEmoji,
-          buttonEmoji: available ? d.activeEmoji : d.inactiveEmoji,
+          emoji: d.emoji,
         };
       }
     );
@@ -53,7 +51,7 @@ export default class TheProjects {
     capacity: ProjectsEntryData["capacity"],
     d: DistrictViewModel
   ) {
-    return `${d.tableEmoji} => ${
+    return `${d.emoji} => ${
       d.open
         ? `\` [OPEN] \` => \`${d.capacity}/${capacity} available\``
         : `\`[CLOSED]\` => \`${d.capacity}/${capacity} available\``

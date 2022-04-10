@@ -70,7 +70,7 @@ export default class TossController {
     // Handle negative amount
     if (g.amount < 0) {
       await i.reply({
-        content: `${bb.defaultEmojiId} **MINUS** ${Math.abs(
+        content: `${bb.emoji} **MINUS** ${Math.abs(
           g.amount
         )}? BIG BROTHER HAS BEEN NOTIFIED. CHEATERS WILL NOT BE TOLERATED.`,
         ephemeral: true,

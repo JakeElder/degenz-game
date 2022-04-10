@@ -7,8 +7,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Index,
+  OneToOne,
+  JoinColumn,
 } from "typeorm";
 import { BotSymbol } from "../types";
+import { Emoji } from "..";
 
 @Entity()
 export class NPC extends BaseEntity {
@@ -20,8 +23,9 @@ export class NPC extends BaseEntity {
   @Index({ unique: true })
   symbol: BotSymbol;
 
-  @Column({ type: "varchar", nullable: true })
-  defaultEmojiId: string | null;
+  @OneToOne(() => Emoji, { eager: true })
+  @JoinColumn()
+  emoji: Emoji;
 
   @Column({ default: true, nullable: true })
   enabled: boolean;

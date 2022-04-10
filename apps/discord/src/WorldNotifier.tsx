@@ -29,7 +29,7 @@ export default class WorldNotifier {
       NPC.findOneOrFail({ where: { symbol: botSymbol } }),
       this.getChannel("BIG_BROTHER", "HALL_OF_PRIVACY"),
     ]);
-    await hop.send(`>>> ${npc.defaultEmojiId} \`${e}\` ${message}`);
+    await hop.send(`>>> ${npc.emoji} \`${e}\` ${message}`);
   }
 
   static async logToChannel(
@@ -215,7 +215,8 @@ export default class WorldNotifier {
   static async gameEnteredApartment(e: PickEvent<"GAME_ENTERED_APARTMENT">) {
     const message = r(
       <>
-        **{e.data.user.displayName}** entered {e.data.district.inactiveEmoji}.
+        **{e.data.user.displayName}** entered {e.data.district.emoji.toString()}
+        .
       </>
     );
     await this.logToHOP("BIG_BROTHER", e.type, message);

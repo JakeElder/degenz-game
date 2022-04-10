@@ -7,9 +7,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  OneToOne,
+  JoinColumn,
 } from "typeorm";
-import { CitizenRoleSymbol, DistrictSymbol } from "../types";
-import { ApartmentTenancy } from "..";
+import { CitizenRoleSymbol, DistrictSymbolEnum } from "../types";
+import { ApartmentTenancy, Emoji } from "..";
 import { Exclude } from "class-transformer";
 
 @Entity()
@@ -18,21 +20,16 @@ export class District extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: "enum", enum: DistrictSymbol })
+  @Column({ type: "enum", enum: DistrictSymbolEnum })
   @Index({ unique: true })
-  symbol: DistrictSymbol;
+  symbol: `${DistrictSymbolEnum}`;
 
   @Column({ default: false })
   open: boolean;
 
-  @Column({ nullable: true })
-  emoji: string;
-
-  @Column({ nullable: true })
-  activeEmoji: string;
-
-  @Column({ nullable: true })
-  inactiveEmoji: string;
+  @OneToOne(() => Emoji, { eager: true })
+  @JoinColumn()
+  emoji: Emoji;
 
   @Column({ nullable: true })
   allowance: number;
@@ -46,24 +43,15 @@ export class District extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  static async open(symbol: DistrictSymbol) {
+  static async open(symbol: `${DistrictSymbolEnum}`) {
     await this.update({ symbol }, { open: true });
   }
 
-  static async close(symbol: DistrictSymbol) {
+  static async close(symbol: `${DistrictSymbolEnum}`) {
     await this.update({ symbol }, { open: false });
   }
 
   get citizenRoleSymbol(): CitizenRoleSymbol {
-    return (
-      {
-        PROJECTS_D1: "D1_CITIZEN",
-        PROJECTS_D2: "D2_CITIZEN",
-        PROJECTS_D3: "D3_CITIZEN",
-        PROJECTS_D4: "D4_CITIZEN",
-        PROJECTS_D5: "D5_CITIZEN",
-        PROJECTS_D6: "D6_CITIZEN",
-      } as const
-    )[this.symbol];
+    return `${this.symbol}_CITIZEN`;
   }
 }

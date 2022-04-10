@@ -3,10 +3,10 @@ import Config from "config";
 import { Command } from "../../lib";
 import { Emoji } from "data/db";
 import prompts from "prompts";
-import chalk from "chalk";
 import ProgressBar from "../../lib/ProgressBar";
 import { getBot } from "../../utils";
 import { Flags } from "@oclif/core";
+import { EmojiSymbol } from "data/types";
 
 export default class DeleteEmojis extends Command {
   static description = "Deploy emojis";
@@ -70,7 +70,7 @@ export default class DeleteEmojis extends Command {
       return;
     }
 
-    const progress = new ProgressBar(deletes.map((e) => e.symbol));
+    const progress = new ProgressBar<EmojiSymbol>(deletes.map((e) => e.symbol));
     progress.start();
 
     try {

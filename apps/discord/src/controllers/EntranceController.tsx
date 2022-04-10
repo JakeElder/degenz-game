@@ -1,6 +1,6 @@
 import React from "react";
 import Config from "config";
-import { NPC, User } from "data/db";
+import { Emoji, NPC, User } from "data/db";
 import {
   ButtonInteraction,
   MessageActionRow,
@@ -22,7 +22,7 @@ const { r } = Utils;
 type EntryData = {
   open: boolean;
   emoji: {
-    bb: string;
+    bb: Emoji;
   };
   projects: ProjectsEntryData;
   shelters: SheltersEntryData;
@@ -62,7 +62,7 @@ export default class EntranceController {
 
     return {
       open: true,
-      emoji: { bb: bb.defaultEmojiId! },
+      emoji: { bb: bb.emoji },
       projects,
       shelters,
     };
@@ -85,7 +85,8 @@ export default class EntranceController {
     const intro = r(
       <>
         The totalitarian state of **Beautopia** is ruled by{" "}
-        {userMention(Config.clientId("BIG_BROTHER"))} {data.emoji.bb}.
+        {userMention(Config.clientId("BIG_BROTHER"))} {data.emoji.bb.toString()}
+        .
         <br />
         A strict class system exists, dictating your value to society.
         <br />

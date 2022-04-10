@@ -353,7 +353,7 @@ export default class OnboardController {
     await channel.send(
       r(
         <>
-          Ok {roleMention(role.discordId)} {dormitory.activeEmoji} **
+          Ok {roleMention(role.discordId)} {dormitory.emoji.toString()} **
           {user.displayName}**, that's everything I have to tell you for now.
         </>
       )
@@ -406,7 +406,7 @@ export default class OnboardController {
             </>
           )
         );
-        await message.react(dormitory.activeEmoji);
+        await message.react(dormitory.emoji.identifier);
         await delay(random.int(300, 800));
 
         // Celebrate

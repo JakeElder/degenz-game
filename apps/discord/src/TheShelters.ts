@@ -1,4 +1,4 @@
-import { AppState, Dormitory } from "data/db";
+import { AppState, Dormitory, Emoji } from "data/db";
 import { DormitorySymbol } from "data/types";
 
 export type DormitoryViewModel = {
@@ -6,7 +6,7 @@ export type DormitoryViewModel = {
   capacity: number;
   tenancies: number;
   available: boolean;
-  tableEmoji: string;
+  tableEmoji: Emoji;
 };
 
 export type SheltersEntryData = {
@@ -34,7 +34,7 @@ export default class TheShelters {
           tenancies: d.tenancies.length,
           available,
           tableEmoji:
-            state.sheltersOpen && available ? d.activeEmoji : d.inactiveEmoji,
+            state.sheltersOpen && available ? d.emoji : d.inactiveEmoji,
         };
       });
 

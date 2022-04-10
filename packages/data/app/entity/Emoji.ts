@@ -26,4 +26,8 @@ export class Emoji extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  toString() {
+    return `<:${this.identifier}>`;
+  }
 }

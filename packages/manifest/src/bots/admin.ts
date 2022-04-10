@@ -18,6 +18,15 @@ const admin: Bot = {
   commands: [],
 };
 
+const districtChoices: [string, DistrictSymbol][] = [
+  ["District 1", "D1"],
+  ["District 2", "D2"],
+  ["District 3", "D3"],
+  ["District 4", "D4"],
+  ["District 5", "D5"],
+  ["District 6", "D6"],
+];
+
 // Admin command
 admin.commands.push({
   symbol: "ADMIN",
@@ -39,14 +48,7 @@ admin.commands.push({
           option
             .setName("district")
             .setRequired(true)
-            .setChoices([
-              ["District 1", DistrictSymbol.PROJECTS_D1],
-              ["District 2", DistrictSymbol.PROJECTS_D2],
-              ["District 3", DistrictSymbol.PROJECTS_D3],
-              ["District 4", DistrictSymbol.PROJECTS_D4],
-              ["District 5", DistrictSymbol.PROJECTS_D5],
-              ["District 6", DistrictSymbol.PROJECTS_D6],
-            ])
+            .setChoices(districtChoices)
             .setDescription(`The district to assign an apartment`)
         )
         .addBooleanOption((option) =>
@@ -144,14 +146,7 @@ admin.commands.push({
             .setRequired(true)
             .setName("district")
             .setDescription(`The district to open entries to`)
-            .setChoices([
-              ["District 1", DistrictSymbol.PROJECTS_D1],
-              ["District 2", DistrictSymbol.PROJECTS_D2],
-              ["District 3", DistrictSymbol.PROJECTS_D3],
-              ["District 4", DistrictSymbol.PROJECTS_D4],
-              ["District 5", DistrictSymbol.PROJECTS_D5],
-              ["District 6", DistrictSymbol.PROJECTS_D6],
-            ])
+            .setChoices(districtChoices)
         )
     )
     .addSubcommand((subcommand) =>
@@ -162,14 +157,7 @@ admin.commands.push({
           option
             .setName("district")
             .setRequired(true)
-            .setChoices([
-              ["District 1", DistrictSymbol.PROJECTS_D1],
-              ["District 2", DistrictSymbol.PROJECTS_D2],
-              ["District 3", DistrictSymbol.PROJECTS_D3],
-              ["District 4", DistrictSymbol.PROJECTS_D4],
-              ["District 5", DistrictSymbol.PROJECTS_D5],
-              ["District 6", DistrictSymbol.PROJECTS_D6],
-            ])
+            .setChoices(districtChoices)
             .setDescription(`The district to close`)
         )
     )

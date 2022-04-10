@@ -132,7 +132,7 @@ export class Help {
 
     const d = dormitories.map((dorm) => (
       <>
-        {dorm.activeEmoji} `{dorm.symbol}` - `{dorm.tenancies.length}{" "}
+        {dorm.emoji} `{dorm.symbol}` - `{dorm.tenancies.length}{" "}
         {pluralize("citizen", dorm.tenancies.length)}`
       </>
     ));

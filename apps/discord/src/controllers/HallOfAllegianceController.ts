@@ -42,7 +42,7 @@ export default class HallOfAllegianceController {
 
     const districtTable = districts
       .map((d) => {
-        return `${d.activeEmoji} : ${Format.currency(d.allowance)}`;
+        return `${d.emoji} : ${Format.currency(d.allowance)}`;
       })
       .join("\n");
 

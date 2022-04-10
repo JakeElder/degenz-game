@@ -78,7 +78,7 @@ export type CategorySymbol =
   | "COMMAND_CENTER"
   | "COMMUNITY"
   | "BEAUTOPIA"
-  | `THE_${DistrictSymbol}`
+  | `THE_PROJECTS_${DistrictSymbolEnum}`
   | "THE_SHELTERS"
   | "PRISON";
 
@@ -255,14 +255,16 @@ export enum ApartmentTenancyLevelEnum {
 
 export type ApartmentTenancyLevel = `${ApartmentTenancyLevelEnum}`;
 
-export enum DistrictSymbol {
-  PROJECTS_D1 = "PROJECTS_D1",
-  PROJECTS_D2 = "PROJECTS_D2",
-  PROJECTS_D3 = "PROJECTS_D3",
-  PROJECTS_D4 = "PROJECTS_D4",
-  PROJECTS_D5 = "PROJECTS_D5",
-  PROJECTS_D6 = "PROJECTS_D6",
+export enum DistrictSymbolEnum {
+  D1 = "D1",
+  D2 = "D2",
+  D3 = "D3",
+  D4 = "D4",
+  D5 = "D5",
+  D6 = "D6",
 }
+
+export type DistrictSymbol = `${DistrictSymbolEnum}`;
 
 export enum DormitorySymbolEnum {
   THE_LEFT = "THE_LEFT",
@@ -451,3 +453,27 @@ export type Emoji = {
   symbol: EmojiSymbol;
   name: string;
 };
+
+export enum EntitySymbolEnum {
+  Achievement = "ACHIEVEMENT",
+  ApartmentTenancy = "APARTMENT_TENANCY",
+  AppState = "APP_STATE",
+  CampaignInvite = "CAMPAIGN_INVITE",
+  Channel = "CHANNEL",
+  District = "DISTRICT",
+  Dormitory = "DORMITORY",
+  DormitoryTenancy = "DORMITORY_TENANCY",
+  Emoji = "EMOJI",
+  Imprisonment = "IMPRISONMENT",
+  MartItem = "MART_ITEM",
+  MartItemOwnership = "MART_ITEM_OWNERSHIP",
+  NPC = "NPC",
+  PersistentMessage = "PERSISTENT_MESSAGE",
+  Pledge = "PLEDGE",
+  QuestLogChannel = "QUEST_LOG_CHANNEL",
+  QuestLogMessage = "QUEST_LOG_MESSAGE",
+  Role = "ROLE",
+  User = "USER",
+}
+
+export type EntitySymbol = `${EntitySymbolEnum}`;

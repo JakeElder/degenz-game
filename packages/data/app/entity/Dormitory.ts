@@ -6,11 +6,14 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  OneToOne,
+  JoinColumn,
 } from "typeorm";
 import { Exclude } from "class-transformer";
 import { CitizenRoleSymbol, DormitorySymbolEnum } from "../types";
 import { AppState, DormitoryTenancy } from "..";
 import randomItem from "random-item";
+import { Emoji } from "./Emoji";
 
 @Entity()
 export class Dormitory extends BaseEntity {
@@ -24,11 +27,13 @@ export class Dormitory extends BaseEntity {
   @Column({ type: "enum", enum: DormitorySymbolEnum, unique: true })
   symbol: `${DormitorySymbolEnum}`;
 
-  @Column({ nullable: true })
-  activeEmoji: string;
+  @OneToOne(() => Emoji, { eager: true })
+  @JoinColumn()
+  emoji: Emoji;
 
-  @Column({ nullable: true })
-  inactiveEmoji: string;
+  @OneToOne(() => Emoji, { eager: true })
+  @JoinColumn()
+  inactiveEmoji: Emoji;
 
   @OneToMany(
     () => DormitoryTenancy,

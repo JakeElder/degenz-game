@@ -8,6 +8,7 @@ import { Emoji } from "data/db";
 import ProgressBar from "../../lib/ProgressBar";
 import { Flags } from "@oclif/core";
 import prompts from "prompts";
+import { EmojiSymbol } from "data/types";
 
 export default class InsertEmojis extends Command {
   static description = "Deploy emojis";
@@ -82,7 +83,7 @@ export default class InsertEmojis extends Command {
       return;
     }
 
-    const progress = new ProgressBar(inserts.map((e) => e.symbol));
+    const progress = new ProgressBar<EmojiSymbol>(inserts.map((e) => e.symbol));
     progress.start();
 
     try {

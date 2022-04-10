@@ -81,7 +81,7 @@ export default class UserController {
       return { success: false, code: "DISTRICT_FULL" };
     }
 
-    const parent = Config.categoryId(`THE_${districtSymbol}`);
+    const parent = Config.categoryId(`THE_PROJECTS_${districtSymbol}`);
     const admin = Global.bot("ADMIN");
 
     const apartment = await admin.guild.channels.create(

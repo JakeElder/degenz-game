@@ -2,7 +2,7 @@ import progress from "cli-progress";
 import chalk from "chalk";
 import { nl } from "../utils";
 
-export default class ProgressBar {
+export default class ProgressBar<T extends string> {
   symbols: string[];
   lastComplete: string | null = null;
   bar: progress.SingleBar;
@@ -10,7 +10,7 @@ export default class ProgressBar {
   remainingLimit: null | number = null;
   completeCount = 0;
 
-  constructor(symbols: string[]) {
+  constructor(symbols: T[]) {
     this.symbols = symbols;
 
     this.bar = new progress.SingleBar({
@@ -60,7 +60,7 @@ export default class ProgressBar {
     });
   }
 
-  complete(symbol: string) {
+  complete(symbol: T) {
     this.bar.increment({ symbol: symbol, rl: this.currentRateLimit });
     this.lastComplete = symbol;
     this.completeCount++;
