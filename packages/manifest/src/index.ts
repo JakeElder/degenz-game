@@ -14,12 +14,18 @@ export default class Manifest {
     return bots;
   }
 
+  static async emojis() {
+    const { default: emojis } = await import("./emojis");
+    return emojis;
+  }
+
   static async load() {
-    const [structure, roles, bots] = await Promise.all([
+    const [structure, roles, bots, emojis] = await Promise.all([
       this.structure(),
       this.roles(),
       this.bots(),
+      this.emojis(),
     ]);
-    return { structure, roles, bots };
+    return { structure, roles, bots, emojis };
   }
 }

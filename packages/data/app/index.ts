@@ -9,6 +9,7 @@ import { Channel } from "./entity/Channel";
 import { District } from "./entity/District";
 import { Dormitory } from "./entity/Dormitory";
 import { DormitoryTenancy } from "./entity/DormitoryTenancy";
+import { Emoji } from "./entity/Emoji";
 import { Imprisonment } from "./entity/Imprisonment";
 import { MartItem } from "./entity/MartItem";
 import { MartItemOwnership } from "./entity/MartItemOwnership";
@@ -59,6 +60,7 @@ export {
   District,
   Dormitory,
   DormitoryTenancy,
+  Emoji,
   Imprisonment,
   MartItem,
   MartItemOwnership,
