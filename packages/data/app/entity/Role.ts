@@ -12,6 +12,8 @@ import { RoleSymbol, RoleSymbolEnum, RoleTypeEnum } from "../types";
 
 @Entity()
 export class Role extends BaseEntity {
+  static SymbolEnum = Symbol;
+
   @Exclude()
   @PrimaryGeneratedColumn()
   id: number;

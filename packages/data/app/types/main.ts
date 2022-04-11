@@ -10,11 +10,17 @@ import {
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { APIApplicationCommandPermission } from "discord-api-types/v9";
 import { SetOptional } from "type-fest";
+import { NPCSymbol } from "../entity/NPC";
+import { DormitorySymbol } from "../entity/Dormitory";
+import { DistrictSymbol } from "../entity/District";
+import { EmojiSymbol } from "../entity/Emoji";
 import { User } from "..";
+
+export type { DormitorySymbol, DistrictSymbol, NPCSymbol, EmojiSymbol };
 
 export type EnvVars = SetOptional<
   Record<
-    | `${BotSymbol}_BOT_TOKEN`
+    | `${NPCSymbol}_BOT_TOKEN`
     | "CA_CERT"
     | "DATABASE_URL"
     | "MONGO_URI"
@@ -27,36 +33,30 @@ export type EnvVars = SetOptional<
   "CA_CERT"
 >;
 
-export enum ChannelSymbolEnum {
-  ENTRANCE = "ENTRANCE",
-  QUESTS = "QUESTS",
-
-  ANNOUNCEMENTS = "ANNOUNCEMENTS",
-  LEADERBOARD = "LEADERBOARD",
-  COMMANDS = "COMMANDS",
-  WHITELIST = "WHITELIST",
-  FAQ = "FAQ",
-
-  GENERAL = "GENERAL",
-  WELCOME_ROOM = "WELCOME_ROOM",
-  FEEDBACK = "FEEDBACK",
-  HALL_OF_PRIVACY = "HALL_OF_PRIVACY",
-
-  TOWN_SQUARE = "TOWN_SQUARE",
-  METRO = "METRO",
-  TAVERN = "TAVERN",
-  HALL_OF_ALLEIGANCE = "HALL_OF_ALLEIGANCE",
-  MART = "MART",
-  ARMORY = "ARMORY",
-  TOSS_HOUSE = "TOSS_HOUSE",
-  BANK = "BANK",
-  ARENA = "ARENA",
-  TRAINING_DOJO = "TRAINING_DOJO",
-
-  GEN_POP = "GEN_POP",
-}
-
-export type ChannelSymbol = `${ChannelSymbolEnum}` | `${DormitorySymbolEnum}`;
+export type ChannelSymbol =
+  | "ENTRANCE"
+  | "QUESTS"
+  | "ANNOUNCEMENTS"
+  | "LEADERBOARD"
+  | "COMMANDS"
+  | "WHITELIST"
+  | "FAQ"
+  | "GENERAL"
+  | "WELCOME_ROOM"
+  | "FEEDBACK"
+  | "HALL_OF_PRIVACY"
+  | "TOWN_SQUARE"
+  | "METRO"
+  | "TAVERN"
+  | "HALL_OF_ALLEIGANCE"
+  | "MART"
+  | "ARMORY"
+  | "TOSS_HOUSE"
+  | "BANK"
+  | "ARENA"
+  | "TRAINING_DOJO"
+  | "GEN_POP"
+  | `${DormitorySymbol}`;
 
 export type Channel = {
   symbol: ChannelSymbol;
@@ -69,7 +69,7 @@ export enum MartItemSymbolEnum {
   PIZZA = "PIZZA",
   NOODLES = "NOODLES",
   GRILLED_RAT = "GRILLED_RAT",
-  FRACTAL_NFT = 'FRACTAL_NFT
+  FRACTAL_NFT = "FRACTAL_NFT",
 }
 
 export type MartItemSymbol = `${MartItemSymbolEnum}`;
@@ -79,7 +79,7 @@ export type CategorySymbol =
   | "COMMAND_CENTER"
   | "COMMUNITY"
   | "BEAUTOPIA"
-  | `THE_PROJECTS_${DistrictSymbolEnum}`
+  | `THE_PROJECTS_${DistrictSymbol}`
   | "THE_SHELTERS"
   | "PRISON";
 
@@ -90,22 +90,6 @@ export type Category = {
   permissionOverwrites: OverwriteResolvable[];
 };
 
-export enum BotSymbolEnum {
-  ADMIN = "ADMIN",
-  ALLY = "ALLY",
-  ARMORY_CLERK = "ARMORY_CLERK",
-  BANKER = "BANKER",
-  BIG_BROTHER = "BIG_BROTHER",
-  DEVILS_ADVOCATE = "DEVILS_ADVOCATE",
-  MART_CLERK = "MART_CLERK",
-  PRISONER = "PRISONER",
-  SCOUT = "SCOUT",
-  SENSEI = "SENSEI",
-  TOSSER = "TOSSER",
-  WARDEN = "WARDEN",
-  RESISTANCE_LEADER = "RESISTANCE_LEADER",
-}
-
 export enum RoleTypeEnum {
   EVERYONE = "EVERYONE",
   BASE = "BASE",
@@ -113,8 +97,6 @@ export enum RoleTypeEnum {
   SUPPLEMENTARY = "SUPPLEMENTARY",
   MANAGED = "MANAGED",
 }
-
-export type BotSymbol = `${BotSymbolEnum}`;
 
 export enum EveryoneRoleSymbolEnum {
   EVERYONE = "EVERYONE",
@@ -243,7 +225,7 @@ export type Command = {
 };
 
 export type Bot = {
-  symbol: BotSymbol;
+  symbol: NPCSymbol;
   name: string;
   commands: Command[];
   clientOptions: ClientOptions;
@@ -255,27 +237,6 @@ export enum ApartmentTenancyLevelEnum {
 }
 
 export type ApartmentTenancyLevel = `${ApartmentTenancyLevelEnum}`;
-
-export enum DistrictSymbolEnum {
-  D1 = "D1",
-  D2 = "D2",
-  D3 = "D3",
-  D4 = "D4",
-  D5 = "D5",
-  D6 = "D6",
-}
-
-export type DistrictSymbol = `${DistrictSymbolEnum}`;
-
-export enum DormitorySymbolEnum {
-  THE_LEFT = "THE_LEFT",
-  THE_RIGHT = "THE_RIGHT",
-  THE_GRID = "THE_GRID",
-  BULLSEYE = "BULLSEYE",
-  VULTURE = "VULTURE",
-}
-
-export type DormitorySymbol = `${DormitorySymbolEnum}`;
 
 export enum Achievement {
   HELP_REQUESTED = "HELP_REQUESTED",
@@ -381,79 +342,6 @@ export enum QuestSymbolEnum {
 }
 
 export type QuestSymbol = `${QuestSymbolEnum}`;
-
-export enum EmojiSymbolEnum {
-  ALLY_NPC = "ALLY_NPC",
-  ANON = "ANON",
-  ARMORY_CLERK_NPC = "ARMORY_CLERK_NPC",
-  BABY = "BABY",
-  BANKER_NPC = "BANKER_NPC",
-  BB = "BB",
-  BIG_BROTHER_NPC = "BIG_BROTHER_NPC",
-  BLUE_TICK = "BLUE_TICK",
-  BULLSEYE = "BULLSEYE",
-  BULLSEYE_INACTIVE = "BULLSEYE_INACTIVE",
-  CHICKEN = "CHICKEN",
-  CIRCUIT_BOARD = "CIRCUIT_BOARD",
-  COIN_HEADS = "COIN_HEADS",
-  COIN_TAILS = "COIN_TAILS",
-  CROWN = "CROWN",
-  CUPCAKE = "CUPCAKE",
-  CYPHER_SHIELD = "CYPHER_SHIELD",
-  D1 = "D1",
-  D2 = "D2",
-  D3 = "D3",
-  D4 = "D4",
-  D5 = "D5",
-  D6 = "D6",
-  DEGENZ_RAMEN = "DEGENZ_RAMEN",
-  DEVILS_ADVOCATE_NPC = "DEVILS_ADVOCATE_NPC",
-  DOWN_ARROW = "DOWN_ARROW",
-  ENCRYPTION_SHIELD = "ENCRYPTION_SHIELD",
-  EYE = "EYE",
-  FAT_PIZZA = "FAT_PIZZA",
-  FIREWALL_SHIELD = "FIREWALL_SHIELD",
-  GBT_COIN = "GBT_COIN",
-  KEY = "KEY",
-  MART_CLERK_NPC = "MART_CLERK_NPC",
-  MOONSHINE = "MOONSHINE",
-  NUU_PING = "NUU_PING",
-  OBEY = "OBEY",
-  OLD_TV = "OLD_TV",
-  PILL_BOTTLE = "PILL_BOTTLE",
-  PRISONER_NPC = "PRISONER_NPC",
-  RAT = "RAT",
-  RED_BLUE_PILLS = "RED_BLUE_PILLS",
-  RED_DICE = "RED_DICE",
-  RED_TICK = "RED_TICK",
-  REMOTE_ACCESS = "REMOTE_ACCESS",
-  RESISTANCE_LEADER_NPC = "RESISTANCE_LEADER_NPC",
-  SENSEI_NPC = "SENSEI_NPC",
-  SUNSHINE = "SUNSHINE",
-  SUSHI = "SUSHI",
-  THE_GRID = "THE_GRID",
-  THE_GRID_INACTIVE = "THE_GRID_INACTIVE",
-  THE_LEFT = "THE_LEFT",
-  THE_LEFT_INACTIVE = "THE_LEFT_INACTIVE",
-  THE_RIGHT = "THE_RIGHT",
-  THE_RIGHT_INACTIVE = "THE_RIGHT_INACTIVE",
-  THOUGHT_POLICE = "THOUGHT_POLICE",
-  TIGER_BLOOD = "TIGER_BLOOD",
-  TOSSER_NPC = "TOSSER_NPC",
-  UP_ARROW = "UP_ARROW",
-  VIRUS_HACK = "VIRUS_HACK",
-  VULTURE = "VULTURE",
-  VULTURE_INACTIVE = "VULTURE_INACTIVE",
-  WARDEN_NPC = "WARDEN_NPC",
-  WORM_HACK = "WORM_HACK",
-}
-
-export type EmojiSymbol = `${EmojiSymbolEnum}`;
-
-export type Emoji = {
-  symbol: EmojiSymbol;
-  name: string;
-};
 
 export enum EntitySymbolEnum {
   Achievement = "ACHIEVEMENT",

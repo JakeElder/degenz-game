@@ -7,11 +7,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
-import {
-  BotSymbolEnum,
-  ChannelSymbolEnum,
-  PersistentMessageSymbolEnum,
-} from "../types";
+import { ChannelSymbol, PersistentMessageSymbolEnum } from "../types";
+import { NPCSymbol } from "../entity/NPC";
 
 @Entity()
 export class PersistentMessage extends BaseEntity {
@@ -25,11 +22,11 @@ export class PersistentMessage extends BaseEntity {
   @Column({ nullable: true })
   messageId: string;
 
-  @Column({ type: "enum", enum: ChannelSymbolEnum })
-  channelSymbol: `${ChannelSymbolEnum}`;
+  @Column()
+  channelSymbol: ChannelSymbol;
 
-  @Column({ type: "enum", enum: BotSymbolEnum })
-  maintainerSymbol: `${BotSymbolEnum}`;
+  @Column()
+  maintainerSymbol: NPCSymbol;
 
   @CreateDateColumn()
   createdAt: Date;

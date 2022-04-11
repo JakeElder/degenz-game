@@ -1,27 +1,34 @@
-import { Exclude } from "class-transformer";
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   BaseEntity,
   CreateDateColumn,
   UpdateDateColumn,
-  Index,
+  PrimaryColumn,
   OneToOne,
   JoinColumn,
 } from "typeorm";
-import { BotSymbol } from "../types";
 import { Emoji } from "..";
+
+export type NPCSymbol =
+  | "ADMIN"
+  | "ALLY"
+  | "ARMORY_CLERK"
+  | "BANKER"
+  | "BIG_BROTHER"
+  | "DEVILS_ADVOCATE"
+  | "MART_CLERK"
+  | "PRISONER"
+  | "SCOUT"
+  | "SENSEI"
+  | "TOSSER"
+  | "WARDEN"
+  | "RESISTANCE_LEADER";
 
 @Entity()
 export class NPC extends BaseEntity {
-  @Exclude()
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
-  @Index({ unique: true })
-  symbol: BotSymbol;
+  @PrimaryColumn({ type: "varchar", unique: true })
+  id: NPCSymbol;
 
   @OneToOne(() => Emoji, { eager: true })
   @JoinColumn()

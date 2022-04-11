@@ -1,6 +1,5 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   BaseEntity,
   CreateDateColumn,
@@ -8,24 +7,27 @@ import {
   OneToMany,
   OneToOne,
   JoinColumn,
+  PrimaryColumn,
 } from "typeorm";
-import { Exclude } from "class-transformer";
-import { CitizenRoleSymbol, DormitorySymbolEnum } from "../types";
+import { CitizenRoleSymbol } from "../types";
 import { AppState, DormitoryTenancy } from "..";
 import randomItem from "random-item";
 import { Emoji } from "./Emoji";
 
+export type DormitorySymbol =
+  | "THE_LEFT"
+  | "THE_RIGHT"
+  | "THE_GRID"
+  | "BULLSEYE"
+  | "VULTURE";
+
 @Entity()
 export class Dormitory extends BaseEntity {
-  @Exclude()
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn({ type: "varchar", unique: true })
+  id: DormitorySymbol;
 
   @Column({ nullable: true })
   discordChannelId: string;
-
-  @Column({ type: "enum", enum: DormitorySymbolEnum, unique: true })
-  symbol: `${DormitorySymbolEnum}`;
 
   @OneToOne(() => Emoji, { eager: true })
   @JoinColumn()
@@ -70,6 +72,6 @@ export class Dormitory extends BaseEntity {
   }
 
   get citizenRoleSymbol(): CitizenRoleSymbol {
-    return `${this.symbol}_CITIZEN`;
+    return `${this.id}_CITIZEN`;
   }
 }
