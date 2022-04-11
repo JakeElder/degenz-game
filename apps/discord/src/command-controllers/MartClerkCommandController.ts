@@ -72,12 +72,13 @@ export default class MartClerkCommandController extends CommandController {
     });
 
     const url = `${Config.env("WEB_URL")}/mart-items/buy`;
-    const w = 16;
+    const w = 20;
 
     const emojis: Record<MartItemSymbol, string> = {
       GRILLED_RAT: "\u{1f400} ",
       PIZZA: "\u{1f355} ",
       NOODLES: "\u{1f35c} ",
+      FRACTAL_NFT: "\u2744\ufe0f ",
     };
 
     const embedItems = boughtItem
@@ -86,21 +87,17 @@ export default class MartClerkCommandController extends CommandController {
 
     const embeds: MessageEmbedOptions[] = embedItems.map((item) => {
       const s = [
-        ["Stock", "$GBT", "Effect"],
-        [
-          item.stock,
-          Format.currency(item.price, { bare: true }),
-          `+${item.strengthIncrease} \u{1f4aa}`,
-        ],
+        ["Stock", "$GBT"],
+        [item.stock, Format.currency(item.price, { bare: true })],
       ];
 
       const info = !boughtItem
         ? Format.codeBlock(
             table(s, {
-              drawVerticalLine: (idx) => [1, 2].includes(idx),
+              drawVerticalLine: (idx) => [1].includes(idx),
               columnDefault: { alignment: "center" },
               drawHorizontalLine: (i) => i === 1,
-              columns: [{ width: 5 }, { width: 4 }, { width: w - 5 - 4 }],
+              columns: [{ width: 10 }, { width: 10 }],
             })
           )
         : Format.codeBlock(
@@ -116,7 +113,7 @@ export default class MartClerkCommandController extends CommandController {
         thumbnail: {
           height: 32,
           width: 32,
-          url: `${url}/${item.symbol}.png`,
+          url: `${url}/${item.symbol}.png?v1`,
         },
       };
     });

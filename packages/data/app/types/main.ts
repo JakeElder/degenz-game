@@ -69,6 +69,7 @@ export enum MartItemSymbolEnum {
   PIZZA = "PIZZA",
   NOODLES = "NOODLES",
   GRILLED_RAT = "GRILLED_RAT",
+  FRACTAL_NFT = 'FRACTAL_NFT
 }
 
 export type MartItemSymbol = `${MartItemSymbolEnum}`;
