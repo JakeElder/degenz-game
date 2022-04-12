@@ -271,7 +271,7 @@ export default class AllyCommandController extends CommandController {
     try {
       const invite = await admin.guild.invites.create(
         Config.channelId("VERIFICATION"),
-        { unique: true }
+        { unique: true, maxAge: 0 }
       );
       await CampaignInvite.insert({ campaign, discordCode: invite.code });
       await i.reply({ content: "`\u2705 SUCCESS`", ephemeral: true });
