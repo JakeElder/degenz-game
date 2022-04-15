@@ -1,9 +1,9 @@
-import { Bot } from "data/types";
+import { NPC } from "data/db";
 import SenseiCommandController from "../command-controllers/SenseiCommandController";
 import DiscordBot from "../DiscordBot";
 
 export default class SenseiBot extends DiscordBot {
-  constructor(descriptor: Bot) {
-    super(descriptor, new SenseiCommandController());
+  constructor(npc: NPC) {
+    super(npc, new SenseiCommandController());
   }
 }

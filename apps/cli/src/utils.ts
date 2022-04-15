@@ -1,10 +1,9 @@
-import { APIChannelPatchOverwrite } from "discord-api-types/v9";
-import { Client, OverwriteResolvable, Permissions } from "discord.js";
+import { Client } from "discord.js";
 import { inspect } from "util";
 import { promises as fs } from "fs";
-import { BotSymbol } from "data/types";
 import Manifest from "manifest";
 import Config from "config";
+import { NPCSymbol } from "data/types";
 
 export function json(data: any) {
   return inspect(data, {
@@ -12,26 +11,6 @@ export function json(data: any) {
     depth: null,
     maxArrayLength: null,
   });
-}
-
-export function resolvableToOverwrite(
-  resolvable: OverwriteResolvable
-): APIChannelPatchOverwrite {
-  const bits = {
-    deny: ((resolvable.deny as (keyof typeof Permissions.FLAGS)[]) || []).map(
-      (s) => Permissions.FLAGS[s]
-    ),
-    allow: ((resolvable.allow as (keyof typeof Permissions.FLAGS)[]) || []).map(
-      (s) => Permissions.FLAGS[s]
-    ),
-  };
-
-  return {
-    id: resolvable.id as string,
-    type: 0,
-    deny: bits.deny.reduce((p, n) => p | n, BigInt(0)).toString(),
-    allow: bits.allow.reduce((p, n) => p | n, BigInt(0)).toString(),
-  };
 }
 
 export async function fileExists(path: string) {
@@ -44,15 +23,14 @@ export async function fileExists(path: string) {
 }
 
 export async function getBot(
-  symbol: BotSymbol,
+  symbol: NPCSymbol,
   onRateLimit: (ms: number) => void = () => {}
 ) {
-  const bots = await Manifest.bots();
-
-  const bot = bots.find((b) => b.symbol === symbol);
+  const { npcs } = await Manifest.load();
+  const bot = npcs.find((b) => b.id === symbol);
 
   if (!bot) {
-    throw new Error(`Bot ${bot} not found`);
+    throw new Error(`Bot ${symbol} not found`);
   }
 
   const client = new Client(bot.clientOptions);
@@ -68,7 +46,7 @@ export async function getBot(
     client.on("rateLimit", (rl) => {
       onRateLimit(rl.timeout);
     });
-    client.login(Config.botToken(bot.symbol));
+    client.login(Config.botToken(bot.id));
   });
 
   return client;

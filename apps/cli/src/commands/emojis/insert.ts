@@ -1,110 +1,70 @@
 import Manifest from "manifest";
-import Config from "config";
 import { Command } from "../../lib";
-import { fileExists, getBot } from "../../utils";
-import path from "path";
-import { promises as fs } from "fs";
-import { Emoji } from "data/db";
-import ProgressBar from "../../lib/ProgressBar";
-import { Flags } from "@oclif/core";
+import { Channel, ManagedChannel } from "data/db";
+import { ManagedChannelSymbol } from "data/types";
 import prompts from "prompts";
-import { EmojiSymbol } from "data/types";
+import chalk from "chalk";
 
-export default class InsertEmojis extends Command {
-  static description = "Deploy emojis";
-
-  static flags = {
-    select: Flags.boolean({ default: false }),
-  };
+export default class InsertChannels extends Command {
+  static description = "Insert channels";
 
   async run(): Promise<void> {
-    const { flags } = await this.parse(InsertEmojis);
+    const { channels } = await Manifest.load();
 
-    const emojis = await Manifest.emojis();
+    const rows = await ManagedChannel.find();
+    const existingIds = rows.map((r) => r.id);
 
-    const client = await getBot("ADMIN", (rl) => progress.rateLimit(rl));
-    const guild = await client.guilds.fetch(Config.general("GUILD_ID"));
+    const removeExisting = (channels: ManagedChannel[]) =>
+      channels.filter((c) => !existingIds.includes(c.id));
 
-    const rows = await Emoji.find();
+    let inserts = removeExisting(channels).map((c) => {
+      c.children = removeExisting(c.children || []);
+      return c;
+    });
 
-    let inserts = emojis.filter(
-      (e) => typeof rows.find((r) => r.symbol === e.symbol) === "undefined"
-    );
+    const bot = await this.bot("ADMIN");
 
-    const files = await Promise.all(
-      inserts.map(async (s) => {
-        const file = path.join(
-          __dirname,
-          `../../images/emojis/${s.symbol}.png`
-        );
-        const exists = await fileExists(file);
-        return exists ? file : null;
-      })
-    );
+    const flat = inserts.flatMap((c) => [c, ...c.children]);
 
-    const missing = files.reduce<number[]>((v, c, idx) => {
-      return c === null ? [...v, idx] : v;
-    }, []);
-
-    if (missing.length) {
-      console.error(
-        "Missing emoji files",
-        missing.map((idx) => inserts[idx].symbol)
-      );
-      throw new Error();
-    }
-
-    if (flags.select) {
-      const response = await prompts([
-        {
-          type: "multiselect",
-          name: "emojis",
-          message: "Which emojis should be deleted?",
-          choices: inserts.map((i) => ({ title: i.symbol, value: i.symbol })),
-        },
-      ]);
-
-      inserts = inserts.filter((d) => response.emojis.includes(d.symbol));
-    }
-
-    const response = await prompts([
-      {
-        type: "toggle",
-        name: "cancel",
-        message: `Insert ${inserts.length} emojis?`,
-        initial: false,
-        active: "No",
-        inactive: "Yes",
-      },
-    ]);
-
-    if (response.cancel) {
-      client.destroy();
+    const confirm = await this.confirm(`Insert ${inserts.length} emojis?`);
+    if (!confirm) {
       return;
     }
 
-    const progress = new ProgressBar<EmojiSymbol>(inserts.map((e) => e.symbol));
+    const progress = this.getProgressBar<ManagedChannelSymbol>(
+      flat.map((c) => c.id)
+    );
+    bot.onRateLimit = (ms) => progress.rateLimit(ms);
     progress.start();
 
-    try {
-      await Promise.all(
-        inserts.map(async (e, idx) => {
-          const file = await fs.readFile((files as string[])[idx]);
-          const emoji = await guild.emojis.create(file, e.name);
-          await Emoji.insert({
-            symbol: e.symbol,
-            identifier: emoji.identifier,
-          });
-          progress.complete(e.symbol);
-        })
-      );
-    } catch (e) {
-      progress.stop();
-      console.error(e);
-      throw new Error();
-    }
+    const discordIds = await prompts(
+      flat.map((c) => {
+        return {
+          type: "text",
+          name: c.id,
+          message: `"${chalk.yellow(c.name)}" id?`,
+        };
+      })
+    );
 
-    progress.stop();
-    client.destroy();
+    await Promise.all(
+      inserts.map(async (mc) => {
+        mc.type = "CATEGORY";
+        mc.channel = Channel.create({ id: discordIds[mc.id], type: "MANAGED" });
+        mc.children = mc.children.map((mcc) => {
+          mcc.type = "CHANNEL";
+          mcc.channel = Channel.create({
+            id: discordIds[mcc.id],
+            type: "MANAGED",
+          });
+          return mcc;
+        });
+        await mc.save();
+        const ids = [mc, ...mc.children].map((c) => c.id);
+        for (let i = 0; i < ids.length; i++) {
+          progress.complete(ids[i]);
+        }
+      })
+    );
   }
 }

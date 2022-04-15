@@ -7,5 +7,3 @@
 /tmp
 node_modules
 oclif.manifest.json
-users.json
-members.json

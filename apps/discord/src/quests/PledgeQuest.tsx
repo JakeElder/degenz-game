@@ -14,7 +14,7 @@ export default class PledgeQuest extends Quest {
   }
 
   async getProgress(user: User) {
-    const pledges = await Pledge.count({ where: { user } });
+    const pledges = await Pledge.count({ where: { user: { id: user.id } } });
     const progress: number = pledges > 0 ? 1 : 0;
     return progress;
   }
@@ -49,7 +49,7 @@ export default class PledgeQuest extends Quest {
       ),
       expanded,
       details,
-      userDiscordId: user.discordId,
+      userDiscordId: user.id,
     });
   }
 }

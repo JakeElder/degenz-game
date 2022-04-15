@@ -7,8 +7,8 @@ import {
 } from "discord.js";
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import { Achievement, Bot, TossGame } from "data/types";
-import { User, MartItem, District, Dormitory } from "data/db";
+import { AchievementSymbol, TossGame } from "data/types";
+import { User, MartItem, District, Dormitory, NPC } from "data/db";
 
 type EnterEvent = {
   type: "ENTER";
@@ -29,7 +29,7 @@ type ExitEvent = {
 type BotReadyEvent = {
   type: "BOT_READY";
   data: {
-    bot: Bot;
+    bot: NPC;
   };
 };
 
@@ -46,7 +46,7 @@ type CommandNotImplementedEvent = {
 type SendMessageAsExecutedEvent = {
   type: "SEND_MESSAGE_AS_EXECUTED";
   data: {
-    bot: Bot;
+    bot: NPC;
     channel: GuildBasedChannel;
     message: string;
     success: boolean;
@@ -187,7 +187,7 @@ type AchievementAwardedEvent = {
   type: "ACHIEVEMENT_AWARDED";
   data: {
     user: User;
-    achievement: Achievement;
+    achievement: AchievementSymbol;
   };
 };
 

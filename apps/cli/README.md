@@ -16,36 +16,36 @@ oclif example Hello World CLI
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g cli
-$ degenz COMMAND
+$ npm install -g oclif-hello-world
+$ oex COMMAND
 running command...
-$ degenz (--version)
-cli/0.0.0 darwin-arm64 node-v16.14.0
-$ degenz --help [COMMAND]
+$ oex (--version)
+oclif-hello-world/0.0.0 darwin-x64 node-v16.13.1
+$ oex --help [COMMAND]
 USAGE
-  $ degenz COMMAND
+  $ oex COMMAND
 ...
 ```
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`degenz hello PERSON`](#degenz-hello-person)
-* [`degenz hello world`](#degenz-hello-world)
-* [`degenz help [COMMAND]`](#degenz-help-command)
-* [`degenz plugins`](#degenz-plugins)
-* [`degenz plugins:inspect PLUGIN...`](#degenz-pluginsinspect-plugin)
-* [`degenz plugins:install PLUGIN...`](#degenz-pluginsinstall-plugin)
-* [`degenz plugins:link PLUGIN`](#degenz-pluginslink-plugin)
-* [`degenz plugins:uninstall PLUGIN...`](#degenz-pluginsuninstall-plugin)
-* [`degenz plugins update`](#degenz-plugins-update)
+* [`oex hello PERSON`](#oex-hello-person)
+* [`oex hello world`](#oex-hello-world)
+* [`oex help [COMMAND]`](#oex-help-command)
+* [`oex plugins`](#oex-plugins)
+* [`oex plugins:inspect PLUGIN...`](#oex-pluginsinspect-plugin)
+* [`oex plugins:install PLUGIN...`](#oex-pluginsinstall-plugin)
+* [`oex plugins:link PLUGIN`](#oex-pluginslink-plugin)
+* [`oex plugins:uninstall PLUGIN...`](#oex-pluginsuninstall-plugin)
+* [`oex plugins update`](#oex-plugins-update)
 
-## `degenz hello PERSON`
+## `oex hello PERSON`
 
 Say hello
 
 ```
 USAGE
-  $ degenz hello [PERSON] -f <value>
+  $ oex hello [PERSON] -f <value>
 
 ARGUMENTS
   PERSON  Person to say hello to
@@ -61,15 +61,15 @@ EXAMPLES
   hello friend from oclif! (./src/commands/hello/index.ts)
 ```
 
-_See code: [dist/commands/hello/index.ts](https://github.com/JakeElder/hello-world/blob/v0.0.0/dist/commands/hello/index.ts)_
+_See code: [dist/commands/hello/index.ts](https://github.com/oclif/hello-world/blob/v0.0.0/dist/commands/hello/index.ts)_
 
-## `degenz hello world`
+## `oex hello world`
 
 Say hello world
 
 ```
 USAGE
-  $ degenz hello world
+  $ oex hello world
 
 DESCRIPTION
   Say hello world
@@ -79,13 +79,13 @@ EXAMPLES
   hello world! (./src/commands/hello/world.ts)
 ```
 
-## `degenz help [COMMAND]`
+## `oex help [COMMAND]`
 
-Display help for degenz.
+Display help for oex.
 
 ```
 USAGE
-  $ degenz help [COMMAND] [-n]
+  $ oex help [COMMAND] [-n]
 
 ARGUMENTS
   COMMAND  Command to show help for.
@@ -94,18 +94,18 @@ FLAGS
   -n, --nested-commands  Include all nested commands in the output.
 
 DESCRIPTION
-  Display help for degenz.
+  Display help for oex.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.11/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.10/src/commands/help.ts)_
 
-## `degenz plugins`
+## `oex plugins`
 
 List installed plugins.
 
 ```
 USAGE
-  $ degenz plugins [--core]
+  $ oex plugins [--core]
 
 FLAGS
   --core  Show core plugins.
@@ -114,18 +114,18 @@ DESCRIPTION
   List installed plugins.
 
 EXAMPLES
-  $ degenz plugins
+  $ oex plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.0/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.0.11/src/commands/plugins/index.ts)_
 
-## `degenz plugins:inspect PLUGIN...`
+## `oex plugins:inspect PLUGIN...`
 
 Displays installation properties of a plugin.
 
 ```
 USAGE
-  $ degenz plugins:inspect PLUGIN...
+  $ oex plugins:inspect PLUGIN...
 
 ARGUMENTS
   PLUGIN  [default: .] Plugin to inspect.
@@ -138,16 +138,16 @@ DESCRIPTION
   Displays installation properties of a plugin.
 
 EXAMPLES
-  $ degenz plugins:inspect myplugin
+  $ oex plugins:inspect myplugin
 ```
 
-## `degenz plugins:install PLUGIN...`
+## `oex plugins:install PLUGIN...`
 
 Installs a plugin into the CLI.
 
 ```
 USAGE
-  $ degenz plugins:install PLUGIN...
+  $ oex plugins:install PLUGIN...
 
 ARGUMENTS
   PLUGIN  Plugin to install.
@@ -169,23 +169,23 @@ DESCRIPTION
   the CLI without the need to patch and update the whole CLI.
 
 ALIASES
-  $ degenz plugins add
+  $ oex plugins add
 
 EXAMPLES
-  $ degenz plugins:install myplugin 
+  $ oex plugins:install myplugin 
 
-  $ degenz plugins:install https://github.com/someuser/someplugin
+  $ oex plugins:install https://github.com/someuser/someplugin
 
-  $ degenz plugins:install someuser/someplugin
+  $ oex plugins:install someuser/someplugin
 ```
 
-## `degenz plugins:link PLUGIN`
+## `oex plugins:link PLUGIN`
 
 Links a plugin into the CLI for development.
 
 ```
 USAGE
-  $ degenz plugins:link PLUGIN
+  $ oex plugins:link PLUGIN
 
 ARGUMENTS
   PATH  [default: .] path to plugin
@@ -203,16 +203,16 @@ DESCRIPTION
   command will override the user-installed or core plugin implementation. This is useful for development work.
 
 EXAMPLES
-  $ degenz plugins:link myplugin
+  $ oex plugins:link myplugin
 ```
 
-## `degenz plugins:uninstall PLUGIN...`
+## `oex plugins:uninstall PLUGIN...`
 
 Removes a plugin from the CLI.
 
 ```
 USAGE
-  $ degenz plugins:uninstall PLUGIN...
+  $ oex plugins:uninstall PLUGIN...
 
 ARGUMENTS
   PLUGIN  plugin to uninstall
@@ -225,17 +225,17 @@ DESCRIPTION
   Removes a plugin from the CLI.
 
 ALIASES
-  $ degenz plugins unlink
-  $ degenz plugins remove
+  $ oex plugins unlink
+  $ oex plugins remove
 ```
 
-## `degenz plugins update`
+## `oex plugins update`
 
 Update installed plugins.
 
 ```
 USAGE
-  $ degenz plugins update [-h] [-v]
+  $ oex plugins update [-h] [-v]
 
 FLAGS
   -h, --help     Show CLI help.

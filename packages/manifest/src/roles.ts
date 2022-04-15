@@ -1,4 +1,4 @@
-import { Role } from "data/types";
+import { Role } from "data/db";
 import { Permissions } from "discord.js";
 
 const EVERYONE = new Permissions([
@@ -11,8 +11,6 @@ const EVERYONE = new Permissions([
   "READ_MESSAGE_HISTORY",
   "USE_APPLICATION_COMMANDS",
 ]);
-
-// (+)
 
 const BASE = new Permissions([
   "SEND_MESSAGES_IN_THREADS",
@@ -27,138 +25,152 @@ const ESTABLISHMENT = new Permissions([
   "MENTION_EVERYONE",
 ]);
 
-const roles: Role[] = [
+const roles = Role.create([
   {
+    id: "EVERYONE",
     type: "EVERYONE",
-    symbol: "EVERYONE",
     permissions: EVERYONE.bitfield.toString(),
   },
   {
+    id: "VERIFIED",
     type: "BASE",
-    symbol: "VERIFIED",
     name: "Verified",
     permissions: BASE.bitfield.toString(),
   },
   {
     type: "BASE",
-    symbol: "DEGEN",
+    id: "DEGEN",
     name: "Degen",
     permissions: BASE.bitfield.toString(),
   },
   {
     type: "BASE",
-    symbol: "PRISONER",
+    id: "PRISONER",
     name: "Prisoner",
     permissions: BASE.bitfield.toString(),
   },
   {
     type: "BASE",
-    symbol: "ESTABLISHMENT",
+    id: "ESTABLISHMENT",
     name: "Establishment",
     permissions: ESTABLISHMENT.bitfield.toString(),
+    emoji: { id: "RED_TICK" },
   },
   {
     type: "MANAGED",
-    symbol: "ADMIN_BOT",
+    id: "ADMIN_BOT",
     permissions: new Permissions(["ADMINISTRATOR"]).bitfield.toString(),
   },
-  { type: "MANAGED", symbol: "BIG_BROTHER_BOT" },
-  { type: "MANAGED", symbol: "DEVILS_ADVOCATE_BOT" },
-  { type: "MANAGED", symbol: "ALLY_BOT" },
-  { type: "MANAGED", symbol: "WARDEN_BOT" },
-  { type: "MANAGED", symbol: "TOSSER_BOT" },
-  { type: "MANAGED", symbol: "BANKER_BOT" },
-  { type: "MANAGED", symbol: "MART_CLERK_BOT" },
-  { type: "MANAGED", symbol: "PRISONER_BOT" },
-  { type: "MANAGED", symbol: "ARMORY_CLERK_BOT" },
-  { type: "MANAGED", symbol: "SENSEI_BOT" },
+  { id: "BIG_BROTHER_BOT", type: "MANAGED" },
+  { id: "DEVILS_ADVOCATE_BOT", type: "MANAGED" },
+  { id: "ALLY_BOT", type: "MANAGED" },
+  { id: "WARDEN_BOT", type: "MANAGED" },
+  { id: "TOSSER_BOT", type: "MANAGED" },
+  { id: "BANKER_BOT", type: "MANAGED" },
+  { id: "MART_CLERK_BOT", type: "MANAGED" },
+  { id: "PRISONER_BOT", type: "MANAGED" },
+  { id: "ARMORY_CLERK_BOT", type: "MANAGED" },
+  { id: "SENSEI_BOT", type: "MANAGED" },
   {
     type: "CITIZEN",
-    symbol: "D1_CITIZEN",
+    id: "D1_CITIZEN",
     name: "D1 Citizen",
     color: "#edb500",
+    emoji: { id: "D1" },
   },
   {
     type: "CITIZEN",
-    symbol: "D2_CITIZEN",
+    id: "D2_CITIZEN",
     name: "D2 Citizen",
     color: "#9b65e3",
+    emoji: { id: "D2" },
   },
   {
     type: "CITIZEN",
-    symbol: "D3_CITIZEN",
+    id: "D3_CITIZEN",
     name: "D3 Citizen",
     color: "#9b65e3",
+    emoji: { id: "D3" },
   },
   {
     type: "CITIZEN",
-    symbol: "D4_CITIZEN",
+    id: "D4_CITIZEN",
     name: "D4 Citizen",
     color: "#9b65e3",
+    emoji: { id: "D4" },
   },
   {
     type: "CITIZEN",
-    symbol: "D5_CITIZEN",
+    id: "D5_CITIZEN",
     name: "D5 Citizen",
     color: "#9b65e3",
+    emoji: { id: "D5" },
   },
   {
     type: "CITIZEN",
-    symbol: "D6_CITIZEN",
+    id: "D6_CITIZEN",
     name: "D6 Citizen",
     color: "#9b65e3",
+    emoji: { id: "D6" },
   },
   {
     type: "CITIZEN",
-    symbol: "BULLSEYE_CITIZEN",
+    id: "BULLSEYE_CITIZEN",
     name: "Bullseye Citizen",
     color: "#379de6",
+    emoji: { id: "BULLSEYE" },
   },
   {
     type: "CITIZEN",
-    symbol: "THE_GRID_CITIZEN",
+    id: "THE_GRID_CITIZEN",
     name: "The Grid Citizen",
     color: "#379de6",
+    emoji: { id: "THE_GRID" },
   },
   {
     type: "CITIZEN",
-    symbol: "THE_LEFT_CITIZEN",
+    id: "THE_LEFT_CITIZEN",
     name: "The Left Citizen",
     color: "#379de6",
+    emoji: { id: "THE_LEFT" },
   },
   {
     type: "CITIZEN",
-    symbol: "THE_RIGHT_CITIZEN",
+    id: "THE_RIGHT_CITIZEN",
     name: "The Right Citizen",
     color: "#379de6",
+    emoji: { id: "THE_RIGHT" },
   },
   {
     type: "CITIZEN",
-    symbol: "VULTURE_CITIZEN",
+    id: "VULTURE_CITIZEN",
     name: "Vulture Citizen",
     color: "#379de6",
+    emoji: { id: "VULTURE" },
   },
   {
     type: "SUPPLEMENTARY",
-    symbol: "TRAINEE",
+    id: "TRAINEE",
     name: "Trainee",
   },
   {
     type: "SUPPLEMENTARY",
-    symbol: "WHITELIST",
+    id: "WHITELIST",
     name: "Whitelist",
   },
   {
     type: "SUPPLEMENTARY",
-    symbol: "THOUGHT_POLICE",
+    id: "THOUGHT_POLICE",
     name: "Thought Police",
+    emoji: { id: "THOUGHT_POLICE" },
   },
   {
     type: "SUPPLEMENTARY",
-    symbol: "ADMIN",
+    id: "ADMIN",
     name: "Admin",
     permissions: new Permissions(["ADMINISTRATOR"]).bitfield.toString(),
+    emoji: { id: "BLUE_TICK" },
   },
-];
+]);
 
 export default roles;

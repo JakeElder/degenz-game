@@ -6,13 +6,13 @@
     "build": "tsc",
     "dev": "node scripts/dev",
     "typecheck": "tsc --noEmit",
-    "migration:show": "typeorm --config dist/ormconfig.js migration:show",
-    "migration:run": "typeorm --config dist/ormconfig.js migration:run",
-    "migration:generate": "typeorm --config dist/ormconfig.js migration:generate",
-    "migration:create": "typeorm --config dist/ormconfig.js migration:create",
-    "schema:log": "typeorm --config dist/ormconfig.js schema:log",
-    "schema:sync": "typeorm --config dist/ormconfig.js schema:sync",
-    "orm": "typeorm --config dist/ormconfig.js"
+    "migration:show": "typeorm -d dist/data-source migration:show",
+    "migration:run": "typeorm -d dist/data-source migration:run",
+    "migration:generate": "typeorm -d dist/data-source migration:generate",
+    "migration:create": "typeorm -d dist/data-source migration:create",
+    "schema:log": "typeorm -d dist/data-source schema:log",
+    "schema:sync": "typeorm -d dist/data-source schema:sync",
+    "orm": "typeorm -d dist/data-source"
   },
   "devDependencies": {
     "@types/find-parent-dir": "^0.3.0",
@@ -28,14 +28,16 @@
     "typescript": "^4.6.1-rc"
   },
   "dependencies": {
+    "@types/find-config": "^1.0.1",
     "class-transformer": "^0.5.1",
     "discord.js": "^13.6.0",
+    "find-config": "^1.0.0",
     "find-parent-dir": "^0.3.1",
     "pg": "^8.7.3",
     "pg-connection-string": "^2.5.0",
     "random-item": "^3.1.0",
     "reflect-metadata": "^0.1.13",
-    "typeorm": "^0.2.41",
+    "typeorm": "^0.3.5",
     "typeorm-naming-strategies": "^2.0.0"
   }
 }

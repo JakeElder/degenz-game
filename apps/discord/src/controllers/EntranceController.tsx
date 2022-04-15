@@ -57,7 +57,7 @@ export default class EntranceController {
     const [projects, shelters, bb] = await Promise.all([
       TheProjects.computeEntryData(),
       TheShelters.computeEntryData(),
-      NPC.findOneOrFail({ where: { symbol: "BIG_BROTHER" } }),
+      NPC.findOneOrFail({ where: { id: "BIG_BROTHER" } }),
     ]);
 
     return {
@@ -148,11 +148,11 @@ export default class EntranceController {
 
   static async handleButtonPress(i: ButtonInteraction) {
     await i.deferReply({ ephemeral: true });
-    const user = await User.findOne({ where: { discordId: i.user.id } });
+    const user = await User.findOne({ where: { id: i.user.id } });
 
     if (user && user.inGame) {
       await i.editReply({
-        content: `${userMention(user.discordId)} - You're already a Degen.`,
+        content: `${userMention(user.id)} - You're already a Degen.`,
       });
       return;
     }
@@ -167,9 +167,9 @@ export default class EntranceController {
         dormitory: tenancy.dormitory,
       });
       const um = userMention(i.user.id);
-      const dorm = channelMention(Config.channelId(tenancy.dormitory.symbol));
-      const onboardingThread = channelMention(tenancy.onboardingThreadId!);
-      const prefix = tenancy.dormitory.symbol.startsWith("THE") ? "" : "the ";
+      const dorm = channelMention(Config.channelId(tenancy.dormitory.id));
+      const onboardingThread = channelMention(tenancy.onboardingChannel!.id);
+      const prefix = tenancy.dormitory.id.startsWith("THE") ? "" : "the ";
 
       await i.editReply({
         content: r(

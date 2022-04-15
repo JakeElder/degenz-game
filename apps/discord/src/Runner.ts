@@ -1,4 +1,3 @@
-import { BotSymbol, Achievement } from "data/types";
 import Events from "./Events";
 import Logger from "./Logger";
 import WorldNotifier from "./WorldNotifier";
@@ -16,6 +15,7 @@ import NextStepController from "./controllers/NextStepsController";
 import EntranceController from "./controllers/EntranceController";
 import QuestLogController from "./controllers/QuestLogController";
 import AchievementController from "./controllers/AchievementController";
+import { NPCSymbol } from "data/types";
 
 export default class Runner {
   constructor(private bots: DiscordBot[]) {
@@ -34,24 +34,24 @@ export default class Runner {
     Events.on("BOT_READY", (e) => {
       Logger.botReady(e);
 
-      if (e.data.bot.symbol === "ADMIN") {
+      if (e.data.bot.id === "ADMIN") {
         AppController.bindEnterListener();
         OnboardController.bindEventListeners();
         QuestsController.init();
         QuestLogController.init();
       }
 
-      if (e.data.bot.symbol === "BIG_BROTHER") {
+      if (e.data.bot.id === "BIG_BROTHER") {
         HallOfAllegianceController.init();
         LeaderboardController.init();
         EntranceController.init();
       }
 
-      if (e.data.bot.symbol === "MART_CLERK") {
+      if (e.data.bot.id === "MART_CLERK") {
         MartClerkCommandController.init();
       }
 
-      if (e.data.bot.symbol === "ALLY") {
+      if (e.data.bot.id === "ALLY") {
         NextStepController.init();
       }
     });
@@ -125,10 +125,7 @@ export default class Runner {
     Events.on("TOSS_COMPLETED", (e) => {
       WorldNotifier.tossCompleted(e);
       Analytics.tossCompleted(e);
-      AchievementController.checkAndAward(
-        e.data.challenger,
-        Achievement.TOSS_COMPLETED
-      );
+      AchievementController.checkAndAward(e.data.challenger, "TOSS_COMPLETED");
     });
 
     Events.on("REDPILL_TAKEN", (e) => {
@@ -201,8 +198,8 @@ export default class Runner {
     });
   }
 
-  get(symbol: BotSymbol) {
-    const bot = this.bots.find((b) => b.manifest.symbol === symbol);
+  get(symbol: NPCSymbol) {
+    const bot = this.bots.find((b) => b.npc.id === symbol);
     if (!bot) {
       throw new Error(`Bot not found ${symbol}`);
     }
@@ -211,7 +208,7 @@ export default class Runner {
 
   destroy() {
     for (let b of this.bots) {
-      console.log(`SHUTTING_DOWN: ${b.manifest.symbol}`);
+      console.log(`SHUTTING_DOWN: ${b.npc.id}`);
       b.destroy();
     }
   }

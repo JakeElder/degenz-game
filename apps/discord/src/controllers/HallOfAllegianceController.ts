@@ -12,7 +12,6 @@ import pluralize from "pluralize";
 import Events from "../Events";
 import AchievementController from "./AchievementController";
 import { PersistentMessageController } from "./PersistentMessageController";
-import { Achievement as AchievementEnum } from "data/types";
 import QuestLogController from "./QuestLogController";
 
 export default class HallOfAllegianceController {
@@ -37,7 +36,7 @@ export default class HallOfAllegianceController {
 
     const districts = await District.find({
       relations: ["tenancies"],
-      order: { symbol: 1 },
+      order: { id: 1 },
     });
 
     const districtTable = districts
@@ -83,7 +82,7 @@ export default class HallOfAllegianceController {
 
   static async handleButtonPress(i: ButtonInteraction) {
     const user = await User.findOneOrFail({
-      where: { discordId: i.user.id },
+      where: { id: i.user.id },
       relations: [
         "apartmentTenancies",
         "apartmentTenancies.district",
@@ -92,7 +91,7 @@ export default class HallOfAllegianceController {
     });
 
     const pledge = await Pledge.findOne({
-      where: { user },
+      where: { user: { id: i.user.id } },
       order: { createdAt: -1 },
     });
 
@@ -112,11 +111,8 @@ export default class HallOfAllegianceController {
         ephemeral: true,
       });
 
-      if (!user.hasAchievement(AchievementEnum.ALLEGIANCE_PLEDGED)) {
-        await AchievementController.award(
-          user,
-          AchievementEnum.ALLEGIANCE_PLEDGED
-        );
+      if (!user.hasAchievement("ALLEGIANCE_PLEDGED")) {
+        await AchievementController.award(user, "ALLEGIANCE_PLEDGED");
         QuestLogController.refresh(user);
       }
 

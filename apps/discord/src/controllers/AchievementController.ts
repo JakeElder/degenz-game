@@ -1,13 +1,13 @@
 import { MessageEmbed } from "discord.js";
 import { User, Achievement } from "data/db";
-import { Achievement as AchievementEnum } from "data/types";
 import { Global } from "../Global";
 import Events from "../Events";
 import { Format } from "lib";
 import QuestLogController from "./QuestLogController";
+import { AchievementSymbol } from "data/types";
 
 export default class AchievementController {
-  static descriptions: Record<AchievementEnum, string> = {
+  static descriptions: Record<AchievementSymbol, string> = {
     JOINED_THE_DEGENZ: "You took the `/redpill` and joined the Degenz army.",
     HELP_REQUESTED: "You used the `/help` command.",
     STATS_CHECKED: "You used the `/stats` command.",
@@ -19,14 +19,14 @@ export default class AchievementController {
     MART_STOCK_CHECKED: "-",
   };
 
-  static async checkAndAward(user: User, achievement: AchievementEnum) {
+  static async checkAndAward(user: User, achievement: AchievementSymbol) {
     if (!user.hasAchievement(achievement)) {
       await this.award(user, achievement);
       QuestLogController.refresh(user);
     }
   }
 
-  static async award(user: User, achievement: AchievementEnum) {
+  static async award(user: User, achievement: AchievementSymbol) {
     const admin = Global.bot("ADMIN");
 
     if (user.hasAchievement(achievement)) {
@@ -35,8 +35,8 @@ export default class AchievementController {
 
     const [residence, member, achievementData] = await Promise.all([
       admin.getTextChannel(user.notificationChannelId),
-      admin.guild.members.fetch(user.discordId),
-      Achievement.findOne({ where: { symbol: achievement } }),
+      admin.guild.members.fetch(user.id),
+      Achievement.findOne({ where: { id: achievement } }),
     ]);
 
     if (!achievementData) {
@@ -66,7 +66,7 @@ export default class AchievementController {
         Format.transaction(startBalance, achievementData.reward)
       );
 
-    if (achievement === AchievementEnum.JOINED_THE_DEGENZ) {
+    if (achievement === "JOINED_THE_DEGENZ") {
       embed = embed.setImage(
         "https://s10.gifyu.com/images/HeaderCryptoDegenz-min.gif"
       );

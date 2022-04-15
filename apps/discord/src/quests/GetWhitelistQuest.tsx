@@ -1,6 +1,5 @@
 import Config from "config";
 import { User } from "data/db";
-import { Achievement } from "data/types";
 import { EmbedFieldData } from "discord.js";
 import React from "react";
 import { Global } from "../Global";
@@ -16,7 +15,7 @@ export default class GetWhitelistQuest extends Quest {
 
   async getProgress(user: User) {
     const admin = Global.bot("ADMIN");
-    const member = await admin.guild.members.fetch(user.discordId);
+    const member = await admin.guild.members.fetch(user.id);
     if (!member) {
       throw new Error(`Member ${user.displayName} not found`);
     }
@@ -54,7 +53,7 @@ export default class GetWhitelistQuest extends Quest {
       description: <>Who *doesn't* want Whitelist?</>,
       expanded,
       details,
-      userDiscordId: user.discordId,
+      userDiscordId: user.id,
     });
   }
 }

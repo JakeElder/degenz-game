@@ -26,7 +26,7 @@ export default class PrisonerCommandController extends CommandController {
       });
 
       await Utils.delay(2000);
-      await UserController.release(user.discordId, null, "ESCAPE");
+      await UserController.release(user.id, null, "ESCAPE");
     } else {
       i.reply({
         content: r(<FailedEscapeMessage code={code} />),

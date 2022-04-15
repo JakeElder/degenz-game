@@ -22,8 +22,8 @@ export default class MartClerkCommandController extends CommandController {
     merris.client.on("interactionCreate", async (i) => {
       if (!i.isButton()) return;
       if (i.customId.startsWith("buy:")) {
-        const [_, symbol] = i.customId.split(":") as [any, MartItemSymbol];
-        const item = await MartItem.findOne({ where: { symbol } });
+        const [_, id] = i.customId.split(":") as [any, MartItemSymbol];
+        const item = await MartItem.findOne({ where: { id } });
 
         if (!item) {
           i.update({ content: "Error", components: [], embeds: [] });
@@ -35,9 +35,7 @@ export default class MartClerkCommandController extends CommandController {
         const user = await getUser(i.user.id);
 
         if (res.success) {
-          const update = await MartClerkCommandController.makeBuyResponse(
-            symbol
-          );
+          const update = await MartClerkCommandController.makeBuyResponse(id);
           await i.update(update);
           Events.emit("MART_ITEM_BOUGHT", { user, item });
           return;
@@ -82,7 +80,7 @@ export default class MartClerkCommandController extends CommandController {
     };
 
     const embedItems = boughtItem
-      ? items.filter((i) => i.symbol === boughtItem)
+      ? items.filter((i) => i.id === boughtItem)
       : items;
 
     const embeds: MessageEmbedOptions[] = embedItems.map((item) => {
@@ -106,14 +104,14 @@ export default class MartClerkCommandController extends CommandController {
 
       return {
         author: {
-          name: `${emojis[item.symbol]} ${item.name}`,
+          name: `${emojis[item.id]} ${item.name}`,
         },
         color: item.stock === 0 ? "DARK_RED" : "DARK_GREEN",
         description: info,
         thumbnail: {
           height: 32,
           width: 32,
-          url: `${url}/${item.symbol}.png?v1`,
+          url: `${url}/${item.id}.png?v1`,
         },
       };
     });
@@ -124,9 +122,9 @@ export default class MartClerkCommandController extends CommandController {
         new MessageActionRow().addComponents(
           items.map((item) =>
             new MessageButton()
-              .setCustomId(`buy:${item.symbol}`)
+              .setCustomId(`buy:${item.id}`)
               .setStyle(item.stock > 0 ? "PRIMARY" : "SECONDARY")
-              .setLabel(`${emojis[item.symbol]} ${item.name}`)
+              .setLabel(`${emojis[item.id]} ${item.name}`)
               .setDisabled(!!boughtItem || item.stock === 0)
           )
         ),

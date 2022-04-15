@@ -54,7 +54,7 @@ export default class Analytics {
   static redpillTaken(e: PickEvent<"REDPILL_TAKEN">) {
     this.generic(
       capitalCase("REDPILL"),
-      e.data.user.discordId,
+      e.data.user.id,
       e.data.user.displayName
     );
   }
@@ -62,7 +62,7 @@ export default class Analytics {
   static helpRequested(e: PickEvent<"HELP_REQUESTED">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
-      distinct_id: e.data.user.discordId,
+      distinct_id: e.data.user.id,
       user_display_name: e.data.user.displayName,
       channel_name: e.data.channel.name,
       channel_id: e.data.channel.id,
@@ -72,7 +72,7 @@ export default class Analytics {
   static statsChecked(e: PickEvent<"STATS_CHECKED">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
-      distinct_id: e.data.checker.discordId,
+      distinct_id: e.data.checker.id,
       user_display_name: e.data.checker.displayName,
       channel_name: e.data.channel.name,
       channel_id: e.data.channel.id,
@@ -82,7 +82,7 @@ export default class Analytics {
   static balanceChecked(e: PickEvent<"BALANCE_CHECKED">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
-      distinct_id: e.data.user.discordId,
+      distinct_id: e.data.user.id,
       user_display_name: e.data.user.displayName,
       balance: e.data.user.gbt,
     });
@@ -91,9 +91,9 @@ export default class Analytics {
   static gbtTransferred(e: PickEvent<"GBT_TRANSFERRED">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
-      distinct_id: e.data.sender.discordId,
+      distinct_id: e.data.sender.id,
       user_display_name: e.data.sender.displayName,
-      recipient: e.data.recipient.discordId,
+      recipient: e.data.recipient.id,
       amount: e.data.amount,
     });
   }
@@ -101,7 +101,7 @@ export default class Analytics {
   static martStockChecked(e: PickEvent<"MART_STOCK_CHECKED">) {
     this.generic(
       capitalCase("MART_STOCK_CHECKED"),
-      e.data.user.discordId,
+      e.data.user.id,
       e.data.user.displayName
     );
   }
@@ -109,7 +109,7 @@ export default class Analytics {
   static martItemBought(e: PickEvent<"MART_ITEM_BOUGHT">) {
     this.mixpanel.track(capitalCase("MART_ITEM_PURCHASED"), {
       ...this.common,
-      distinct_id: e.data.user.discordId,
+      distinct_id: e.data.user.id,
       user_display_name: e.data.user.displayName,
       item: e.data.item.name,
       price: e.data.item.price,
@@ -119,7 +119,7 @@ export default class Analytics {
   static itemEaten(e: PickEvent<"ITEM_EATEN">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
-      distinct_id: e.data.user.discordId,
+      distinct_id: e.data.user.id,
       user_display_name: e.data.user.displayName,
       item: e.data.item.name,
     });
@@ -128,9 +128,9 @@ export default class Analytics {
   static inventoryChecked(e: PickEvent<"INVENTORY_CHECKED">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
-      distinct_id: e.data.checker.discordId,
+      distinct_id: e.data.checker.id,
       user_display_name: e.data.checker.displayName,
-      checkee_id: e.data.checkee.discordId,
+      checkee_id: e.data.checkee.id,
       checkee_name: e.data.checkee.displayName,
       own: e.data.checker.id === e.data.checkee.id,
     });
@@ -140,11 +140,11 @@ export default class Analytics {
     const [challengee_id, challengee_name] =
       e.data.challengee === "HOUSE"
         ? ["HOUSE", "HOUSE"]
-        : [e.data.challengee.discordId, e.data.challengee.displayName];
+        : [e.data.challengee.id, e.data.challengee.displayName];
 
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
-      distinct_id: e.data.challenger.discordId,
+      distinct_id: e.data.challenger.id,
       user_display_name: e.data.challenger.displayName,
       challengee_id,
       challengee_name,
@@ -157,7 +157,7 @@ export default class Analytics {
   static firstWorldChoice(e: PickEvent<"FIRST_WORLD_CHOICE">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
-      distinct_id: e.data.user.discordId,
+      distinct_id: e.data.user.id,
       user_display_name: e.data.user.displayName,
       choice: e.data.choice,
     });
@@ -166,7 +166,7 @@ export default class Analytics {
   static allegiancePledged(e: PickEvent<"ALLEGIANCE_PLEDGED">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
-      distinct_id: e.data.user.discordId,
+      distinct_id: e.data.user.id,
       user_display_name: e.data.user.displayName,
       yld: e.data.yld,
     });
@@ -175,25 +175,25 @@ export default class Analytics {
   static gameEnteredApartment(e: PickEvent<"GAME_ENTERED_APARTMENT">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
-      distinct_id: e.data.user.discordId,
+      distinct_id: e.data.user.id,
       user_display_name: e.data.user.displayName,
-      district: e.data.district.symbol,
+      district: e.data.district.id,
     });
   }
 
   static gameEnteredDormitory(e: PickEvent<"GAME_ENTERED_DORMITORY">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
-      distinct_id: e.data.user.discordId,
+      distinct_id: e.data.user.id,
       user_display_name: e.data.user.displayName,
-      district: e.data.dormitory.symbol,
+      district: e.data.dormitory.id,
     });
   }
 
   static achievementAwarded(e: PickEvent<"ACHIEVEMENT_AWARDED">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
-      distinct_id: e.data.user.discordId,
+      distinct_id: e.data.user.id,
       user_display_name: e.data.user.displayName,
       achievement: e.data.achievement,
     });
@@ -202,7 +202,7 @@ export default class Analytics {
   static dormReadyButtonPressed(e: PickEvent<"DORM_READY_BUTTON_PRESSED">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
-      distinct_id: e.data.user.discordId,
+      distinct_id: e.data.user.id,
       user_display_name: e.data.user.displayName,
       response: e.data.response,
     });
@@ -211,7 +211,7 @@ export default class Analytics {
   static onboardingThreadPurged(e: PickEvent<"ONBOARDING_THREAD_PURGED">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
-      distinct_id: e.data.user.discordId,
+      distinct_id: e.data.user.id,
       user_display_name: e.data.user.displayName,
       redpilled: e.data.redpilled,
     });
@@ -221,7 +221,7 @@ export default class Analytics {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
       distinct_id: e.data.issuerId,
-      recipient: e.data.recipient?.discordId || null,
+      recipient: e.data.recipient?.id || null,
       amount: e.data.amount,
     });
   }
@@ -238,8 +238,8 @@ export default class Analytics {
   static citizenImprisoned(e: PickEvent<"CITIZEN_IMPRISONED">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
-      distinct_id: e.data.prisoner.discordId,
-      captor: e.data.captor.discordId,
+      distinct_id: e.data.prisoner.id,
+      captor: e.data.captor.id,
       reason: e.data.reason,
     });
   }
@@ -247,15 +247,15 @@ export default class Analytics {
   static citizenEscaped(e: PickEvent<"CITIZEN_ESCAPED">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
-      distinct_id: e.data.prisoner.discordId,
+      distinct_id: e.data.prisoner.id,
     });
   }
 
   static citizenReleased(e: PickEvent<"CITIZEN_RELEASED">) {
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
-      distinct_id: e.data.prisoner.discordId,
-      captor: e.data.captor.discordId,
+      distinct_id: e.data.prisoner.id,
+      captor: e.data.captor.id,
     });
   }
 }

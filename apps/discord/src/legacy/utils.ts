@@ -75,7 +75,7 @@ export function makeInventoryEmbed(
   const foods = [];
 
   for (let group of Object.keys(groups)) {
-    const name = items.find((i) => i.symbol === group)!.name;
+    const name = items.find((i) => i.id === group)!.name;
     const amount = groups[group].length.toLocaleString();
     foods.push(
       `${name.padEnd(`${longestItemName}   `.length)} | ${amount.padEnd(

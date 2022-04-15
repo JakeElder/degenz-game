@@ -15,14 +15,14 @@ export default class PrisonerCommandController extends CommandController {
 
     const amount = i.options.getInteger("amount", true);
 
-    await transactBalance(user.discordId, -amount);
+    await transactBalance(user.id, -amount);
 
     if (amount >= 30) {
       i.reply({
         content: r(
           <SuccessfulBribeReply
             amount={amount}
-            citizenId={user.discordId}
+            citizenId={user.id}
             releaseCode={user.imprisonment.releaseCode}
           />
         ),
@@ -30,9 +30,7 @@ export default class PrisonerCommandController extends CommandController {
       });
     } else {
       i.reply({
-        content: r(
-          <FailedBribeReply amount={amount} citizenId={user.discordId} />
-        ),
+        content: r(<FailedBribeReply amount={amount} citizenId={user.id} />),
         ephemeral: true,
       });
     }

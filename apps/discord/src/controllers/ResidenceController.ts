@@ -1,10 +1,10 @@
 import { User } from "data/db";
-import { BotSymbol } from "data/types";
+import { NPCSymbol } from "data/types";
 import { TextBasedChannel } from "discord.js";
 import { Global } from "../Global";
 
 class ResidenceController {
-  static async get(user: User, botSymbol: BotSymbol = "ADMIN") {
+  static async get(user: User, botSymbol: NPCSymbol = "ADMIN") {
     const tenancy = user.primaryTenancy;
     const bot = Global.bot(botSymbol);
 

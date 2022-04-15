@@ -1,6 +1,5 @@
 import Config from "config";
 import { User } from "data/db";
-import { Achievement } from "data/types";
 import { EmbedFieldData } from "discord.js";
 import React from "react";
 import { ChannelMention, UserMention } from "../legacy/templates";
@@ -14,9 +13,7 @@ export default class LearnToHackerBattleQuest extends Quest {
   }
 
   async getProgress(user: User) {
-    let progress: number = user.hasAchievement(Achievement.FINISHED_TRAINER)
-      ? 1
-      : 0;
+    let progress: number = user.hasAchievement("FINISHED_TRAINER") ? 1 : 0;
     return progress;
   }
 
@@ -50,7 +47,7 @@ export default class LearnToHackerBattleQuest extends Quest {
       ),
       expanded,
       details,
-      userDiscordId: user.discordId,
+      userDiscordId: user.id,
     });
   }
 }

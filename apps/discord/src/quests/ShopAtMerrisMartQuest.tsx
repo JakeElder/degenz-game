@@ -2,7 +2,7 @@ import Config from "config";
 import { MartItemOwnership, User } from "data/db";
 import { EmbedFieldData } from "discord.js";
 import React from "react";
-import { ChannelMention, UserMention } from "../legacy/templates";
+import { ChannelMention } from "../legacy/templates";
 import Quest from "../Quest";
 import Utils from "../Utils";
 
@@ -14,7 +14,7 @@ export default class ShopAtMerrisMartQuest extends Quest {
 
   async getProgress(user: User) {
     const items = await MartItemOwnership.count({
-      where: { user },
+      where: { user: { id: user.id } },
       withDeleted: true,
     });
 
@@ -51,7 +51,7 @@ export default class ShopAtMerrisMartQuest extends Quest {
       ),
       expanded,
       details,
-      userDiscordId: user.discordId,
+      userDiscordId: user.id,
     });
   }
 }

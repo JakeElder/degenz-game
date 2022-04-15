@@ -1,13 +1,13 @@
 import cleanup from "node-cleanup";
 import PrettyError from "pretty-error";
-import { connect, disconnect } from "data/db";
+import { connect, disconnect, NPC } from "data/db";
 import Utils from "./Utils";
 import Runner from "./Runner";
 import * as Bots from "./bots";
 import { Global } from "./Global";
 import Config from "config";
 import Manifest from "manifest";
-import { Bot, BotSymbol } from "data/types";
+import { NPCSymbol } from "data/types";
 
 const pe = new PrettyError();
 
@@ -31,28 +31,33 @@ cleanup((_, signal) => {
 });
 
 let runner: Runner;
+let npcs: NPC[];
 
-function d(descriptors: Bot[], symbol: BotSymbol) {
-  return descriptors.find((bot) => bot.symbol === symbol)!;
+function npc(id: NPCSymbol) {
+  const n = npcs.find((npc) => npc.id === id);
+  if (!n) {
+    throw new Error(`${id} npc not found.`);
+  }
+  return n;
 }
 
 async function main() {
   await connect();
   await Config.load();
 
-  const ds = await Manifest.bots();
+  ({ npcs } = await Manifest.load());
 
-  Global.bot("ADMIN", new Bots.AdminBot(d(ds, "ADMIN")));
-  Global.bot("ALLY", new Bots.AllyBot(d(ds, "ALLY")));
-  Global.bot("BANKER", new Bots.BankerBot(d(ds, "BANKER")));
-  Global.bot("BIG_BROTHER", new Bots.BigBrotherBot(d(ds, "BIG_BROTHER")));
-  Global.bot("MART_CLERK", new Bots.MartClerkBot(d(ds, "MART_CLERK")));
-  Global.bot("PRISONER", new Bots.PrisonerBot(d(ds, "PRISONER")));
-  Global.bot("TOSSER", new Bots.TosserBot(d(ds, "TOSSER")));
-  Global.bot("WARDEN", new Bots.WardenBot(d(ds, "WARDEN")));
+  Global.bot("ADMIN", new Bots.AdminBot(npc("ADMIN")));
+  Global.bot("ALLY", new Bots.AllyBot(npc("ALLY")));
+  Global.bot("BANKER", new Bots.BankerBot(npc("BANKER")));
+  Global.bot("BIG_BROTHER", new Bots.BigBrotherBot(npc("BIG_BROTHER")));
+  Global.bot("MART_CLERK", new Bots.MartClerkBot(npc("MART_CLERK")));
+  Global.bot("PRISONER", new Bots.PrisonerBot(npc("PRISONER")));
+  Global.bot("TOSSER", new Bots.TosserBot(npc("TOSSER")));
+  Global.bot("WARDEN", new Bots.WardenBot(npc("WARDEN")));
 
   if (Config.env("NODE_ENV") === "development" && Config.general("USE_SCOUT")) {
-    Global.bot("SCOUT", new Bots.ScoutBot(d(ds, "SCOUT")));
+    Global.bot("SCOUT", new Bots.ScoutBot(npc("SCOUT")));
   }
 
   runner = new Runner(Global.bots());

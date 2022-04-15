@@ -65,7 +65,7 @@ export default class TossController {
       };
     })();
 
-    const bb = await NPC.findOneOrFail({ where: { symbol: "BIG_BROTHER" } });
+    const bb = await NPC.findOneOrFail({ where: { id: "BIG_BROTHER" } });
 
     // Handle negative amount
     if (g.amount < 0) {
@@ -165,7 +165,7 @@ export default class TossController {
       };
     }
 
-    g.challenger.user = await getUser(g.challenger.user!.discordId);
+    g.challenger.user = await getUser(g.challenger.user!.id);
 
     if (g.challenger.user!.gbt < g.amount) {
       g.challenger.balanceAvailable = false;
@@ -185,11 +185,11 @@ export default class TossController {
       g.winner = g.result === g.choice ? "CHALLENGER" : "CHALLENGEE";
 
       await transactBalance(
-        g.challenger.user!.discordId,
+        g.challenger.user!.id,
         g.winner === "CHALLENGER" ? g.amount - g.rake : -g.amount
       );
 
-      g.challenger.user = await getUser(g.challenger.user!.discordId);
+      g.challenger.user = await getUser(g.challenger.user!.id);
       await i.followUp({
         embeds: [
           TossController.makeTossResultEmbed({ g, player: "CHALLENGER" }),
@@ -306,8 +306,8 @@ export default class TossController {
     }
 
     [g.challengee.user, g.challenger.user] = await Promise.all([
-      getUser(g.challengee.user!.discordId),
-      getUser(g.challenger.user!.discordId),
+      getUser(g.challengee.user!.id),
+      getUser(g.challenger.user!.id),
     ]);
 
     // Handle insufficient balance
@@ -334,18 +334,18 @@ export default class TossController {
     // Update balances
     await Promise.all([
       transactBalance(
-        g.challenger.user!.discordId,
+        g.challenger.user!.id,
         g.winner === "CHALLENGER" ? g.amount - g.rake : -g.amount
       ),
       transactBalance(
-        g.challengee.user!.discordId,
+        g.challengee.user!.id,
         g.winner === "CHALLENGEE" ? g.amount - g.rake : -g.amount
       ),
     ]);
 
     [g.challengee.user, g.challenger.user] = await Promise.all([
-      getUser(g.challengee.user!.discordId),
-      getUser(g.challenger.user!.discordId),
+      getUser(g.challengee.user!.id),
+      getUser(g.challenger.user!.id),
     ]);
 
     await Promise.all([

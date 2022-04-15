@@ -4,13 +4,13 @@ import DEV_CONFIG from "./config";
 import STAGE_CONFIG from "./config.stage";
 import PROD_CONFIG from "./config.prod";
 import {
-  BotSymbol,
-  CategorySymbol,
-  ChannelSymbol,
+  NPCSymbol,
   EnvVars,
   RoleSymbol,
+  GeneralConfig,
+  ManagedChannelSymbol,
 } from "data/types";
-import { Role } from "data/db";
+import { ManagedChannel, NPC, Role } from "data/db";
 import chalk from "chalk";
 
 const NODE_ENV =
@@ -47,64 +47,105 @@ const env = process.env as EnvVars;
 
 export default class ConfigManager {
   static roles: Role[];
+  static npcs: NPC[];
+  static managedChannels: ManagedChannel[];
 
   static async load() {
-    this.roles = await Role.find();
+    [this.roles, this.npcs, this.managedChannels] = await Promise.all([
+      Role.find(),
+      NPC.find(),
+      ManagedChannel.find(),
+    ]);
   }
 
-  static general<T extends keyof typeof configs["development"]["GENERAL"]>(
-    k: T
-  ): typeof configs["development"]["GENERAL"][T] {
-    return configs[NODE_ENV].GENERAL[k];
+  static general<T extends keyof GeneralConfig>(k: T): GeneralConfig[T] {
+    return configs[NODE_ENV][k];
   }
 
   static env<T extends keyof EnvVars>(k: T): EnvVars[T] {
     return env[k];
   }
 
-  static categoryId(k: CategorySymbol) {
-    return configs[NODE_ENV].CATEGORY_IDS[k];
+  static notFound(entity: string, id: string) {
+    const e = new Error(`${id} ${entity} not found`);
+    console.error(e.stack);
   }
 
-  static channelId(k: ChannelSymbol) {
-    return configs[NODE_ENV].CHANNEL_IDS[k];
+  static categoryId(k: ManagedChannelSymbol) {
+    const row = this.managedChannels.find((r) => r.id === k);
+
+    if (!row) {
+      this.notFound("category", k);
+      throw new Error();
+    }
+
+    if (row.isChannel()) {
+      throw new Error(`${k} is not a category`);
+    }
+
+    return row.channel.id;
+  }
+
+  static channelId(k: ManagedChannelSymbol) {
+    const row = this.managedChannels.find((r) => r.id === k);
+
+    if (!row) {
+      this.notFound("category", k);
+      throw new Error();
+    }
+
+    if (!row.isChannel()) {
+      throw new Error(`${k} is not a channel`);
+    }
+
+    return row.channel.id;
   }
 
   static roleId(k: RoleSymbol) {
-    const role = this.roles.find((r) => r.symbol === k);
-    if (!role) {
-      const e = new Error(`${k} role not found`);
-      console.log(e.stack);
-      throw e;
+    const row = this.roles.find((r) => r.id === k);
+
+    if (!row) {
+      this.notFound("role", k);
+      throw new Error();
     }
-    return role.discordId;
+
+    return row.discordId;
   }
 
   static reverseRoleId = (id: string) => {
-    const role = this.roles.find((r) => r.discordId === id);
-    if (!role) {
-      throw new Error(`${id} role not found`);
+    const row = this.roles.find((r) => r.discordId === id);
+
+    if (!row) {
+      this.notFound("role", id);
+      throw new Error();
     }
-    return role.discordId;
+
+    return row.id;
   };
 
-  static clientId(k: BotSymbol) {
-    return configs[NODE_ENV].CLIENT_IDS[k];
+  static clientId(k: NPCSymbol) {
+    const row = this.npcs.find((r) => r.id === k);
+
+    if (!row) {
+      this.notFound("npc", k);
+      throw new Error();
+    }
+
+    return row.clientId;
   }
 
-  static botToken(k: BotSymbol) {
+  static botToken(k: NPCSymbol) {
     return env[`${k}_BOT_TOKEN`];
   }
 
-  static clientIds() {
-    return configs[NODE_ENV].CLIENT_IDS;
-  }
-
   static reverseClientId = (id: string) => {
-    for (const [key, value] of Object.entries(configs[NODE_ENV].CLIENT_IDS)) {
-      if (value === id) {
-        return key as BotSymbol;
-      }
+    const row = this.npcs.find((r) => r.clientId === id);
+
+    if (!row) {
+      this.notFound("npc", id);
+      throw new Error();
     }
+
+    return row.id;
   };
 }

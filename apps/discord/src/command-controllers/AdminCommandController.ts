@@ -105,6 +105,7 @@ export default class AllyCommandController extends CommandController {
       await this.respond(i, "CHANNEL_CLEARED", "SUCCESS");
     } catch (e) {
       await this.respond(i, "DISCORD_ERROR", "FAIL");
+      console.error(e);
     }
   }
 
@@ -113,10 +114,10 @@ export default class AllyCommandController extends CommandController {
     const member = i.options.getUser("member", true);
 
     try {
-      let user: User | undefined;
+      let user: User | null;
       if (member) {
         user = await User.findOne({
-          where: { discordId: member.id },
+          where: { id: member.id },
         });
         if (!user || !user.inGame) {
           await this.respond(i, "USER_NOT_FOUND", "FAIL");
@@ -148,10 +149,10 @@ export default class AllyCommandController extends CommandController {
     const member = i.options.getUser("member");
 
     try {
-      let user: User | undefined;
+      let user: User | null;
       if (member) {
         user = await User.findOne({
-          where: { discordId: member.id },
+          where: { id: member.id },
         });
         if (!user || !user.inGame) {
           await this.respond(i, "USER_NOT_FOUND", "FAIL");
@@ -247,7 +248,7 @@ export default class AllyCommandController extends CommandController {
   async admin_sendNextSteps(i: CommandInteraction) {
     const member =
       i.options.getUser("member", false) || (i.member as GuildMember);
-    const user = await User.findOneOrFail({ where: { discordId: member.id } });
+    const user = await User.findOneOrFail({ where: { id: member.id } });
     const ally = Global.bot("ALLY");
     const channel = await ally.guild.channels.fetch(i.channelId);
     await NextStepController.send(channel as TextBasedChannel, user);
@@ -315,14 +316,14 @@ export default class AllyCommandController extends CommandController {
       const u = users[i];
       const apartment = u.apartmentTenancies[0]
         ? prettyjson.render(
-            { district: u.apartmentTenancies[0].district.symbol },
+            { district: u.apartmentTenancies[0].district.id },
             { noColor: true }
           )
         : "--none--";
 
       const dormitory = u.dormitoryTenancy
         ? prettyjson.render(
-            { dorm: u.dormitoryTenancy.dormitory.symbol },
+            { dorm: u.dormitoryTenancy.dormitory.id },
             { noColor: true }
           )
         : "--none--";

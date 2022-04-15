@@ -1,132 +1,93 @@
 import { Command as OclifCommand } from "@oclif/core";
-import axios, { AxiosResponse } from "axios";
-import Config from "config";
 import { connect, disconnect } from "data/db";
-import delay from "delay";
-import Listr from "Listr";
-import { json } from "../utils";
+import { NPCSymbol } from "data/types";
+import Manifest from "manifest";
+import prompts from "prompts";
+import { Client, Guild } from "discord.js";
+import Config from "config";
+import { ProgressBar } from ".";
 
-const http = axios.create({
-  baseURL: "https://discord.com/api/v9",
-  headers: { Accept: "application/json" },
-});
+type AugmentedClient = Client & {
+  onRateLimit: (ms: number) => void;
+  guild: Guild;
+};
 
 export default abstract class Command extends OclifCommand {
+  progressBars: ProgressBar[] = [];
+  bots: AugmentedClient[] = [];
+
   async init() {
     await connect();
-    await Config.load();
   }
 
   async finally(err?: Error) {
-    disconnect();
+    for (let i = 0; i < this.progressBars.length; i++) {
+      this.progressBars[i].stop();
+    }
+
+    for (let i = 0; i < this.bots.length; i++) {
+      this.bots[i].destroy();
+    }
+
+    await disconnect();
     return super.finally(err);
   }
 
-  async get(route: string, token: string) {
-    try {
-      return http({
-        method: "GET",
-        url: route,
-        headers: { Authorization: `Bot ${token}` },
-      });
-    } catch (e) {
-      this.debug(e);
-      throw e;
+  async confirm(message: string) {
+    const response = await prompts([
+      {
+        type: "toggle",
+        name: "cancel",
+        message,
+        initial: false,
+        active: "No",
+        inactive: "Yes",
+      },
+    ]);
+
+    return !response.cancel;
+  }
+
+  async bot(symbol: NPCSymbol): Promise<AugmentedClient> {
+    const { npcs } = await Manifest.load();
+    const npc = npcs.find((b) => b.id === symbol);
+
+    if (!npc) {
+      throw new Error(`Bot ${symbol} not found`);
     }
-  }
 
-  async delete(route: string, token: string, task?: Listr.ListrTaskWrapper) {
-    return this.req(route, null, token, "DELETE", task);
-  }
+    const client = new Client(npc.clientOptions);
 
-  async req(
-    route: string,
-    data: any,
-    token: string,
-    method: "PUT" | "POST" | "PATCH" | "DELETE",
-    task?: Listr.ListrTaskWrapper
-  ): Promise<AxiosResponse<any, any>> {
-    const res = await http({
-      method,
-      data,
-      url: route,
-      headers: { Authorization: `Bot ${token}` },
-      validateStatus: () => true,
+    await new Promise((resolve) => {
+      client.once("ready", resolve);
+      client.on("apiResponse", async (_req, res) => {
+        if (res.status === 429) {
+          const rl = parseInt(res.headers.get("retry-after")!, 10) * 1000;
+          augmentedClient.onRateLimit(rl);
+        }
+      });
+      client.on("rateLimit", (rl) => {
+        augmentedClient.onRateLimit(rl.timeout);
+      });
+      client.login(Config.botToken(npc.id));
     });
 
-    if (res.status === 429) {
-      const wait = res.data.retry_after + 2;
-      let delta = 0;
-
-      if (task) {
-        const update = () =>
-          (task.output = `RATE_LIMITED: Waiting ${Math.round(
-            wait - delta
-          )} seconds`);
-        const i = setInterval(() => {
-          update();
-          delta += 1;
-          if (wait - delta < 1) {
-            clearInterval(i);
-          }
-        }, 1000);
-        update();
-      } else {
-        const update = () => {
-          console.log();
-          process.stdout.cursorTo(0);
-          process.stdout.write(
-            `RATE_LIMITED: Waiting ${Math.round(wait - delta)} seconds`
-          );
-        };
-        const i = setInterval(() => {
-          update();
-          delta += 1;
-          if (wait - delta < 1) {
-            clearInterval(i);
-          }
-        }, 1000);
-        update();
+    const augmentedClient: AugmentedClient = Object.assign(
+      Object.create(client),
+      {
+        onRateLimit: () => {},
+        guild: await client.guilds.fetch(Config.general("GUILD_ID")),
       }
+    );
 
-      this.debug(`RATE_LIMITED: ${Math.round(wait)} seconds`);
-      await delay((res.data.retry_after + 2) * 1000);
-      console.log();
-      return this.req(route, data, token, method, task);
-    }
+    this.bots.push(augmentedClient);
 
-    if (res.status < 200 || res.status >= 300) {
-      this.debug(json(res));
-      throw new Error(`${res.status}: ${res.statusText}`);
-    }
-
-    return res;
+    return augmentedClient;
   }
 
-  async patch(
-    route: string,
-    data: any,
-    token: string,
-    task?: Listr.ListrTaskWrapper
-  ) {
-    return this.req(route, data, token, "PATCH", task);
-  }
-
-  async put(
-    route: string,
-    data: any,
-    token: string,
-    task?: Listr.ListrTaskWrapper
-  ) {
-    return this.req(route, data, token, "PUT", task);
-  }
-
-  async post(
-    route: string,
-    data: any,
-    token: string,
-    task?: Listr.ListrTaskWrapper
-  ) {
-    return this.req(route, data, token, "POST", task);
+  getProgressBar<T extends string = string>(symbols: T[]) {
+    const progress = new ProgressBar<T>(symbols);
+    this.progressBars.push(progress);
+    return progress;
   }
 }

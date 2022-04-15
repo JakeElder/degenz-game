@@ -74,7 +74,7 @@ export default class BankerCommandController extends CommandController {
     }
 
     // Perform transaction
-    await transferBalance(i.user.id, recipient.discordId, o.amount);
+    await transferBalance(i.user.id, recipient.id, o.amount);
 
     // Reply to interaction
     await i.reply({

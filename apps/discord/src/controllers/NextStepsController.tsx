@@ -51,13 +51,13 @@ export default class NextStepController {
   static async activate(i: ButtonInteraction) {
     const { member } = await Interaction.getProps(i);
 
-    const [_, choice, discordId] = i.customId.split(":") as [
+    const [_, choice, id] = i.customId.split(":") as [
       string,
       TabOption,
       string
     ];
 
-    if (member.id !== discordId) {
+    if (member.id !== id) {
       await i.reply({
         content: `${userMention(member.id)} - These buttons aren't for you.`,
         ephemeral: true,
@@ -69,7 +69,7 @@ export default class NextStepController {
       Config.botToken("ALLY")
     );
 
-    const user = await User.findOneOrFail({ where: { discordId } });
+    const user = await User.findOneOrFail({ where: { id } });
     await rest.patch(Routes.channelMessage(i.channelId, i.message.id), {
       body: this.makeMessage({ user, active: choice }),
     });
@@ -87,14 +87,13 @@ export default class NextStepController {
       data.active === null
         ? r(
             <>
-              {userMention(user.discordId)} - There's lots to see and do here in
-              **
+              {userMention(user.id)} - There's lots to see and do here in **
               {Format.worldName()}**
               <br />
               So what do you want to do?
             </>
           )
-        : `${userMention(user.discordId)} - what next?`;
+        : `${userMention(user.id)} - what next?`;
 
     let embeds: MessageEmbedOptions[] = [{ description: content }];
 
@@ -106,8 +105,8 @@ export default class NextStepController {
         },
         description: r(
           <>
-            {userMention(user.discordId)} - If you want to learn to hacker
-            battle, go and see {userMention(Config.clientId("SENSEI"))} in the
+            {userMention(user.id)} - If you want to learn to hacker battle, go
+            and see {userMention(Config.clientId("SENSEI"))} in the
             {channelMention(Config.channelId("TRAINING_DOJO"))}. Just press the
             **LFG** button when you get there.
           </>
@@ -168,7 +167,7 @@ export default class NextStepController {
       components: [
         new MessageActionRow().addComponents(
           new MessageButton()
-            .setCustomId(`FIRST_WORLD_CHOICE:FIGHT:${user.discordId}`)
+            .setCustomId(`FIRST_WORLD_CHOICE:FIGHT:${user.id}`)
             .setLabel("Fight")
             .setStyle(
               data.active === null || data.active === "FIGHT"
@@ -176,7 +175,7 @@ export default class NextStepController {
                 : "SECONDARY"
             ),
           new MessageButton()
-            .setCustomId(`FIRST_WORLD_CHOICE:GAMBLE:${user.discordId}`)
+            .setCustomId(`FIRST_WORLD_CHOICE:GAMBLE:${user.id}`)
             .setLabel("Gamble")
             .setStyle(
               data.active === null || data.active === "GAMBLE"
@@ -184,7 +183,7 @@ export default class NextStepController {
                 : "SECONDARY"
             ),
           new MessageButton()
-            .setCustomId(`FIRST_WORLD_CHOICE:SHOP:${user.discordId}`)
+            .setCustomId(`FIRST_WORLD_CHOICE:SHOP:${user.id}`)
             .setLabel("Shop")
             .setStyle(
               data.active === null || data.active === "SHOP"
@@ -192,7 +191,7 @@ export default class NextStepController {
                 : "SECONDARY"
             ),
           new MessageButton()
-            .setCustomId(`FIRST_WORLD_CHOICE:WHITELIST:${user.discordId}`)
+            .setCustomId(`FIRST_WORLD_CHOICE:WHITELIST:${user.id}`)
             .setLabel("Get Whitelist")
             .setStyle(
               data.active === null || data.active === "WHITELIST"

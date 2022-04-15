@@ -77,13 +77,13 @@ export default class QuestLogController {
         : "GUILD_PUBLIC_THREAD",
     });
 
-    await thread.members.add(user.discordId);
+    await thread.members.add(user.id);
 
     user.questLogChannel = QuestLogChannel.create({
       user,
       channel: Channel.create({
+        id: thread.id,
         type: "QUEST_LOG_THREAD",
-        discordId: thread.id,
       }),
     });
 
@@ -100,7 +100,7 @@ export default class QuestLogController {
 
   static async purgeThread(thread: ThreadChannel) {
     const c = await QuestLogChannel.findOne({
-      where: { channel: { discordId: thread.id } },
+      where: { channel: { id: thread.id } },
       relations: ["user", "user.achievements", "channel"],
     });
 
@@ -187,7 +187,7 @@ export default class QuestLogController {
     }
 
     const options = await quest.message(qlc.user, qlm.expanded);
-    await rest.patch(Routes.channelMessage(qlc.channel.discordId, message.id), {
+    await rest.patch(Routes.channelMessage(qlc.channel.id, message.id), {
       body: options,
     });
     // await message.edit(options);
@@ -201,7 +201,7 @@ export default class QuestLogController {
     ];
 
     const channel = await QuestLogChannel.findOne({
-      where: { user: { discordId: memberId } },
+      where: { user: { id: memberId } },
       relations: ["user", "user.achievements", "channel", "questLogMessages"],
     });
 
@@ -231,7 +231,7 @@ export default class QuestLogController {
 
   static async show(member: GuildMember) {
     const user = await User.findOne({
-      where: { discordId: member.id },
+      where: { id: member.id },
       relations: [
         "achievements",
         "questLogChannel",
@@ -280,7 +280,7 @@ export default class QuestLogController {
       throw new Error("Quests channel not found");
     }
 
-    const threadId = user.questLogChannel.channel.discordId;
+    const threadId = user.questLogChannel.channel.id;
     const thread = await lc.threads.fetch(threadId);
 
     if (!thread) {

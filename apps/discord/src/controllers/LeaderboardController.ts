@@ -39,7 +39,7 @@ export class LeaderboardController {
     await bot.ready;
 
     const members = await bot.guild.members.fetch({
-      user: leaders.map((l) => l.discordId),
+      user: leaders.map((l) => l.id),
     });
 
     const data: Leader[] = leaders.map((u) => {
@@ -47,7 +47,7 @@ export class LeaderboardController {
         id: u.id,
         displayName: u.displayName,
         gbt: u.gbt,
-        member: members.get(u.discordId)!,
+        member: members.get(u.id)!,
       };
     });
 

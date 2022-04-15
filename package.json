@@ -6,6 +6,9 @@
     "packages": [
       "apps/*",
       "packages/*"
+    ],
+    "nohoist": [
+      "**/@types/**"
     ]
   },
   "scripts": {

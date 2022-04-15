@@ -1,9 +1,9 @@
-import { Bot } from "data/types";
+import { NPC } from "data/db";
 import MartClerkCommandController from "../command-controllers/MartClerkCommandController";
 import DiscordBot from "../DiscordBot";
 
 export default class MartClerkBot extends DiscordBot {
-  constructor(descriptor: Bot) {
-    super(descriptor, new MartClerkCommandController());
+  constructor(npc: NPC) {
+    super(npc, new MartClerkCommandController());
   }
 }

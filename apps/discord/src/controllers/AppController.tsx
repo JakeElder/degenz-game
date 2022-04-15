@@ -8,7 +8,6 @@ import UserController from "./UserController";
 import { Channel } from "../Channel";
 import OnboardController from "./OnboardController";
 import EntranceController from "./EntranceController";
-import Manifest from "manifest";
 import QuestLogController from "./QuestLogController";
 
 export default class AppController {
@@ -69,14 +68,11 @@ export default class AppController {
         member.roles.cache.has(Config.roleId("WHITELIST"))
       ) {
         const user = await User.findOneOrFail({
-          where: { discordId: member.id },
+          where: { id: member.id },
         });
         QuestLogController.refresh(user);
       }
-      User.update(
-        { discordId: member.id },
-        { displayName: member.displayName }
-      );
+      User.update({ id: member.id }, { displayName: member.displayName });
     });
 
     admin.client.on("threadUpdate", async (oldThread, newThread) => {
@@ -118,20 +114,13 @@ export default class AppController {
       return { success: false, code: "BOT_NOT_FOUND" };
     }
 
-    const bots = await Manifest.bots();
-
-    const botData = bots.find((bot) => bot.symbol === botId);
-    if (!botData) {
-      return { success: false, code: "BOT_NOT_FOUND" };
-    }
-
-    const bot = Global.bot(botData.symbol);
+    const bot = Global.bot(Config.reverseClientId(botId));
 
     try {
       const c = await bot.getTextChannel(channel.id);
       await c.send(message);
       Events.emit("SEND_MESSAGE_AS_EXECUTED", {
-        bot: botData,
+        bot: bot.npc,
         channel,
         message,
         success: true,
@@ -140,7 +129,7 @@ export default class AppController {
       return { success: true };
     } catch (e) {
       Events.emit("SEND_MESSAGE_AS_EXECUTED", {
-        bot: botData,
+        bot: bot.npc,
         channel,
         message,
         success: false,

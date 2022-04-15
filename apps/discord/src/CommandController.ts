@@ -1,11 +1,5 @@
 import { camelCase, pascalCase } from "change-case";
-import {
-  CommandInteraction,
-  GuildMember,
-  SelectMenuInteraction,
-} from "discord.js";
-import { User } from "data/db";
-import { Channel } from "./Channel";
+import { CommandInteraction, SelectMenuInteraction } from "discord.js";
 import DiscordBot from "./DiscordBot";
 import Events from "./Events";
 
@@ -13,9 +7,7 @@ export abstract class CommandController {
   constructor() {}
 
   async execute(i: CommandInteraction, bot: DiscordBot) {
-    const command = bot.manifest.commands.find(
-      (c) => c.data.name === i.commandName
-    );
+    const command = bot.npc.commands.find((c) => c.data.name === i.commandName);
 
     if (!command) {
       this.error(i);
@@ -23,30 +15,30 @@ export abstract class CommandController {
       return;
     }
 
-    if (command.restrict) {
-      const [channelDescriptor, user] = await Promise.all([
-        Channel.getDescriptor(i.channelId),
-        User.findOneOrFail({
-          where: { discordId: i.user.id },
-          relations: ["achievements", "apartmentTenancies", "dormitoryTenancy"],
-        }),
-      ]);
+    // if (command.restrict) {
+    //   const [channelDescriptor, user] = await Promise.all([
+    //     Channel.getDescriptor(i.channelId),
+    //     User.findOneOrFail({
+    //       where: { discordId: i.user.id },
+    //       relations: ["achievements", "apartmentTenancies", "dormitoryTenancy"],
+    //     }),
+    //   ]);
 
-      let interactee: User | null = null;
-      if (command.symbol === "TRANSFER") {
-        const recipient = i.options.getMember("recipient", true) as GuildMember;
-        interactee = await User.findOneOrFail({
-          where: { discordId: recipient.user.id },
-          relations: ["achievements"],
-        });
-      }
+    //   let interactee: User | null = null;
+    //   if (command.symbol === "TRANSFER") {
+    //     const recipient = i.options.getMember("recipient", true) as GuildMember;
+    //     interactee = await User.findOneOrFail({
+    //       where: { discordId: recipient.user.id },
+    //       relations: ["achievements"],
+    //     });
+    //   }
 
-      const r = await command.restrict(i, channelDescriptor, user, interactee);
-      if (r) {
-        i.replied ? i.editReply(r.response) : i.reply(r.response);
-        return;
-      }
-    }
+    //   const r = await command.restrict(i, channelDescriptor, user, interactee);
+    //   if (r) {
+    //     i.replied ? i.editReply(r.response) : i.reply(r.response);
+    //     return;
+    //   }
+    // }
 
     let option;
     try {

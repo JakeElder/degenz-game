@@ -1,13 +1,11 @@
 import {
-  Achievement,
   Imprisonment,
   MartItem,
   MartItemOwnership,
   ApartmentTenancy,
   User,
-  District,
 } from "data/db";
-import { DistrictSymbol, Achievement as AchievementEnum } from "data/types";
+import { DistrictSymbol } from "data/types";
 import { In } from "typeorm";
 
 export async function getMartItems() {
@@ -24,7 +22,7 @@ export async function getLeaders(take: number = 50) {
 
 export async function getUser(id: string) {
   return User.findOneOrFail({
-    where: { discordId: id },
+    where: { id },
     relations: [
       "apartmentTenancies",
       "dormitoryTenancy",
@@ -48,10 +46,9 @@ export async function getUsers() {
 }
 
 export async function getTenanciesInDistrict(districtSymbol: DistrictSymbol) {
-  const district = await District.findOneOrFail({
-    where: { symbol: districtSymbol },
+  return ApartmentTenancy.count({
+    where: { district: { id: districtSymbol } },
   });
-  return ApartmentTenancy.count({ where: { district } });
 }
 
 export async function getUserByApartment(id: string) {
@@ -63,23 +60,26 @@ export async function getUserByApartment(id: string) {
 }
 
 export async function eatItem(
-  itemSymbol: MartItem["symbol"],
-  memberId: User["discordId"]
+  itemSymbol: MartItem["id"],
+  memberId: User["id"]
 ) {
-  const item = await MartItem.findOne({ where: { symbol: itemSymbol } });
+  const item = await MartItem.findOne({ where: { id: itemSymbol } });
 
   if (!item) {
     return { success: false, code: "ITEM_NOT_FOUND" };
   }
 
-  const user = await User.findOne({ where: { discordId: memberId } });
+  const user = await User.findOne({ where: { id: memberId } });
 
   if (!user) {
     return { success: false, code: "USER_NOT_FOUND" };
   }
 
   const ownership = await MartItemOwnership.findOne({
-    where: { item, user },
+    where: {
+      item: { id: item.id },
+      user: { id: user.id },
+    },
   });
 
   if (!ownership) {
@@ -96,12 +96,12 @@ export async function eatItem(
   return { success: true };
 }
 
-export async function sellItem(item: MartItem, memberId: User["discordId"]) {
+export async function sellItem(item: MartItem, memberId: User["id"]) {
   if (item.stock === 0) {
     return { success: false, code: "ITEM_NO_STOCK" };
   }
 
-  const user = await User.findOneOrFail({ where: { discordId: memberId } });
+  const user = await User.findOneOrFail({ where: { id: memberId } });
 
   if (user.gbt < item.price) {
     return { success: false, code: "INSUFFICIENT_BALANCE" };
@@ -140,7 +140,7 @@ export async function getAvailableCellNumber() {
 }
 
 export async function transactBalance(memberId: string, amount: number) {
-  const user = await User.findOne({ where: { discordId: memberId } });
+  const user = await User.findOne({ where: { id: memberId } });
   user!.gbt += amount;
   await user!.save();
 }
@@ -159,21 +159,17 @@ export async function issueTokens(amount: number) {
     .execute();
 }
 
-export async function getImprisonmentByCellChannelId(id: string) {
-  return Imprisonment.findOne({ where: { cellDiscordChannelId: id } });
-}
-
 export async function transferBalance(
   senderId: string,
   recipientId: string,
   amount: number
 ) {
   const users = await User.find({
-    where: { discordId: In([senderId, recipientId]) },
+    where: { id: In([senderId, recipientId]) },
   });
 
-  const sender = users.find((u) => u.discordId === senderId);
-  const recipient = users.find((u) => u.discordId === recipientId);
+  const sender = users.find((u) => u.id === senderId);
+  const recipient = users.find((u) => u.id === recipientId);
 
   if (!sender || !recipient) {
     throw new Error("Transfer users not established");

@@ -1,11 +1,6 @@
 import Config from "config";
-import {
-  ApartmentTenancy,
-  Dormitory,
-  DormitoryTenancy,
-  Imprisonment,
-} from "data/db";
-import { ChannelDescriptor } from "data/types";
+import { Channel as ChannelEntity } from "data/db";
+import { ChannelDescriptor, NestedManagedChannelSymbol } from "data/types";
 import { TextBasedChannel } from "discord.js";
 import Manifest from "manifest";
 import memoize from "memoizee";
@@ -14,45 +9,39 @@ import { Global } from "./Global";
 export class Channel {
   static getDescriptor = memoize(
     async (channelId: TextBasedChannel["id"]): Promise<ChannelDescriptor> => {
-      const structure = await Manifest.structure();
+      const { channels } = await Manifest.load();
 
       const [beautopia, theGame, commandCenter, community] = [
-        structure.find((c) => c.symbol === "BEAUTOPIA")!,
-        structure.find((c) => c.symbol === "THE_GAME")!,
-        structure.find((c) => c.symbol === "COMMAND_CENTER")!,
-        structure.find((c) => c.symbol === "COMMUNITY")!,
+        channels.find((c) => c.id === "BEAUTOPIA"),
+        channels.find((c) => c.id === "THE_GAME"),
+        channels.find((c) => c.id === "COMMAND_CENTER"),
+        channels.find((c) => c.id === "COMMUNITY"),
       ];
 
-      const communityChannelIds = [
-        ...theGame.channels,
-        ...commandCenter.channels,
-        ...community.channels,
-      ].map((c) => Config.channelId(c.symbol));
+      if (!theGame || !commandCenter || !community || !beautopia) {
+        throw new Error("Missing category");
+      }
 
-      const gameChannelIds = beautopia.channels.map((c) =>
-        Config.channelId(c.symbol)
+      const communityChannelIds = [
+        ...theGame.children,
+        ...commandCenter.children,
+        ...community.children,
+      ].map((c) => Config.channelId(c.id));
+
+      const gameChannelIds = beautopia.children.map((c) =>
+        Config.channelId(c.id as NestedManagedChannelSymbol)
       );
 
+      const c = await ChannelEntity.findOneOrFail({ where: { id: channelId } });
+
       const admin = Global.bot("ADMIN");
-      const [
-        imprisonment,
-        apartmentTenancy,
-        dormitoryTenancy,
-        dormitory,
-        channel,
-      ] = await Promise.all([
-        Imprisonment.findOne({ where: { cellDiscordChannelId: channelId } }),
-        ApartmentTenancy.findOne({ where: { discordChannelId: channelId } }),
-        DormitoryTenancy.findOne({ where: { onboardingThreadId: channelId } }),
-        Dormitory.findOne({ where: { discordChannelId: channelId } }),
-        admin.getTextChannel(channelId),
-      ]);
+      const channel = await admin.getTextChannel(channelId);
 
       const isCommunity = communityChannelIds.includes(channelId);
-      const isApartment = !!apartmentTenancy;
-      const isDormitory = !!dormitory;
-      const isOnboardingThread = !!dormitoryTenancy;
-      const isCell = !!imprisonment;
+      const isApartment = c.type === "APARTMENT";
+      const isDormitory = c.type === "DORMITORY";
+      const isOnboardingThread = c.type === "ONBOARDING_THREAD";
+      const isCell = c.type === "CELL";
       const isInPrison = isCell || channelId === Config.channelId("GEN_POP");
       const isInGame =
         isApartment ||

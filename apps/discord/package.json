@@ -55,7 +55,7 @@
     "truncate": "^3.0.0",
     "turndown": "^7.1.1",
     "type-fest": "^2.11.2",
-    "typeorm": "^0.2.41",
+    "typeorm": "^0.3.5",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
@@ -78,7 +78,7 @@
     "nodemon": "^2.0.15",
     "source-map-support": "^0.5.21",
     "tsconfig": "*",
-    "typescript": "^4.6.1-rc",
+    "typescript": "^4.6.3",
     "wait-on": "^6.0.0"
   },
   "engines": {

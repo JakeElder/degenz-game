@@ -1,10 +1,10 @@
-import { BotSymbol } from "data/types";
+import { NPCSymbol } from "data/types";
 import DiscordBot from "./DiscordBot";
 
 export class Global {
-  private static botManifest: Partial<Record<BotSymbol, DiscordBot>> = {};
+  private static botManifest: Partial<Record<NPCSymbol, DiscordBot>> = {};
 
-  static bot(symbol: BotSymbol, bot?: DiscordBot) {
+  static bot(symbol: NPCSymbol, bot?: DiscordBot) {
     if (bot) {
       this.botManifest[symbol] = bot;
       return bot;
@@ -19,7 +19,7 @@ export class Global {
     return b;
   }
 
-  static bots(...symbols: BotSymbol[]) {
+  static bots(...symbols: NPCSymbol[]) {
     if (symbols.length === 0) {
       return Object.values(this.botManifest) as DiscordBot[];
     }

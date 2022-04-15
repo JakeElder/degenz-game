@@ -23,7 +23,7 @@ export default class TheProjects {
 
     const districts = await District.find({
       relations: ["tenancies"],
-      order: { symbol: 1 },
+      order: { id: 1 },
     });
 
     const computedDistricts: ProjectsEntryData["districts"] = districts.map(
@@ -31,7 +31,7 @@ export default class TheProjects {
         const available = d.open && d.tenancies.length < capacity;
         return {
           open: d.open,
-          symbol: d.symbol,
+          symbol: d.id,
           tenancies: d.tenancies.length,
           capacity: capacity - d.tenancies.length,
           available,

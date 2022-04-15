@@ -2,7 +2,7 @@ import progress from "cli-progress";
 import chalk from "chalk";
 import { nl } from "../utils";
 
-export default class ProgressBar<T extends string> {
+export default class ProgressBar<T extends string = string> {
   symbols: string[];
   lastComplete: string | null = null;
   bar: progress.SingleBar;
@@ -19,7 +19,7 @@ export default class ProgressBar<T extends string> {
       )} | {percentage}% | {value}/{total} | {symbol} | Rate Limit: {rl}`,
       barCompleteChar: "\u2588",
       barIncompleteChar: "\u2591",
-      hideCursor: true,
+      stopOnComplete: true,
     });
   }
 

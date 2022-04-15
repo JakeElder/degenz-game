@@ -2,11 +2,7 @@ import { GuildMember } from "discord.js";
 import Config from "config";
 import { paramCase } from "change-case";
 import { userMention } from "@discordjs/builders";
-import {
-  DistrictSymbol,
-  ApartmentTenancyLevelEnum,
-  Achievement as AchievementEnum,
-} from "data/types";
+import { DistrictSymbol } from "data/types";
 import Events from "../Events";
 import {
   District,
@@ -14,8 +10,8 @@ import {
   User,
   Dormitory,
   DormitoryTenancy,
-  Role,
   Imprisonment,
+  Channel,
 } from "data/db";
 import Utils from "../Utils";
 import { getAvailableCellNumber, getTenanciesInDistrict } from "../legacy/db";
@@ -42,7 +38,7 @@ type ApartmentInitResult =
 export default class UserController {
   static async add(member: GuildMember) {
     const user = User.create({
-      discordId: member.id,
+      id: member.id,
       displayName: member.displayName,
       apartmentTenancies: [],
     });
@@ -57,14 +53,14 @@ export default class UserController {
   ): Promise<ApartmentInitResult> {
     let [member, user] = await Promise.all([
       UserController.getMember(memberId),
-      User.findOne({ where: { discordId: memberId } }),
+      User.findOne({ where: { id: memberId } }),
     ]);
 
     if (member === null) {
       return { success: false, code: "MEMBER_NOT_FOUND" };
     }
 
-    if (typeof user === "undefined") {
+    if (user === null) {
       [user] = await Promise.all([
         this.add(member),
         member.roles.add(Config.roleId("VERIFIED")),
@@ -107,7 +103,7 @@ export default class UserController {
     );
 
     const district = await District.findOneOrFail({
-      where: { symbol: districtSymbol },
+      where: { id: districtSymbol },
     });
 
     user.gbt = onboard ? 0 : 100;
@@ -116,15 +112,15 @@ export default class UserController {
     user.apartmentTenancies = [
       ApartmentTenancy.create({
         discordChannelId: apartment.id,
-        level: ApartmentTenancyLevelEnum.AUTHORITY,
+        level: "AUTHORITY",
         district,
       }),
     ];
 
-    const role = await Role.findOneOrFail({
-      where: { symbol: district.citizenRoleSymbol },
-    });
-    await Promise.all([user.save(), member.roles.add(role.discordId)]);
+    await Promise.all([
+      user.save(),
+      member.roles.add(district.citizenRole.discordId),
+    ]);
 
     EntranceController.update();
     Events.emit("APARTMENT_ALLOCATED", { user, onboard });
@@ -138,14 +134,14 @@ export default class UserController {
   ) {
     let [member, user] = await Promise.all([
       UserController.getMember(memberId),
-      User.findOne({ where: { discordId: memberId } }),
+      User.findOne({ where: { id: memberId } }),
     ]);
 
     if (member === null) {
       return { success: false, code: "MEMBER_NOT_FOUND" };
     }
 
-    if (typeof user === "undefined") {
+    if (user === null) {
       [user] = await Promise.all([
         this.add(member),
         member.roles.add(Config.roleId("VERIFIED")),
@@ -158,9 +154,10 @@ export default class UserController {
       return { success: false, code: "THE_SHELTERS_FULL" };
     }
 
-    const dormId = Config.channelId(dormitory.symbol);
     const bb = Global.bot("BIG_BROTHER");
     const admin = Global.bot("ADMIN");
+
+    const dormId = dormitory.channel.channel.id;
 
     const dormChannelBB = await bb.getTextChannel(dormId);
     const dormChannelAdmin = await admin.getTextChannel(dormId);
@@ -185,13 +182,16 @@ export default class UserController {
     user.inGame = true;
     user.dormitoryTenancy = DormitoryTenancy.create({
       dormitory,
-      onboardingThreadId: thread.id,
+      onboardingChannel: Channel.merge(new Channel(), {
+        type: "ONBOARDING_THREAD",
+        id: thread.id,
+      }),
     });
 
-    const role = await Role.findOneOrFail({
-      where: { symbol: dormitory.citizenRoleSymbol },
-    });
-    await Promise.all([user.save(), member.roles.add(role.discordId)]);
+    await Promise.all([
+      user.save(),
+      member.roles.add(dormitory.citizenRole.discordId),
+    ]);
 
     EntranceController.update();
     Events.emit("DORMITORY_ALLOCATED", { user, onboard });
@@ -224,9 +224,7 @@ export default class UserController {
       return member;
     }
 
-    return bots
-      .find((b) => b.manifest.symbol === "ADMIN")!
-      .guild.members.fetch(id);
+    return bots.find((b) => b.npc.id === "ADMIN")!.guild.members.fetch(id);
   }
 
   static async getMembers(ids: GuildMember["id"][]) {
@@ -245,7 +243,7 @@ export default class UserController {
 
     // If not hit API
     const remaining = await bots
-      .find((b) => b.manifest.symbol === "ADMIN")!
+      .find((b) => b.npc.id === "ADMIN")!
       .guild.members.fetch({
         user: ids.filter(
           (id) => !members.some((m) => m !== null && m.id === id)
@@ -263,7 +261,7 @@ export default class UserController {
   static async eject(memberId: GuildMember["id"]) {
     const admin = Global.bot("ADMIN");
     const user = await User.findOne({
-      where: { discordId: memberId },
+      where: { id: memberId },
       relations: [
         "apartmentTenancies",
         "dormitoryTenancy",
@@ -278,6 +276,12 @@ export default class UserController {
 
     // Check user exists in db
     if (!user) {
+      try {
+        const member = await UserController.getMember(memberId);
+        await member.roles.remove(member.roles.valueOf());
+      } catch (e) {
+        // console.error(e);
+      }
       return { success: false, code: "USER_NOT_FOUND" };
     }
 
@@ -300,17 +304,20 @@ export default class UserController {
       const tenancy = user.dormitoryTenancy;
 
       if (tenancy) {
-        const { onboardingThreadId } = tenancy;
-        const discordChannelId = tenancy.dormitory.discordChannelId;
+        const discordChannelId = tenancy.dormitory.channel.channel.id;
         const dormChannel = await admin.getTextChannel(discordChannelId);
-        const thread = await dormChannel.threads.fetch(onboardingThreadId!);
+
+        const { onboardingChannel } = tenancy;
+        if (onboardingChannel) {
+          const thread = await dormChannel.threads.fetch(onboardingChannel.id!);
+          await onboardingChannel.remove();
+          if (thread) {
+            thread.delete();
+          }
+        }
 
         try {
-          thread!.delete();
-        } catch (e) {}
-
-        try {
-          dormChannel.permissionOverwrites.delete(user.discordId);
+          dormChannel.permissionOverwrites.delete(user.id);
         } catch (e) {}
 
         await tenancy.remove();
@@ -345,9 +352,9 @@ export default class UserController {
     const member = await UserController.getMember(prisonerId);
 
     const [captor, prisoner] = await Promise.all([
-      User.findOne({ where: { discordId: captorId } }),
+      User.findOne({ where: { id: captorId } }),
       User.findOne({
-        where: { discordId: prisonerId },
+        where: { id: prisonerId },
         relations: [
           "apartmentTenancies",
           "dormitoryTenancy",
@@ -367,7 +374,7 @@ export default class UserController {
       return { success: false, code: "USER_NOT_FOUND" };
     }
 
-    if (!prisoner.hasAchievement(AchievementEnum.JOINED_THE_DEGENZ)) {
+    if (!prisoner.hasAchievement("JOINED_THE_DEGENZ")) {
       return { success: false, code: "USER_NOT_REDPILLED" };
     }
 
@@ -419,7 +426,7 @@ export default class UserController {
 
     await Promise.all([
       prisoner.imprison({
-        cellDiscordChannelId: cell.id,
+        channel: Channel.create({ id: cell.id }),
         cellNumber: number,
         entryRoleIds,
         releaseCode,
@@ -456,7 +463,7 @@ export default class UserController {
 
     await Utils.delay(1500);
 
-    const member = userMention(user.discordId);
+    const member = userMention(user.id);
     await channel.send(
       `Tough break ${member}. I see they've thrown you in here too.`
     );
@@ -482,7 +489,7 @@ export default class UserController {
       const residence = await admin.getTextChannel(
         user.primaryTenancy.discordChannelId
       );
-      residence.permissionOverwrites.delete(user.discordId);
+      residence.permissionOverwrites.delete(user.id);
     }
   }
 
@@ -492,7 +499,7 @@ export default class UserController {
       const residence = await admin.getTextChannel(
         user.primaryTenancy.discordChannelId
       );
-      residence.permissionOverwrites.create(user.discordId, {
+      residence.permissionOverwrites.create(user.id, {
         VIEW_CHANNEL: true,
       });
     }
@@ -506,9 +513,9 @@ export default class UserController {
     const admin = Global.bot("ADMIN");
     const member = await UserController.getMember(prisonerId);
     const [captor, prisoner] = await Promise.all([
-      User.findOne({ where: { discordId: captorId } }),
+      User.findOne({ where: { id: captorId! } }),
       User.findOne({
-        where: { discordId: prisonerId },
+        where: { id: prisonerId },
         relations: ["apartmentTenancies", "dormitoryTenancy", "imprisonments"],
       }),
     ]);
@@ -533,7 +540,7 @@ export default class UserController {
     const { imprisonment } = prisoner;
 
     await member.roles.remove(Config.roleId("PRISONER"));
-    const cell = await admin.getTextChannel(imprisonment.cellDiscordChannelId);
+    const cell = await admin.getTextChannel(imprisonment.channel.id);
     await Promise.all([cell.delete(), imprisonment.softRemove()]);
 
     if (type === "ESCAPE") {
@@ -546,16 +553,16 @@ export default class UserController {
   }
 
   static async openWorld(user: User) {
-    const member = await UserController.getMember(user.discordId);
+    const member = await UserController.getMember(user.id);
     await member!.roles.add(Config.roleId("DEGEN"));
     await member!.roles.remove(Config.roleId("VERIFIED"));
     const admin = Global.bot("ADMIN");
 
     if (user.primaryTenancy.type === "DORMITORY") {
       const dormChannel = await admin.getTextChannel(
-        user.primaryTenancy.dormitory.discordChannelId
+        user.primaryTenancy.dormitory.channel.channel.id
       );
-      await dormChannel.permissionOverwrites.delete(user.discordId);
+      await dormChannel.permissionOverwrites.delete(user.id);
     }
   }
 }

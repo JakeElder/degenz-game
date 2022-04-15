@@ -1,6 +1,5 @@
 import React from "react";
 import { NPC } from "data/db";
-import { BotSymbol, ChannelSymbol } from "data/types";
 import memoize from "memoizee";
 import Config from "config";
 import { Event, PickEvent } from "./Events";
@@ -8,12 +7,13 @@ import { Global } from "./Global";
 import Utils from "./Utils";
 import { Format } from "lib";
 import { channelMention, userMention } from "@discordjs/builders";
+import { NestedManagedChannelSymbol, NPCSymbol } from "data/types";
 
 const { r } = Utils;
 
 export default class WorldNotifier {
   static getChannel = memoize(
-    async (botSymbol: BotSymbol, channelSymbol: ChannelSymbol) => {
+    async (botSymbol: NPCSymbol, channelSymbol: NestedManagedChannelSymbol) => {
       const bot = Global.bot(botSymbol);
       return bot.getTextChannel(Config.channelId(channelSymbol));
     },
@@ -21,20 +21,20 @@ export default class WorldNotifier {
   );
 
   static async logToHOP(
-    botSymbol: BotSymbol,
+    botSymbol: NPCSymbol,
     e: Event["type"],
     message: string
   ) {
     const [npc, hop] = await Promise.all([
-      NPC.findOneOrFail({ where: { symbol: botSymbol } }),
+      NPC.findOneOrFail({ where: { id: botSymbol } }),
       this.getChannel("BIG_BROTHER", "HALL_OF_PRIVACY"),
     ]);
     await hop.send(`>>> ${npc.emoji} \`${e}\` ${message}`);
   }
 
   static async logToChannel(
-    channelSymbol: ChannelSymbol,
-    botSymbol: BotSymbol,
+    channelSymbol: NestedManagedChannelSymbol,
+    botSymbol: NPCSymbol,
     e: Event["type"],
     message: string
   ) {
@@ -226,7 +226,7 @@ export default class WorldNotifier {
     const message = r(
       <>
         **{e.data.user.displayName}** entered{" "}
-        {channelMention(e.data.dormitory.discordChannelId)}.
+        {channelMention(e.data.dormitory.id)}.
       </>
     );
     await this.logToHOP("BIG_BROTHER", e.type, message);
@@ -244,7 +244,7 @@ export default class WorldNotifier {
 
     if (e.data.prisoner.primaryTenancy.type === "DORMITORY") {
       await this.logToChannel(
-        e.data.prisoner.primaryTenancy.dormitory.symbol,
+        e.data.prisoner.primaryTenancy.dormitory.id,
         "WARDEN",
         e.type,
         message
@@ -263,7 +263,7 @@ export default class WorldNotifier {
 
     if (e.data.prisoner.primaryTenancy.type === "DORMITORY") {
       await this.logToChannel(
-        e.data.prisoner.primaryTenancy.dormitory.symbol,
+        e.data.prisoner.primaryTenancy.dormitory.id,
         "WARDEN",
         e.type,
         message
@@ -279,7 +279,7 @@ export default class WorldNotifier {
 
     if (e.data.prisoner.primaryTenancy.type === "DORMITORY") {
       await this.logToChannel(
-        e.data.prisoner.primaryTenancy.dormitory.symbol,
+        e.data.prisoner.primaryTenancy.dormitory.id,
         "PRISONER",
         e.type,
         message

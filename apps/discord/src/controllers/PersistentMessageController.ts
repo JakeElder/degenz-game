@@ -6,7 +6,7 @@ import { Message, MessageOptions } from "discord.js";
 
 export class PersistentMessageController {
   static async set(
-    symbol: PersistentMessageSymbol,
+    id: PersistentMessageSymbol,
     value: MessageOptions,
     options: { replace?: boolean } = { replace: false }
   ) {
@@ -14,7 +14,7 @@ export class PersistentMessageController {
       return;
     }
 
-    const pm = await PersistentMessage.findOneOrFail({ where: { symbol } });
+    const pm = await PersistentMessage.findOneOrFail({ where: { id } });
 
     let message: Message;
 
@@ -22,8 +22,8 @@ export class PersistentMessageController {
       return this.create(pm, value);
     }
 
-    const channelId = Config.channelId(pm.channelSymbol);
-    const bot = Global.bot(pm.maintainerSymbol);
+    const channelId = Config.channelId(pm.channel.id);
+    const bot = Global.bot(pm.maintainer.id);
     const channel = await bot.getTextChannel(channelId);
 
     if (options.replace) {
@@ -45,8 +45,8 @@ export class PersistentMessageController {
   }
 
   static async create(pm: PersistentMessage, value: MessageOptions) {
-    const bot = Global.bot(pm.maintainerSymbol);
-    const channelId = Config.channelId(pm.channelSymbol);
+    const bot = Global.bot(pm.maintainer.id);
+    const channelId = Config.channelId(pm.channel.id);
     const channel = await bot.getTextChannel(channelId);
     const message = await channel.send(value);
     pm.messageId = message.id;

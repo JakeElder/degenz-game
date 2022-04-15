@@ -1,6 +1,5 @@
 import Config from "config";
 import { User } from "data/db";
-import { Achievement } from "data/types";
 import { EmbedFieldData } from "discord.js";
 import React from "react";
 import { ChannelMention, UserMention } from "../legacy/templates";
@@ -14,9 +13,7 @@ export default class TossWithTedQuest extends Quest {
   }
 
   async getProgress(user: User) {
-    let progress: number = user.hasAchievement(Achievement.TOSS_COMPLETED)
-      ? 1
-      : 0;
+    let progress: number = user.hasAchievement("TOSS_COMPLETED") ? 1 : 0;
     return progress;
   }
 
@@ -51,7 +48,7 @@ export default class TossWithTedQuest extends Quest {
       ),
       expanded,
       details,
-      userDiscordId: user.discordId,
+      userDiscordId: user.id,
     });
   }
 }

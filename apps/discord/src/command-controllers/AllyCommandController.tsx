@@ -6,10 +6,9 @@ import {
   SelectMenuInteraction,
   TextChannel,
 } from "discord.js";
-import Config from "config";
 import { CommandController } from "../CommandController";
 import { eatItem, getMartItems, getUser } from "../legacy/db";
-import { Achievement as AchievementEnum, MartItemSymbol } from "data/types";
+import { MartItemSymbol } from "data/types";
 import { Dormitory, User } from "data/db";
 import { groupBy } from "lodash";
 import OnboardController from "../controllers/OnboardController";
@@ -35,7 +34,7 @@ export default class AllyCommandController extends CommandController {
         .setPlaceholder("Choose from your inventory")
         .addOptions(
           Object.keys(groups).map((g) => {
-            const i = items.find((i) => i.symbol === g)!;
+            const i = items.find((i) => i.id === g)!;
             return {
               label: `${i.name}`,
               description: `[${groups[g].length}] available [effect] +${i.strengthIncrease} stength`,
@@ -85,7 +84,7 @@ export default class AllyCommandController extends CommandController {
     const user = await getUser(member!.id);
     Events.emit("HELP_REQUESTED", { user, channel });
 
-    if (!user.hasAchievement(AchievementEnum.HELP_REQUESTED)) {
+    if (!user.hasAchievement("HELP_REQUESTED")) {
       await OnboardController.sendHelpRequestedResponse(user);
     }
   }
@@ -132,7 +131,7 @@ export default class AllyCommandController extends CommandController {
       ephemeral: true,
     });
 
-    if (!checkeeUser.hasAchievement(AchievementEnum.STATS_CHECKED)) {
+    if (!checkeeUser.hasAchievement("STATS_CHECKED")) {
       await OnboardController.sendStatsCheckedResponse(checkeeUser);
     }
 
@@ -192,7 +191,7 @@ export default class AllyCommandController extends CommandController {
     const items = await getMartItems();
     const res = await eatItem(i.values[0] as MartItemSymbol, i.user.id);
 
-    const item = items.find((item) => item.symbol === i.values[0])!;
+    const item = items.find((item) => item.id === i.values[0])!;
 
     if (res.success) {
       await i.update({

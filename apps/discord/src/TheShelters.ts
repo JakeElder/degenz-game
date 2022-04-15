@@ -21,7 +21,7 @@ export default class TheShelters {
       AppState.fetch(),
       Dormitory.find({
         relations: ["tenancies"],
-        order: { symbol: 1 },
+        order: { id: 1 },
       }),
     ]);
 
@@ -29,7 +29,7 @@ export default class TheShelters {
       dormitories.map((d) => {
         const available = state.dormitoryCapacity > d.tenancies.length;
         return {
-          symbol: d.symbol,
+          symbol: d.id,
           capacity: state.dormitoryCapacity - d.tenancies.length,
           tenancies: d.tenancies.length,
           available,

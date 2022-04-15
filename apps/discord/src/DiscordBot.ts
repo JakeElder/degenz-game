@@ -1,5 +1,5 @@
 import { Client, Guild, GuildMember, TextChannel } from "discord.js";
-import { Bot } from "data/types";
+import { NPC } from "data/db";
 import Config from "config";
 import Events from "./Events";
 import { CommandController } from "./CommandController";
@@ -15,8 +15,8 @@ export default abstract class DiscordBot {
     return this.readyPromise;
   }
 
-  constructor(public manifest: Bot, public controller: CommandController) {
-    this.client = new Client(this.manifest.clientOptions);
+  constructor(public npc: NPC, public controller: CommandController) {
+    this.client = new Client(this.npc.clientOptions);
     this.readyPromise = new Promise((resolve) => {
       this.readyResolver = resolve;
     });
@@ -46,15 +46,15 @@ export default abstract class DiscordBot {
   private connect() {
     this.client.once("ready", async () => {
       const guildId =
-        this.manifest.symbol === "SCOUT"
+        this.npc.id === "SCOUT"
           ? Config.general("PROD_GUILD_ID")
           : Config.general("GUILD_ID");
 
       this.guild = await this.client.guilds.fetch(guildId);
       this.readyResolver();
-      Events.emit("BOT_READY", { bot: this.manifest });
+      Events.emit("BOT_READY", { bot: this.npc });
     });
-    this.client.login(Config.botToken(this.manifest.symbol));
+    this.client.login(Config.botToken(this.npc.id));
     return this.readyPromise;
   }
 
