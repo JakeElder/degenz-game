@@ -133,6 +133,7 @@ export type RoleSymbol =
   | "SERVER_BOOSTER"
   | "VERIFIED"
   | "TRAINEE"
+  | "HIGH_COMMAND"
   | `${BotSymbol}_BOT`
   | "THOUGHT_POLICE";
 

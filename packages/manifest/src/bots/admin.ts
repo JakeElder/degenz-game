@@ -24,7 +24,10 @@ const admin: Bot = {
 // Admin command
 admin.commands.push({
   symbol: "ADMIN",
-  permissions: [{ id: Config.roleId("ADMIN"), type: 1, permission: true }],
+  permissions: [
+    { id: Config.roleId("ADMIN"), type: 1, permission: true },
+    { id: Config.roleId("HIGH_COMMAND"), type: 1, permission: true },
+  ],
   data: new SlashCommandBuilder()
     .setName("admin")
     .setDescription(`Find out about ${Format.worldName()} and it's citizens`)

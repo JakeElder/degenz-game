@@ -78,6 +78,7 @@ const ROLE_IDS: Record<RoleSymbol, string> = {
   DEGEN: "",
   DEVILS_ADVOCATE_BOT: "",
   EVERYONE: GENERAL.GUILD_ID,
+  HIGH_COMMAND: "",
   MART_CLERK_BOT: "",
   PRISONER: "",
   PRISONER_BOT: "",
