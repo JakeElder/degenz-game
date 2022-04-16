@@ -84,7 +84,7 @@ export default class AllyCommandController extends CommandController {
 
     return this.respond(
       i,
-      res.success ? "MESSAGE_SENT" : res.code,
+      res.success !== false ? "MESSAGE_SENT" : res.code,
       res.success ? "SUCCESS" : "FAIL"
     );
   }

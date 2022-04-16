@@ -6,7 +6,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryColumn,
-  OneToOne,
   ManyToOne,
 } from "typeorm";
 import { Emoji } from "..";

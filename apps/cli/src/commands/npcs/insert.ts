@@ -1,7 +1,7 @@
 import Manifest from "manifest";
 import { Command } from "../../lib";
 import { NPC } from "data/db";
-import { NPCSymbol, RoleSymbol } from "data/types";
+import { NPCSymbol } from "data/types";
 import prompts from "prompts";
 import chalk from "chalk";
 

@@ -4,7 +4,7 @@
   "description": "Degenz CLI",
   "author": "Jake Elder @JakeElder",
   "bin": {
-    "degenz": "./bin/run"
+    "degenz": "./bin/dev"
   },
   "scripts": {
     "build": "shx rm -rf dist && tsc -b",
@@ -18,7 +18,7 @@
     "version": "oclif readme && git add README.md"
   },
   "license": "UNLICENSED",
-  "main": "dist/index.js",
+  "main": "src/index.ts",
   "files": [
     "/bin",
     "/dist",

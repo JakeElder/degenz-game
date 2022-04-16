@@ -17,6 +17,11 @@ export default class SyncChannels extends Command {
     await Promise.all(
       syncs.map(async (c) => {
         const source = flat.find((s) => s.id === c.id);
+
+        if (!source) {
+          throw new Error(`Channel ${c.id} not found`);
+        }
+
         const dc = await bot.guild.channels.fetch(c.channel.id);
 
         if (!dc) {

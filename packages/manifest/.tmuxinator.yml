@@ -6,4 +6,4 @@ pre_window: nvm use
 windows:
   - Vim: vim
   - Terminal:
-  - Dev: yarn dev
+  - Watch: yarn typecheck --watch

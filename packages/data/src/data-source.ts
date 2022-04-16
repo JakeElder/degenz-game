@@ -26,7 +26,7 @@ const ssl: PostgresConnectionCredentialsOptions["ssl"] =
 export default new DataSource({
   type: "postgres",
   namingStrategy: new SnakeNamingStrategy(),
-  entities: [path.join(__dirname, "entity", "**", "*.js")],
+  entities: [path.join(__dirname, "entity", "**", "*.ts")],
   username: db.user,
   host: db.host!,
   database: db.database!,

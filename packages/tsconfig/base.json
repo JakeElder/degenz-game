@@ -13,8 +13,6 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "preserveWatchOutput": true,
-    "skipLibCheck": true,
-    "strict": true
-  },
-  "exclude": ["node_modules"]
+    "skipLibCheck": true
+  }
 }

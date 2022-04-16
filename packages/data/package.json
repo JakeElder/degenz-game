@@ -6,13 +6,13 @@
     "build": "tsc",
     "dev": "node scripts/dev",
     "typecheck": "tsc --noEmit",
-    "migration:show": "typeorm -d dist/data-source migration:show",
-    "migration:run": "typeorm -d dist/data-source migration:run",
-    "migration:generate": "typeorm -d dist/data-source migration:generate",
-    "migration:create": "typeorm -d dist/data-source migration:create",
-    "schema:log": "typeorm -d dist/data-source schema:log",
-    "schema:sync": "typeorm -d dist/data-source schema:sync",
-    "orm": "typeorm -d dist/data-source"
+    "migration:show": "typeorm -d src/data-source migration:show",
+    "migration:run": "typeorm -d src/data-source migration:run",
+    "migration:generate": "typeorm -d src/data-source migration:generate",
+    "migration:create": "typeorm -d src/data-source migration:create",
+    "schema:log": "typeorm -d src/data-source schema:log",
+    "schema:sync": "typeorm -d src/data-source schema:sync",
+    "orm": "typeorm -d src/data-source"
   },
   "devDependencies": {
     "@types/find-parent-dir": "^0.3.0",
