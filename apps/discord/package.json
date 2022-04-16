@@ -45,9 +45,8 @@
     "table": "^6.8.0",
     "truncate": "^3.0.0",
     "turndown": "^7.1.1",
-    "type-fest": "^2.11.2",
-    "typeorm": "^0.3.5",
-    "uuid": "^8.3.2"
+    "typed-emitter": "^2.1.0",
+    "typeorm": "^0.3.5"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.178",
@@ -60,17 +59,12 @@
     "@types/prettyjson": "^0.0.30",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
-    "@types/source-map-support": "^0.5.4",
     "@types/turndown": "^5.0.1",
-    "@types/uuid": "^8.3.4",
-    "concurrently": "^7.0.0",
     "config": "*",
     "eslint": "7.32.0",
     "nodemon": "^2.0.15",
-    "source-map-support": "^0.5.21",
     "tsconfig": "*",
-    "typescript": "^4.6.3",
-    "wait-on": "^6.0.0"
+    "typescript": "^4.6.3"
   },
   "engines": {
     "npm": ">=7.0.0",

@@ -11,14 +11,12 @@
     "@types/dotenv": "^8.2.0",
     "@types/find-config": "^1.0.1",
     "tsconfig": "*",
-    "typescript": "^4.6.3",
-    "lib": "*"
+    "typescript": "^4.6.3"
   },
   "dependencies": {
     "chalk": "^4.1.2",
-    "discord.js": "^13.6.0",
+    "data": "*",
     "dotenv": "^16.0.0",
-    "find-config": "^1.0.0",
-    "data": "*"
+    "find-config": "^1.0.0"
   }
 }
