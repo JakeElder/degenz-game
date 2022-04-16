@@ -5,7 +5,6 @@
   "main": "./src/index.ts",
   "scripts": {
     "build": "yarn tsc",
-    "dev": "ts-node scripts/dev",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

@@ -4,9 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "ts-node src/main",
-    "build": "yarn tsc",
-    "start": "node dist/main",
-    "lint": "eslint",
     "typecheck": "tsc --noEmit"
   },
   "nodemonConfig": {
