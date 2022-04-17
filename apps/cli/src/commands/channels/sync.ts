@@ -1,9 +1,10 @@
 import Manifest from "manifest";
 import { Command } from "../../lib";
 import { ManagedChannel } from "data/db";
+import Config from "config";
 
 export default class SyncChannels extends Command {
-  static description = "Insert channels";
+  static description = "Sync channels";
 
   async run(): Promise<void> {
     const { channels } = await Manifest.load();
@@ -13,6 +14,7 @@ export default class SyncChannels extends Command {
     const bot = await this.bot("ADMIN");
 
     const progress = this.getProgressBar(flat.map((c) => c.id));
+    progress.start();
 
     await Promise.all(
       syncs.map(async (c) => {
@@ -30,8 +32,16 @@ export default class SyncChannels extends Command {
           );
         }
 
-        await dc.edit({ name: source.name, permissionOverwrites: [] });
-        progress;
+        const pos = source.permissionOverwrites.map((po) => {
+          return { ...po, id: Config.roleId(po.id) };
+        });
+
+        await dc.edit({
+          name: source.name,
+          permissionOverwrites: pos,
+        });
+
+        progress.complete(source.id);
       })
     );
   }

@@ -58,187 +58,215 @@ const ESTABLISHMENT: ManagedChannel["permissionOverwrites"] = [
 
 const channels: RecursivePartial<ManagedChannel>[] = [];
 
-channels.push({
-  id: "THE_GAME",
-  name: "The Game",
-  permissionOverwrites: [...ESTABLISHMENT],
-  children: [
-    {
-      id: "ENTRANCE",
-      name: "\u{1f02b}\uff5centrance",
-      lockPermissions: true,
-      permissionOverwrites: [],
-    },
-    {
-      id: "QUESTS",
-      name: "\u2658\uff5cquests",
-      lockPermissions: true,
-      permissionOverwrites: [...DISCOVERABLE, ...READ_ONLY],
-    },
-  ],
-});
+channels.push(
+  // THE_GAME
+  {
+    id: "THE_GAME",
+    name: "The Game",
+    permissionOverwrites: [...ESTABLISHMENT],
+  },
+  // CHANNELS
+  {
+    id: "ENTRANCE",
+    name: "🚪｜entrance",
+    lockPermissions: true,
+    permissionOverwrites: [],
+    parent: { id: "THE_GAME" },
+  },
+  {
+    id: "QUESTS",
+    name: "🕹️｜quests",
+    lockPermissions: true,
+    permissionOverwrites: [...DISCOVERABLE, ...READ_ONLY],
+    parent: { id: "THE_GAME" },
+  }
+);
 
-channels.push({
-  id: "COMMAND_CENTER",
-  name: "Command Center",
-  permissionOverwrites: [...DISCOVERABLE, ...ESTABLISHMENT],
-  children: [
-    {
-      id: "ANNOUNCEMENTS",
-      name: "\u2621\uff5cannouncements",
-      lockPermissions: false,
-      permissionOverwrites: READ_ONLY,
-    },
-    {
-      id: "LEADERBOARD",
-      name: "\u2042\uff5cleaderboard",
-      lockPermissions: false,
-      permissionOverwrites: READ_ONLY,
-    },
-    {
-      id: "COMMANDS",
-      name: "\u2318\uff5ccommands",
-      lockPermissions: false,
-      permissionOverwrites: READ_ONLY,
-    },
-    {
-      id: "FAQ",
-      name: "\u2637\uff5cfaq",
-      lockPermissions: false,
-      permissionOverwrites: READ_ONLY,
-    },
-  ],
-});
+channels.push(
+  // COMMAND_CENTER
+  {
+    id: "COMMAND_CENTER",
+    name: "Command Center",
+    permissionOverwrites: [...DISCOVERABLE, ...ESTABLISHMENT],
+  },
+  // CHANNELS
+  {
+    id: "ANNOUNCEMENTS",
+    name: "📣｜announcements",
+    lockPermissions: false,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "COMMAND_CENTER" },
+  },
+  {
+    id: "LEADERBOARD",
+    name: "🏆｜leaderboard",
+    lockPermissions: false,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "COMMAND_CENTER" },
+  },
+  {
+    id: "COMMANDS",
+    name: "📜｜commands",
+    lockPermissions: false,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "COMMAND_CENTER" },
+  },
+  {
+    id: "FAQ",
+    name: "❓｜faq",
+    lockPermissions: false,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "COMMAND_CENTER" },
+  }
+);
 
-channels.push({
-  id: "COMMUNITY",
-  name: "Community",
-  permissionOverwrites: [...DISCOVERABLE, ...ESTABLISHMENT],
-  children: [
-    {
-      id: "WELCOME_ROOM",
-      name: "\u22c8\uff5cwelcome-room",
-      lockPermissions: true,
-      permissionOverwrites: READ_ONLY,
-    },
-    {
-      id: "GENERAL",
-      name: "\u20aa\uff5cgeneral",
-      lockPermissions: true,
-      permissionOverwrites: [],
-    },
-    {
-      id: "FEEDBACK",
-      name: "\u22b1\uff5cfeedback",
-      lockPermissions: true,
-      permissionOverwrites: [],
-    },
-    {
-      id: "HALL_OF_PRIVACY",
-      name: "\u2205\uff5chall-of-privacy",
-      lockPermissions: false,
-      permissionOverwrites: READ_ONLY,
-    },
-  ],
-});
+channels.push(
+  // COMMUNITY
+  {
+    id: "COMMUNITY",
+    name: "Community",
+    permissionOverwrites: [...DISCOVERABLE, ...ESTABLISHMENT],
+  },
+  // CHANNELS
+  {
+    id: "WELCOME_ROOM",
+    name: "👋｜welcome-room",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "COMMUNITY" },
+  },
+  {
+    id: "GENERAL",
+    name: "💬｜general",
+    lockPermissions: true,
+    permissionOverwrites: [],
+    parent: { id: "COMMUNITY" },
+  },
+  {
+    id: "FEEDBACK",
+    name: "🤌｜feedback",
+    lockPermissions: true,
+    permissionOverwrites: [],
+    parent: { id: "COMMUNITY" },
+  },
+  {
+    id: "HALL_OF_PRIVACY",
+    name: "👁️｜hall-of-privacy",
+    lockPermissions: false,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "COMMUNITY" },
+  }
+);
 
-channels.push({
-  id: "BEAUTOPIA",
-  name: "Beautopia",
-  permissionOverwrites: [...DISCOVERABLE, ...ESTABLISHMENT],
-  children: [
-    {
-      id: "TOWN_SQUARE",
-      name: "\u2ff4\uff5ctown-square",
-      lockPermissions: true,
-      permissionOverwrites: [],
-    },
-    {
-      id: "METRO",
-      name: "\u03c6\uff5cmetro",
-      lockPermissions: true,
-      permissionOverwrites: READ_ONLY,
-    },
-    {
-      id: "TAVERN",
-      name: "\u2248\uff5ctavern",
-      lockPermissions: true,
-      permissionOverwrites: [],
-    },
-    {
-      id: "HALL_OF_ALLEIGANCE",
-      name: "\u04a7\uff5chall-of-allegiance",
-      lockPermissions: true,
-      permissionOverwrites: READ_ONLY,
-    },
-    {
-      id: "MART",
-      name: "\u1789\uff5cmerris-mart",
-      lockPermissions: true,
-      permissionOverwrites: [
-        {
-          id: "MART_CLERK_BOT",
-          allow: ["VIEW_CHANNEL"],
-        },
-      ],
-    },
-    {
-      id: "ARMORY",
-      name: "\u23e3\uff5cthe-armory",
-      lockPermissions: true,
-      permissionOverwrites: [
-        {
-          id: "ARMORY_CLERK_BOT",
-          allow: ["VIEW_CHANNEL"],
-        },
-      ],
-    },
-    {
-      id: "TOSS_HOUSE",
-      name: "\u2609\uff5cteds-toss-house",
-      lockPermissions: true,
-      permissionOverwrites: [
-        {
-          id: "TOSSER_BOT",
-          allow: ["VIEW_CHANNEL"],
-        },
-      ],
-    },
-    {
-      id: "BANK",
-      name: "\u1368\uff5cbank-of-beautopia",
-      lockPermissions: true,
-      permissionOverwrites: [
-        {
-          id: "BANKER_BOT",
-          allow: ["VIEW_CHANNEL"],
-        },
-      ],
-    },
-    {
-      id: "ARENA",
-      name: "\u0436\uff5cthe-arena",
-      lockPermissions: true,
-      permissionOverwrites: [
-        {
-          id: "SENSEI_BOT",
-          allow: ["VIEW_CHANNEL"],
-        },
-      ],
-    },
-    {
-      id: "TRAINING_DOJO",
-      name: "\u2059\uff5ctraining-dojo",
-      lockPermissions: true,
-      permissionOverwrites: [
-        {
-          id: "SENSEI_BOT",
-          allow: ["VIEW_CHANNEL"],
-        },
-      ],
-    },
-  ],
-});
+channels.push(
+  // BEAUTOPIA
+  {
+    id: "BEAUTOPIA",
+    name: "Beautopia",
+    permissionOverwrites: [...DISCOVERABLE, ...ESTABLISHMENT],
+  },
+  // CHANNELS
+  {
+    id: "TOWN_SQUARE",
+    name: "🕍｜town-square",
+    lockPermissions: true,
+    permissionOverwrites: [],
+    parent: { id: "BEAUTOPIA" },
+  },
+  {
+    id: "METRO",
+    name: "🚇｜metro",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "BEAUTOPIA" },
+  },
+  {
+    id: "TAVERN",
+    name: "🍺｜tavern",
+    lockPermissions: true,
+    permissionOverwrites: [],
+    parent: { id: "BEAUTOPIA" },
+  },
+  {
+    id: "HALL_OF_ALLEIGANCE",
+    name: "🧎｜hall-of-allegiance",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "BEAUTOPIA" },
+  },
+  {
+    id: "MART",
+    name: "🏪｜merris-mart",
+    lockPermissions: true,
+    permissionOverwrites: [
+      {
+        id: "MART_CLERK_BOT",
+        allow: ["VIEW_CHANNEL"],
+      },
+    ],
+    parent: { id: "BEAUTOPIA" },
+  },
+  {
+    id: "ARMORY",
+    name: "🛡｜the-armory",
+    lockPermissions: true,
+    permissionOverwrites: [
+      {
+        id: "ARMORY_CLERK_BOT",
+        allow: ["VIEW_CHANNEL"],
+      },
+    ],
+    parent: { id: "BEAUTOPIA" },
+  },
+  {
+    id: "TOSS_HOUSE",
+    name: "🎲｜teds-toss-house",
+    lockPermissions: true,
+    permissionOverwrites: [
+      {
+        id: "TOSSER_BOT",
+        allow: ["VIEW_CHANNEL"],
+      },
+    ],
+    parent: { id: "BEAUTOPIA" },
+  },
+  {
+    id: "BANK",
+    name: "🏦｜bank-of-beautopia",
+    lockPermissions: true,
+    permissionOverwrites: [
+      {
+        id: "BANKER_BOT",
+        allow: ["VIEW_CHANNEL"],
+      },
+    ],
+    parent: { id: "BEAUTOPIA" },
+  },
+  {
+    id: "ARENA",
+    name: "🗡｜the-arena",
+    lockPermissions: true,
+    permissionOverwrites: [
+      {
+        id: "SENSEI_BOT",
+        allow: ["VIEW_CHANNEL"],
+      },
+    ],
+    parent: { id: "BEAUTOPIA" },
+  },
+  {
+    id: "TRAINING_DOJO",
+    name: "⛩️｜training-dojo",
+    lockPermissions: true,
+    permissionOverwrites: [
+      {
+        id: "SENSEI_BOT",
+        allow: ["VIEW_CHANNEL"],
+      },
+    ],
+    parent: { id: "BEAUTOPIA" },
+  }
+);
 
 channels.push({
   id: "THE_PROJECTS_D1",
@@ -250,108 +278,120 @@ channels.push({
   id: "THE_PROJECTS_D2",
   name: "The Projects D2",
   permissionOverwrites: [...ESTABLISHMENT],
-  children: [],
 });
 
 channels.push({
   id: "THE_PROJECTS_D3",
   name: "The Projects D3",
   permissionOverwrites: [...ESTABLISHMENT],
-  children: [],
 });
 
 channels.push({
   id: "THE_PROJECTS_D4",
   name: "The Projects D4",
   permissionOverwrites: [...ESTABLISHMENT],
-  children: [],
 });
 
 channels.push({
   id: "THE_PROJECTS_D5",
   name: "The Projects D5",
   permissionOverwrites: [...ESTABLISHMENT],
-  children: [],
 });
 
 channels.push({
   id: "THE_PROJECTS_D6",
   name: "The Projects D6",
   permissionOverwrites: [...ESTABLISHMENT],
-  children: [],
 });
 
-channels.push({
-  id: "THE_SHELTERS",
-  name: "The Shelters",
-  permissionOverwrites: [...DISCOVERABLE, ...ESTABLISHMENT],
-  children: [
-    {
-      id: "BULLSEYE",
-      name: "\u25c9\uff5cbullseye",
-      lockPermissions: true,
-      permissionOverwrites: [],
-    },
-    {
-      id: "THE_GRID",
-      name: "\u25a6\uff5cthe-grid",
-      lockPermissions: true,
-      permissionOverwrites: [],
-    },
-    {
-      id: "THE_LEFT",
-      name: "\u25e7\uff5cthe-left",
-      lockPermissions: true,
-      permissionOverwrites: [],
-    },
-    {
-      id: "THE_RIGHT",
-      name: "\u25e8\uff5cthe-right",
-      lockPermissions: true,
-      permissionOverwrites: [],
-    },
-    {
-      id: "VULTURE",
-      name: "\u{13182}\uff5cvulture",
-      lockPermissions: true,
-      permissionOverwrites: [],
-    },
-  ],
-});
+channels.push(
+  // THE_SHELTERS
+  {
+    id: "THE_SHELTERS",
+    name: "The Shelters",
+    permissionOverwrites: [...DISCOVERABLE, ...ESTABLISHMENT],
+  },
+  // CHANNELS
+  {
+    id: "BULLSEYE",
+    name: "\u25c9\uff5cbullseye",
+    lockPermissions: true,
+    permissionOverwrites: [],
+    parent: { id: "THE_SHELTERS" },
+  },
+  {
+    id: "THE_GRID",
+    name: "\u25a6\uff5cthe-grid",
+    lockPermissions: true,
+    permissionOverwrites: [],
+    parent: { id: "THE_SHELTERS" },
+  },
+  {
+    id: "THE_LEFT",
+    name: "\u25e7\uff5cthe-left",
+    lockPermissions: true,
+    permissionOverwrites: [],
+    parent: { id: "THE_SHELTERS" },
+  },
+  {
+    id: "THE_RIGHT",
+    name: "\u25e8\uff5cthe-right",
+    lockPermissions: true,
+    permissionOverwrites: [],
+    parent: { id: "THE_SHELTERS" },
+  },
+  {
+    id: "VULTURE",
+    name: "\u{13182}\uff5cvulture",
+    lockPermissions: true,
+    permissionOverwrites: [],
+    parent: { id: "THE_SHELTERS" },
+  }
+);
 
-channels.push({
-  id: "PRISON",
-  name: "Prison",
-  permissionOverwrites: [
-    {
-      id: "EVERYONE",
-      deny: ["VIEW_CHANNEL"],
-    },
-    {
-      id: "WARDEN_BOT",
-      allow: ["VIEW_CHANNEL"],
-    },
-    {
-      id: "PRISONER",
-      allow: ["VIEW_CHANNEL"],
-    },
-    {
-      id: "PRISONER_BOT",
-      allow: ["VIEW_CHANNEL"],
-    },
-    {
-      id: "THOUGHT_POLICE",
-      allow: ["VIEW_CHANNEL"],
-    },
-  ],
-  children: [
-    {
-      id: "GEN_POP",
-      name: "\u25a5\uff5cgen-pop",
-      lockPermissions: true,
-      permissionOverwrites: [],
-    },
-  ],
-});
+channels.push(
+  // PRISON
+  {
+    id: "PRISON",
+    name: "Prison",
+    permissionOverwrites: [
+      {
+        id: "EVERYONE",
+        deny: ["VIEW_CHANNEL"],
+      },
+      {
+        id: "WARDEN_BOT",
+        allow: ["VIEW_CHANNEL"],
+      },
+      {
+        id: "PRISONER",
+        allow: ["VIEW_CHANNEL"],
+      },
+      {
+        id: "PRISONER_BOT",
+        allow: ["VIEW_CHANNEL"],
+      },
+      {
+        id: "THOUGHT_POLICE",
+        allow: ["VIEW_CHANNEL"],
+      },
+    ],
+  },
+  // CHANNELS
+  {
+    id: "GEN_POP",
+    name: "👥｜gen-pop",
+    lockPermissions: true,
+    permissionOverwrites: [],
+    parent: { id: "PRISON" },
+  },
+  {
+    id: "SOLITARY",
+    name: "\u2b1b｜solitary",
+    lockPermissions: true,
+    permissionOverwrites: [],
+    parent: { id: "PRISON" },
+  }
+);
 
 export default plainToInstance(ManagedChannel, channels);

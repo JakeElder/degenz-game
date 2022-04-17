@@ -40,6 +40,7 @@ export type NestedManagedChannelSymbol =
   | "ARENA"
   | "TRAINING_DOJO"
   | "GEN_POP"
+  | "SOLITARY"
   | DormitorySymbol;
 
 export type ManagedCategorySymbol =
@@ -67,9 +68,7 @@ export class ManagedChannel extends BaseEntity {
   @Column()
   type: "CATEGORY" | "CHANNEL";
 
-  @Column()
   name: string;
-
   lockPermissions: boolean;
   permissionOverwrites: {
     id: RoleSymbol;

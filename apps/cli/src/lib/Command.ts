@@ -18,6 +18,7 @@ export default abstract class Command extends OclifCommand {
 
   async init() {
     await connect();
+    await Config.load();
   }
 
   async finally(err?: Error) {
