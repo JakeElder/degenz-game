@@ -10,7 +10,7 @@ import {
   GeneralConfig,
   ManagedChannelSymbol,
 } from "data/types";
-import { ManagedChannel, NPC, Role } from "data/db";
+import { Emoji, ManagedChannel, NPC, Role } from "data/db";
 import chalk from "chalk";
 
 const NODE_ENV =
@@ -49,13 +49,16 @@ export default class ConfigManager {
   static roles: Role[];
   static npcs: NPC[];
   static managedChannels: ManagedChannel[];
+  static emojis: Emoji[];
 
   static async load() {
-    [this.roles, this.npcs, this.managedChannels] = await Promise.all([
-      Role.find(),
-      NPC.find(),
-      ManagedChannel.find(),
-    ]);
+    [this.roles, this.npcs, this.managedChannels, this.emojis] =
+      await Promise.all([
+        Role.find(),
+        NPC.find(),
+        ManagedChannel.find(),
+        Emoji.find(),
+      ]);
   }
 
   static general<T extends keyof GeneralConfig>(k: T): GeneralConfig[T] {
@@ -90,7 +93,7 @@ export default class ConfigManager {
     const row = this.managedChannels.find((r) => r.id === k);
 
     if (!row) {
-      this.notFound("category", k);
+      this.notFound("channel", k);
       throw new Error();
     }
 

@@ -69,7 +69,7 @@ export default class QuestLogController {
     }
 
     const thread = await questsChannel.threads.create({
-      name: `\u2658\uFF5C${paramCase(user.displayName)}s-quest-log`,
+      name: `📜｜${paramCase(user.displayName)}s-quest-log`,
       invitable: false,
       autoArchiveDuration: 60,
       type: ["production"].includes(Config.env("NODE_ENV"))

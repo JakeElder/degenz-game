@@ -50,7 +50,7 @@ export default class EntranceController {
   static async update() {
     const data = await this.computeEntryData();
     await this.setEnterMessages(data);
-    this.setStatus(data.open);
+    // this.setStatus(data.open);
   }
 
   static async computeEntryData(): Promise<EntryData> {

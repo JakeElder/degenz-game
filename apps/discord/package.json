@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "ts-node src/main",
+    "dev": "nodemon src/main.ts",
     "typecheck": "tsc --noEmit"
   },
   "nodemonConfig": {

@@ -58,8 +58,32 @@
       "@oclif/plugin-plugins"
     ],
     "topics": {
+      "achievements": {
+        "description": "Manage Achievements"
+      },
+      "channels": {
+        "description": "Manage Channels"
+      },
+      "districts": {
+        "description": "Manage Districts"
+      },
+      "dormitories": {
+        "description": "Manage Dormitories"
+      },
       "emojis": {
-        "description": "Manage emojis"
+        "description": "Manage Emojis"
+      },
+      "mart-items": {
+        "description": "Manage Mart Items"
+      },
+      "npcs": {
+        "description": "Manage NPCs"
+      },
+      "persistent-messages": {
+        "description": "Manage Persistent Messages"
+      },
+      "roles": {
+        "description": "Manage Roles"
       }
     }
   },

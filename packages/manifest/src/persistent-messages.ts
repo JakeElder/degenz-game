@@ -1,6 +1,6 @@
 import { PersistentMessage } from "data/db";
 
-const persistentMessages = PersistentMessage.create([
+export const persistentMessages = PersistentMessage.create([
   {
     id: "ENTRANCE",
     channel: { id: "ENTRANCE" },
@@ -27,5 +27,3 @@ const persistentMessages = PersistentMessage.create([
     maintainer: { id: "ADMIN" },
   },
 ]);
-
-export default persistentMessages;

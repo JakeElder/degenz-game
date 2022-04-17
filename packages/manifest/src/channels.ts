@@ -56,9 +56,9 @@ const ESTABLISHMENT: ManagedChannel["permissionOverwrites"] = [
   },
 ];
 
-const channels: RecursivePartial<ManagedChannel>[] = [];
+const c: RecursivePartial<ManagedChannel>[] = [];
 
-channels.push(
+c.push(
   // THE_GAME
   {
     id: "THE_GAME",
@@ -82,7 +82,7 @@ channels.push(
   }
 );
 
-channels.push(
+c.push(
   // COMMAND_CENTER
   {
     id: "COMMAND_CENTER",
@@ -117,10 +117,17 @@ channels.push(
     lockPermissions: false,
     permissionOverwrites: READ_ONLY,
     parent: { id: "COMMAND_CENTER" },
+  },
+  {
+    id: "WHITELIST",
+    name: "🎟️｜whitelist",
+    lockPermissions: false,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "COMMAND_CENTER" },
   }
 );
 
-channels.push(
+c.push(
   // COMMUNITY
   {
     id: "COMMUNITY",
@@ -158,7 +165,7 @@ channels.push(
   }
 );
 
-channels.push(
+c.push(
   // BEAUTOPIA
   {
     id: "BEAUTOPIA",
@@ -189,7 +196,7 @@ channels.push(
   },
   {
     id: "HALL_OF_ALLEIGANCE",
-    name: "🧎｜hall-of-allegiance",
+    name: "💰｜hall-of-allegiance",
     lockPermissions: true,
     permissionOverwrites: READ_ONLY,
     parent: { id: "BEAUTOPIA" },
@@ -268,43 +275,43 @@ channels.push(
   }
 );
 
-channels.push({
+c.push({
   id: "THE_PROJECTS_D1",
   name: "The Projects D1",
   permissionOverwrites: [...ESTABLISHMENT],
 });
 
-channels.push({
+c.push({
   id: "THE_PROJECTS_D2",
   name: "The Projects D2",
   permissionOverwrites: [...ESTABLISHMENT],
 });
 
-channels.push({
+c.push({
   id: "THE_PROJECTS_D3",
   name: "The Projects D3",
   permissionOverwrites: [...ESTABLISHMENT],
 });
 
-channels.push({
+c.push({
   id: "THE_PROJECTS_D4",
   name: "The Projects D4",
   permissionOverwrites: [...ESTABLISHMENT],
 });
 
-channels.push({
+c.push({
   id: "THE_PROJECTS_D5",
   name: "The Projects D5",
   permissionOverwrites: [...ESTABLISHMENT],
 });
 
-channels.push({
+c.push({
   id: "THE_PROJECTS_D6",
   name: "The Projects D6",
   permissionOverwrites: [...ESTABLISHMENT],
 });
 
-channels.push(
+c.push(
   // THE_SHELTERS
   {
     id: "THE_SHELTERS",
@@ -349,7 +356,7 @@ channels.push(
   }
 );
 
-channels.push(
+c.push(
   // PRISON
   {
     id: "PRISON",
@@ -394,4 +401,4 @@ channels.push(
   }
 );
 
-export default plainToInstance(ManagedChannel, channels);
+export const channels = plainToInstance(ManagedChannel, c);

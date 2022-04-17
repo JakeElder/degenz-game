@@ -91,4 +91,8 @@ export default abstract class Command extends OclifCommand {
     this.progressBars.push(progress);
     return progress;
   }
+
+  done() {
+    console.log("✅ Done");
+  }
 }

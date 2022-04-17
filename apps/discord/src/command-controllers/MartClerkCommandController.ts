@@ -6,7 +6,7 @@ import {
   MessageButton,
   MessageEmbedOptions,
 } from "discord.js";
-import { MartItem } from "data/db";
+import { MartItem, Emoji } from "data/db";
 import Config from "config";
 import { CommandController } from "../CommandController";
 import { getUser, sellItem } from "../legacy/db";
@@ -72,30 +72,30 @@ export default class MartClerkCommandController extends CommandController {
     const url = `${Config.env("WEB_URL")}/mart-items/buy`;
     const w = 20;
 
-    const emojis: Record<MartItemSymbol, string> = {
-      GRILLED_RAT: "\u{1f400} ",
-      PIZZA: "\u{1f355} ",
-      NOODLES: "\u{1f35c} ",
-      FRACTAL_NFT: "\u2744\ufe0f ",
-    };
-
     const embedItems = boughtItem
       ? items.filter((i) => i.id === boughtItem)
       : items;
 
     const embeds: MessageEmbedOptions[] = embedItems.map((item) => {
       const s = [
-        ["Stock", "$GBT"],
-        [item.stock, Format.currency(item.price, { bare: true })],
+        ["Stock", "Price"],
+        [
+          item.stock,
+          `${Format.currency(item.price, { bare: true })} ${Format.token()}`,
+        ],
       ];
 
       const info = !boughtItem
         ? Format.codeBlock(
             table(s, {
               drawVerticalLine: (idx) => [1].includes(idx),
-              columnDefault: { alignment: "center" },
+              columnDefault: {
+                alignment: "center",
+                paddingLeft: 0,
+                paddingRight: 0,
+              },
               drawHorizontalLine: (i) => i === 1,
-              columns: [{ width: 10 }, { width: 10 }],
+              columns: [{ width: 16 }, { width: 16 }],
             })
           )
         : Format.codeBlock(
@@ -103,9 +103,7 @@ export default class MartClerkCommandController extends CommandController {
           );
 
       return {
-        author: {
-          name: `${emojis[item.id]} ${item.name}`,
-        },
+        title: `${item.emoji} ${item.name}`,
         color: item.stock === 0 ? "DARK_RED" : "DARK_GREEN",
         description: info,
         thumbnail: {
@@ -113,6 +111,7 @@ export default class MartClerkCommandController extends CommandController {
           width: 32,
           url: `${url}/${item.id}.png?v1`,
         },
+        image: { url: `${Config.env("WEB_URL")}/blank-row.png` },
       };
     });
 
@@ -123,8 +122,9 @@ export default class MartClerkCommandController extends CommandController {
           items.map((item) =>
             new MessageButton()
               .setCustomId(`buy:${item.id}`)
-              .setStyle(item.stock > 0 ? "PRIMARY" : "SECONDARY")
-              .setLabel(`${emojis[item.id]} ${item.name}`)
+              .setEmoji(item.emoji.identifier)
+              .setStyle(!!boughtItem || item.stock === 0 ? "SECONDARY" : "PRIMARY")
+              .setLabel(item.name)
               .setDisabled(!!boughtItem || item.stock === 0)
           )
         ),

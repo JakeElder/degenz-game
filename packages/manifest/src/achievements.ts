@@ -1,6 +1,6 @@
 import { Achievement } from "data/db";
 
-const achievements = Achievement.create([
+export const achievements = Achievement.create([
   { id: "ALLEGIANCE_PLEDGED" },
   { id: "FINISHED_TRAINER" },
   { id: "HELP_REQUESTED" },
@@ -11,5 +11,3 @@ const achievements = Achievement.create([
   { id: "SUPER_OBEDIENT" },
   { id: "TOSS_COMPLETED" },
 ]);
-
-export default achievements;

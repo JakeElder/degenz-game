@@ -6,8 +6,9 @@ import {
   UpdateDateColumn,
   OneToMany,
   PrimaryColumn,
+  ManyToOne,
 } from "typeorm";
-import { MartItemOwnership } from "..";
+import { Emoji, MartItemOwnership } from "..";
 
 export type MartItemSymbol =
   | "PIZZA"
@@ -29,11 +30,14 @@ export class MartItem extends BaseEntity {
   @Column()
   price: number;
 
-  @Column()
+  @Column({ default: 0 })
   stock: number;
 
   @Column()
   strengthIncrease: number;
+
+  @ManyToOne(() => Emoji, { eager: true })
+  emoji: Emoji;
 
   @OneToMany(
     () => MartItemOwnership,

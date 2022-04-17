@@ -1,6 +1,6 @@
 import { Dormitory } from "data/db";
 
-const dormitories = Dormitory.create([
+export const dormitories = Dormitory.create([
   {
     id: "BULLSEYE",
     emoji: { id: "BULLSEYE" },
@@ -37,5 +37,3 @@ const dormitories = Dormitory.create([
     citizenRole: { id: "VULTURE_CITIZEN" },
   },
 ]);
-
-export default dormitories;

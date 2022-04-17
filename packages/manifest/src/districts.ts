@@ -1,6 +1,6 @@
 import { District } from "data/db";
 
-const districts = District.create([
+export const districts = District.create([
   {
     id: "D1",
     allowance: 150,
@@ -38,5 +38,3 @@ const districts = District.create([
     citizenRole: { id: "D6_CITIZEN" },
   },
 ]);
-
-export default districts;

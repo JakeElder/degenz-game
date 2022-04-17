@@ -11,7 +11,7 @@ import sensei from "./sensei";
 import tosser from "./tosser";
 import warden from "./warden";
 
-export default [
+export const npcs = [
   admin,
   ally,
   armoryClerk,

@@ -1,6 +1,6 @@
 import { Emoji } from "data/db";
 
-const emojis = Emoji.create([
+export const emojis = Emoji.create([
   { id: "ALLY_NPC", name: "ivan_6000" },
   { id: "ANON", name: "anon" },
   { id: "ARMORY_CLERK_NPC", name: "private_willy" },
@@ -65,5 +65,3 @@ const emojis = Emoji.create([
   { id: "WARDEN_NPC", name: "walden" },
   { id: "WORM_HACK", name: "worm_hack" },
 ]);
-
-export default emojis;

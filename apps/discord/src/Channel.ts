@@ -1,6 +1,6 @@
 import Config from "config";
 import { Channel as ChannelEntity } from "data/db";
-import { ChannelDescriptor, NestedManagedChannelSymbol } from "data/types";
+import { ChannelDescriptor, ManagedChannelSymbol } from "data/types";
 import { TextBasedChannel } from "discord.js";
 import Manifest from "manifest";
 import memoize from "memoizee";
@@ -11,33 +11,24 @@ export class Channel {
     async (channelId: TextBasedChannel["id"]): Promise<ChannelDescriptor> => {
       const { channels } = await Manifest.load();
 
-      const [beautopia, theGame, commandCenter, community] = [
-        channels.find((c) => c.id === "BEAUTOPIA"),
-        channels.find((c) => c.id === "THE_GAME"),
-        channels.find((c) => c.id === "COMMAND_CENTER"),
-        channels.find((c) => c.id === "COMMUNITY"),
+      const communityCategoryIds: ManagedChannelSymbol[] = [
+        "THE_GAME",
+        "COMMAND_CENTER",
+        "COMMUNITY",
       ];
 
-      if (!theGame || !commandCenter || !community || !beautopia) {
-        throw new Error("Missing category");
-      }
-
-      const communityChannelIds = [
-        ...theGame.children,
-        ...commandCenter.children,
-        ...community.children,
-      ].map((c) => Config.channelId(c.id));
-
-      const gameChannelIds = beautopia.children.map((c) =>
-        Config.channelId(c.id as NestedManagedChannelSymbol)
+      const communityChannels = channels.filter((c) =>
+        communityCategoryIds.includes(c.parent?.id)
       );
+
+      const gameChannels = channels.filter((c) => c.parent?.id === "BEAUTOPIA");
 
       const c = await ChannelEntity.findOneOrFail({ where: { id: channelId } });
 
       const admin = Global.bot("ADMIN");
       const channel = await admin.getTextChannel(channelId);
 
-      const isCommunity = communityChannelIds.includes(channelId);
+      const isCommunity = !!communityChannels.find((c) => c.id === channelId);
       const isApartment = c.type === "APARTMENT";
       const isDormitory = c.type === "DORMITORY";
       const isOnboardingThread = c.type === "ONBOARDING_THREAD";
@@ -48,7 +39,7 @@ export class Channel {
         isDormitory ||
         isOnboardingThread ||
         isInPrison ||
-        gameChannelIds.includes(channelId);
+        !!gameChannels.find((c) => c.id === channelId);
 
       return {
         id: channelId,

@@ -1,25 +1,25 @@
 export default class Manifest {
   static async load() {
-    const { default: channels } = await import("./channels");
-    const { default: roles } = await import("./roles");
-    const { default: npcs } = await import("./npcs");
-    const { default: emojis } = await import("./emojis");
-    const { default: districts } = await import("./districts");
-    const { default: dormitories } = await import("./dormitories");
-    const { default: achievements } = await import("./achievements");
-    const { default: persistentMessages } = await import(
-      "./persistent-messages"
-    );
+    const { achievements } = await import("./achievements");
+    const { channels } = await import("./channels");
+    const { districts } = await import("./districts");
+    const { dormitories } = await import("./dormitories");
+    const { emojis } = await import("./emojis");
+    const { martItems } = await import("./mart-items");
+    const { npcs } = await import("./npcs");
+    const { persistentMessages } = await import("./persistent-messages");
+    const { roles } = await import("./roles");
 
     return {
       achievements,
       channels,
-      roles,
-      npcs,
-      emojis,
       districts,
       dormitories,
+      emojis,
+      martItems,
+      npcs,
       persistentMessages,
+      roles,
     };
   }
 }

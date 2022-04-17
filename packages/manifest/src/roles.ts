@@ -25,7 +25,7 @@ const ESTABLISHMENT = new Permissions([
   "MENTION_EVERYONE",
 ]);
 
-const roles = Role.create([
+export const roles = Role.create([
   {
     id: "EVERYONE",
     type: "EVERYONE",
@@ -172,5 +172,3 @@ const roles = Role.create([
     emoji: { id: "BLUE_TICK" },
   },
 ]);
-
-export default roles;
