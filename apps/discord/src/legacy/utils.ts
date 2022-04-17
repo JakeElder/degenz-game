@@ -1,8 +1,10 @@
 import { capitalCase } from "change-case";
 import { GuildMember, MessageButton, MessageEmbedOptions } from "discord.js";
 import emoji from "node-emoji";
-import { groupBy } from "lodash";
-import { User, MartItem } from "data/db";
+import { User, MartItem, MartItemOwnership } from "data/db";
+import { getBorderCharacters, table } from "table";
+import truncate from "truncate";
+import { Format } from "lib";
 
 export function calculateTossRake(amount: number) {
   return Math.max(Math.ceil(amount * 0.02), 1);
@@ -54,74 +56,45 @@ export function currency({
   return currency;
 }
 
-export function makeInventoryEmbed(
-  items: MartItem[],
+export async function makeInventoryEmbed(
   user: User,
   member: GuildMember
-) {
-  const groups = groupBy(user.martItemOwnerships, "item.symbol");
+): Promise<MessageEmbedOptions> {
+  const q = await MartItem.createQueryBuilder()
+    .select(["mi.name as name", "COUNT(mo.id)"])
+    .from(MartItemOwnership, "mo")
+    .leftJoin(MartItem, "mi", "mo.item_id = mi.id")
+    .where("mo.user_id = :uid", { uid: user.id })
+    .groupBy("mo.item_id, mi.name")
+    .execute();
 
-  const longestItemName = [...items].sort(
-    (a, b) => b.name.length - a.name.length
-  )[0].name;
+  const rows = q.map((q: any) => [truncate(q.name, 25), q.count]);
 
-  const longestQuantity = [...items]
-    .sort(
-      (a, b) =>
-        b.price.toLocaleString().length - a.price.toLocaleString().length
-    )[0]
-    .price.toLocaleString();
+  const t = table(rows, {
+    drawVerticalLine: (idx) => [1].includes(idx),
+    columnDefault: { paddingLeft: 0, paddingRight: 0 },
+    drawHorizontalLine: () => false,
+    columns: [{ width: 27 }, { width: 5, alignment: "center" }],
+  });
 
-  const foods = [];
-
-  for (let group of Object.keys(groups)) {
-    const name = items.find((i) => i.id === group)!.name;
-    const amount = groups[group].length.toLocaleString();
-    foods.push(
-      `${name.padEnd(`${longestItemName}   `.length)} | ${amount.padEnd(
-        longestQuantity.length,
-        " "
-      )}`
-    );
-  }
-
-  const width = Math.max(
-    `${longestItemName}   | ${longestQuantity} `.length,
-    30
-  );
-
-  if (foods.length === 0) {
-    const message = "-- no food --";
-    foods.push(
-      `${message
-        .padStart((width - message.length) / 2 + message.length, " ")
-        .padEnd(width - message.length + message.length, " ")}`
-    );
-  }
-
-  const message = "-- coming soon --";
-  const i = `\`\`\`${message
-    .padStart((width - message.length) / 2 + message.length, " ")
-    .padEnd(width - message.length + message.length, " ")}\`\`\``;
-
-  const m: MessageEmbedOptions = {
-    color: member.displayColor,
+  return {
     author: {
       name: member.displayName,
       iconURL: member.displayAvatarURL(),
     },
     title: "Inventory",
     fields: [
-      {
-        name: "Food",
-        value: `\`\`\`${foods.join("\n")}\`\`\``,
-      },
+      { name: "Food", value: Format.codeBlock(t) },
       {
         name: "Items",
-        value: i,
+        value: Format.codeBlock(
+          table([["-- Coming Soon --"]], {
+            border: getBorderCharacters("void"),
+            columnDefault: { paddingLeft: 0, paddingRight: 0 },
+            columns: [{ width: 32, alignment: "center" }],
+          })
+        ),
       },
     ],
   };
-
-  return m;
 }

@@ -7,7 +7,7 @@ export default class SyncMartItems extends Command {
 
   async run(): Promise<void> {
     const { martItems } = await Manifest.load();
-    await MartItem.upsert(martItems, ["id"]);
-    console.log("✅ Done");
+    await MartItem.save(martItems);
+    this.done();
   }
 }

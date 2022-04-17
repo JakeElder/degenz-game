@@ -178,7 +178,7 @@ export default class AllyCommandController extends CommandController {
       return;
     }
 
-    const e = makeInventoryEmbed(await getMartItems(), users[1], checkee);
+    const e = await makeInventoryEmbed(users[1], checkee);
     await i.reply({ embeds: [e], ephemeral: true });
 
     Events.emit("INVENTORY_CHECKED", {
