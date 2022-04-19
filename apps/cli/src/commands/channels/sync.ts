@@ -1,24 +1,26 @@
 import Manifest from "manifest";
-import { Command } from "../../lib";
 import { ManagedChannel } from "data/db";
 import Config from "config";
+import { Command } from "../../lib";
 
 export default class SyncChannels extends Command {
   static description = "Sync channels";
 
   async run(): Promise<void> {
     const { channels } = await Manifest.load();
-    const flat = channels.flatMap((c) => [c, ...(c.children || [])]);
 
-    const syncs = await ManagedChannel.find();
-    const bot = await this.bot("ADMIN");
+    const [syncCategories, syncChannels, bot] = await Promise.all([
+      ManagedChannel.find({ where: { type: "CATEGORY" } }),
+      ManagedChannel.find({ where: { type: "CHANNEL" } }),
+      this.bot("ADMIN"),
+    ]);
 
-    const progress = this.getProgressBar(flat.map((c) => c.id));
+    const progress = this.getProgressBar(channels.map((c) => c.id));
     progress.start();
 
     await Promise.all(
-      syncs.map(async (c) => {
-        const source = flat.find((s) => s.id === c.id);
+      syncCategories.map(async (c) => {
+        const source = channels.find((s) => s.id === c.id);
 
         if (!source) {
           throw new Error(`Channel ${c.id} not found`);
@@ -32,17 +34,54 @@ export default class SyncChannels extends Command {
           );
         }
 
-        const pos = source.permissionOverwrites.map((po) => {
-          return { ...po, id: Config.roleId(po.id) };
-        });
+        let p = source.permissionOverwrites;
 
         await dc.edit({
           name: source.name,
-          permissionOverwrites: pos,
+          permissionOverwrites: p.map((po) => {
+            return { ...po, id: Config.roleId(po.id) };
+          }),
         });
 
         progress.complete(source.id);
       })
+    );
+
+    await Promise.all(
+      syncChannels
+        .filter((c) => c.type === "CHANNEL")
+        .map(async (c) => {
+          const source = channels.find((s) => s.id === c.id);
+
+          if (!source) {
+            throw new Error(`Channel ${c.id} not found`);
+          }
+
+          const dc = await bot.guild.channels.fetch(c.channel.id);
+
+          if (!dc) {
+            throw new Error(
+              `Discord channel not found: ${c.name}:${c.channel.id}`
+            );
+          }
+
+          await dc.edit({ name: source.name });
+
+          if (source.lockPermissions) {
+            await dc.lockPermissions();
+          }
+
+          await Promise.all(
+            source.permissionOverwrites.map((po) =>
+              dc.permissionOverwrites.create(Config.roleId(po.id), {
+                ...(po.allow || []).reduce((c, v) => ({ ...c, [v]: true }), {}),
+                ...(po.deny || []).reduce((c, v) => ({ ...c, [v]: false }), {}),
+              })
+            )
+          );
+
+          progress.complete(source.id);
+        })
     );
   }
 }

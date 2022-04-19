@@ -41,7 +41,7 @@ export class DormitoryTenancy extends BaseEntity {
   updatedAt: Date;
 
   get discordChannelId() {
-    return this.dormitory.channel.id;
+    return this.dormitory.channel.channel.id;
   }
 
   get dailyAllowance() {

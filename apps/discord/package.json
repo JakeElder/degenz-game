@@ -8,6 +8,7 @@
   },
   "nodemonConfig": {
     "signal": "SIGTERM",
+    "ext": "ts,tsx,json",
     "watch": [
       "src",
       "../../packages/manifest/src",

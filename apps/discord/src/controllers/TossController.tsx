@@ -4,7 +4,7 @@ import {
   GuildMember,
   Message,
   MessageActionRow,
-  MessageEmbed,
+  MessageEmbedOptions,
 } from "discord.js";
 import Config from "config";
 import { Format } from "lib";
@@ -18,10 +18,10 @@ import {
   TossChoicePrompt,
   TossChoiceTimeoutPrompt,
 } from "../legacy/templates";
-import { userMention } from "@discordjs/builders";
 import Events from "../Events";
 import ResidenceController from "./ResidenceController";
 import { NPC } from "data/db";
+import { userMention } from "@discordjs/builders";
 
 const { r } = Utils;
 
@@ -191,9 +191,7 @@ export default class TossController {
 
       g.challenger.user = await getUser(g.challenger.user!.id);
       await i.followUp({
-        embeds: [
-          TossController.makeTossResultEmbed({ g, player: "CHALLENGER" }),
-        ],
+        embeds: TossController.makeTossResultEmbeds({ g }),
         ephemeral: true,
       });
 
@@ -350,14 +348,10 @@ export default class TossController {
 
     await Promise.all([
       i.followUp({
-        embeds: [
-          TossController.makeTossResultEmbed({ g, player: "CHALLENGER" }),
-        ],
+        embeds: TossController.makeTossResultEmbeds({ g }),
       }),
       challengeMessage.reply({
-        embeds: [
-          TossController.makeTossResultEmbed({ g, player: "CHALLENGEE" }),
-        ],
+        embeds: TossController.makeTossResultEmbeds({ g }),
       }),
     ]);
 
@@ -375,16 +369,7 @@ export default class TossController {
     return { success: true, data: { game: g } };
   }
 
-  static makeTossResultEmbed({
-    g,
-    player,
-  }: {
-    g: TossGame;
-    player: "CHALLENGER" | "CHALLENGEE";
-  }) {
-    const win = g.winner === player;
-    const p = g[player === "CHALLENGER" ? "challenger" : "challengee"];
-
+  static makeTossResultEmbeds({ g }: { g: TossGame }): MessageEmbedOptions[] {
     const gifs = {
       TAILS: {
         lose: "https://s10.gifyu.com/images/tails-coin-static---lose.gif",
@@ -398,38 +383,48 @@ export default class TossController {
 
     const result = g.result as Exclude<TossGame["result"], "UNDECIDED">;
 
-    const embed = new MessageEmbed()
-      .setAuthor({
-        name: p.member.displayName,
-        iconURL: p.member.displayAvatarURL(),
-      })
-      .setTitle("Toss Results")
-      .setDescription(
-        `It was **${g.result}**! You ${
-          win
-            ? `**WON** ${Format.currency(g.amount)} \u{1f389} `
-            : `**LOST** ${Format.currency(g.amount)} \u{1f62d}`
-        }`
-      )
-      .setColor(win ? "GREEN" : "RED")
-      .addField("Challenger", userMention(g.challenger.member.id))
-      .addField("Challengee", userMention(g.challengee.member.id))
-      .addField("Bet", `${g.amount}`, true)
-      .addField("Rake", `${g.rake}`, true)
-      .setImage(gifs[result][win ? "win" : "lose"]);
+    const challengerWonLost =
+      g.result === g.choice
+        ? `**WON** ${Format.currency(g.amount)} \u{1f389} `
+        : `**LOST** ${Format.currency(g.amount)} \u{1f62d}`;
 
-    const net = win ? g.amount - g.rake : -g.amount;
-    const before = p.user!.gbt - net;
+    let challengerNet =
+      g.winner === "CHALLENGER" ? g.amount - g.rake : -g.amount;
+    let challengerBefore = g.challenger.user.gbt - challengerNet;
 
-    if (win) {
-      embed.addField("Return", `${g.amount + net}`, true);
+    const embeds: MessageEmbedOptions[] = [
+      {
+        title: "Toss Results",
+        thumbnail: { url: gifs[result]["win"] },
+        description: `It was **${g.result}**! ${g.challenger.user.mention} ${challengerWonLost}`,
+        fields: [
+          { name: "Challengee", value: userMention(g.challengee.member.id) },
+        ],
+      },
+      {
+        author: {
+          name: g.challenger.member.displayName,
+          iconURL: g.challenger.member.displayAvatarURL(),
+        },
+        description: Format.transaction(challengerBefore, challengerNet),
+        color: g.choice === g.result ? "DARK_GREEN" : "DARK_RED",
+      },
+    ];
+
+    if (!g.againstHouse) {
+      let challengeeNet =
+        g.winner === "CHALLENGEE" ? g.amount - g.rake : -g.amount;
+      let challengeeBefore = g.challengee.user.gbt - challengeeNet;
+      embeds.push({
+        author: {
+          name: g.challengee.member.displayName,
+          iconURL: g.challengee.member.displayAvatarURL(),
+        },
+        description: Format.transaction(challengeeBefore, challengeeNet),
+        color: g.choice !== g.result ? "DARK_GREEN" : "DARK_RED",
+      });
     }
 
-    embed.addField(
-      `New ${Format.currency(null)} Balance`,
-      Format.transaction(before, net)
-    );
-
-    return embed;
+    return embeds;
   }
 }

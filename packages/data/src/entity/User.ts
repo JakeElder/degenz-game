@@ -189,4 +189,8 @@ export class User extends BaseEntity {
     }
     return !!this.achievements.find((a) => a.id === achievement);
   }
+
+  get mention() {
+    return `<@${this.id}>`;
+  }
 }

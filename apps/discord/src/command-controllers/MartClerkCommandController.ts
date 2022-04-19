@@ -123,7 +123,9 @@ export default class MartClerkCommandController extends CommandController {
             new MessageButton()
               .setCustomId(`buy:${item.id}`)
               .setEmoji(item.emoji.identifier)
-              .setStyle(!!boughtItem || item.stock === 0 ? "SECONDARY" : "PRIMARY")
+              .setStyle(
+                !!boughtItem || item.stock === 0 ? "SECONDARY" : "PRIMARY"
+              )
               .setLabel(item.name)
               .setDisabled(!!boughtItem || item.stock === 0)
           )
