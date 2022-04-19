@@ -9,6 +9,7 @@ import {
   OneToOne,
   JoinColumn,
 } from "typeorm";
+import { Permissions } from "discord.js";
 import { Emoji } from "..";
 
 export type RoleTypeSymbol =
@@ -22,6 +23,7 @@ export type EveryoneRoleSymbol = "EVERYONE";
 
 export type BaseRoleSymbol =
   | "VERIFIED"
+  | "PREGEN"
   | "DEGEN"
   | "PRISONER"
   | "ESTABLISHMENT";
@@ -89,7 +91,7 @@ export class Role extends BaseEntity {
   @JoinColumn()
   emoji: Emoji;
 
-  permissions: string;
+  permissions?: Permissions;
 
   @CreateDateColumn()
   createdAt: Date;
