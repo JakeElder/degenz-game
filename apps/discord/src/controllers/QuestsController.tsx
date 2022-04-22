@@ -1,5 +1,5 @@
 import React from "react";
-import { GuildMember, MessageActionRow, MessageButton } from "discord.js";
+import { MessageActionRow, MessageButton } from "discord.js";
 import { Global } from "../Global";
 import { PersistentMessageController } from "./PersistentMessageController";
 import QuestLogController from "./QuestLogController";
@@ -22,7 +22,7 @@ export default class QuestsController {
 
       if (i.customId === "SHOW_QUESTS") {
         await i.deferReply({ ephemeral: true });
-        const thread = await QuestLogController.show(i.member as GuildMember);
+        const thread = await QuestLogController.show(i.user.id);
         await i.editReply({
           embeds: [
             {
@@ -46,11 +46,14 @@ export default class QuestsController {
       .setCustomId("SHOW_QUESTS")
       .setStyle("DANGER");
 
-    const image =
-      "https://cdn.discordapp.com/attachments/922414052708327497/965595416538271784/PCScreen2.gif";
-
     await PersistentMessageController.set("SHOW_QUESTS", {
-      content: image,
+      embeds: [
+        {
+          image: {
+            url: "https://cdn.discordapp.com/attachments/922414052708327497/965595416538271784/PCScreen2.gif",
+          },
+        },
+      ],
       components: [new MessageActionRow().addComponents(button)],
     });
   }

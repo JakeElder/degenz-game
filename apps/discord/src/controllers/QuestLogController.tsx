@@ -16,8 +16,8 @@ import Quest from "../Quest";
 import { Global } from "../Global";
 import LearnToHackerBattleQuest from "../quests/LearnToHackerBattleQuest";
 import TossWithTedQuest from "../quests/TossWithTedQuest";
-import ShopAtMerrisMartQuest from "../quests/ShopAtMerrisMartQuest";
 import GetWhitelistQuest from "../quests/GetWhitelistQuest";
+import ShopAtMerrisMartQuest from "../quests/ShopAtMerrisMartQuest";
 
 const rest = new REST({ version: "10", rejectOnRateLimit: ["/"] }).setToken(
   Config.botToken("ADMIN")
@@ -229,9 +229,9 @@ export default class QuestLogController {
     await channel.save();
   }
 
-  static async show(member: GuildMember) {
+  static async show(userId: User["id"]) {
     const user = await User.findOne({
-      where: { id: member.id },
+      where: { id: userId },
       relations: [
         "achievements",
         "questLogChannel",
@@ -247,7 +247,7 @@ export default class QuestLogController {
     const { thread, isNew } = await this.getQuestLogChannel(user);
 
     if (isNew) {
-      await this.sendQuestMessages(user, thread);
+      this.sendQuestMessages(user, thread);
     }
 
     return thread;

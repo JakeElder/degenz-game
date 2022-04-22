@@ -14,10 +14,7 @@ prisoner.commands = [];
 
 prisoner.commands.push({
   id: "ESCAPE",
-  permissions: [
-    { id: "PRISONER", type: 1, permission: true },
-    { id: "ADMIN", type: 1, permission: true },
-  ],
+  permissions: [{ id: "PRISONER", type: 1, permission: true }],
   data: new SlashCommandBuilder()
     .setName("escape")
     .setDescription(`Try and escape while Hugh keeps lookout.`)

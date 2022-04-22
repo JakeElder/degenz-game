@@ -286,4 +286,17 @@ export default class WorldNotifier {
       );
     }
   }
+
+  static async questCompleted(e: PickEvent<"QUEST_COMPLETED">) {
+    const message = r(
+      <>
+        {e.data.user.mention} completed the `{e.data.quest}` quest.{" "}
+        {Format.transaction(
+          e.data.user.gbt - e.data.achievement.reward,
+          e.data.achievement.reward
+        )}
+      </>
+    );
+    await this.logToHOP("ALLY", e.type, message);
+  }
 }

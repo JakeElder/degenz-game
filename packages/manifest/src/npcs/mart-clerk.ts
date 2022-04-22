@@ -33,8 +33,8 @@ martClerk.commands = [];
 martClerk.commands.push({
   id: "STOCK",
   permissions: [
+    { id: "PREGEN", type: 1, permission: true },
     { id: "DEGEN", type: 1, permission: true },
-    { id: "ADMIN", type: 1, permission: true },
   ],
   // restrict: restrictToMart,
   data: new SlashCommandBuilder()
@@ -46,8 +46,8 @@ martClerk.commands.push({
 martClerk.commands.push({
   id: "BUY",
   permissions: [
+    { id: "PREGEN", type: 1, permission: true },
     { id: "DEGEN", type: 1, permission: true },
-    { id: "ADMIN", type: 1, permission: true },
   ],
   // restrict: restrictToMart,
   data: new SlashCommandBuilder()

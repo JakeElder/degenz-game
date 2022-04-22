@@ -18,7 +18,7 @@ export class QuestLogMessage extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Column()
   quest: QuestSymbol;
 
   @Column()

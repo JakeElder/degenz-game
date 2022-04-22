@@ -25,13 +25,13 @@ import {
   OneMoreThing,
   SelfDestructMessage,
   RedpillPrompt,
-  StatsPrompt,
-  StatsPromptPrep,
   StatsRewardMessage,
   UnderstandPrompt,
   UnderstandResponse,
   WelcomeComrade,
   WorldIntro,
+  GBTReward,
+  GBTUsage,
 } from "../legacy/onboard-dialog";
 import Utils from "../Utils";
 import { makeButton } from "../legacy/utils";
@@ -50,6 +50,9 @@ import random from "random";
 import Events from "../Events";
 import { Channel } from "../Channel";
 import { AchievementSymbol } from "data/types";
+import QuestLogController from "./QuestLogController";
+import SelfDestructController from "./SelfDestructController";
+import { ChannelMention } from "../legacy/templates";
 
 const { r } = Utils;
 
@@ -273,8 +276,7 @@ export default class OnboardController {
 
   static async sendRedPillTakenResponse(user: User) {
     const ally = Global.bot("ALLY");
-    await AchievementController.award(user, "JOINED_THE_DEGENZ");
-    await UserController.openWorld(user);
+    await AchievementController.award(user, "JOIN_THE_DEGENZ_QUEST_COMPLETED");
     await Utils.delay(3000);
 
     const channel = await this.getOnboardingChannel(user, ally);
@@ -282,10 +284,31 @@ export default class OnboardController {
     await channel.send(r(<InitiationCongrats />));
     await Utils.delay(3000);
 
-    await channel.send(r(<StatsPromptPrep />));
-    await Utils.delay(2500);
+    await channel.send(r(<GBTReward initial={user.gbt - 100} net={100} />));
+    await Utils.delay(1000);
 
-    await channel.send(r(<StatsPrompt />));
+    await channel.send(r(<GBTUsage />));
+
+    const questThread = await QuestLogController.show(user.id);
+
+    await SelfDestructController.init(channel, 30, async () => {
+      const tenancy = user.dormitoryTenancy;
+      const oc = tenancy.onboardingChannel;
+      tenancy.onboardingChannel = null;
+      await tenancy.save();
+      await oc.remove();
+    });
+
+    await channel.send("Ok, that's it for now.. get out of here!!");
+
+    await channel.send(
+      r(
+        <>
+          **GO TO** <ChannelMention id={questThread.id} /> see how you can earn
+          more {Config.emojiCode("GBT_COIN")}!
+        </>
+      )
+    );
   }
 
   static async sendStatsCheckedResponse(user: User) {
@@ -373,12 +396,7 @@ export default class OnboardController {
       embeds: [
         {
           color: "RED",
-          description: r(
-            <SelfDestructMessage
-              dormChannelId={dormitory.channel.channel.id}
-              seconds={30}
-            />
-          ),
+          description: r(<SelfDestructMessage seconds={30} />),
         },
       ],
     });
@@ -425,12 +443,7 @@ export default class OnboardController {
             embeds: [
               {
                 color: "RED",
-                description: r(
-                  <SelfDestructMessage
-                    dormChannelId={dormitory.id}
-                    seconds={30 - i}
-                  />
-                ),
+                description: r(<SelfDestructMessage seconds={30 - i} />),
               },
             ],
           });
@@ -480,20 +493,17 @@ export default class OnboardController {
   }
 
   static async skip(user: User) {
-    await UserController.openWorld(user);
+    const onboardingAchievements: AchievementSymbol[] = [
+      "JOIN_THE_DEGENZ_QUEST_COMPLETED",
+      "HELP_REQUESTED",
+      "STATS_CHECKED",
+    ];
 
     const achievements = await Achievement.find({
-      where: {
-        id: In([
-          "JOINED_THE_DEGENZ",
-          "HELP_REQUESTED",
-          "STATS_CHECKED",
-        ] as AchievementSymbol[]),
-      },
+      where: { id: In(onboardingAchievements) },
     });
 
     user.achievements = achievements;
-
     await user.save();
   }
 
@@ -505,7 +515,7 @@ export default class OnboardController {
 
     const { user } = tenancy;
 
-    if (user.hasAchievement("JOINED_THE_DEGENZ")) {
+    if (user.hasAchievement("JOIN_THE_DEGENZ_QUEST_COMPLETED")) {
       Events.emit("ONBOARDING_THREAD_PURGED", { user, redpilled: "YES" });
       await thread.delete();
     } else {

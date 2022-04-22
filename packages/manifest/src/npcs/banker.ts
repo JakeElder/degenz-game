@@ -16,6 +16,7 @@ banker.commands = [];
 banker.commands.push({
   id: "BALANCE",
   permissions: [
+    { id: "PREGEN", type: 1, permission: true },
     { id: "DEGEN", type: 1, permission: true },
     { id: "ADMIN", type: 1, permission: true },
   ],
@@ -30,6 +31,7 @@ banker.commands.push({
 banker.commands.push({
   id: "TRANSFER",
   permissions: [
+    { id: "PREGEN", type: 1, permission: true },
     { id: "DEGEN", type: 1, permission: true },
     { id: "ADMIN", type: 1, permission: true },
   ],

@@ -4,7 +4,7 @@ import random from "random";
 import Config from "config";
 import { Format } from "lib";
 
-export type StatsViewModel = {
+type StatsViewModel = {
   member: GuildMember;
   imageURL: string;
   strength: number;
@@ -47,10 +47,8 @@ class Stats {
 
     return {
       color,
-      image: {
+      thumbnail: {
         url: model.imageURL,
-        height: 680,
-        width: 680,
       },
       author: {
         name: model.member.displayName,
@@ -70,14 +68,7 @@ class Stats {
           name: "Attributes",
           value: Format.codeBlock(this.makeAttributes(model)),
         },
-        // {
-        //   name: "Achievements",
-        //   value: `\`\`\`${user.achievements
-        //     .map((a) => `${TROPHY} ${a.symbol}`)
-        //     .join("\n")}\`\`\``,
-        // },
       ],
-      footer: { text: `Rarity: ????` },
     };
   }
 

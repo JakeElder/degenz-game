@@ -127,9 +127,24 @@ export const RedpillPrompt = () => (
 
 export const InitiationCongrats = () => (
   <>
-    Ok! You're now part of the **Degenz Army Resistance**! The{" "}
-    {emoji.get("pill")} **red pill** you just took will give you access to many
-    hidden places in **{Config.general("WORLD_NAME")}**.
+    Ok! You took the {emoji.get("pill")} **red pill** and completed your first
+    **QUEST**, `JOIN_THE_DEGENZ_ARMY`!
+  </>
+);
+
+export const GBTReward = ({
+  initial,
+  net,
+}: {
+  initial: number;
+  net: number;
+}) => <>For completing this quest, You earnt {Format.currency(net)}! </>;
+
+export const GBTUsage = () => (
+  <>
+    {Config.emojiCode("GBT_COIN")} is the **currency of Beautopia**. You can use
+    it to buy *real things* like NFT's in{" "}
+    <ChannelMention id={Config.channelId("MART")} />.
   </>
 );
 
@@ -171,14 +186,11 @@ export const RememberHelp = () => (
 
 export const SeeYa = () => <>See you around {Config.general("WORLD_NAME")}!</>;
 
-export const SelfDestructMessage = (props: {
-  dormChannelId: string;
-  seconds: number;
-}) => {
+export const SelfDestructMessage = ({ seconds }: { seconds: number }) => {
   return (
     <>
-      **This thread will self destruct in `{props.seconds}`{" "}
-      {pluralize("second", props.seconds)}!**
+      **This thread will self destruct in `{seconds}`{" "}
+      {pluralize("second", seconds)}!**
     </>
   );
 };

@@ -1,16 +1,18 @@
+import { channelMention } from "@discordjs/builders";
 import Config from "config";
 import { User } from "data/db";
-import { EmbedFieldData } from "discord.js";
-import React from "react";
 import { Global } from "../Global";
-import { ChannelMention } from "../legacy/templates";
 import Quest from "../Quest";
-import Utils from "../Utils";
 
 export default class GetWhitelistQuest extends Quest {
   constructor() {
     super();
     this.symbol = "GET_WHITELIST";
+    this.instructions = [
+      `**Go to** the ${channelMention(Config.channelId("WHITELIST"))} channel`,
+      `Press the **Give Me Whitelist** button`,
+      `Follow the instructions there!`,
+    ];
   }
 
   async getProgress(user: User) {
@@ -28,31 +30,13 @@ export default class GetWhitelistQuest extends Quest {
   async message(user: User, expanded: boolean) {
     const progress = await this.getProgress(user);
 
-    const details: EmbedFieldData[] = [];
-
-    if (expanded) {
-      details.push({
-        name: "Details",
-        value: Utils.r(
-          <>
-            If you want Whitelist, go to the{" "}
-            <ChannelMention id={Config.channelId("WHITELIST")} /> channel.
-            <br />
-            And press the **"Give Me Whitelist"** button.
-          </>
-        ),
-      });
-    }
-
     return this.format({
       title: "Get Whitelist",
       thumbnail: `${Config.env(
         "WEB_URL"
       )}/characters/npcs/RESISTANCE_LEADER.png`,
       progress,
-      description: <>Who *doesn't* want Whitelist?</>,
       expanded,
-      details,
       userDiscordId: user.id,
     });
   }

@@ -16,8 +16,8 @@ tosser.commands = [];
 tosser.commands.push({
   id: "TOSS",
   permissions: [
+    { id: "PREGEN", type: 1, permission: true },
     { id: "DEGEN", type: 1, permission: true },
-    { id: "ADMIN", type: 1, permission: true },
   ],
   // restrict: async (i, channel) => {
   //   if (channel.isTossHouse) {

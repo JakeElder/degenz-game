@@ -14,10 +14,7 @@ warden.commands = [];
 
 warden.commands.push({
   id: "BRIBE",
-  permissions: [
-    { id: "PRISONER", type: 1, permission: true },
-    { id: "ADMIN", type: 1, permission: true },
-  ],
+  permissions: [{ id: "PRISONER", type: 1, permission: true }],
   data: new SlashCommandBuilder()
     .setName("bribe")
     .setDescription(
@@ -58,10 +55,7 @@ warden.commands.push({
 
 warden.commands.push({
   id: "RELEASE",
-  permissions: [
-    { id: "THOUGHT_POLICE", type: 1, permission: true },
-    { id: "ADMIN", type: 1, permission: true },
-  ],
+  permissions: [{ id: "THOUGHT_POLICE", type: 1, permission: true }],
   data: new SlashCommandBuilder()
     .setName("release")
     .setDescription(`Release a prisoner`)

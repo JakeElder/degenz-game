@@ -7,8 +7,8 @@ import {
 } from "discord.js";
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import { AchievementSymbol, TossGame } from "data/types";
-import { User, MartItem, District, Dormitory, NPC } from "data/db";
+import { AchievementSymbol, QuestSymbol, TossGame } from "data/types";
+import { User, MartItem, District, Dormitory, NPC, Achievement } from "data/db";
 
 type EnterEvent = {
   type: "ENTER";
@@ -188,6 +188,7 @@ type AchievementAwardedEvent = {
   data: {
     user: User;
     achievement: AchievementSymbol;
+    isQuest: boolean;
   };
 };
 
@@ -249,6 +250,15 @@ type CitizenReleasedEvent = {
   };
 };
 
+type QuestCompletedEvent = {
+  type: "QUEST_COMPLETED";
+  data: {
+    user: User;
+    achievement: Achievement;
+    quest: QuestSymbol;
+  };
+};
+
 export type Event =
   | BotReadyEvent
   | CommandNotFoundEvent
@@ -281,7 +291,8 @@ export type Event =
   | TokensConfiscatedEvent
   | CitizenImprisonedEvent
   | CitizenEscapedEvent
-  | CitizenReleasedEvent;
+  | CitizenReleasedEvent
+  | QuestCompletedEvent;
 
 type EventHandler<E extends Event> = {
   [P in E["type"]]: (e: { type: E["type"]; data: E["data"] }) => void;
@@ -318,7 +329,8 @@ type DegenEmitterEvents = EventHandler<BotReadyEvent> &
   EventHandler<TokensConfiscatedEvent> &
   EventHandler<CitizenImprisonedEvent> &
   EventHandler<CitizenEscapedEvent> &
-  EventHandler<CitizenReleasedEvent>;
+  EventHandler<CitizenReleasedEvent> &
+  EventHandler<QuestCompletedEvent>;
 
 export type PickEvent<T extends keyof DegenEmitterEvents> = Parameters<
   DegenEmitterEvents[T]

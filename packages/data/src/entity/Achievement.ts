@@ -6,17 +6,13 @@ import {
   UpdateDateColumn,
   PrimaryColumn,
 } from "typeorm";
+import { QuestSymbol } from "../types";
 
 export type AchievementSymbol =
-  | "HELP_REQUESTED"
-  | "STATS_CHECKED"
-  | "JOINED_THE_DEGENZ"
-  | "SUPER_OBEDIENT"
+  | `${QuestSymbol}_QUEST_COMPLETED`
   | "FINISHED_TRAINER"
-  | "MART_STOCK_CHECKED"
-  | "ALLEGIANCE_PLEDGED"
-  | "TOSS_COMPLETED"
-  | "MART_ITEM_BOUGHT";
+  | "HELP_REQUESTED"
+  | "STATS_CHECKED";
 
 @Entity()
 export class Achievement extends BaseEntity {

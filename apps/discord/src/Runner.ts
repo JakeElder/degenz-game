@@ -125,7 +125,10 @@ export default class Runner {
     Events.on("TOSS_COMPLETED", (e) => {
       WorldNotifier.tossCompleted(e);
       Analytics.tossCompleted(e);
-      AchievementController.checkAndAward(e.data.challenger, "TOSS_COMPLETED");
+      AchievementController.checkAndAward(
+        e.data.challenger,
+        "TOSS_WITH_TED_QUEST_COMPLETED"
+      );
     });
 
     Events.on("REDPILL_TAKEN", (e) => {
@@ -164,6 +167,10 @@ export default class Runner {
 
     Events.on("ACHIEVEMENT_AWARDED", (e) => {
       Analytics.achievementAwarded(e);
+    });
+
+    Events.on("QUEST_COMPLETED", (e) => {
+      WorldNotifier.questCompleted(e);
     });
 
     Events.on("DORM_READY_BUTTON_PRESSED", (e) => {

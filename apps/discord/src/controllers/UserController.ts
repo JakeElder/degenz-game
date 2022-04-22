@@ -63,7 +63,7 @@ export default class UserController {
     if (user === null) {
       [user] = await Promise.all([
         this.add(member),
-        member.roles.add(Config.roleId("VERIFIED")),
+        member.roles.add(Config.roleId("PREGEN")),
       ]);
     }
 
@@ -144,7 +144,7 @@ export default class UserController {
     if (user === null) {
       [user] = await Promise.all([
         this.add(member),
-        member.roles.add(Config.roleId("VERIFIED")),
+        member.roles.add(Config.roleId("PREGEN")),
       ]);
     }
 
@@ -157,24 +157,17 @@ export default class UserController {
     const bb = Global.bot("BIG_BROTHER");
     const admin = Global.bot("ADMIN");
 
-    const dormId = dormitory.channel.channel.id;
+    const entrance = await bb.getTextChannel(Config.channelId("ENTRANCE"));
 
-    const dormChannelBB = await bb.getTextChannel(dormId);
-    const dormChannelAdmin = await admin.getTextChannel(dormId);
-
-    await Promise.all([
-      dormChannelAdmin.permissionOverwrites.create(member, {
-        VIEW_CHANNEL: true,
-      }),
-    ]);
-
-    const thread = await dormChannelBB.threads.create({
-      name: `\u2331\uFF5C${paramCase(member!.displayName)}s-orientation`,
+    const thread = await entrance.threads.create({
+      name: `📟｜${paramCase(member!.displayName)}s-orientation`,
       invitable: false,
-      autoArchiveDuration: 1440,
-      type: ["production"].includes(Config.env("NODE_ENV"))
-        ? "GUILD_PRIVATE_THREAD"
-        : "GUILD_PUBLIC_THREAD",
+      autoArchiveDuration: 60,
+      type:
+        admin.guild.features.includes("PRIVATE_THREADS") ||
+        Config.env("NODE_ENV") === "production"
+          ? "GUILD_PRIVATE_THREAD"
+          : "GUILD_PUBLIC_THREAD",
     });
 
     user.gbt = onboard ? 0 : 100;
@@ -296,7 +289,7 @@ export default class UserController {
         await apartment.delete();
       }
     } catch (e) {
-      // console.error(e)
+      console.error(e);
     }
 
     // Remove dorm tenancy
@@ -308,19 +301,20 @@ export default class UserController {
         const dormChannel = await admin.getTextChannel(discordChannelId);
 
         const { onboardingChannel } = tenancy;
-        if (onboardingChannel) {
-          const thread = await dormChannel.threads.fetch(onboardingChannel.id!);
-          await onboardingChannel.remove();
-          if (thread) {
-            thread.delete();
-          }
-        }
 
         try {
           dormChannel.permissionOverwrites.delete(user.id);
         } catch (e) {}
 
         await tenancy.remove();
+
+        if (onboardingChannel) {
+          const thread = await dormChannel.threads.fetch(onboardingChannel.id);
+          await onboardingChannel.remove();
+          if (thread) {
+            thread.delete();
+          }
+        }
       }
     } catch (e) {
       console.error(e);
@@ -374,7 +368,7 @@ export default class UserController {
       return { success: false, code: "USER_NOT_FOUND" };
     }
 
-    if (!prisoner.hasAchievement("JOINED_THE_DEGENZ")) {
+    if (!prisoner.hasAchievement("JOIN_THE_DEGENZ_QUEST_COMPLETED")) {
       return { success: false, code: "USER_NOT_REDPILLED" };
     }
 
@@ -550,19 +544,5 @@ export default class UserController {
     }
 
     return { success: true, code: "USER_RELEASED" };
-  }
-
-  static async openWorld(user: User) {
-    const member = await UserController.getMember(user.id);
-    await member!.roles.add(Config.roleId("DEGEN"));
-    await member!.roles.remove(Config.roleId("VERIFIED"));
-    const admin = Global.bot("ADMIN");
-
-    if (user.primaryTenancy.type === "DORMITORY") {
-      const dormChannel = await admin.getTextChannel(
-        user.primaryTenancy.dormitory.channel.channel.id
-      );
-      await dormChannel.permissionOverwrites.delete(user.id);
-    }
   }
 }

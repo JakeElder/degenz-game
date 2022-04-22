@@ -115,21 +115,7 @@ export default class AllyCommandController extends CommandController {
       },
     });
 
-    await i.reply({
-      embeds: [
-        e,
-        {
-          author: {
-            icon_url: `https://stage.degenz.game/info.png`,
-            name: "Info",
-          },
-          color: "BLUE",
-          description:
-            "Your NFT will be your in game character, it's attributes and rarity will grant you special abilities in game.",
-        },
-      ],
-      ephemeral: true,
-    });
+    await i.reply({ embeds: [e], ephemeral: true });
 
     if (!checkeeUser.hasAchievement("STATS_CHECKED")) {
       await OnboardController.sendStatsCheckedResponse(checkeeUser);

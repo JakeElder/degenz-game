@@ -1,53 +1,33 @@
+import { channelMention } from "@discordjs/builders";
 import Config from "config";
 import { User } from "data/db";
-import { EmbedFieldData } from "discord.js";
-import React from "react";
-import { ChannelMention, UserMention } from "../legacy/templates";
 import Quest from "../Quest";
-import Utils from "../Utils";
 
 export default class TossWithTedQuest extends Quest {
   constructor() {
     super();
     this.symbol = "TOSS_WITH_TED";
+    this.instructions = [
+      `**Go to** ${channelMention(Config.channelId("TOSS_HOUSE"))}`,
+      `Type the \`/toss\` command to gamble`,
+    ];
   }
 
   async getProgress(user: User) {
-    let progress: number = user.hasAchievement("TOSS_COMPLETED") ? 1 : 0;
+    let progress: number = user.hasAchievement("TOSS_WITH_TED_QUEST_COMPLETED")
+      ? 1
+      : 0;
     return progress;
   }
 
   async message(user: User, expanded: boolean) {
     const progress = await this.getProgress(user);
 
-    const details: EmbedFieldData[] = [];
-
-    if (expanded) {
-      details.push({
-        name: "Details",
-        value: Utils.r(
-          <>
-            If you want to gamble, go and see{" "}
-            <UserMention id={Config.clientId("TOSSER")} /> in{" "}
-            <ChannelMention id={Config.channelId("TOSS_HOUSE")} />. Remember to
-            type the `/help` command when you get there.
-          </>
-        ),
-      });
-    }
-
     return this.format({
       title: "Toss with Ted",
       thumbnail: `${Config.env("WEB_URL")}/characters/npcs/TOSSER.png`,
       progress,
-      description: (
-        <>
-          Go and toss a coin at{" "}
-          <ChannelMention id={Config.channelId("TOSS_HOUSE")} />
-        </>
-      ),
       expanded,
-      details,
       userDiscordId: user.id,
     });
   }

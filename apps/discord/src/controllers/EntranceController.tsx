@@ -16,6 +16,7 @@ import UserController from "./UserController";
 import Utils from "../Utils";
 import TheProjects, { ProjectsEntryData } from "../TheProjects";
 import TheShelters, { SheltersEntryData } from "../TheShelters";
+import { UserMention } from "../legacy/templates";
 
 const { r } = Utils;
 
@@ -92,7 +93,7 @@ export default class EntranceController {
         <br />
         <br />
         `/hack`,{"\u200e"}`/steal`{"\u200e"}and{"\u200e"}`/toss` your way up the
-        Ranks, while taking on the{" "}
+        ranks, while taking on the{" "}
         {roleMention(Config.roleId("THOUGHT_POLICE"))} and{" "}
         {userMention(Config.clientId("BIG_BROTHER"))}.
         <br />
@@ -152,7 +153,17 @@ export default class EntranceController {
 
     if (user && user.inGame) {
       await i.editReply({
-        content: `${userMention(user.id)} - You're already a Degen.`,
+        embeds: [
+          {
+            color: "RED",
+            description: Utils.r(
+              <>
+                <UserMention id={user.id} /> - What, **again**? You're already
+                *in* the server.
+              </>
+            ),
+          },
+        ],
       });
       return;
     }
@@ -166,72 +177,29 @@ export default class EntranceController {
         user,
         dormitory: tenancy.dormitory,
       });
-      const um = userMention(i.user.id);
-      const dorm = channelMention(Config.channelId(tenancy.dormitory.id));
+
+      // const um = userMention(i.user.id);
       const onboardingThread = channelMention(tenancy.onboardingChannel!.id);
-      const prefix = tenancy.dormitory.id.startsWith("THE") ? "" : "the ";
+
+      const member = await UserController.getMember(user.id);
 
       await i.editReply({
-        content: r(
-          <>
-            {um} - You have been assigned a space in {prefix}
-            {dorm} dormitory. **GO TO** {onboardingThread} to receive further
-            instructions.
-          </>
-        ),
+        embeds: [
+          {
+            author: {
+              iconURL: member.displayAvatarURL(),
+              name: member.displayName,
+            },
+            title: "Welcome to BEAUTOPIA",
+            color: "RED",
+            description: r(
+              <>**GO TO** {onboardingThread} to receive further instructions.</>
+            ),
+          },
+        ],
       });
 
       EntranceController.update();
     }
-  }
-
-  static async setStatus(open: boolean, isRetry = false) {
-    if (this.rateLimited && !isRetry) {
-      return { status: 429 };
-    }
-
-    const admin = Global.bot("ADMIN");
-    const room = await admin.getTextChannel(Config.channelId("ENTRANCE"));
-
-    const disabled = `\u{1f02b}\uff5centrance`;
-    const enabled = `\u{1f006}\uff5centrance`;
-
-    const newName = open ? enabled : disabled;
-
-    if (room.name === newName) {
-      return { status: 304 };
-    }
-
-    const res = await axios({
-      method: "PATCH",
-      baseURL: "https://discord.com/api/v9",
-      url: `/channels/${Config.channelId("ENTRANCE")}`,
-      data: { name: newName },
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bot ${Config.botToken("ADMIN")}`,
-      },
-      validateStatus: () => true,
-    });
-
-    if (res.status === 429) {
-      const wait = res.data.retry_after + 2;
-      console.log(`RATE_LIMIT: retrying after ${wait} seconds`);
-      this.rateLimited = true;
-      setTimeout(async () => {
-        const data = await this.computeEntryData();
-        const res = await this.setStatus(data.open);
-        console.log("retry:", res);
-        if (res.status >= 200 && res.status < 300) {
-          console.log(`RATE_LIMIT_LIFTED: waiting room status in sync`);
-        }
-      }, wait * 1000);
-    } else if (res.status < 200 || res.status >= 300) {
-      console.log(res.status, res.statusText);
-    } else {
-      this.rateLimited = false;
-    }
-
-    return res;
   }
 }

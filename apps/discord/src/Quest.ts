@@ -1,29 +1,27 @@
-import React from "react";
 import { QuestSymbol } from "data/types";
 import {
-  EmbedFieldData,
   GuildMember,
   MessageActionRow,
   MessageButton,
+  MessageEmbedOptions,
   MessageOptions,
   Util,
 } from "discord.js";
 import { User } from "data/db";
 import Config from "config";
-import Utils from "./Utils";
+import { Format } from "lib";
 
 type FormatProps = {
   title: string;
   thumbnail: string;
-  description: React.ReactElement;
   progress: number;
   userDiscordId: GuildMember["id"];
   expanded: boolean;
-  details: EmbedFieldData[];
 };
 
 export default abstract class Quest {
-  symbol!: QuestSymbol;
+  symbol: QuestSymbol;
+  instructions: string[];
 
   abstract message(user: User, expanded: boolean): Promise<MessageOptions>;
   abstract getProgress(user: User): Promise<number>;
@@ -31,56 +29,71 @@ export default abstract class Quest {
   makeToggleButton({
     userDiscordId,
     expanded,
-    complete,
   }: {
     userDiscordId: GuildMember["id"];
     expanded: boolean;
-    complete: boolean;
   }) {
     return new MessageButton()
       .setLabel(expanded ? "Hide Details" : "Show Details")
-      .setStyle(complete ? "SUCCESS" : "PRIMARY")
+      .setStyle("SECONDARY")
       .setCustomId(`TOGGLE_QUEST_DETAILS:${this.symbol}:${userDiscordId}`);
   }
 
   format(props: FormatProps): MessageOptions {
-    const {
-      title,
-      description,
-      thumbnail,
-      progress,
-      userDiscordId,
-      expanded,
-      details,
-    } = props;
+    const { title, thumbnail, progress, userDiscordId, expanded } = props;
 
     const complete = progress === 1;
     const button = this.makeToggleButton({
       userDiscordId,
       expanded,
-      complete,
     });
     const color = complete
       ? Util.resolveColor("DARK_GREEN")
-      : Util.resolveColor("BLUE");
+      : Util.resolveColor("NOT_QUITE_BLACK");
+
+    const embeds: MessageEmbedOptions[] = [
+      {
+        thumbnail: { url: thumbnail },
+        color,
+        title,
+        fields: [
+          {
+            name: "Progress",
+            value: complete ? "🏅 Complete" : "▫️ Incomplete",
+            inline: true,
+          },
+          {
+            name: "Reward",
+            value: Format.currency(100),
+            inline: true,
+          },
+        ],
+        image: { url: `${Config.env("WEB_URL")}/blank-row.png` },
+      },
+    ];
+
+    if (expanded) {
+      const emojis = [
+        "\u0031\ufe0f\u20e3",
+        "\u0032\ufe0f\u20e3",
+        "\u0033\ufe0f\u20e3",
+        "\u0034\ufe0f\u20e3",
+        "\u0035\ufe0f\u20e3",
+        "\u0036\ufe0f\u20e3",
+        "\u0037\ufe0f\u20e3",
+        "\u0038\ufe0f\u20e3",
+        "\u0039\ufe0f\u20e3",
+      ];
+
+      embeds.push({
+        description: this.instructions
+          .map((i, idx) => `${emojis[idx]}\u2007${i}`)
+          .join("\n"),
+      });
+    }
 
     return {
-      embeds: [
-        {
-          title,
-          thumbnail: { url: thumbnail },
-          color,
-          description: Utils.r(description),
-          fields: [
-            {
-              name: "Progress",
-              value: complete ? "\u2705 Complete" : "\u274c Incomplete",
-            },
-            ...details,
-          ],
-          image: { url: `${Config.env("WEB_URL")}/blank-row.png` },
-        },
-      ],
+      embeds,
       components: [new MessageActionRow().addComponents(button)],
     };
   }

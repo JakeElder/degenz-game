@@ -9,6 +9,7 @@ import {
   RoleSymbol,
   GeneralConfig,
   ManagedChannelSymbol,
+  EmojiSymbol,
 } from "data/types";
 import { Emoji, ManagedChannel, NPC, Role } from "data/db";
 import chalk from "chalk";
@@ -67,6 +68,21 @@ export default class ConfigManager {
 
   static env<T extends keyof EnvVars>(k: T): EnvVars[T] {
     return env[k];
+  }
+
+  static emojiCodes(...ids: EmojiSymbol[]) {
+    return ids.map((id) => this.emojiCode(id));
+  }
+
+  static emojiCode(id: EmojiSymbol) {
+    const row = this.emojis.find((r) => r.id === id);
+
+    if (!row) {
+      this.notFound("emoji", id);
+      throw new Error();
+    }
+
+    return row.toString();
   }
 
   static notFound(entity: string, id: string) {

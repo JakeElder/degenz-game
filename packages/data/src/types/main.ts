@@ -60,13 +60,12 @@ export type EnvVars = SetOptional<
     | "DATABASE_URL"
     | "MONGO_URI"
     | "MIXPANEL_PROJECT_TOKEN"
-    | "NODE_ENV"
     | "ROLLBAR_TOKEN"
     | "WEB_URL",
     string
   >,
   "CA_CERT"
->;
+> & { NODE_ENV: "stage" | "production" | "development" };
 
 export type GeneralConfig = {
   DISTRICT_CAPACITY: number;
@@ -180,6 +179,7 @@ export type RecursivePartial<T> = {
 };
 
 export type QuestSymbol =
+  | "JOIN_THE_DEGENZ"
   | "PLEDGE"
   | "LEARN_TO_HACKER_BATTLE"
   | "TOSS_WITH_TED"

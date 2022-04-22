@@ -4,19 +4,20 @@ import { Global } from "../Global";
 import Events from "../Events";
 import { Format } from "lib";
 import QuestLogController from "./QuestLogController";
-import { AchievementSymbol } from "data/types";
+import { AchievementSymbol, QuestSymbol } from "data/types";
 
 export default class AchievementController {
   static descriptions: Record<AchievementSymbol, string> = {
-    JOINED_THE_DEGENZ: "You took the `/redpill` and joined the Degenz army.",
+    JOIN_THE_DEGENZ_QUEST_COMPLETED:
+      "You took the `/redpill` and joined the Degenz army.",
+    PLEDGE_QUEST_COMPLETED: "You pledged your allegiance to Big Brother.",
+    TOSS_WITH_TED_QUEST_COMPLETED: "You gambled at Teds Toss House",
+    LEARN_TO_HACKER_BATTLE_QUEST_COMPLETED: "-",
+    GET_WHITELIST_QUEST_COMPLETED: "-",
+    SHOP_AT_MERRIS_MART_QUEST_COMPLETED: "-",
+    FINISHED_TRAINER: "-",
     HELP_REQUESTED: "You used the `/help` command.",
     STATS_CHECKED: "You used the `/stats` command.",
-    SUPER_OBEDIENT: "You typed the `/obey` command twice. Such a good citizen.",
-    ALLEGIANCE_PLEDGED: "You pledged your allegiance to Big Brother.",
-    TOSS_COMPLETED: "You gambled at Teds Toss House",
-    FINISHED_TRAINER: "-",
-    MART_ITEM_BOUGHT: "-",
-    MART_STOCK_CHECKED: "-",
   };
 
   static async checkAndAward(user: User, achievement: AchievementSymbol) {
@@ -66,13 +67,23 @@ export default class AchievementController {
         Format.transaction(startBalance, achievementData.reward)
       );
 
-    if (achievement === "JOINED_THE_DEGENZ") {
+    if (achievement === "JOIN_THE_DEGENZ_QUEST_COMPLETED") {
       embed = embed.setImage(
         "https://s10.gifyu.com/images/HeaderCryptoDegenz-min.gif"
       );
     }
 
     await residence.send({ embeds: [embed] });
-    Events.emit("ACHIEVEMENT_AWARDED", { user, achievement });
+    const isQuest = achievement.endsWith("QUEST_COMPLETED");
+
+    if (isQuest) {
+      Events.emit("QUEST_COMPLETED", {
+        user,
+        quest: achievement.replace(/_QUEST_COMPLETED$/, "") as QuestSymbol,
+        achievement: achievementData,
+      });
+    }
+
+    Events.emit("ACHIEVEMENT_AWARDED", { user, achievement, isQuest });
   }
 }

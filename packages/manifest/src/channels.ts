@@ -13,11 +13,11 @@ const READ_ONLY: ManagedChannel["permissionOverwrites"] = [
     ],
   },
   {
-    id: "DEGEN",
+    id: "PREGEN",
     allow: ["VIEW_CHANNEL"],
   },
   {
-    id: "VERIFIED",
+    id: "DEGEN",
     allow: ["VIEW_CHANNEL"],
   },
   {
@@ -36,7 +36,7 @@ const DISCOVERABLE: ManagedChannel["permissionOverwrites"] = [
     deny: ["VIEW_CHANNEL"],
   },
   {
-    id: "VERIFIED",
+    id: "PREGEN",
     allow: ["VIEW_CHANNEL"],
   },
   {

@@ -16,8 +16,8 @@ ally.commands = [];
 ally.commands.push({
   id: "EAT",
   permissions: [
+    { id: "PREGEN", type: 1, permission: true },
     { id: "DEGEN", type: 1, permission: true },
-    { id: "ADMIN", type: 1, permission: true },
   ],
   data: new SlashCommandBuilder()
     .setName("eat")
@@ -64,8 +64,8 @@ ally.commands.push({
 ally.commands.push({
   id: "STATS",
   permissions: [
+    { id: "PREGEN", type: 1, permission: true },
     { id: "DEGEN", type: 1, permission: true },
-    { id: "ADMIN", type: 1, permission: true },
   ],
   data: new SlashCommandBuilder()
     .setName("stats")
@@ -90,8 +90,8 @@ ally.commands.push({
 ally.commands.push({
   id: "INVENTORY",
   permissions: [
+    { id: "PREGEN", type: 1, permission: true },
     { id: "DEGEN", type: 1, permission: true },
-    { id: "ADMIN", type: 1, permission: true },
   ],
   data: new SlashCommandBuilder()
     .setName("inventory")
@@ -106,8 +106,8 @@ ally.commands.push({
 ally.commands.push({
   id: "LEADERBOARD",
   permissions: [
+    { id: "PREGEN", type: 1, permission: true },
     { id: "DEGEN", type: 1, permission: true },
-    { id: "ADMIN", type: 1, permission: true },
   ],
   data: new SlashCommandBuilder()
     .setName("leaderboard")

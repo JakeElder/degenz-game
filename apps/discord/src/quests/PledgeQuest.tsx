@@ -1,16 +1,17 @@
+import { channelMention } from "@discordjs/builders";
 import Config from "config";
 import { Pledge, User } from "data/db";
-import { EmbedFieldData } from "discord.js";
-import { Format } from "lib";
-import React from "react";
-import { ChannelMention, UserMention } from "../legacy/templates";
 import Quest from "../Quest";
-import Utils from "../Utils";
 
 export default class PledgeQuest extends Quest {
   constructor() {
     super();
     this.symbol = "PLEDGE";
+    this.instructions = [
+      `**Go to** ${channelMention(Config.channelId("HALL_OF_ALLEIGANCE"))}`,
+      `Press the **PLEDGE TO CLAIM $GBT** button`,
+      `**Profit** ${Config.emojiCode("GBT_COIN")}`,
+    ];
   }
 
   async getProgress(user: User) {
@@ -22,33 +23,11 @@ export default class PledgeQuest extends Quest {
   async message(user: User, expanded: boolean) {
     const progress = await this.getProgress(user);
 
-    const details: EmbedFieldData[] = [];
-
-    if (expanded) {
-      details.push({
-        name: "Details",
-        value: Utils.r(
-          <>
-            Go to <ChannelMention id={Config.channelId("HALL_OF_ALLEIGANCE")} />{" "}
-            and press the **PLEDGE** button to receive your first allowance.
-          </>
-        ),
-      });
-    }
-
     return this.format({
       title: "Pledge Allegiance to Big Brother",
       thumbnail: `${Config.env("WEB_URL")}/characters/npcs/BIG_BROTHER.png`,
       progress,
-      description: (
-        <>
-          Pledge your allegiance to{" "}
-          <UserMention id={Config.clientId("BIG_BROTHER")} /> and receive **
-          {Format.token()}**.
-        </>
-      ),
       expanded,
-      details,
       userDiscordId: user.id,
     });
   }
