@@ -14,6 +14,7 @@ import Events from "../Events";
 import { Format } from "lib";
 import { Global } from "../Global";
 import { MartItemSymbol } from "data/types";
+import AchievementController from "../controllers/AchievementController";
 
 export default class MartClerkCommandController extends CommandController {
   static async init() {
@@ -38,6 +39,10 @@ export default class MartClerkCommandController extends CommandController {
           const update = await MartClerkCommandController.makeBuyResponse(id);
           await i.update(update);
           Events.emit("MART_ITEM_BOUGHT", { user, item });
+          AchievementController.checkAndAward(
+            user,
+            "SHOP_AT_MERRIS_MART_QUEST_COMPLETED"
+          );
           return;
         } else {
           if (res.code === "INSUFFICIENT_BALANCE") {

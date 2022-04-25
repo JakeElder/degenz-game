@@ -12,7 +12,7 @@ const td = new TurndownService();
 
 class ManagedChannel {
   static async get(id: ManagedChannelSymbol) {
-    return Channel.get(Config.channelId(id));
+    return Channel.getOrFail(Config.channelId(id));
   }
 }
 

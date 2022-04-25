@@ -63,7 +63,7 @@ export default class OnboardController {
   }
 
   static async bindButtonListeners() {
-    const [bb, ally] = Global.bots("BIG_BROTHER", "ALLY");
+    const [bb, ally, admin] = Global.bots("BIG_BROTHER", "ALLY", "ADMIN");
     await Promise.all([bb.ready, ally.ready]);
 
     bb.client.on("interactionCreate", async (i) => {
@@ -85,6 +85,25 @@ export default class OnboardController {
         this.sendIsHeGoneResponse(i);
       }
     });
+
+    admin.client.on("threadUpdate", async (prev, thread) => {
+      if (!prev.archived && thread.archived) {
+        if (await this.isOnboardingThread(thread)) {
+          this.purgeThread(thread);
+        }
+      }
+    });
+
+    admin.client.on("threadDelete", async (thread) => {
+      if (await this.isOnboardingThread(thread)) {
+        this.purgeThread(thread);
+      }
+    });
+  }
+
+  static async isOnboardingThread(thread: ThreadChannel) {
+    const c = await Channel.getDescriptor(thread.id);
+    return c.isOnboardingThread;
   }
 
   static async start(user: User) {
@@ -315,7 +334,9 @@ export default class OnboardController {
       const oc = tenancy.onboardingChannel;
       tenancy.onboardingChannel = null;
       await tenancy.save();
-      await oc.remove();
+      if (oc) {
+        await oc.remove();
+      }
     });
 
     await channel.send("Ok, that's it for now.. get out of here!!");
@@ -527,19 +548,16 @@ export default class OnboardController {
   }
 
   static async purgeThread(thread: ThreadChannel) {
-    const tenancy = await DormitoryTenancy.findOneOrFail({
+    const { user } = await DormitoryTenancy.findOneOrFail({
       where: { onboardingChannel: { id: thread.id } },
       relations: ["user", "user.achievements"],
     });
 
-    const { user } = tenancy;
-
-    if (user.hasAchievement("JOIN_THE_DEGENZ_QUEST_COMPLETED")) {
-      Events.emit("ONBOARDING_THREAD_PURGED", { user, redpilled: "YES" });
-      await thread.delete();
-    } else {
-      Events.emit("ONBOARDING_THREAD_PURGED", { user, redpilled: "NO" });
-      await UserController.eject(user.id);
-    }
+    Events.emit("ONBOARDING_THREAD_PURGED", {
+      user,
+      redpilled: user.hasAchievement("JOIN_THE_DEGENZ_QUEST_COMPLETED")
+        ? "YES"
+        : "NO",
+    });
   }
 }

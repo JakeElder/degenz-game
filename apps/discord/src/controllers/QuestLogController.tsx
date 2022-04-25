@@ -56,13 +56,22 @@ export default class QuestLogController {
 
     admin.client.on("threadUpdate", async (prev, thread) => {
       if (!prev.archived && thread.archived) {
-        await this.purge(thread);
+        if (await this.isQuestLogThread(thread)) {
+          await this.purge(thread);
+        }
       }
     });
 
     admin.client.on("threadDelete", async (thread) => {
-      await this.purge(thread);
+      if (await this.isQuestLogThread(thread)) {
+        await this.purge(thread);
+      }
     });
+  }
+
+  static async isQuestLogThread(thread: ThreadChannel) {
+    const c = await Utils.Channel.getDescriptor(thread.id);
+    return c.isQuestLogThread;
   }
 
   static async show(userId: User["id"]): Promise<TextBasedChannel> {
@@ -145,6 +154,11 @@ export default class QuestLogController {
 
     q.meta.expanded = !q.meta.expanded;
     const qo = this.quests.find((qo) => qo.symbol === q.meta.quest);
+
+    if (!qo) {
+      throw new Error(`Quest ${qo} not found.`);
+    }
+
     q.data = await qo.message(c.user, q.meta.expanded);
 
     const thread = await Utils.Thread.getOrFail(c.channel.id);
@@ -215,17 +229,13 @@ export default class QuestLogController {
     } catch (e) {}
   }
 
-  static async refresh(user?: User, quest?: QuestSymbol) {
+  static async refresh(user?: User) {
     if (!user) {
       await this.refreshAll();
       return;
     }
 
-    // if (!quest) {
-    //   await this.refreshUser(user);
-    // }
-
-    // await this.refreshUserQuest(user, quest);
+    await this.refreshUser(user);
   }
 
   static async refreshAll() {
@@ -243,6 +253,14 @@ export default class QuestLogController {
     this.reconcile(thread, qlc.state, next);
   }
 
-  // static async refreshUser(user: User) {}
-  // static async refreshUserQuest(user: User, quest: QuestSymbol) {}
+  static async refreshUser(user: User) {
+    const qlc = await QuestLogChannel.findOne({
+      where: { user: { id: user.id } },
+      relations: ["user", "user.achievements"],
+    });
+
+    if (qlc) {
+      await this.refreshOne(qlc);
+    }
+  }
 }

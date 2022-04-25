@@ -37,6 +37,20 @@ type ApartmentInitResult =
   | FailedApartmentInitResult;
 
 export default class UserController {
+  static init() {
+    this.bindEventListeners();
+  }
+
+  static bindEventListeners() {
+    Events.on("QUEST_COMPLETED", async (e) => {
+      const member = await this.getMember(e.data.user.id);
+      if (member.roles.cache.has(Config.roleId("PREGEN"))) {
+        await member.roles.add(Config.roleId("DEGEN"));
+        await member.roles.remove(Config.roleId("PREGEN"));
+      }
+    });
+  }
+
   static async add(member: GuildMember) {
     const user = User.create({
       id: member.id,

@@ -162,6 +162,11 @@ export const roles = Role.create([
   },
   {
     type: "SUPPLEMENTARY",
+    id: "HACKER",
+    name: "Hacker",
+  },
+  {
+    type: "SUPPLEMENTARY",
     id: "WHITELIST",
     name: "Whitelist",
   },

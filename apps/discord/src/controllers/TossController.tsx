@@ -402,13 +402,15 @@ export default class TossController {
 
     let challengerNet =
       g.winner === "CHALLENGER" ? g.amount - g.rake : -g.amount;
-    let challengerBefore = g.challenger.user.gbt - challengerNet;
+    let challengerBefore = g.challenger.user!.gbt - challengerNet;
 
     const embeds: MessageEmbedOptions[] = [
       {
         title: "Toss Results",
         thumbnail: { url: gifs[result]["win"] },
-        description: `It was **${g.result}**! ${g.challenger.user.mention} ${challengerWonLost}`,
+        description: `It was **${g.result}**! ${
+          g.challenger.user!.mention
+        } ${challengerWonLost}`,
         fields: [
           { name: "Challengee", value: userMention(g.challengee.member.id) },
         ],
@@ -426,7 +428,7 @@ export default class TossController {
     if (!g.againstHouse) {
       let challengeeNet =
         g.winner === "CHALLENGEE" ? g.amount - g.rake : -g.amount;
-      let challengeeBefore = g.challengee.user.gbt - challengeeNet;
+      let challengeeBefore = g.challengee.user!.gbt - challengeeNet;
       embeds.push({
         author: {
           name: g.challengee.member.displayName,

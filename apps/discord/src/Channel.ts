@@ -7,7 +7,7 @@ import memoize from "memoizee";
 import { Global } from "./Global";
 
 export class Channel {
-  static async get(
+  static async getOrFail(
     id: ManagedChannelSymbol | TextBasedChannel["id"],
     botSymbol: NPCSymbol = "ADMIN"
   ) {
@@ -46,6 +46,7 @@ export class Channel {
       const isApartment = c.type === "APARTMENT";
       const isDormitory = c.type === "DORMITORY";
       const isOnboardingThread = c.type === "ONBOARDING_THREAD";
+      const isQuestLogThread = c.type === "QUEST_LOG_THREAD";
       const isCell = c.type === "CELL";
       const isInPrison = isCell || channelId === Config.channelId("GEN_POP");
       const isInGame =
@@ -63,6 +64,7 @@ export class Channel {
         isApartment,
         isDormitory,
         isOnboardingThread,
+        isQuestLogThread,
         isCell,
         isInPrison,
         isInGame,

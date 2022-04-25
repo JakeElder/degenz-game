@@ -1,7 +1,6 @@
 import { channelMention } from "@discordjs/builders";
 import Config from "config";
 import { User } from "data/db";
-import { Global } from "../Global";
 import Quest from "../Quest";
 
 export default class GetWhitelistQuest extends Quest {
@@ -16,12 +15,9 @@ export default class GetWhitelistQuest extends Quest {
   }
 
   async getProgress(user: User) {
-    const admin = Global.bot("ADMIN");
-    const member = await admin.guild.members.fetch(user.id);
-    if (!member) {
-      throw new Error(`Member ${user.displayName} not found`);
-    }
-    let progress: number = member.roles.cache.has(Config.roleId("WHITELIST"))
+    const progress: number = user.hasAchievement(
+      "GET_WHITELIST_QUEST_COMPLETED"
+    )
       ? 1
       : 0;
     return progress;

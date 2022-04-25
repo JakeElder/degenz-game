@@ -9,6 +9,7 @@ import { Channel } from "../Channel";
 import OnboardController from "./OnboardController";
 import EntranceController from "./EntranceController";
 import AchievementController from "./AchievementController";
+import Utils from "../Utils";
 
 export default class AppController {
   static invites: Collection<string, Invite>;
@@ -63,27 +64,38 @@ export default class AppController {
     });
 
     admin.client.on("guildMemberUpdate", async (prevMember, member) => {
+      const user = await User.findOne({
+        where: { id: member.id },
+      });
+
+      if (!user) {
+        Utils.rollbar.info(`User missing: ${member.displayName}:${member.id}`);
+        return;
+      }
+
       if (
-        prevMember.roles.cache.has(Config.roleId("WHITELIST")) !==
+        !prevMember.roles.cache.has(Config.roleId("WHITELIST")) &&
         member.roles.cache.has(Config.roleId("WHITELIST"))
       ) {
-        const user = await User.findOneOrFail({
-          where: { id: member.id },
-        });
         AchievementController.checkAndAward(
           user,
           "GET_WHITELIST_QUEST_COMPLETED"
         );
       }
-      User.update({ id: member.id }, { displayName: member.displayName });
-    });
 
-    admin.client.on("threadUpdate", async (oldThread, newThread) => {
-      if (!oldThread.archived && newThread.archived) {
-        const c = await Channel.getDescriptor(newThread.id);
-        if (c.isOnboardingThread) {
-          OnboardController.purgeThread(newThread);
-        }
+      if (
+        !prevMember.roles.cache.has(Config.roleId("HACKER")) &&
+        member.roles.cache.has(Config.roleId("HACKER"))
+      ) {
+        AchievementController.checkAndAward(
+          user,
+          "LEARN_TO_HACKER_BATTLE_QUEST_COMPLETED"
+        );
+      }
+
+      if (member.displayName !== user.displayName) {
+        user.displayName = member.displayName;
+        await user.save();
       }
     });
   }

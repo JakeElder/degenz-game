@@ -43,7 +43,7 @@ export default class JoinTheDegenzQuest extends Quest {
 
   async message(user: User, expanded: boolean) {
     const progress = await this.getProgress(user);
-    const buttons = [];
+    const buttons: MessageButton[] = [];
 
     if (progress < 1 && expanded) {
       const onboardingChannel = await this.getOnboardingChannel(user.id);

@@ -21,12 +21,11 @@ export default class ShopAtMerrisMartQuest extends Quest {
   }
 
   async getProgress(user: User) {
-    const items = await MartItemOwnership.count({
-      where: { user: { id: user.id } },
-      withDeleted: true,
-    });
-
-    let progress: number = items > 0 ? 1 : 0;
+    let progress: number = user.hasAchievement(
+      "SHOP_AT_MERRIS_MART_QUEST_COMPLETED"
+    )
+      ? 1
+      : 0;
     return progress;
   }
 

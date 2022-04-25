@@ -6,7 +6,6 @@ import { SelfDestructMessage } from "../legacy/onboard-dialog";
 import Utils from "../Utils";
 import Config from "config";
 import { Routes } from "discord-api-types/v10";
-import { Global } from "../Global";
 
 export default class SelfDestructController {
   static async init(
@@ -14,12 +13,9 @@ export default class SelfDestructController {
     seconds: number,
     onDestruct: () => void = () => {}
   ) {
-    const admin = Global.bot("ADMIN");
-    const adminChannel = await admin.guild.channels.fetch(channel.id);
-
-    if (!adminChannel.isText()) {
-      throw new Error("Non text channel.");
-    }
+    const adminChannel = await (channel.isThread()
+      ? Utils.Thread.getOrFail(channel.id)
+      : Utils.Channel.getOrFail(channel.id, "ADMIN"));
 
     const message = await adminChannel.send(this.makeMessage(seconds));
     this.tick(adminChannel, message, seconds).then(async () => {

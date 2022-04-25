@@ -1,6 +1,6 @@
 import { channelMention } from "@discordjs/builders";
 import Config from "config";
-import { Pledge, User } from "data/db";
+import { User } from "data/db";
 import Quest from "../Quest";
 
 export default class PledgeQuest extends Quest {
@@ -15,8 +15,9 @@ export default class PledgeQuest extends Quest {
   }
 
   async getProgress(user: User) {
-    const pledges = await Pledge.count({ where: { user: { id: user.id } } });
-    const progress: number = pledges > 0 ? 1 : 0;
+    const progress: number = user.hasAchievement("PLEDGE_QUEST_COMPLETED")
+      ? 1
+      : 0;
     return progress;
   }
 

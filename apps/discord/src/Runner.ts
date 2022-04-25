@@ -14,7 +14,6 @@ import MartClerkCommandController from "./command-controllers/MartClerkCommandCo
 import NextStepController from "./controllers/NextStepsController";
 import EntranceController from "./controllers/EntranceController";
 import QuestLogController from "./controllers/QuestLogController";
-import AchievementController from "./controllers/AchievementController";
 import { NPCSymbol } from "data/types";
 
 export default class Runner {
@@ -39,6 +38,7 @@ export default class Runner {
         OnboardController.bindEventListeners();
         QuestsController.init();
         QuestLogController.init();
+        UserController.init();
       }
 
       if (e.data.bot.id === "BIG_BROTHER") {
@@ -119,7 +119,6 @@ export default class Runner {
     Events.on("MART_ITEM_BOUGHT", (e) => {
       WorldNotifier.martItemBought(e);
       Analytics.martItemBought(e);
-      // QuestLogController.refresh(e.data.user);
     });
 
     Events.on("TOSS_COMPLETED", (e) => {
@@ -167,7 +166,7 @@ export default class Runner {
 
     Events.on("QUEST_COMPLETED", (e) => {
       WorldNotifier.questCompleted(e);
-      // QuestLogController.updateQuestMessage(e.data.user, e.data.quest);
+      QuestLogController.refresh(e.data.user);
     });
 
     Events.on("DORM_READY_BUTTON_PRESSED", (e) => {

@@ -48,7 +48,8 @@ export type SupplementaryRoleSymbol =
   | "SERVER_BOOSTER"
   | "TRAINEE"
   | "THOUGHT_POLICE"
-  | "WHITELIST";
+  | "WHITELIST"
+  | "HACKER";
 
 export type CitizenRoleSymbol =
   | "D1_CITIZEN"

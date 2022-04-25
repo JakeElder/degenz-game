@@ -111,9 +111,7 @@ export default class HallOfAllegianceController {
         ephemeral: true,
       });
 
-      if (!user.hasAchievement("PLEDGE_QUEST_COMPLETED")) {
-        await AchievementController.award(user, "PLEDGE_QUEST_COMPLETED");
-      }
+      await AchievementController.checkAndAward(user, "PLEDGE_QUEST_COMPLETED");
 
       return;
     }

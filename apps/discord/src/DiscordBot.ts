@@ -4,6 +4,7 @@ import Config from "config";
 import Events from "./Events";
 import { CommandController } from "./CommandController";
 import Utils from "./Utils";
+import Analytics from "./Analytics";
 
 export default abstract class DiscordBot {
   protected readyPromise: Promise<void>;
@@ -27,9 +28,12 @@ export default abstract class DiscordBot {
 
   bindClientEvents() {
     this.client.on("rateLimit", (e) => {
-      Utils.rollbar.info(
-        `Rate Limited Request: \n\`\`\`${JSON.stringify(e, null, 2)}\`\`\``
-      );
+      Analytics.mixpanel.track("Rate Limited", {
+        guild_id: Config.general("GUILD_ID"),
+        env: Config.env("NODE_ENV"),
+        distinct_id: "APP",
+        ...e,
+      });
     });
 
     this.client.on("interactionCreate", async (i) => {
