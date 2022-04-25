@@ -19,6 +19,7 @@ import { Global } from "../Global";
 import random from "random";
 import EntranceController from "./EntranceController";
 import QuestLogController from "./QuestLogController";
+import OnboardController from "./OnboardController";
 
 type FailedApartmentInitResult = {
   success: false;
@@ -154,37 +155,25 @@ export default class UserController {
       return { success: false, code: "THE_SHELTERS_FULL" };
     }
 
-    const bb = Global.bot("BIG_BROTHER");
-    const admin = Global.bot("ADMIN");
-
-    const entrance = await bb.getTextChannel(Config.channelId("ENTRANCE"));
-
-    const thread = await entrance.threads.create({
-      name: `📟｜${paramCase(member!.displayName)}s-orientation`,
-      invitable: false,
-      autoArchiveDuration: 60,
-      type:
-        admin.guild.features.includes("PRIVATE_THREADS") ||
-        Config.env("NODE_ENV") === "production"
-          ? "GUILD_PRIVATE_THREAD"
-          : "GUILD_PUBLIC_THREAD",
-    });
-
     user.gbt = onboard ? 0 : 100;
     user.strength = 100;
     user.inGame = true;
-    user.dormitoryTenancy = DormitoryTenancy.create({
-      dormitory,
-      onboardingChannel: Channel.merge(new Channel(), {
-        type: "ONBOARDING_THREAD",
-        id: thread.id,
-      }),
-    });
+
+    user.dormitoryTenancy = DormitoryTenancy.create({ dormitory });
 
     await Promise.all([
       user.save(),
       member.roles.add(dormitory.citizenRole.discordId),
     ]);
+
+    const thread = await OnboardController.start(user);
+
+    user.dormitoryTenancy.onboardingChannel = Channel.create({
+      type: "ONBOARDING_THREAD",
+      id: thread.id,
+    });
+
+    await user.save();
 
     EntranceController.update();
     Events.emit("DORMITORY_ALLOCATED", { user, onboard });
@@ -263,7 +252,7 @@ export default class UserController {
         "martItemOwnerships",
         "questLogChannel",
         "questLogChannel.channel",
-        "questLogChannel.questLogMessages",
+        "questLogChannel",
       ],
     });
 
@@ -279,7 +268,16 @@ export default class UserController {
     }
 
     // Remove quest log stuff
-    await QuestLogController.purgeThreadForUser(user);
+    if (user.questLogChannel) {
+      try {
+        const thread = await Utils.Thread.getOrFail(
+          user.questLogChannel.channel.id
+        );
+        await QuestLogController.purge(thread);
+      } catch (e) {
+        console.error(e);
+      }
+    }
 
     // Remove apartment
     try {

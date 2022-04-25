@@ -2,6 +2,7 @@ import {
   BaseCommandInteraction,
   CommandInteraction,
   GuildMember,
+  MessageOptions,
   TextChannel,
   ThreadChannel,
 } from "discord.js";
@@ -169,6 +170,16 @@ export type ChannelDescriptor = {
   isBank: boolean;
   isTavern: boolean;
 };
+
+export type QuestLogMessage = {
+  meta: {
+    quest: QuestSymbol;
+    expanded: boolean;
+  };
+  data: MessageOptions;
+};
+
+export type QuestLogState = QuestLogMessage[];
 
 export type RecursivePartial<T> = {
   [P in keyof T]?: T[P] extends (infer U)[]

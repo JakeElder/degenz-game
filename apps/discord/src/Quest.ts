@@ -7,46 +7,43 @@ import {
   MessageOptions,
   Util,
 } from "discord.js";
-import { User } from "data/db";
+import { Achievement, User } from "data/db";
 import Config from "config";
-import { Format } from "lib";
 
 type FormatProps = {
   title: string;
   thumbnail: string;
   progress: number;
-  userDiscordId: GuildMember["id"];
+  userId: GuildMember["id"];
   expanded: boolean;
+  buttons?: MessageButton[];
 };
 
 export default abstract class Quest {
   symbol: QuestSymbol;
-  instructions: string[];
+  instructions: string[] | ((userId: User["id"]) => Promise<string[]>);
 
   abstract message(user: User, expanded: boolean): Promise<MessageOptions>;
   abstract getProgress(user: User): Promise<number>;
 
   makeToggleButton({
-    userDiscordId,
+    userId,
     expanded,
   }: {
-    userDiscordId: GuildMember["id"];
+    userId: GuildMember["id"];
     expanded: boolean;
   }) {
     return new MessageButton()
       .setLabel(expanded ? "Hide Details" : "Show Details")
       .setStyle("SECONDARY")
-      .setCustomId(`TOGGLE_QUEST_DETAILS:${this.symbol}:${userDiscordId}`);
+      .setCustomId(`TOGGLE_QUEST_DETAILS:${this.symbol}:${userId}`);
   }
 
-  format(props: FormatProps): MessageOptions {
-    const { title, thumbnail, progress, userDiscordId, expanded } = props;
+  async format(props: FormatProps): Promise<MessageOptions> {
+    const { title, thumbnail, progress, userId, expanded, buttons } = props;
 
     const complete = progress === 1;
-    const button = this.makeToggleButton({
-      userDiscordId,
-      expanded,
-    });
+    const button = this.makeToggleButton({ userId, expanded });
     const color = complete
       ? Util.resolveColor("DARK_GREEN")
       : Util.resolveColor("NOT_QUITE_BLACK");
@@ -64,7 +61,7 @@ export default abstract class Quest {
           },
           {
             name: "Reward",
-            value: Format.currency(100),
+            value: `${await this.reward()}`,
             inline: true,
           },
         ],
@@ -85,16 +82,28 @@ export default abstract class Quest {
         "\u0039\ufe0f\u20e3",
       ];
 
+      const instructions =
+        typeof this.instructions === "function"
+          ? await this.instructions(userId)
+          : this.instructions;
+
       embeds.push({
-        description: this.instructions
+        description: instructions
           .map((i, idx) => `${emojis[idx]}\u2007${i}`)
           .join("\n"),
       });
     }
 
-    return {
-      embeds,
-      components: [new MessageActionRow().addComponents(button)],
-    };
+    const row = new MessageActionRow();
+    row.addComponents(button, ...(buttons || []));
+
+    return { embeds, components: [row] };
+  }
+
+  async reward() {
+    const achievement = await Achievement.findOneOrFail({
+      where: { id: `${this.symbol}_QUEST_COMPLETED` },
+    });
+    return achievement.reward;
   }
 }

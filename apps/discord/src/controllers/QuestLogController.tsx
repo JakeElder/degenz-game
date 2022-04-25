@@ -1,16 +1,10 @@
 import { paramCase } from "change-case";
 import Config from "config";
-import { QuestLogChannel, User, Channel, QuestLogMessage } from "data/db";
-import {
-  ButtonInteraction,
-  GuildMember,
-  Message,
-  ThreadChannel,
-} from "discord.js";
-import { REST } from "@discordjs/rest";
-import { QuestSymbol } from "data/types";
+import { QuestLogChannel, User, Channel } from "data/db";
+import { TextBasedChannel, ThreadChannel } from "discord.js";
+import { QuestLogMessage, QuestLogState, QuestSymbol } from "data/types";
 import equal from "fast-deep-equal";
-import { Routes } from "discord-api-types/v10";
+import { cloneDeep } from "lodash";
 import PledgeQuest from "../quests/PledgeQuest";
 import Quest from "../Quest";
 import { Global } from "../Global";
@@ -18,15 +12,14 @@ import LearnToHackerBattleQuest from "../quests/LearnToHackerBattleQuest";
 import TossWithTedQuest from "../quests/TossWithTedQuest";
 import GetWhitelistQuest from "../quests/GetWhitelistQuest";
 import ShopAtMerrisMartQuest from "../quests/ShopAtMerrisMartQuest";
-
-const rest = new REST({ version: "10", rejectOnRateLimit: ["/"] }).setToken(
-  Config.botToken("ADMIN")
-);
+import JoinTheDegenzQuest from "../quests/JoinTheDegenzQuest";
+import Utils from "../Utils";
 
 export default class QuestLogController {
   static quests: Quest[];
   static async init() {
     this.quests = [
+      new JoinTheDegenzQuest(),
       new PledgeQuest(),
       new GetWhitelistQuest(),
       new LearnToHackerBattleQuest(),
@@ -44,260 +37,212 @@ export default class QuestLogController {
       if (!i.isButton()) {
         return;
       }
-      const [type] = i.customId.split(":");
+
+      const [type, quest, userId] = i.customId.split(":") as [
+        string,
+        QuestSymbol,
+        User["id"]
+      ];
+
       if (type === "TOGGLE_QUEST_DETAILS") {
-        this.toggleQuestDetails(i);
+        await this.toggle(userId, quest);
+        await i.update({ fetchReply: false });
+      }
+
+      if (type === "START_JOIN_THE_DEGENZ_QUEST") {
+        await i.reply({ content: "YOOO", ephemeral: true });
       }
     });
 
     admin.client.on("threadUpdate", async (prev, thread) => {
       if (!prev.archived && thread.archived) {
-        await this.purgeThread(thread);
+        await this.purge(thread);
       }
+    });
+
+    admin.client.on("threadDelete", async (thread) => {
+      await this.purge(thread);
     });
   }
 
-  static async createThread(user: User) {
-    const admin = Global.bot("ADMIN");
-
-    const questsChannel = await admin.guild.channels.fetch(
-      Config.channelId("QUESTS")
-    );
-
-    if (!questsChannel || questsChannel.type !== "GUILD_TEXT") {
-      throw new Error("Quests channel not found");
-    }
-
-    const thread = await questsChannel.threads.create({
-      name: `📜｜${paramCase(user.displayName)}s-quest-log`,
-      invitable: false,
-      autoArchiveDuration: 60,
-      type: ["production"].includes(Config.env("NODE_ENV"))
-        ? "GUILD_PRIVATE_THREAD"
-        : "GUILD_PUBLIC_THREAD",
+  static async show(userId: User["id"]): Promise<TextBasedChannel> {
+    const qlc = await QuestLogChannel.findOne({
+      where: { user: { id: userId } },
     });
 
-    await thread.members.add(user.id);
+    const thread = await (qlc
+      ? Utils.Thread.getOrFail(qlc.channel.id)
+      : this.createThread(userId));
 
-    user.questLogChannel = QuestLogChannel.create({
-      user,
-      channel: Channel.create({
-        id: thread.id,
-        type: "QUEST_LOG_THREAD",
-      }),
-    });
-
-    await user.save();
     return thread;
   }
 
-  static async purgeThreadForUser(user: User) {
-    if (user.questLogChannel) {
-      const thread = await this.fetchExistingThread(user);
-      await this.purgeThread(thread);
-    }
-  }
+  static async createThread(userId: User["id"]) {
+    const user = await User.findOneOrFail({ where: { id: userId } });
 
-  static async purgeThread(thread: ThreadChannel) {
-    const c = await QuestLogChannel.findOne({
-      where: { channel: { id: thread.id } },
-      relations: ["user", "user.achievements", "channel"],
+    const admin = Global.bot("ADMIN");
+    const quests = await Utils.ManagedChannel.get("QUESTS");
+
+    const thread = await quests.threads.create({
+      name: `📜｜${paramCase(user.displayName)}s-quest-log`,
+      invitable: false,
+      autoArchiveDuration: 60,
+      type:
+        admin.guild.features.includes("PRIVATE_THREADS") ||
+        ["production"].includes(Config.env("NODE_ENV"))
+          ? "GUILD_PRIVATE_THREAD"
+          : "GUILD_PUBLIC_THREAD",
     });
 
-    if (c) {
-      await c.remove();
-      await c.channel.remove();
-      await thread.delete();
-    }
+    await Promise.all([
+      thread.members.add(user.id),
+      QuestLogChannel.save({
+        user,
+        channel: Channel.create({
+          id: thread.id,
+          type: "QUEST_LOG_THREAD",
+        }),
+      }),
+    ]);
+
+    this.populate(thread, user);
+
+    return thread;
   }
 
-  static async refresh(user?: User) {
-    const channels = await QuestLogChannel.find({
-      ...(user ? { where: { user: { id: user.id } } } : {}),
-      relations: ["user", "user.achievements", "channel", "questLogMessages"],
-    });
-
-    await Promise.all(
-      channels.map(async (c) => {
-        c.user.questLogChannel = c;
-        const thread = await this.fetchExistingThread(c.user);
-
-        if (thread.archived) {
-          await this.purgeThread(thread);
-          return;
-        }
-
-        if (
-          !equal(
-            this.quests.map((q) => q.symbol).sort(),
-            c.questLogMessages.map((m) => m.quest).sort()
-          )
-        ) {
-          if (c.questLogMessages.length) {
-            await Promise.all([
-              c.questLogMessages.map((m) =>
-                thread.messages.delete(m.discordId)
-              ),
-            ]);
-            await QuestLogMessage.remove(c.questLogMessages);
-          }
-
-          const user = await User.findOneOrFail({
-            where: { id: c.user.id },
-            relations: [
-              "achievements",
-              "questLogChannel",
-              "questLogChannel.channel",
-              "questLogChannel.questLogMessages",
-            ],
-          });
-          await this.sendQuestMessages(user, thread);
-          return;
-        }
-
-        await Promise.all(
-          this.quests.map((q) => this.updateQuestMessage(c, q.symbol))
-        );
+  static async computeState(
+    user: User,
+    expanded: QuestSymbol[] = []
+  ): Promise<QuestLogMessage[]> {
+    return Promise.all(
+      this.quests.map(async (q) => {
+        const e = expanded.includes(q.symbol);
+        return {
+          meta: { quest: q.symbol, expanded: e },
+          data: await q.message(user, e),
+        };
       })
     );
   }
 
-  static async updateQuestMessage(
-    qlc: QuestLogChannel,
-    questSymbol: QuestSymbol
-  ) {
-    const qlm = qlc.questLogMessages.find((m) => m.quest === questSymbol);
-    if (!qlm) {
-      throw new Error(
-        `No db message for ${qlc.user.displayName}${questSymbol}`
-      );
-    }
-
-    const thread = await this.fetchExistingThread(qlc.user);
-    const message = await thread.messages.fetch(qlm.discordId);
-    if (!message) {
-      throw new Error(
-        `Message for ${qlc.user.displayName}:${questSymbol} not found`
-      );
-    }
-
-    const quest = this.quests.find((q) => q.symbol === questSymbol);
-    if (!quest) {
-      throw new Error(`Quest ${questSymbol} not found`);
-    }
-
-    const options = await quest.message(qlc.user, qlm.expanded);
-    await rest.patch(Routes.channelMessage(qlc.channel.id, message.id), {
-      body: options,
-    });
-    // await message.edit(options);
+  static async populate(thread: ThreadChannel, user: User) {
+    const state = await this.computeState(user);
+    await this.reconcile(thread, [], state);
   }
 
-  static async toggleQuestDetails(i: ButtonInteraction) {
-    const [_e, questSymbol, memberId] = i.customId.split(":") as [
-      string,
-      QuestSymbol,
-      GuildMember["id"]
-    ];
-
-    const channel = await QuestLogChannel.findOne({
-      where: { user: { id: memberId } },
-      relations: ["user", "user.achievements", "channel", "questLogMessages"],
+  static async toggle(userId: User["id"], quest: QuestSymbol) {
+    const c = await QuestLogChannel.findOneOrFail({
+      where: { user: { id: userId } },
+      relations: ["user", "user.achievements"],
     });
 
-    if (!channel) {
-      throw new Error("QuestLogChannel not found");
+    const next = cloneDeep(c.state);
+    const q = next.find((m) => m.meta.quest === quest);
+
+    if (!q) {
+      throw new Error(`Quest ${q} not found.`);
     }
 
-    channel.user.questLogChannel = channel;
+    q.meta.expanded = !q.meta.expanded;
+    const qo = this.quests.find((qo) => qo.symbol === q.meta.quest);
+    q.data = await qo.message(c.user, q.meta.expanded);
 
-    const message = channel.questLogMessages.find(
-      (m) => m.quest === questSymbol
-    )!;
+    const thread = await Utils.Thread.getOrFail(c.channel.id);
+    await this.reconcile(thread, c.state, next);
+  }
 
-    // const expandedMessage = channel.questLogMessages.find((m) => m.expanded);
-    // if (expandedMessage && expandedMessage.quest !== questSymbol) {
-    //   expandedMessage.expanded = false;
-    //   this.updateQuestMessage(channel, expandedMessage.quest);
+  static async reconcile(
+    thread: ThreadChannel,
+    prev: QuestLogState,
+    next: QuestLogState
+  ) {
+    const qlc = await QuestLogChannel.findOneOrFail({
+      where: { channel: { id: thread.id } },
+      relations: ["channel"],
+    });
+
+    // Check order/count
+    if (
+      !equal(
+        prev.map((m) => m.meta.quest),
+        next.map((m) => m.meta.quest)
+      )
+    ) {
+      await Promise.all(
+        prev.map(async (_, idx) => {
+          const dm = await thread.messages.fetch(qlc.messages[idx]);
+          await dm.delete();
+        })
+      );
+
+      const messages = await Promise.all(next.map((m) => thread.send(m.data)));
+      qlc.messages = messages.map((m) => m.id);
+    } else {
+      // We know that prev/next are same size and order
+      // Diff
+      const updated = next.filter(
+        // stringify & parse as state gets serialized when inserting into database
+        // some discord.js objects define a toJSON(), which this calls
+        (m, idx) => !equal(JSON.parse(JSON.stringify(m)), prev[idx])
+      );
+
+      if (updated.length) {
+        await Promise.all(
+          updated.map(async (m) => {
+            const idx = next.findIndex((p) => equal(p, m));
+            const dm = await thread.messages.fetch(qlc.messages[idx]);
+            await dm.edit(m.data);
+          })
+        );
+      }
+    }
+
+    qlc.state = next;
+    await qlc.save();
+  }
+
+  static async purge(thread: ThreadChannel) {
+    const c = await QuestLogChannel.findOneOrFail({
+      where: { channel: { id: thread.id } },
+      relations: ["channel"],
+    });
+
+    await c.remove();
+    await c.channel.remove();
+
+    try {
+      await thread.delete();
+    } catch (e) {}
+  }
+
+  static async refresh(user?: User, quest?: QuestSymbol) {
+    if (!user) {
+      await this.refreshAll();
+      return;
+    }
+
+    // if (!quest) {
+    //   await this.refreshUser(user);
     // }
 
-    message.expanded = !message.expanded;
-
-    await this.updateQuestMessage(channel, questSymbol);
-
-    await i.update({ fetchReply: false });
-    await channel.save();
+    // await this.refreshUserQuest(user, quest);
   }
 
-  static async show(userId: User["id"]) {
-    const user = await User.findOne({
-      where: { id: userId },
-      relations: [
-        "achievements",
-        "questLogChannel",
-        "questLogChannel.channel",
-        "questLogChannel.questLogMessages",
-      ],
+  static async refreshAll() {
+    const qlcs = await QuestLogChannel.find({
+      relations: ["user", "user.achievements"],
     });
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    const { thread, isNew } = await this.getQuestLogChannel(user);
-
-    if (isNew) {
-      this.sendQuestMessages(user, thread);
-    }
-
-    return thread;
+    await Promise.all(qlcs.map((qlc) => this.refreshOne(qlc)));
   }
 
-  static async sendQuestMessages(user: User, thread: ThreadChannel) {
-    const messages: Message[] = [];
-
-    for (let i = 0; i < this.quests.length; i++) {
-      const options = await this.quests[i].message(user, false);
-      messages.push(await thread.send(options));
-    }
-
-    user.questLogChannel.questLogMessages = this.quests.map((q, idx) => {
-      return QuestLogMessage.create({
-        quest: q.symbol,
-        questLogChannel: user.questLogChannel,
-        discordId: messages[idx].id,
-      });
-    });
-
-    await user.save();
+  static async refreshOne(qlc: QuestLogChannel) {
+    const [next, thread] = await Promise.all([
+      this.computeState(qlc.user),
+      Utils.Thread.getOrFail(qlc.channel.id),
+    ]);
+    this.reconcile(thread, qlc.state, next);
   }
 
-  static async fetchExistingThread(user: User) {
-    const admin = Global.bot("ADMIN");
-    const lc = await admin.guild.channels.fetch(Config.channelId("QUESTS"));
-
-    if (!lc || lc.type !== "GUILD_TEXT") {
-      throw new Error("Quests channel not found");
-    }
-
-    const threadId = user.questLogChannel.channel.id;
-    const thread = await lc.threads.fetch(threadId);
-
-    if (!thread) {
-      throw new Error("Quest log not found");
-    }
-
-    return thread;
-  }
-
-  static async getQuestLogChannel(user: User) {
-    if (!user.questLogChannel) {
-      const thread = await this.createThread(user);
-      return { thread, isNew: true };
-    }
-
-    const thread = await this.fetchExistingThread(user);
-
-    return { thread, isNew: false };
-  }
+  // static async refreshUser(user: User) {}
+  // static async refreshUserQuest(user: User, quest: QuestSymbol) {}
 }

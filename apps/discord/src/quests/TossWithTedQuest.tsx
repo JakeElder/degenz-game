@@ -25,10 +25,10 @@ export default class TossWithTedQuest extends Quest {
 
     return this.format({
       title: "Toss with Ted",
-      thumbnail: `${Config.env("WEB_URL")}/characters/npcs/TOSSER.png`,
+      thumbnail: `https://s10.gifyu.com/images/heads-coin-smaller-1.gif`,
       progress,
       expanded,
-      userDiscordId: user.id,
+      userId: user.id,
     });
   }
 }

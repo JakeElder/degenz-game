@@ -190,7 +190,7 @@ export default class AllyCommandController extends CommandController {
       await AppController.openDistrict(districtSymbol);
       await this.respond(i, `${districtSymbol}_OPENED`, "SUCCESS");
     } catch (e) {
-      console.log(e);
+      console.error(e);
       await this.respond(i, "DIDNT_SET_DISTRICT", "FAIL");
     }
   }

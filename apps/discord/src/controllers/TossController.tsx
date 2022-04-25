@@ -22,6 +22,7 @@ import Events from "../Events";
 import ResidenceController from "./ResidenceController";
 import { NPC } from "data/db";
 import { userMention } from "@discordjs/builders";
+import AchievementController from "./AchievementController";
 
 const { r } = Utils;
 
@@ -200,6 +201,12 @@ export default class TossController {
         challengee: "HOUSE",
         game: g,
       });
+
+      AchievementController.checkAndAward(
+        g.challenger.user,
+        "TOSS_WITH_TED_QUEST_COMPLETED"
+      );
+
       return { success: true, data: { game: g } };
     }
 
@@ -360,6 +367,11 @@ export default class TossController {
       challengee: g.challengee.user,
       game: g,
     });
+
+    AchievementController.checkAndAward(
+      g.challenger.user,
+      "TOSS_WITH_TED_QUEST_COMPLETED"
+    );
 
     (async () => {
       const residence = await ResidenceController.get(g.challengee.user!);

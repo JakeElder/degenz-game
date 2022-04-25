@@ -16,7 +16,6 @@ import { NPC } from "./entity/NPC";
 import { PersistentMessage } from "./entity/PersistentMessage";
 import { Pledge } from "./entity/Pledge";
 import { QuestLogChannel } from "./entity/QuestLogChannel";
-import { QuestLogMessage } from "./entity/QuestLogMessage";
 import { Role } from "./entity/Role";
 import { User } from "./entity/User";
 import dataSource from "./data-source";
@@ -47,7 +46,6 @@ export {
   PersistentMessage,
   Pledge,
   QuestLogChannel,
-  QuestLogMessage,
   Role,
   User,
 };

@@ -1,4 +1,5 @@
 import { Exclude } from "class-transformer";
+import { Message } from "discord.js";
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -8,10 +9,10 @@ import {
   DeleteDateColumn,
   OneToOne,
   JoinColumn,
-  OneToMany,
+  Column,
 } from "typeorm";
 import { Channel, User } from "..";
-import { QuestLogMessage } from "./QuestLogMessage";
+import { QuestLogState, QuestSymbol } from "../types";
 
 @Entity()
 export class QuestLogChannel extends BaseEntity {
@@ -19,7 +20,7 @@ export class QuestLogChannel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => Channel, { cascade: true })
+  @OneToOne(() => Channel, { cascade: true, eager: true })
   @JoinColumn()
   channel: Channel;
 
@@ -27,12 +28,11 @@ export class QuestLogChannel extends BaseEntity {
   @JoinColumn()
   user: User;
 
-  @OneToMany(
-    () => QuestLogMessage,
-    (questLogMessage) => questLogMessage.questLogChannel,
-    { cascade: true }
-  )
-  questLogMessages: QuestLogMessage[];
+  @Column({ type: "json", default: [] })
+  state: QuestLogState;
+
+  @Column({ type: "json", default: [] })
+  messages: Message["id"][];
 
   @CreateDateColumn()
   createdAt: Date;

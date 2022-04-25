@@ -28,7 +28,7 @@ export default class PledgeQuest extends Quest {
       thumbnail: `${Config.env("WEB_URL")}/characters/npcs/BIG_BROTHER.png`,
       progress,
       expanded,
-      userDiscordId: user.id,
+      userId: user.id,
     });
   }
 }

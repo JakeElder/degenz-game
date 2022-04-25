@@ -95,12 +95,9 @@ export class User extends BaseEntity {
   })
   pledges: Pledge[];
 
-  @ManyToMany(() => Achievement)
+  @ManyToMany(() => Achievement, { eager: true })
   @JoinTable()
   achievements: Achievement[];
-
-  @Column({ type: "timestamp", nullable: true })
-  welcomeMentionMadeAt: Date;
 
   @CreateDateColumn()
   createdAt: Date;

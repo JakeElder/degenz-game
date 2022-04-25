@@ -1,12 +1,26 @@
 import Config from "config";
 import { Channel as ChannelEntity } from "data/db";
-import { ChannelDescriptor, ManagedChannelSymbol } from "data/types";
+import { ChannelDescriptor, ManagedChannelSymbol, NPCSymbol } from "data/types";
 import { TextBasedChannel } from "discord.js";
 import Manifest from "manifest";
 import memoize from "memoizee";
 import { Global } from "./Global";
 
 export class Channel {
+  static async get(
+    id: ManagedChannelSymbol | TextBasedChannel["id"],
+    botSymbol: NPCSymbol = "ADMIN"
+  ) {
+    const bot = Global.bot(botSymbol);
+    const channel = await bot.guild.channels.fetch(id);
+
+    if (!channel || channel.type !== "GUILD_TEXT") {
+      throw new Error(`Channel ${id} not found.`);
+    }
+
+    return channel;
+  }
+
   static getDescriptor = memoize(
     async (channelId: TextBasedChannel["id"]): Promise<ChannelDescriptor> => {
       const { channels } = await Manifest.load();

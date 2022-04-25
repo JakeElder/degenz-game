@@ -113,7 +113,6 @@ export default class HallOfAllegianceController {
 
       if (!user.hasAchievement("PLEDGE_QUEST_COMPLETED")) {
         await AchievementController.award(user, "PLEDGE_QUEST_COMPLETED");
-        QuestLogController.refresh(user);
       }
 
       return;
@@ -166,7 +165,10 @@ export default class HallOfAllegianceController {
 
   static async award(user: User, yld: number) {
     user.gbt += yld;
-    await Promise.all([user.save(), Pledge.insert({ user, yld })]);
+    await Promise.all([
+      user.save(),
+      Pledge.insert({ user: { id: user.id }, yld }),
+    ]);
     Events.emit("ALLEGIANCE_PLEDGED", { user, yld });
   }
 }

@@ -8,7 +8,7 @@ import UserController from "./UserController";
 import { Channel } from "../Channel";
 import OnboardController from "./OnboardController";
 import EntranceController from "./EntranceController";
-import QuestLogController from "./QuestLogController";
+import AchievementController from "./AchievementController";
 
 export default class AppController {
   static invites: Collection<string, Invite>;
@@ -70,7 +70,10 @@ export default class AppController {
         const user = await User.findOneOrFail({
           where: { id: member.id },
         });
-        QuestLogController.refresh(user);
+        AchievementController.checkAndAward(
+          user,
+          "GET_WHITELIST_QUEST_COMPLETED"
+        );
       }
       User.update({ id: member.id }, { displayName: member.displayName });
     });

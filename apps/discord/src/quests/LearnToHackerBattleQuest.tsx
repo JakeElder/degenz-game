@@ -26,10 +26,10 @@ export default class LearnToHackerBattleQuest extends Quest {
 
     return this.format({
       title: "Learn to Hacker Battle",
-      thumbnail: `${Config.env("WEB_URL")}/characters/npcs/SENSEI.png`,
+      thumbnail: `https://s10.gifyu.com/images/Mind-Control-Degenz-V2-min.gif`,
       progress,
       expanded,
-      userDiscordId: user.id,
+      userId: user.id,
     });
   }
 }

@@ -53,6 +53,7 @@ import { AchievementSymbol } from "data/types";
 import QuestLogController from "./QuestLogController";
 import SelfDestructController from "./SelfDestructController";
 import { ChannelMention } from "../legacy/templates";
+import { paramCase } from "change-case";
 
 const { r } = Utils;
 
@@ -84,6 +85,24 @@ export default class OnboardController {
         this.sendIsHeGoneResponse(i);
       }
     });
+  }
+
+  static async start(user: User) {
+    const admin = Global.bot("ADMIN");
+    const entrance = await admin.getTextChannel(Config.channelId("ENTRANCE"));
+
+    const thread = await entrance.threads.create({
+      name: `📟｜${paramCase(user.displayName)}s-orientation`,
+      invitable: false,
+      autoArchiveDuration: 60,
+      type:
+        admin.guild.features.includes("PRIVATE_THREADS") ||
+        Config.env("NODE_ENV") === "production"
+          ? "GUILD_PRIVATE_THREAD"
+          : "GUILD_PUBLIC_THREAD",
+    });
+
+    return thread;
   }
 
   static async getOnboardingChannel(user: User, bot: DiscordBot) {
@@ -304,8 +323,8 @@ export default class OnboardController {
     await channel.send(
       r(
         <>
-          **GO TO** <ChannelMention id={questThread.id} /> see how you can earn
-          more {Config.emojiCode("GBT_COIN")}!
+          **GO TO** <ChannelMention id={questThread.id} /> to see how you can
+          earn more {Config.emojiCode("GBT_COIN")}!
         </>
       )
     );

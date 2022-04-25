@@ -108,12 +108,15 @@ export async function sellItem(item: MartItem, memberId: User["id"]) {
   }
 
   item.stock -= 1;
-  user!.gbt -= item.price;
+  user.gbt -= item.price;
 
   await Promise.all([
     item.save(),
-    user!.save(),
-    MartItemOwnership.insert({ user, item }),
+    user.save(),
+    MartItemOwnership.insert({
+      user: { id: user.id },
+      item: { id: item.id },
+    }),
   ]);
 
   return { success: true };

@@ -32,12 +32,10 @@ export default class GetWhitelistQuest extends Quest {
 
     return this.format({
       title: "Get Whitelist",
-      thumbnail: `${Config.env(
-        "WEB_URL"
-      )}/characters/npcs/RESISTANCE_LEADER.png`,
+      thumbnail: `https://s10.gifyu.com/images/Card-5x-rotateae82817b5fcc197d.png`,
       progress,
       expanded,
-      userDiscordId: user.id,
+      userId: user.id,
     });
   }
 }

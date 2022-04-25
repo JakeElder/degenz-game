@@ -35,10 +35,10 @@ export default class ShopAtMerrisMartQuest extends Quest {
 
     return this.format({
       title: "Shop at Merris Mart",
-      thumbnail: `${Config.env("WEB_URL")}/characters/npcs/MART_CLERK.png`,
+      thumbnail: `https://s10.gifyu.com/images/ezgif.com-gif-maker-173287457657b663d733b17e847a410d21.gif`,
       progress,
       expanded,
-      userDiscordId: user.id,
+      userId: user.id,
     });
   }
 }

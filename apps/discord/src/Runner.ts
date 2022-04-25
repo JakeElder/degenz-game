@@ -119,16 +119,12 @@ export default class Runner {
     Events.on("MART_ITEM_BOUGHT", (e) => {
       WorldNotifier.martItemBought(e);
       Analytics.martItemBought(e);
-      QuestLogController.refresh(e.data.user);
+      // QuestLogController.refresh(e.data.user);
     });
 
     Events.on("TOSS_COMPLETED", (e) => {
       WorldNotifier.tossCompleted(e);
       Analytics.tossCompleted(e);
-      AchievementController.checkAndAward(
-        e.data.challenger,
-        "TOSS_WITH_TED_QUEST_COMPLETED"
-      );
     });
 
     Events.on("REDPILL_TAKEN", (e) => {
@@ -171,6 +167,7 @@ export default class Runner {
 
     Events.on("QUEST_COMPLETED", (e) => {
       WorldNotifier.questCompleted(e);
+      // QuestLogController.updateQuestMessage(e.data.user, e.data.quest);
     });
 
     Events.on("DORM_READY_BUTTON_PRESSED", (e) => {

@@ -23,7 +23,6 @@ export default class AchievementController {
   static async checkAndAward(user: User, achievement: AchievementSymbol) {
     if (!user.hasAchievement(achievement)) {
       await this.award(user, achievement);
-      QuestLogController.refresh(user);
     }
   }
 
