@@ -2,7 +2,6 @@ import { GeneralConfig } from "data/types";
 
 const GENERAL: GeneralConfig = {
   DISTRICT_CAPACITY: 50,
-  GUILD_ID: "933888229776703559",
   PROD_GUILD_ID: "933888229776703559",
   READ_ONLY: false,
   SKIP_DELAY: false,

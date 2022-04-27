@@ -1,10 +1,10 @@
-import { Client, Guild, GuildMember, TextChannel } from "discord.js";
+import { Client, Guild, GuildMember } from "discord.js";
 import { NPC } from "data/db";
 import Config from "config";
 import Events from "./Events";
 import { CommandController } from "./CommandController";
-import Utils from "./Utils";
 import Analytics from "./Analytics";
+import delay from "delay";
 
 export default abstract class DiscordBot {
   protected readyPromise: Promise<void>;
@@ -29,7 +29,7 @@ export default abstract class DiscordBot {
   bindClientEvents() {
     this.client.on("rateLimit", (e) => {
       Analytics.mixpanel.track("Rate Limited", {
-        guild_id: Config.general("GUILD_ID"),
+        guild_id: Config.env("GUILD_ID"),
         env: Config.env("NODE_ENV"),
         distinct_id: "APP",
         ...e,
@@ -52,7 +52,7 @@ export default abstract class DiscordBot {
       const guildId =
         this.npc.id === "SCOUT"
           ? Config.general("PROD_GUILD_ID")
-          : Config.general("GUILD_ID");
+          : Config.env("GUILD_ID");
 
       this.guild = await this.client.guilds.fetch(guildId);
       this.readyResolver();

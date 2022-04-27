@@ -6,7 +6,7 @@ import pg from "pg-connection-string";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 import { PostgresConnectionCredentialsOptions } from "typeorm/driver/postgres/PostgresConnectionCredentialsOptions";
 
-const env = process.env.NODE_ENV || "development";
+const env = process.env.APP_ENV || process.env.NODE_ENV || "development";
 
 const envFile = {
   development: ".env",
@@ -15,7 +15,6 @@ const envFile = {
 }[env];
 
 dotenv.config({ path: findConfig(envFile)! });
-
 const db = pg.parse(process.env.DATABASE_URL!);
 
 const ssl: PostgresConnectionCredentialsOptions["ssl"] =

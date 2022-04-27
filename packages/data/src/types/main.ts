@@ -62,6 +62,7 @@ export type EnvVars = SetOptional<
     | "MONGO_URI"
     | "MIXPANEL_PROJECT_TOKEN"
     | "ROLLBAR_TOKEN"
+    | "GUILD_ID"
     | "WEB_URL",
     string
   >,
@@ -70,7 +71,6 @@ export type EnvVars = SetOptional<
 
 export type GeneralConfig = {
   DISTRICT_CAPACITY: number;
-  GUILD_ID: string;
   PROD_GUILD_ID: string;
   READ_ONLY: boolean;
   SKIP_DELAY: boolean;

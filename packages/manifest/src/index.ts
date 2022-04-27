@@ -9,8 +9,10 @@ export default class Manifest {
     const { npcs } = await import("./npcs");
     const { persistentMessages } = await import("./persistent-messages");
     const { roles } = await import("./roles");
+    const { appStates } = await import("./app-state");
 
     return {
+      appStates,
       achievements,
       channels,
       districts,

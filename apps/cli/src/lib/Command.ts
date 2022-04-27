@@ -81,7 +81,7 @@ export default abstract class Command extends OclifCommand {
       Object.create(client),
       {
         onRateLimit: () => {},
-        guild: await client.guilds.fetch(Config.general("GUILD_ID")),
+        guild: await client.guilds.fetch(Config.env("GUILD_ID")),
       }
     );
 

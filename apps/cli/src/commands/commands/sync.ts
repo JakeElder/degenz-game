@@ -22,7 +22,7 @@ export default class SyncCommands extends Command {
       syncs.map(async (npc) => {
         const route = Routes.applicationGuildCommands(
           Config.clientId(npc.id),
-          Config.general("GUILD_ID")
+          Config.env("GUILD_ID")
         );
 
         const data = npc.commands.map((c) => {
@@ -44,7 +44,7 @@ export default class SyncCommands extends Command {
             .map((d: any, idx: number) => {
               const route = Routes.applicationCommandPermissions(
                 Config.clientId(npc.id),
-                Config.general("GUILD_ID"),
+                Config.env("GUILD_ID"),
                 d.id
               );
 

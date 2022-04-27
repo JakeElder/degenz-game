@@ -51,7 +51,7 @@ export default class ConfigManager {
   static npcs: NPC[];
   static managedChannels: ManagedChannel[];
   static emojis: Emoji[];
-  static appState: AppState;
+  static appState: AppState | null;
 
   static async load() {
     [this.roles, this.npcs, this.managedChannels, this.emojis, this.appState] =
@@ -60,7 +60,7 @@ export default class ConfigManager {
         NPC.find(),
         ManagedChannel.find(),
         Emoji.find(),
-        AppState.findOneOrFail({ where: { id: "CURRENT" } }),
+        AppState.findOne({ where: { id: "CURRENT" } }),
       ]);
   }
 
@@ -123,6 +123,9 @@ export default class ConfigManager {
   }
 
   static app<T extends keyof AppState>(k: T): AppState[T] {
+    if (!this.appState) {
+      throw new Error("No app state loaded.");
+    }
     return this.appState[k];
   }
 

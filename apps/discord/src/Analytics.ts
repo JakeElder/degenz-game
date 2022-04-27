@@ -6,7 +6,7 @@ import { capitalCase } from "change-case";
 export default class Analytics {
   static mixpanel = Mixpanel.init(Config.env("MIXPANEL_PROJECT_TOKEN"));
   static common = {
-    guild_id: Config.general("GUILD_ID"),
+    guild_id: Config.env("GUILD_ID"),
     env: Config.env("NODE_ENV"),
   };
 
