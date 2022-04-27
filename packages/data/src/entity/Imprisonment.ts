@@ -12,7 +12,7 @@ import {
   OneToOne,
   JoinColumn,
 } from "typeorm";
-import { User, Channel } from "..";
+import { User, DiscordChannel } from "..";
 
 @Entity()
 export class Imprisonment extends BaseEntity {
@@ -34,9 +34,9 @@ export class Imprisonment extends BaseEntity {
   @Column()
   cellNumber: number;
 
-  @OneToOne(() => Channel, { eager: true })
+  @OneToOne(() => DiscordChannel, { eager: true })
   @JoinColumn()
-  channel: Channel;
+  discordChannel: DiscordChannel;
 
   @Column()
   releaseCode: string;

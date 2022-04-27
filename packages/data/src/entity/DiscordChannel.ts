@@ -9,15 +9,15 @@ import {
 } from "typeorm";
 
 type ChannelTypeSymbol =
-  | "MANAGED"
-  | "QUEST_LOG_THREAD"
-  | "DORMITORY"
-  | "CELL"
   | "APARTMENT"
-  | "ONBOARDING_THREAD";
+  | "CELL"
+  | "DORMITORY"
+  | "MANAGED"
+  | "ONBOARDING_THREAD"
+  | "QUEST_LOG_THREAD";
 
 @Entity()
-export class Channel extends BaseEntity {
+export class DiscordChannel extends BaseEntity {
   @PrimaryColumn({ type: "varchar", unique: true })
   id: string;
 

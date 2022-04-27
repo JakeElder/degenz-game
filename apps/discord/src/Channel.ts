@@ -1,5 +1,5 @@
 import Config from "config";
-import { Channel as ChannelEntity } from "data/db";
+import { DiscordChannel } from "data/db";
 import { ChannelDescriptor, ManagedChannelSymbol, NPCSymbol } from "data/types";
 import { TextBasedChannel } from "discord.js";
 import Manifest from "manifest";
@@ -15,6 +15,26 @@ export class Channel {
     const channel = await bot.guild.channels.fetch(id);
 
     if (!channel || channel.type !== "GUILD_TEXT") {
+      throw new Error(`Channel ${id} not found.`);
+    }
+
+    return channel;
+  }
+
+  static async get(
+    id: ManagedChannelSymbol | TextBasedChannel["id"],
+    botSymbol: NPCSymbol = "ADMIN"
+  ) {
+    const bot = Global.bot(botSymbol);
+    let channel: TextBasedChannel | undefined;
+
+    try {
+      channel = (await bot.guild.channels.fetch(id)) as
+        | TextBasedChannel
+        | undefined;
+    } catch (e) {}
+
+    if (channel && (channel.type === "DM" || channel.type === "GUILD_NEWS")) {
       throw new Error(`Channel ${id} not found.`);
     }
 
@@ -37,10 +57,11 @@ export class Channel {
 
       const gameChannels = channels.filter((c) => c.parent?.id === "BEAUTOPIA");
 
-      const c = await ChannelEntity.findOneOrFail({ where: { id: channelId } });
+      const c = await DiscordChannel.findOneOrFail({
+        where: { id: channelId },
+      });
 
-      const admin = Global.bot("ADMIN");
-      const channel = await admin.getTextChannel(channelId);
+      const channel = await this.get(channelId);
 
       const isCommunity = !!communityChannels.find((c) => c.id === channelId);
       const isApartment = c.type === "APARTMENT";
@@ -58,7 +79,7 @@ export class Channel {
 
       return {
         id: channelId,
-        name: channel.name,
+        name: channel?.name,
         channel,
         isCommunity,
         isApartment,

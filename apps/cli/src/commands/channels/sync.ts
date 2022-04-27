@@ -26,11 +26,11 @@ export default class SyncChannels extends Command {
           throw new Error(`Channel ${c.id} not found`);
         }
 
-        const dc = await bot.guild.channels.fetch(c.channel.id);
+        const dc = await bot.guild.channels.fetch(c.discordChannel.id);
 
         if (!dc) {
           throw new Error(
-            `Discord channel not found: ${c.name}:${c.channel.id}`
+            `Discord channel not found: ${c.name}:${c.discordChannel.id}`
           );
         }
 
@@ -57,11 +57,11 @@ export default class SyncChannels extends Command {
             throw new Error(`Channel ${c.id} not found`);
           }
 
-          const dc = await bot.guild.channels.fetch(c.channel.id);
+          const dc = await bot.guild.channels.fetch(c.discordChannel.id);
 
           if (!dc) {
             throw new Error(
-              `Discord channel not found: ${c.name}:${c.channel.id}`
+              `Discord channel not found: ${c.name}:${c.discordChannel.id}`
             );
           }
 

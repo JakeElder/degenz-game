@@ -7,7 +7,6 @@ import {
   MessageButton,
   MessageOptions,
 } from "discord.js";
-import axios from "axios";
 import { Global } from "../Global";
 import { PersistentMessageController } from "./PersistentMessageController";
 import { channelMention, roleMention, userMention } from "@discordjs/builders";
@@ -178,8 +177,7 @@ export default class EntranceController {
         dormitory: tenancy.dormitory,
       });
 
-      // const um = userMention(i.user.id);
-      const onboardingThread = channelMention(tenancy.onboardingChannel!.id);
+      const cm = channelMention(user.onboardingChannel.discordChannel.id);
 
       const member = await UserController.getMember(user.id);
 
@@ -193,7 +191,7 @@ export default class EntranceController {
             title: "Welcome to BEAUTOPIA",
             color: "RED",
             description: r(
-              <>**GO TO** {onboardingThread} to receive further instructions.</>
+              <>**GO TO** {cm} to receive further instructions.</>
             ),
           },
         ],

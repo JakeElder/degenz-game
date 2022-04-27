@@ -1,6 +1,6 @@
 import { paramCase } from "change-case";
 import Config from "config";
-import { QuestLogChannel, User, Channel } from "data/db";
+import { QuestLogChannel, User, DiscordChannel } from "data/db";
 import { TextBasedChannel, ThreadChannel } from "discord.js";
 import { QuestLogMessage, QuestLogState, QuestSymbol } from "data/types";
 import equal from "fast-deep-equal";
@@ -14,6 +14,7 @@ import GetWhitelistQuest from "../quests/GetWhitelistQuest";
 import ShopAtMerrisMartQuest from "../quests/ShopAtMerrisMartQuest";
 import JoinTheDegenzQuest from "../quests/JoinTheDegenzQuest";
 import Utils from "../Utils";
+import OnboardController from "./OnboardController";
 
 export default class QuestLogController {
   static quests: Quest[];
@@ -50,7 +51,13 @@ export default class QuestLogController {
       }
 
       if (type === "START_JOIN_THE_DEGENZ_QUEST") {
-        await i.reply({ content: "YOOO", ephemeral: true });
+        const user = await User.findOneOrFail({ where: { id: userId } });
+        await Promise.all([
+          OnboardController.start(user),
+          i.update({ fetchReply: false }),
+        ]);
+        await this.refresh(user);
+        await OnboardController.sendInitialMessage(user);
       }
     });
 
@@ -80,7 +87,7 @@ export default class QuestLogController {
     });
 
     const thread = await (qlc
-      ? Utils.Thread.getOrFail(qlc.channel.id)
+      ? Utils.Thread.getOrFail(qlc.discordChannel.id)
       : this.createThread(userId));
 
     return thread;
@@ -107,7 +114,7 @@ export default class QuestLogController {
       thread.members.add(user.id),
       QuestLogChannel.save({
         user,
-        channel: Channel.create({
+        discordChannel: DiscordChannel.create({
           id: thread.id,
           type: "QUEST_LOG_THREAD",
         }),
@@ -161,7 +168,7 @@ export default class QuestLogController {
 
     q.data = await qo.message(c.user, q.meta.expanded);
 
-    const thread = await Utils.Thread.getOrFail(c.channel.id);
+    const thread = await Utils.Thread.getOrFail(c.discordChannel.id);
     await this.reconcile(thread, c.state, next);
   }
 
@@ -171,8 +178,8 @@ export default class QuestLogController {
     next: QuestLogState
   ) {
     const qlc = await QuestLogChannel.findOneOrFail({
-      where: { channel: { id: thread.id } },
-      relations: ["channel"],
+      where: { discordChannel: { id: thread.id } },
+      relations: ["discordChannel"],
     });
 
     // Check order/count
@@ -216,13 +223,15 @@ export default class QuestLogController {
   }
 
   static async purge(thread: ThreadChannel) {
-    const c = await QuestLogChannel.findOneOrFail({
-      where: { channel: { id: thread.id } },
-      relations: ["channel"],
+    const c = await QuestLogChannel.findOne({
+      where: { discordChannel: { id: thread.id } },
+      relations: ["discordChannel"],
     });
 
-    await c.remove();
-    await c.channel.remove();
+    if (c) {
+      await c.remove();
+      await c.discordChannel.remove();
+    }
 
     try {
       await thread.delete();
@@ -247,8 +256,11 @@ export default class QuestLogController {
 
   static async refreshOne(qlc: QuestLogChannel) {
     const [next, thread] = await Promise.all([
-      this.computeState(qlc.user),
-      Utils.Thread.getOrFail(qlc.channel.id),
+      this.computeState(
+        qlc.user,
+        qlc.state.filter((q) => q.meta.expanded).map((q) => q.meta.quest)
+      ),
+      Utils.Thread.getOrFail(qlc.discordChannel.id),
     ]);
     this.reconcile(thread, qlc.state, next);
   }

@@ -4,10 +4,9 @@ import {
   ButtonInteraction,
   MessageActionRow,
   MessageEmbed,
-  TextBasedChannel,
   ThreadChannel,
 } from "discord.js";
-import { User, Achievement, DormitoryTenancy } from "data/db";
+import { User, Achievement, OnboardingChannel, DiscordChannel } from "data/db";
 import {
   AllyIntro,
   ApartmentIssuance,
@@ -15,7 +14,6 @@ import {
   BBIntro,
   ChannelListTraining,
   DormAssignment,
-  GoExplore,
   GoodBadTraining,
   HelpPrompt,
   InitiationCongrats,
@@ -23,7 +21,6 @@ import {
   MoneyIssuance,
   NarkCheck,
   OneMoreThing,
-  SelfDestructMessage,
   RedpillPrompt,
   StatsRewardMessage,
   UnderstandPrompt,
@@ -41,12 +38,9 @@ import UserController from "./UserController";
 import { Global } from "../Global";
 import { In } from "typeorm";
 import DiscordBot from "../DiscordBot";
-import { channelMention, roleMention, userMention } from "@discordjs/builders";
-import delay from "delay";
-import WorldNotifier from "../WorldNotifier";
+import { userMention } from "@discordjs/builders";
 import NextStepController from "./NextStepsController";
 import Interaction from "../Interaction";
-import random from "random";
 import Events from "../Events";
 import { Channel } from "../Channel";
 import { AchievementSymbol } from "data/types";
@@ -89,14 +83,14 @@ export default class OnboardController {
     admin.client.on("threadUpdate", async (prev, thread) => {
       if (!prev.archived && thread.archived) {
         if (await this.isOnboardingThread(thread)) {
-          this.purgeThread(thread);
+          this.purge(thread);
         }
       }
     });
 
     admin.client.on("threadDelete", async (thread) => {
       if (await this.isOnboardingThread(thread)) {
-        this.purgeThread(thread);
+        this.purge(thread);
       }
     });
   }
@@ -121,15 +115,24 @@ export default class OnboardController {
           : "GUILD_PUBLIC_THREAD",
     });
 
+    user.onboardingChannel = OnboardingChannel.create({
+      user,
+      discordChannel: DiscordChannel.create({
+        type: "ONBOARDING_THREAD",
+        id: thread.id,
+      }),
+    });
+
+    await user.save();
+
     return thread;
   }
 
   static async getOnboardingChannel(user: User, bot: DiscordBot) {
-    const channel = await bot.guild.channels.fetch(user.notificationChannelId);
-    if (channel === null || !channel.isText()) {
-      throw new Error("Channel not found");
-    }
-    return channel as TextBasedChannel;
+    return Utils.Thread.getOrFail(
+      user.onboardingChannel.discordChannel.id,
+      bot.npc.id
+    );
   }
 
   static async sendInitialMessage(user: User) {
@@ -330,17 +333,10 @@ export default class OnboardController {
     const questThread = await QuestLogController.show(user.id);
 
     await SelfDestructController.init(channel, 30, async () => {
-      const tenancy = user.dormitoryTenancy;
-      const oc = tenancy.onboardingChannel;
-      tenancy.onboardingChannel = null;
-      await tenancy.save();
-      if (oc) {
-        await oc.remove();
-      }
+      this.purge(channel);
     });
 
     await channel.send("Ok, that's it for now.. get out of here!!");
-
     await channel.send(
       r(
         <>
@@ -372,22 +368,13 @@ export default class OnboardController {
   }
 
   static async sendHelpRequestedResponse(user: User) {
-    const ally = Global.bot("ALLY");
-    const channel = await this.getOnboardingChannel(user, ally);
-
-    await Utils.delay(2000);
-
-    await AchievementController.award(user, "HELP_REQUESTED");
-    await Utils.delay(2000);
-
-    if (user.primaryTenancy.type === "APARTMENT") {
-      await channel.send(r(<GoExplore />));
-      await Utils.delay(2000);
-      await OnboardController.sendNextPrompt(user);
-    } else {
-      await Utils.delay(2000);
-      await OnboardController.sendSelfDestructMessage(user);
-    }
+    //   const ally = Global.bot("ALLY");
+    //   const channel = await this.getOnboardingChannel(user, ally);
+    //   await Utils.delay(2000);
+    //   await AchievementController.award(user, "HELP_REQUESTED");
+    //   await Utils.delay(2000);
+    //   await Utils.delay(2000);
+    //   await OnboardController.sendSelfDestructMessage(user);
   }
 
   static async sendNextPrompt(user: User) {
@@ -403,133 +390,13 @@ export default class OnboardController {
     await NextStepController.send(channel, user);
   }
 
-  static async sendSelfDestructMessage(user: User) {
-    const ally = Global.bot("ALLY");
-    const channel = await this.getOnboardingChannel(user, ally);
-
-    const { dormitory } = user.dormitoryTenancy;
-
-    await channel.send(
-      r(
-        <>
-          Ok {roleMention(dormitory.citizenRole.discordId)}{" "}
-          {dormitory.emoji.toString()} **
-          {user.displayName}**, that's everything I have to tell you for now.
-        </>
-      )
-    );
-    await Utils.delay(1000);
-
-    await channel.send(
-      r(
-        <>
-          You should **go to your assigned dormitory,**{" "}
-          {channelMention(dormitory.channel.channel.id)} and meet your fellow
-          degenz.
-        </>
-      )
-    );
-
-    await Utils.delay(2000);
-
-    const m = await channel.send({
-      embeds: [
-        {
-          color: "RED",
-          description: r(<SelfDestructMessage seconds={30} />),
-        },
-      ],
-    });
-
-    const prefix = dormitory.id.startsWith("THE") ? "" : "the ";
-
-    const c = await Channel.getDescriptor(
-      user.dormitoryTenancy.dormitory.channel.channel.id
-    );
-
-    await Promise.all([
-      (async () => {
-        await delay(1000);
-        const message = await WorldNotifier.logToChannel(
-          dormitory.id,
-          "ALLY",
-          "ORIENTATION_COMPLETED",
-          r(
-            <>
-              {userMention(user.id)} joined {prefix} {c.channel.name} dormitory
-              **DEGEN CREW**. **GO TO**{" "}
-              {channelMention(Config.channelId("QUESTS"))} to see what to do
-              next.
-            </>
-          )
-        );
-        await message.react(dormitory.emoji.identifier);
-        await delay(random.int(300, 800));
-
-        // Celebrate
-        await message.react("\u{1f389}");
-        await delay(random.int(300, 800));
-
-        // Fist bump
-        await message.react("\u{1f44a}");
-        await delay(1000);
-
-        // await this.sendNextPrompt(user);
-      })(),
-      (async () => {
-        for (let i = 1; i < 30; i++) {
-          await delay(1000);
-          await m.edit({
-            embeds: [
-              {
-                color: "RED",
-                description: r(<SelfDestructMessage seconds={30 - i} />),
-              },
-            ],
-          });
-        }
-      })(),
-    ]);
-
-    await this.completeDormOnboarding(user);
-  }
-
-  static async completeDormOnboarding(user: User) {
-    const admin = Global.bot("ADMIN");
-    const tenancy = user.dormitoryTenancy;
-    const thread = await admin.guild.channels.fetch(
-      tenancy.onboardingChannel!.id
-    );
-    if (thread && thread.isText()) {
-      const oc = tenancy.onboardingChannel;
-      tenancy.onboardingChannel = null;
-      await Promise.all([thread.delete(), tenancy.save()]);
-      await oc!.remove();
-    }
-  }
-
   static async switchOnboardNPCs(user: User) {
     const admin = Global.bot("ADMIN");
     const channel = await this.getOnboardingChannel(user, admin);
 
-    if (channel.type === "GUILD_TEXT") {
-      await channel.permissionOverwrites.delete(
-        Config.roleId("BIG_BROTHER_BOT")
-      );
-
-      await Utils.delay(2000);
-
-      await channel.permissionOverwrites.create(Config.roleId("ALLY_BOT"), {
-        VIEW_CHANNEL: true,
-        EMBED_LINKS: true,
-      });
-    }
-
-    if (channel.isThread()) {
-      await channel.members.remove(Config.clientId("BIG_BROTHER"));
-      await Utils.delay(2000);
-      await channel.members.add(Config.clientId("ALLY"));
-    }
+    await channel.members.remove(Config.clientId("BIG_BROTHER"));
+    await Utils.delay(2000);
+    await channel.members.add(Config.clientId("ALLY"));
   }
 
   static async skip(user: User) {
@@ -547,17 +414,29 @@ export default class OnboardController {
     await user.save();
   }
 
-  static async purgeThread(thread: ThreadChannel) {
-    const { user } = await DormitoryTenancy.findOneOrFail({
-      where: { onboardingChannel: { id: thread.id } },
-      relations: ["user", "user.achievements"],
+  static async purge(thread: ThreadChannel) {
+    const c = await OnboardingChannel.findOne({
+      where: { discordChannel: { id: thread.id } },
+      relations: ["user", "user.achievements", "discordChannel"],
     });
 
-    Events.emit("ONBOARDING_THREAD_PURGED", {
-      user,
-      redpilled: user.hasAchievement("JOIN_THE_DEGENZ_QUEST_COMPLETED")
-        ? "YES"
-        : "NO",
-    });
+    if (c) {
+      await c.remove();
+      await c.discordChannel.remove();
+    }
+
+    try {
+      await thread.delete();
+    } catch (e) {}
+
+    if (c) {
+      await QuestLogController.refresh(c.user);
+      Events.emit("ONBOARDING_THREAD_PURGED", {
+        user: c.user,
+        redpilled: c.user.hasAchievement("JOIN_THE_DEGENZ_QUEST_COMPLETED")
+          ? "YES"
+          : "NO",
+      });
+    }
   }
 }

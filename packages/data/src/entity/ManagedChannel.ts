@@ -14,7 +14,7 @@ import {
 } from "typeorm";
 import { DistrictSymbol, RoleSymbol } from "../types";
 import { DormitorySymbol } from "./Dormitory";
-import { Channel } from "..";
+import { DiscordChannel } from "..";
 import { Type } from "class-transformer";
 
 export type NestedManagedChannelSymbol =
@@ -61,9 +61,9 @@ export class ManagedChannel extends BaseEntity {
   @PrimaryColumn({ type: "varchar", unique: true })
   id: ManagedChannelSymbol;
 
-  @OneToOne(() => Channel, { cascade: true, eager: true })
+  @OneToOne(() => DiscordChannel, { cascade: true, eager: true })
   @JoinColumn()
-  channel: Channel;
+  discordChannel: DiscordChannel;
 
   @Column()
   type: "CATEGORY" | "CHANNEL";
@@ -82,7 +82,9 @@ export class ManagedChannel extends BaseEntity {
   @Type(() => ManagedChannel)
   children: ManagedChannel[];
 
-  @ManyToOne(() => ManagedChannel, (channel) => channel.children)
+  @ManyToOne(() => ManagedChannel, (channel) => channel.children, {
+    nullable: true,
+  })
   parent: ManagedChannel;
 
   @CreateDateColumn()

@@ -267,16 +267,6 @@ export default class AllyCommandController extends CommandController {
     );
   }
 
-  async admin_purge(i: CommandInteraction) {
-    const c = await Channel.getDescriptor(i.channelId);
-    if (!c.isOnboardingThread || !c.channel.isThread()) {
-      await this.respond(i, `NOT_A_THREAD`, "FAIL");
-      return;
-    }
-    await OnboardController.purgeThread(c.channel);
-    await this.respond(i, `PURGED`, "SUCCESS");
-  }
-
   async admin_createInviteLink(i: CommandInteraction) {
     const admin = Global.bot("ADMIN");
     const campaign = i.options.getString("campaign", true) as DistrictSymbol;

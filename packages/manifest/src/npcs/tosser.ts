@@ -19,23 +19,6 @@ tosser.commands.push({
     { id: "PREGEN", type: 1, permission: true },
     { id: "DEGEN", type: 1, permission: true },
   ],
-  // restrict: async (i, channel) => {
-  //   if (channel.isTossHouse) {
-  //     return false;
-  //   }
-  //   return {
-  //     restricted: true,
-  //     response: {
-  //       content: r(
-  //         <>
-  //           {userMention(i.user.id)}, come to{" "}
-  //           {channelMention(Config.channelId("TOSS_HOUSE"))} if you wanna toss.
-  //         </>
-  //       ),
-  //       ephemeral: true,
-  //     },
-  //   };
-  // },
   data: new SlashCommandBuilder()
     .setName("toss")
     .setDescription(

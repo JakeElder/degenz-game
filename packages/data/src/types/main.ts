@@ -151,8 +151,8 @@ export type TossResult = {
 
 export type ChannelDescriptor = {
   id: string;
-  name: string;
-  channel: TextChannel | ThreadChannel;
+  name: string | undefined;
+  channel: TextChannel | ThreadChannel | undefined;
   isCommunity: boolean;
   isApartment: boolean;
   isDormitory: boolean;

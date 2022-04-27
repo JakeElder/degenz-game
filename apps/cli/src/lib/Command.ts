@@ -46,6 +46,10 @@ export default abstract class Command extends OclifCommand {
       },
     ]);
 
+    if (response.cancel === undefined) {
+      return false;
+    }
+
     return !response.cancel;
   }
 
@@ -94,5 +98,9 @@ export default abstract class Command extends OclifCommand {
 
   done() {
     console.log("✅ Done");
+  }
+
+  cancelled() {
+    console.log("✅ Cancelled");
   }
 }

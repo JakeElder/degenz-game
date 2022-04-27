@@ -6,9 +6,11 @@ import Utils from "../Utils";
 import {
   InsufficientFundsTransferReply,
   TransferSuccessfulReply,
+  UserMention,
 } from "../legacy/templates";
 import { userMention } from "@discordjs/builders";
 import Events from "../Events";
+import Config from "config";
 
 const { r } = Utils;
 
@@ -30,6 +32,19 @@ export default class BankerCommandController extends CommandController {
   }
 
   async transfer(i: CommandInteraction) {
+    if (!Config.app("transferEnabled")) {
+      i.reply({
+        content: Utils.r(
+          <>
+            <UserMention id={i.user.id} /> - The transfer system is currently
+            under review. Check back later.
+          </>
+        ),
+        ephemeral: true,
+      });
+      return;
+    }
+
     // Get options
     const o = {
       amount: i.options.getInteger("amount", true),

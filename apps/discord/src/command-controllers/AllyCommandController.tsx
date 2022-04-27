@@ -1,3 +1,4 @@
+import React from "react";
 import {
   CommandInteraction,
   GuildMember,
@@ -20,6 +21,9 @@ import { LeaderboardController } from "../controllers/LeaderboardController";
 import { Format } from "lib";
 import { Channel } from "../Channel";
 import { Help } from "../Help";
+import { channelMention, userMention } from "@discordjs/builders";
+import Utils from "../Utils";
+import Config from "config";
 
 export default class AllyCommandController extends CommandController {
   async eat(i: CommandInteraction) {
@@ -52,10 +56,43 @@ export default class AllyCommandController extends CommandController {
   }
 
   async redpill(i: CommandInteraction) {
-    const member = i.member as GuildMember;
+    const channel = await Channel.getDescriptor(i.channelId);
+    const user = await User.findOneOrFail({ where: { id: i.user.id } });
+
+    if (user.hasAchievement("JOIN_THE_DEGENZ_QUEST_COMPLETED")) {
+      await i.reply({ content: "What.. Again?", ephemeral: true });
+      return;
+    }
+
+    if (!channel.isApartment && !channel.isOnboardingThread) {
+      if (user.onboardingChannel) {
+        await i.reply({
+          content: Utils.r(
+            <>
+              {userMention(i.user.id)} - Here? Go to{" "}
+              {channelMention(user.onboardingChannel.discordChannel.id)} if you
+              want to join the Degenz.
+            </>
+          ),
+          ephemeral: true,
+        });
+      } else {
+        await i.reply({
+          content: Utils.r(
+            <>
+              {userMention(i.user.id)} - Here? Go to{" "}
+              {channelMention(Config.channelId("QUESTS"))} and start the *Join
+              the Degenz* quest to `/redpill`.
+            </>
+          ),
+          ephemeral: true,
+        });
+      }
+      return;
+    }
 
     i.reply({ content: "`REDPILL_TAKEN`", ephemeral: true });
-    const user = await getUser(member.id);
+
     Events.emit("REDPILL_TAKEN", { user });
     await OnboardController.sendRedPillTakenResponse(user);
   }

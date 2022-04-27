@@ -8,20 +8,22 @@ export default class JoinTheDegenzQuest extends Quest {
     super();
     this.symbol = "JOIN_THE_DEGENZ";
     this.instructions = async (userId) => {
-      const instructions = [`Follow the instructions`];
+      const instructions: string[] = [];
 
       const onboardingChannel = await this.getOnboardingChannel(userId);
 
       if (onboardingChannel === null) {
-        instructions.unshift(
+        instructions.push(
           `**Press** the **START QUEST** button below`,
           `Go to the orientation channel`
         );
       } else {
         instructions.unshift(
-          `**Go to** ${channelMention(onboardingChannel.id)}`
+          `**Go to** ${channelMention(onboardingChannel.discordChannel.id)}`
         );
       }
+
+      instructions.push(`Follow the instructions`);
 
       return instructions;
     };
@@ -29,7 +31,7 @@ export default class JoinTheDegenzQuest extends Quest {
 
   async getOnboardingChannel(userId: User["id"]) {
     const user = await User.findOneOrFail({ where: { id: userId } });
-    return user.dormitoryTenancy.onboardingChannel;
+    return user.onboardingChannel;
   }
 
   async getProgress(user: User) {

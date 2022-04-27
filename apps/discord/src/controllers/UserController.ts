@@ -11,7 +11,7 @@ import {
   Dormitory,
   DormitoryTenancy,
   Imprisonment,
-  Channel,
+  DiscordChannel,
 } from "data/db";
 import Utils from "../Utils";
 import { getAvailableCellNumber, getTenanciesInDistrict } from "../legacy/db";
@@ -54,6 +54,7 @@ export default class UserController {
   static async add(member: GuildMember) {
     const user = User.create({
       id: member.id,
+      discordId: member.id,
       displayName: member.displayName,
       apartmentTenancies: [],
     });
@@ -180,14 +181,7 @@ export default class UserController {
       member.roles.add(dormitory.citizenRole.discordId),
     ]);
 
-    const thread = await OnboardController.start(user);
-
-    user.dormitoryTenancy.onboardingChannel = Channel.create({
-      type: "ONBOARDING_THREAD",
-      id: thread.id,
-    });
-
-    await user.save();
+    await OnboardController.start(user);
 
     EntranceController.update();
     Events.emit("DORMITORY_ALLOCATED", { user, onboard });
@@ -264,9 +258,10 @@ export default class UserController {
         "imprisonments",
         "achievements",
         "martItemOwnerships",
+        "onboardingChannel",
+        "onboardingChannel.discordChannel",
         "questLogChannel",
-        "questLogChannel.channel",
-        "questLogChannel",
+        "questLogChannel.discordChannel",
       ],
     });
 
@@ -284,10 +279,32 @@ export default class UserController {
     // Remove quest log stuff
     if (user.questLogChannel) {
       try {
-        const thread = await Utils.Thread.getOrFail(
-          user.questLogChannel.channel.id
+        const thread = await Utils.Thread.get(
+          user.questLogChannel.discordChannel.id
         );
-        await QuestLogController.purge(thread);
+        if (thread) {
+          await QuestLogController.purge(thread);
+        } else {
+          await user.questLogChannel.remove();
+          await user.questLogChannel.discordChannel.remove();
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // Remove onboarding channel
+    if (user.onboardingChannel) {
+      try {
+        const thread = await Utils.Thread.get(
+          user.onboardingChannel.discordChannel.id
+        );
+        if (thread) {
+          await OnboardController.purge(thread);
+        } else {
+          await user.onboardingChannel.remove();
+          await user.onboardingChannel.discordChannel.remove();
+        }
       } catch (e) {
         console.error(e);
       }
@@ -309,24 +326,14 @@ export default class UserController {
       const tenancy = user.dormitoryTenancy;
 
       if (tenancy) {
-        const discordChannelId = tenancy.dormitory.channel.channel.id;
+        const discordChannelId = tenancy.dormitory.channel.discordChannel.id;
         const dormChannel = await admin.getTextChannel(discordChannelId);
-
-        const { onboardingChannel } = tenancy;
 
         try {
           dormChannel.permissionOverwrites.delete(user.id);
         } catch (e) {}
 
         await tenancy.remove();
-
-        if (onboardingChannel) {
-          const thread = await dormChannel.threads.fetch(onboardingChannel.id);
-          await onboardingChannel.remove();
-          if (thread) {
-            thread.delete();
-          }
-        }
       }
     } catch (e) {
       console.error(e);
@@ -432,7 +439,7 @@ export default class UserController {
 
     await Promise.all([
       prisoner.imprison({
-        channel: Channel.create({ id: cell.id }),
+        discordChannel: DiscordChannel.create({ id: cell.id }),
         cellNumber: number,
         entryRoleIds,
         releaseCode,
@@ -546,7 +553,7 @@ export default class UserController {
     const { imprisonment } = prisoner;
 
     await member.roles.remove(Config.roleId("PRISONER"));
-    const cell = await admin.getTextChannel(imprisonment.channel.id);
+    const cell = await admin.getTextChannel(imprisonment.discordChannel.id);
     await Promise.all([cell.delete(), imprisonment.softRemove()]);
 
     if (type === "ESCAPE") {

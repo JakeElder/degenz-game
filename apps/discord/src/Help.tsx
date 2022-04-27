@@ -203,10 +203,10 @@ export class Help {
           color: "DARK_BLUE",
           description: r(
             <>
-              {channelMention(channel.id)} is your dormitory onboarding thread.
-              Now you're a Degen, once you've finished learning about the game
-              you'll be greeted in to your dormitory and start working your way
-              up the Degen ranks.
+              {channelMention(channel.id)} is your onboarding thread. Now you're
+              a Degen, once you've finished learning about the game you'll be
+              greeted in to your dormitory and start working your way up the
+              Degen ranks.
             </>
           ),
           fields: [

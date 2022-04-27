@@ -1,3 +1,4 @@
+import React from "react";
 import { table } from "table";
 import {
   CommandInteraction,
@@ -6,7 +7,7 @@ import {
   MessageButton,
   MessageEmbedOptions,
 } from "discord.js";
-import { MartItem, Emoji } from "data/db";
+import { MartItem } from "data/db";
 import Config from "config";
 import { CommandController } from "../CommandController";
 import { getUser, sellItem } from "../legacy/db";
@@ -15,6 +16,32 @@ import { Format } from "lib";
 import { Global } from "../Global";
 import { MartItemSymbol } from "data/types";
 import AchievementController from "../controllers/AchievementController";
+import { Channel } from "../Channel";
+import Utils from "../Utils";
+import { ChannelMention, UserMention } from "../legacy/templates";
+
+type RestrictFn = (
+  handler: (i: CommandInteraction) => void
+) => (i: CommandInteraction) => void;
+
+const restrictToMart: RestrictFn = (handler) => async (i) => {
+  const channel = await Channel.getDescriptor(i.channelId);
+
+  if (channel.isMart) {
+    return handler(i);
+  }
+
+  i.reply({
+    content: Utils.r(
+      <>
+        <UserMention id={i.user.id} />, come to{" "}
+        <ChannelMention id={Config.channelId("MART")} /> if you want to buy
+        stuff.
+      </>
+    ),
+    ephemeral: true,
+  });
+};
 
 export default class MartClerkCommandController extends CommandController {
   static async init() {
@@ -63,9 +90,9 @@ export default class MartClerkCommandController extends CommandController {
     });
   }
 
-  async stock(i: CommandInteraction) {
+  stock = restrictToMart((i) => {
     return this.buy(i);
-  }
+  });
 
   static async makeBuyResponse(
     boughtItem?: MartItemSymbol
@@ -140,8 +167,8 @@ export default class MartClerkCommandController extends CommandController {
     };
   }
 
-  async buy(i: CommandInteraction) {
+  buy = restrictToMart(async (i) => {
     const reply = await MartClerkCommandController.makeBuyResponse();
     await i.reply(reply);
-  }
+  });
 }

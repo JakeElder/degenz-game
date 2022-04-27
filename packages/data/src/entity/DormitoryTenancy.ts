@@ -7,7 +7,7 @@ import {
   ManyToOne,
   OneToOne,
 } from "typeorm";
-import { User, Dormitory, Channel } from "..";
+import { User, Dormitory } from "..";
 
 @Entity()
 export class DormitoryTenancy extends BaseEntity {
@@ -20,9 +20,6 @@ export class DormitoryTenancy extends BaseEntity {
 
   @PrimaryGeneratedColumn()
   id: number;
-
-  @ManyToOne(() => Channel, { cascade: true, eager: true })
-  onboardingChannel: Channel | null;
 
   @ManyToOne(() => Dormitory, (dormitory) => dormitory.tenancies, {
     eager: true,
@@ -41,7 +38,7 @@ export class DormitoryTenancy extends BaseEntity {
   updatedAt: Date;
 
   get discordChannelId() {
-    return this.dormitory.channel.channel.id;
+    return this.dormitory.channel.discordChannel.id;
   }
 
   get dailyAllowance() {

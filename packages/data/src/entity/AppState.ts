@@ -20,6 +20,9 @@ export class AppState extends BaseEntity {
   @Column({ default: true })
   sheltersOpen: boolean;
 
+  @Column({ default: false })
+  transferEnabled: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

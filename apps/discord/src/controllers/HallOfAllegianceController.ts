@@ -12,7 +12,6 @@ import pluralize from "pluralize";
 import Events from "../Events";
 import AchievementController from "./AchievementController";
 import { PersistentMessageController } from "./PersistentMessageController";
-import QuestLogController from "./QuestLogController";
 
 export default class HallOfAllegianceController {
   static buttonCollector: InteractionCollector<ButtonInteraction>;

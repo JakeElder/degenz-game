@@ -11,7 +11,7 @@ import {
   ManagedChannelSymbol,
   EmojiSymbol,
 } from "data/types";
-import { Emoji, ManagedChannel, NPC, Role } from "data/db";
+import { AppState, Emoji, ManagedChannel, NPC, Role } from "data/db";
 import chalk from "chalk";
 
 const NODE_ENV =
@@ -51,14 +51,16 @@ export default class ConfigManager {
   static npcs: NPC[];
   static managedChannels: ManagedChannel[];
   static emojis: Emoji[];
+  static appState: AppState;
 
   static async load() {
-    [this.roles, this.npcs, this.managedChannels, this.emojis] =
+    [this.roles, this.npcs, this.managedChannels, this.emojis, this.appState] =
       await Promise.all([
         Role.find(),
         NPC.find(),
         ManagedChannel.find(),
         Emoji.find(),
+        AppState.findOneOrFail({ where: { id: "CURRENT" } }),
       ]);
   }
 
@@ -102,7 +104,7 @@ export default class ConfigManager {
       throw new Error(`${k} is not a category`);
     }
 
-    return row.channel.id;
+    return row.discordChannel.id;
   }
 
   static channelId(k: ManagedChannelSymbol) {
@@ -117,7 +119,11 @@ export default class ConfigManager {
       throw new Error(`${k} is not a channel`);
     }
 
-    return row.channel.id;
+    return row.discordChannel.id;
+  }
+
+  static app<T extends keyof AppState>(k: T): AppState[T] {
+    return this.appState[k];
   }
 
   static roleId(k: RoleSymbol) {

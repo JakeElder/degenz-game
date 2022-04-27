@@ -18,17 +18,21 @@ import {
   MartItemOwnership,
   Pledge,
   QuestLogChannel,
-  Channel,
+  DiscordChannel,
 } from "..";
 import { Achievement, AchievementSymbol } from "./Achievement";
 import { Imprisonment } from "./Imprisonment";
 import { PlayerEvent } from "./PlayerEvent";
 import { DormitoryTenancy } from "./DormitoryTenancy";
+import { OnboardingChannel } from "./OnboardingChannel";
 
 @Entity()
 export class User extends BaseEntity {
   @PrimaryColumn({ type: "varchar", unique: true })
   id: string;
+
+  @Column()
+  discordId: string;
 
   @Column()
   displayName: string;
@@ -73,6 +77,13 @@ export class User extends BaseEntity {
   })
   questLogChannel: QuestLogChannel;
 
+  @OneToOne(
+    () => OnboardingChannel,
+    (onboardingChannel) => onboardingChannel.user,
+    { eager: true, cascade: true }
+  )
+  onboardingChannel: OnboardingChannel;
+
   @OneToMany(() => PlayerEvent, (playerEvent) => playerEvent.user, {
     cascade: true,
   })
@@ -110,13 +121,13 @@ export class User extends BaseEntity {
 
   public async imprison({
     cellNumber,
-    channel,
+    discordChannel,
     entryRoleIds,
     releaseCode,
     reason,
   }: {
     cellNumber: Imprisonment["cellNumber"];
-    channel: Channel;
+    discordChannel: DiscordChannel;
     entryRoleIds: Role["id"][];
     releaseCode: Imprisonment["releaseCode"];
     reason: Imprisonment["reason"];
@@ -129,7 +140,7 @@ export class User extends BaseEntity {
         entryRoleIds,
         reason,
         cellNumber,
-        channel,
+        discordChannel,
         releaseCode,
       })
     );
@@ -157,7 +168,7 @@ export class User extends BaseEntity {
     if (!this.imprisonments) {
       throw new Error("Imprisonments not loaded");
     }
-    return this.imprisonments[0].channel.id;
+    return this.imprisonments[0].discordChannel.id;
   }
 
   public get notificationChannelId() {
@@ -165,11 +176,11 @@ export class User extends BaseEntity {
       return this.apartmentTenancies[0].discordChannelId;
     }
 
-    if (this.dormitoryTenancy.onboardingChannel?.id) {
-      return this.dormitoryTenancy.onboardingChannel.id;
+    if (this.onboardingChannel) {
+      return this.onboardingChannel.discordChannel.id;
     }
 
-    return this.dormitoryTenancy.dormitory.channel.channel.id;
+    return this.dormitoryTenancy.discordChannelId;
   }
 
   public get primaryTenancy() {

@@ -27,32 +27,6 @@ ally.commands.push({
 
 ally.commands.push({
   id: "RED_PILL",
-  // restrict: async (i, channel, user) => {
-  //   if (channel.isApartment || channel.isOnboardingThread) {
-  //     return false;
-  //   }
-
-  //   if (user.hasAchievement("JOINED_THE_DEGENZ")) {
-  //     return {
-  //       restricted: true,
-  //       response: { content: "What.. Again?", ephemeral: true },
-  //     };
-  //   }
-
-  //   return {
-  //     restricted: true,
-  //     response: {
-  //       content: r(
-  //         <>
-  //           {userMention(i.user.id)} - Here? come back to{" "}
-  //           {channelMention(user.primaryTenancy.discordChannelId)} if you want
-  //           to join the Degenz.
-  //         </>
-  //       ),
-  //       ephemeral: true,
-  //     },
-  //   };
-  // },
   permissions: [],
   data: new SlashCommandBuilder()
     .setName("redpill")
