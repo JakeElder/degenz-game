@@ -5,14 +5,17 @@ import TurndownService from "turndown";
 import Rollbar from "rollbar";
 import { Channel } from "./Channel";
 import { Thread } from "./Thread";
-import { ManagedChannelSymbol } from "data/types";
+import { ManagedChannelSymbol, NPCSymbol } from "data/types";
 
 TurndownService.prototype.escape = (s) => s;
 const td = new TurndownService();
 
 class ManagedChannel {
-  static async get(id: ManagedChannelSymbol) {
-    return Channel.getOrFail(Config.channelId(id));
+  static async getOrFail(
+    id: ManagedChannelSymbol,
+    botSymbol: NPCSymbol = "ADMIN"
+  ) {
+    return Channel.getOrFail(Config.channelId(id), botSymbol);
   }
 }
 

@@ -3,6 +3,7 @@ import { PersistentMessageSymbol } from "data/types";
 import Config from "config";
 import { Global } from "../Global";
 import { Message, MessageOptions } from "discord.js";
+import Utils from "../Utils";
 
 export class PersistentMessageController {
   static async set(
@@ -22,9 +23,10 @@ export class PersistentMessageController {
       return this.create(pm, value);
     }
 
-    const channelId = Config.channelId(pm.channel.id);
-    const bot = Global.bot(pm.maintainer.id);
-    const channel = await bot.getTextChannel(channelId);
+    const channel = await Utils.ManagedChannel.getOrFail(
+      pm.channel.id,
+      pm.maintainer.id
+    );
 
     if (options.replace) {
       try {
@@ -45,9 +47,10 @@ export class PersistentMessageController {
   }
 
   static async create(pm: PersistentMessage, value: MessageOptions) {
-    const bot = Global.bot(pm.maintainer.id);
-    const channelId = Config.channelId(pm.channel.id);
-    const channel = await bot.getTextChannel(channelId);
+    const channel = await Utils.ManagedChannel.getOrFail(
+      pm.channel.id,
+      pm.maintainer.id
+    );
     const message = await channel.send(value);
     pm.messageId = message.id;
     await pm.save();

@@ -5,8 +5,6 @@ import { CampaignInvite, District, User } from "data/db";
 import { Global } from "../Global";
 import Events from "../Events";
 import UserController from "./UserController";
-import { Channel } from "../Channel";
-import OnboardController from "./OnboardController";
 import EntranceController from "./EntranceController";
 import AchievementController from "./AchievementController";
 import Utils from "../Utils";
@@ -132,7 +130,7 @@ export default class AppController {
     const bot = Global.bot(Config.reverseClientId(botId));
 
     try {
-      const c = await bot.getTextChannel(channel.id);
+      const c = await Utils.Channel.getOrFail(channel.id);
       await c.send(message);
       Events.emit("SEND_MESSAGE_AS_EXECUTED", {
         bot: bot.npc,

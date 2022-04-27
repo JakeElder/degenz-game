@@ -103,7 +103,7 @@ export default class AllyCommandController extends CommandController {
     const [channelDescriptor, channel, member, dormitories] = await Promise.all(
       [
         Channel.getDescriptor(i.channelId),
-        admin.getTextChannel(i.channelId),
+        Utils.Channel.getOrFail(i.channelId),
         admin.getMember(i.user.id),
         Dormitory.find({ relations: ["tenancies"] }),
       ]

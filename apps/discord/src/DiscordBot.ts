@@ -3,6 +3,7 @@ import { NPC } from "data/db";
 import Config from "config";
 import Events from "./Events";
 import { CommandController } from "./CommandController";
+import Utils from "./Utils";
 import Analytics from "./Analytics";
 
 export default abstract class DiscordBot {
@@ -74,11 +75,5 @@ export default abstract class DiscordBot {
       return null;
     }
     return member;
-  }
-
-  async getTextChannel(id: TextChannel["id"]): Promise<TextChannel> {
-    const channel = await this.guild.channels.fetch(id);
-    if (!channel) throw new Error(`Channel ${id} not found`);
-    return channel as TextChannel;
   }
 }

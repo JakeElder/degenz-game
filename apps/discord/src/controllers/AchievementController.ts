@@ -3,8 +3,8 @@ import { User, Achievement } from "data/db";
 import { Global } from "../Global";
 import Events from "../Events";
 import { Format } from "lib";
-import QuestLogController from "./QuestLogController";
 import { AchievementSymbol, QuestSymbol } from "data/types";
+import Utils from "../Utils";
 
 export default class AchievementController {
   static descriptions: Record<AchievementSymbol, string> = {
@@ -34,7 +34,7 @@ export default class AchievementController {
     }
 
     const [residence, member, achievementData] = await Promise.all([
-      admin.getTextChannel(user.notificationChannelId),
+      Utils.Channel.getOrFail(user.notificationChannelId),
       admin.guild.members.fetch(user.id),
       Achievement.findOne({ where: { id: achievement } }),
     ]);

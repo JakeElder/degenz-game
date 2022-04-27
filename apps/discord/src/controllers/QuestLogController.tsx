@@ -97,7 +97,7 @@ export default class QuestLogController {
     const user = await User.findOneOrFail({ where: { id: userId } });
 
     const admin = Global.bot("ADMIN");
-    const quests = await Utils.ManagedChannel.get("QUESTS");
+    const quests = await Utils.ManagedChannel.getOrFail("QUESTS");
 
     const thread = await quests.threads.create({
       name: `📜｜${paramCase(user.displayName)}s-quest-log`,

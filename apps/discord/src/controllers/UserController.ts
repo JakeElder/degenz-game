@@ -249,7 +249,6 @@ export default class UserController {
   }
 
   static async eject(memberId: GuildMember["id"]) {
-    const admin = Global.bot("ADMIN");
     const user = await User.findOne({
       where: { id: memberId },
       relations: [
@@ -314,7 +313,9 @@ export default class UserController {
     try {
       const tenancy = user.primaryTenancy;
       if (tenancy.type === "APARTMENT") {
-        const apartment = await admin.getTextChannel(tenancy.discordChannelId);
+        const apartment = await Utils.Channel.getOrFail(
+          tenancy.discordChannelId
+        );
         await apartment.delete();
       }
     } catch (e) {
@@ -327,7 +328,7 @@ export default class UserController {
 
       if (tenancy) {
         const discordChannelId = tenancy.dormitory.channel.discordChannel.id;
-        const dormChannel = await admin.getTextChannel(discordChannelId);
+        const dormChannel = await Utils.Channel.getOrFail(discordChannelId);
 
         try {
           dormChannel.permissionOverwrites.delete(user.id);
@@ -461,9 +462,11 @@ export default class UserController {
   }
 
   static async onboardPrisoner(user: User) {
-    const prisoner = Global.bot("PRISONER");
+    const channel = await Utils.Channel.getOrFail(
+      user.cellDiscordChannelId,
+      "PRISONER"
+    );
 
-    const channel = await prisoner.getTextChannel(user.cellDiscordChannelId);
     await channel.send({
       embeds: [
         {
@@ -497,9 +500,8 @@ export default class UserController {
   }
 
   static async hideResidencies(user: User) {
-    const admin = Global.bot("ADMIN");
     if (user.primaryTenancy.type === "APARTMENT") {
-      const residence = await admin.getTextChannel(
+      const residence = await Utils.Channel.getOrFail(
         user.primaryTenancy.discordChannelId
       );
       residence.permissionOverwrites.delete(user.id);
@@ -507,9 +509,8 @@ export default class UserController {
   }
 
   static async showResidencies(user: User) {
-    const admin = Global.bot("ADMIN");
     if (user.primaryTenancy.type === "APARTMENT") {
-      const residence = await admin.getTextChannel(
+      const residence = await Utils.Channel.getOrFail(
         user.primaryTenancy.discordChannelId
       );
       residence.permissionOverwrites.create(user.id, {
@@ -523,7 +524,6 @@ export default class UserController {
     captorId: GuildMember["id"] | null,
     type: "ESCAPE" | "RELEASE"
   ) {
-    const admin = Global.bot("ADMIN");
     const member = await UserController.getMember(prisonerId);
     const [captor, prisoner] = await Promise.all([
       User.findOne({ where: { id: captorId! } }),
@@ -553,7 +553,9 @@ export default class UserController {
     const { imprisonment } = prisoner;
 
     await member.roles.remove(Config.roleId("PRISONER"));
-    const cell = await admin.getTextChannel(imprisonment.discordChannel.id);
+
+    const cell = await Utils.Channel.getOrFail(imprisonment.discordChannel.id);
+
     await Promise.all([cell.delete(), imprisonment.softRemove()]);
 
     if (type === "ESCAPE") {

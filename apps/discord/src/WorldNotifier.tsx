@@ -3,7 +3,6 @@ import { NPC } from "data/db";
 import memoize from "memoizee";
 import Config from "config";
 import { Event, PickEvent } from "./Events";
-import { Global } from "./Global";
 import Utils from "./Utils";
 import { Format } from "lib";
 import { channelMention, userMention } from "@discordjs/builders";
@@ -14,8 +13,7 @@ const { r } = Utils;
 export default class WorldNotifier {
   static getChannel = memoize(
     async (botSymbol: NPCSymbol, channelSymbol: NestedManagedChannelSymbol) => {
-      const bot = Global.bot(botSymbol);
-      return bot.getTextChannel(Config.channelId(channelSymbol));
+      return Utils.ManagedChannel.getOrFail(channelSymbol, botSymbol);
     },
     { promise: true, maxAge: 1000 * 60 * 10 }
   );

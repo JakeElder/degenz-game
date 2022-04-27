@@ -19,6 +19,7 @@ import NextStepController from "../controllers/NextStepsController";
 import Events from "../Events";
 import Config from "config";
 import EntranceController from "../controllers/EntranceController";
+import Utils from "../Utils";
 
 export default class AllyCommandController extends CommandController {
   async respond(
@@ -88,7 +89,6 @@ export default class AllyCommandController extends CommandController {
   }
 
   async admin_clear(i: CommandInteraction) {
-    const admin = Global.bot("ADMIN");
     let channel = i.options.getChannel("channel");
     const number = i.options.getNumber("number");
 
@@ -96,7 +96,7 @@ export default class AllyCommandController extends CommandController {
       channel = i.channel as GuildBasedChannel;
     }
 
-    const c = await admin.getTextChannel(channel.id);
+    const c = await Utils.Channel.getOrFail(channel.id);
 
     try {
       await c.bulkDelete(number || 100);
