@@ -71,8 +71,9 @@ export default class PrisonerCommandController extends CommandController {
 
     content = `${prefix}\`${content}\``;
 
-    return i.deferred || i.replied
+    await (i.deferred || i.replied
       ? i.editReply({ content })
-      : i.reply({ content, ephemeral: true });
+      : i.reply({ content, ephemeral: true }));
+    return;
   }
 }

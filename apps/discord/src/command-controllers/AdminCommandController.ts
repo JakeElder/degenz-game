@@ -16,8 +16,6 @@ import { DistrictSymbol } from "data/types";
 import AppController from "../controllers/AppController";
 import { Global } from "../Global";
 import NextStepController from "../controllers/NextStepsController";
-import { Channel } from "../Channel";
-import OnboardController from "../controllers/OnboardController";
 import Events from "../Events";
 import Config from "config";
 import EntranceController from "../controllers/EntranceController";
@@ -36,9 +34,9 @@ export default class AllyCommandController extends CommandController {
 
     content = `${prefix}\`${content}\``;
 
-    return i.deferred || i.replied
+    await (i.deferred || i.replied
       ? i.editReply({ content })
-      : i.reply({ content, ephemeral: true });
+      : i.reply({ content, ephemeral: true }));
   }
 
   async admin_initiate(i: CommandInteraction) {

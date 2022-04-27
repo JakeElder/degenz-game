@@ -15,7 +15,7 @@ const Home: NextPage = () => {
       <main className={styles.main}>
         <span style={{ margin: "auto" }}>confirmed.</span>
         <div style={{ width: 130, paddingBottom: 30 }}>
-          <Image src={logo} layout="responsive" />
+          <Image src={logo} layout="responsive" alt="Degenz" />
         </div>
       </main>
     </div>

@@ -3,7 +3,6 @@ import { NPC } from "data/db";
 import Config from "config";
 import Events from "./Events";
 import { CommandController } from "./CommandController";
-import Utils from "./Utils";
 import Analytics from "./Analytics";
 
 export default abstract class DiscordBot {

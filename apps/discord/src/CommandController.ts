@@ -15,37 +15,12 @@ export abstract class CommandController {
       return;
     }
 
-    // if (command.restrict) {
-    //   const [channelDescriptor, user] = await Promise.all([
-    //     Channel.getDescriptor(i.channelId),
-    //     User.findOneOrFail({
-    //       where: { discordId: i.user.id },
-    //       relations: ["achievements", "apartmentTenancies", "dormitoryTenancy"],
-    //     }),
-    //   ]);
-
-    //   let interactee: User | null = null;
-    //   if (command.symbol === "TRANSFER") {
-    //     const recipient = i.options.getMember("recipient", true) as GuildMember;
-    //     interactee = await User.findOneOrFail({
-    //       where: { discordId: recipient.user.id },
-    //       relations: ["achievements"],
-    //     });
-    //   }
-
-    //   const r = await command.restrict(i, channelDescriptor, user, interactee);
-    //   if (r) {
-    //     i.replied ? i.editReply(r.response) : i.reply(r.response);
-    //     return;
-    //   }
-    // }
-
-    let option;
+    let option: string | undefined;
     try {
       option = camelCase(i.options.getSubcommand());
     } catch (e) {}
 
-    let handler;
+    let handler: any;
 
     if (option && `${i.commandName}_${option}` in this) {
       handler = (this as any)[`${i.commandName}_${option}`];
@@ -79,9 +54,10 @@ export abstract class CommandController {
     content: string,
     type: "SUCCESS" | "FAIL" | "NEUTRAL" = "NEUTRAL"
   ) {
-    return i.deferred || i.replied
+    i.deferred || i.replied
       ? i.editReply({ content })
       : i.reply({ content, ephemeral: true });
+    return;
   }
 
   async handleSelect(i: SelectMenuInteraction) {
