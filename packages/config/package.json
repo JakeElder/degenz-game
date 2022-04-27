@@ -2,7 +2,7 @@
   "name": "config",
   "version": "0.0.0",
   "license": "UNLICENSED",
-  "main": "./src/index.ts",
+  "main": "./src/index",
   "scripts": {
     "build": "yarn tsc",
     "typecheck": "tsc --noEmit"

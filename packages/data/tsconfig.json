@@ -1,4 +1,5 @@
 {
   "extends": "tsconfig/component.json",
-  "include": ["src/**/*.ts"]
+  "include": ["./db.ts", "./types.ts"],
+  "exclude": ["node_modules"]
 }

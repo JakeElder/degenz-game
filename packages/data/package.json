@@ -4,7 +4,6 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "tsc",
-    "dev": "node scripts/dev",
     "typecheck": "tsc --noEmit",
     "typeorm": "typeorm-ts-node-commonjs -d src/data-source"
   },

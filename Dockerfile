@@ -11,4 +11,4 @@ WORKDIR /app/out
 RUN yarn install
 RUN yarn turbo run build
 
-CMD ["pm2-docker", "node", "--", "-r", "source-map-support/register", "apps/discord/dist/main.js"]
+CMD ["pm2-docker", "node", "--", "-r", "source-map-support/register", "apps/discord/src/main.js"]

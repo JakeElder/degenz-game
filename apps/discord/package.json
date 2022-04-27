@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "build": "yarn tsc",
     "dev": "nodemon src/main.ts",
     "typecheck": "tsc --noEmit"
   },
