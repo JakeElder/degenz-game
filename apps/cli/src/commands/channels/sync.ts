@@ -15,7 +15,9 @@ export default class SyncChannels extends Command {
       this.bot("ADMIN"),
     ]);
 
-    const progress = this.getProgressBar(channels.map((c) => c.id));
+    const progress = this.getProgressBar(
+      [...syncCategories, ...syncChannels].map((c) => c.id)
+    );
     progress.start();
 
     await Promise.all(

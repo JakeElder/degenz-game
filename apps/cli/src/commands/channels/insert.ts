@@ -26,7 +26,7 @@ export default class InsertChannels extends Command {
       });
 
     const total = inserts.length;
-    inserts = inserts.slice(0, 3);
+    inserts = inserts.slice(0, 5);
 
     if (inserts.length === 0) {
       console.log("No channels to insert.");

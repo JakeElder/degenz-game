@@ -16,6 +16,9 @@ export default class InsertRoles extends Command {
 
     let inserts = roles.filter((r) => !existingIds.includes(r.id));
 
+    const total = inserts.length;
+    inserts = inserts.slice(0, 5);
+
     const bot = await this.bot("ADMIN");
 
     if (inserts.length === 0) {
@@ -23,7 +26,9 @@ export default class InsertRoles extends Command {
       return;
     }
 
-    const confirm = await this.confirm(`Insert ${inserts.length} roles?`);
+    const confirm = await this.confirm(
+      `Insert ${inserts.length}/${total} roles?`
+    );
     if (!confirm) {
       return;
     }

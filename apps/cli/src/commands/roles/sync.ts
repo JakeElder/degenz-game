@@ -3,6 +3,7 @@ import { Emoji, Role } from "data/db";
 import Color from "color";
 import { RoleData } from "discord.js";
 import { Command } from "../../lib";
+import { RoleSymbol } from "data/types";
 
 export default class SyncRoles extends Command {
   static description = "Sync Roles";
@@ -18,7 +19,7 @@ export default class SyncRoles extends Command {
 
     syncs = syncs.filter((r) => r.id !== "ADMIN_BOT");
 
-    const progress = this.getProgressBar(roles.map((c) => c.id));
+    const progress = this.getProgressBar<RoleSymbol>(syncs.map((c) => c.id));
     progress.start();
 
     await Promise.all(
@@ -41,13 +42,13 @@ export default class SyncRoles extends Command {
           permissions: source.permissions,
         };
 
-        if (bot.guild.features.includes("ROLE_ICONS") && source.emoji.id) {
+        if (bot.guild.features.includes("ROLE_ICONS") && source.emoji?.id) {
           const row = emojis.find((e) => e.id === source.emoji.id);
           if (!row) {
             throw new Error(`Emoji ${source.emoji.id} row not found.`);
           }
 
-          const id = source.emoji.identifier.split(":")[1];
+          const id = row.identifier.split(":")[1];
           const guildEmoji = await bot.guild.emojis.fetch(id);
 
           if (!guildEmoji) {
