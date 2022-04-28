@@ -14,7 +14,7 @@ export class Channel {
     const bot = Global.bot(botSymbol);
     const channel = await bot.guild.channels.fetch(id);
 
-    if (!channel || channel.type !== "GUILD_TEXT") {
+    if (!channel || (channel.type !== "GUILD_TEXT" && !channel.isThread())) {
       throw new Error(`Channel ${id} not found.`);
     }
 

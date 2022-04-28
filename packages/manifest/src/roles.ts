@@ -1,4 +1,6 @@
+import { plainToInstance } from "class-transformer";
 import { Role } from "data/db";
+import { RecursivePartial } from "data/types";
 import { Permissions } from "discord.js";
 
 const EVERYONE = new Permissions([
@@ -25,7 +27,7 @@ const ESTABLISHMENT = new Permissions([
   "MENTION_EVERYONE",
 ]);
 
-export const roles = Role.create([
+const r: RecursivePartial<Role>[] = [
   {
     id: "EVERYONE",
     type: "EVERYONE",
@@ -68,16 +70,40 @@ export const roles = Role.create([
     id: "ADMIN_BOT",
     permissions: new Permissions(["ADMINISTRATOR"]),
   },
-  { id: "BIG_BROTHER_BOT", type: "MANAGED" },
-  { id: "DEVILS_ADVOCATE_BOT", type: "MANAGED" },
-  { id: "ALLY_BOT", type: "MANAGED" },
-  { id: "WARDEN_BOT", type: "MANAGED" },
-  { id: "TOSSER_BOT", type: "MANAGED" },
-  { id: "BANKER_BOT", type: "MANAGED" },
-  { id: "MART_CLERK_BOT", type: "MANAGED" },
-  { id: "PRISONER_BOT", type: "MANAGED" },
-  { id: "ARMORY_CLERK_BOT", type: "MANAGED" },
-  { id: "SENSEI_BOT", type: "MANAGED" },
+  {
+    id: "BIG_BROTHER_BOT",
+    type: "MANAGED",
+    emoji: { id: "BIG_BROTHER_NPC" },
+    permissions: new Permissions([
+      "CREATE_PUBLIC_THREADS",
+      "CREATE_PRIVATE_THREADS",
+    ]),
+  },
+  {
+    id: "DEVILS_ADVOCATE_BOT",
+    type: "MANAGED",
+    emoji: { id: "DEVILS_ADVOCATE_NPC" },
+  },
+  {
+    id: "ALLY_BOT",
+    type: "MANAGED",
+    emoji: { id: "ALLY_NPC" },
+  },
+  {
+    id: "WARDEN_BOT",
+    type: "MANAGED",
+    emoji: { id: "WARDEN_NPC" },
+  },
+  { id: "TOSSER_BOT", type: "MANAGED", emoji: { id: "TOSSER_NPC" } },
+  { id: "BANKER_BOT", type: "MANAGED", emoji: { id: "BANKER_NPC" } },
+  { id: "MART_CLERK_BOT", type: "MANAGED", emoji: { id: "MART_CLERK_NPC" } },
+  { id: "PRISONER_BOT", type: "MANAGED", emoji: { id: "PRISONER_NPC" } },
+  {
+    id: "ARMORY_CLERK_BOT",
+    type: "MANAGED",
+    emoji: { id: "ARMORY_CLERK_NPC" },
+  },
+  { id: "SENSEI_BOT", type: "MANAGED", emoji: { id: "SENSEI_NPC" } },
   {
     type: "CITIZEN",
     id: "D1_CITIZEN",
@@ -183,4 +209,6 @@ export const roles = Role.create([
     permissions: new Permissions(["ADMINISTRATOR"]),
     emoji: { id: "BLUE_TICK" },
   },
-]);
+];
+
+export const roles = plainToInstance(Role, r);

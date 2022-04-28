@@ -102,7 +102,10 @@ export default class OnboardController {
 
   static async start(user: User) {
     const admin = Global.bot("ADMIN");
-    const entrance = await Utils.ManagedChannel.getOrFail("ENTRANCE");
+    const entrance = await Utils.ManagedChannel.getOrFail(
+      "ENTRANCE",
+      "BIG_BROTHER"
+    );
 
     const thread = await entrance.threads.create({
       name: `📟｜${paramCase(user.displayName)}s-orientation`,
