@@ -24,7 +24,6 @@ import { Achievement, AchievementSymbol } from "./Achievement";
 import { Imprisonment } from "./Imprisonment";
 import { PlayerEvent } from "./PlayerEvent";
 import { DormitoryTenancy } from "./DormitoryTenancy";
-import { OnboardingChannel } from "./OnboardingChannel";
 
 @Entity()
 export class User extends BaseEntity {
@@ -78,11 +77,11 @@ export class User extends BaseEntity {
   questLogChannel: QuestLogChannel;
 
   @OneToOne(
-    () => OnboardingChannel,
-    (onboardingChannel) => onboardingChannel.user,
+    () => DiscordChannel,
     { eager: true, cascade: true }
   )
-  onboardingChannel: OnboardingChannel;
+  @JoinColumn()
+  onboardingChannel: DiscordChannel | null;
 
   @OneToMany(() => PlayerEvent, (playerEvent) => playerEvent.user, {
     cascade: true,
@@ -177,7 +176,7 @@ export class User extends BaseEntity {
     }
 
     if (this.onboardingChannel) {
-      return this.onboardingChannel.discordChannel.id;
+      return this.onboardingChannel.id;
     }
 
     return this.dormitoryTenancy.discordChannelId;

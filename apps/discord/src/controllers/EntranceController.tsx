@@ -177,7 +177,7 @@ export default class EntranceController {
         dormitory: tenancy.dormitory,
       });
 
-      const cm = channelMention(user.onboardingChannel.discordChannel.id);
+      const cm = channelMention(user.onboardingChannel!.id);
 
       const member = await UserController.getMember(user.id);
 

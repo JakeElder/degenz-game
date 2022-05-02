@@ -15,7 +15,6 @@ export { ManagedChannel } from "./entity/ManagedChannel";
 export { MartItem } from "./entity/MartItem";
 export { MartItemOwnership } from "./entity/MartItemOwnership";
 export { NPC } from "./entity/NPC";
-export { OnboardingChannel } from "./entity/OnboardingChannel";
 export { PersistentMessage } from "./entity/PersistentMessage";
 export { Pledge } from "./entity/Pledge";
 export { QuestLogChannel } from "./entity/QuestLogChannel";

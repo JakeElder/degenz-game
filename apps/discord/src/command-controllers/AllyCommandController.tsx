@@ -70,8 +70,8 @@ export default class AllyCommandController extends CommandController {
           content: Utils.r(
             <>
               {userMention(i.user.id)} - Here? Go to{" "}
-              {channelMention(user.onboardingChannel.discordChannel.id)} if you
-              want to join the Degenz.
+              {channelMention(user.onboardingChannel.id)} if you want to join
+              the Degenz.
             </>
           ),
           ephemeral: true,

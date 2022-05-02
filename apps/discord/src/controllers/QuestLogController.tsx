@@ -50,7 +50,7 @@ export default class QuestLogController {
         await i.update({ fetchReply: false });
       }
 
-      if (type === "START_JOIN_THE_DEGENZ_QUEST") {
+      if (type === "START_QUEST") {
         const user = await User.findOneOrFail({ where: { id: userId } });
         await Promise.all([
           OnboardController.start(user),

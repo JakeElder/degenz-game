@@ -69,7 +69,7 @@ export default abstract class Quest {
       },
     ];
 
-    if (expanded) {
+    if (progress < 1 && expanded) {
       const emojis = [
         "\u0031\ufe0f\u20e3",
         "\u0032\ufe0f\u20e3",

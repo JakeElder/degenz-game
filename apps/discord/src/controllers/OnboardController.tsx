@@ -6,7 +6,7 @@ import {
   MessageEmbed,
   ThreadChannel,
 } from "discord.js";
-import { User, Achievement, OnboardingChannel, DiscordChannel } from "data/db";
+import { User, Achievement, DiscordChannel } from "data/db";
 import {
   AllyIntro,
   ApartmentIssuance,
@@ -28,7 +28,6 @@ import {
   WelcomeComrade,
   WorldIntro,
   GBTReward,
-  GBTUsage,
 } from "../legacy/onboard-dialog";
 import Utils from "../Utils";
 import { makeButton } from "../legacy/utils";
@@ -118,12 +117,9 @@ export default class OnboardController {
           : "GUILD_PUBLIC_THREAD",
     });
 
-    user.onboardingChannel = OnboardingChannel.create({
-      user,
-      discordChannel: DiscordChannel.create({
-        type: "ONBOARDING_THREAD",
-        id: thread.id,
-      }),
+    user.onboardingChannel = DiscordChannel.create({
+      id: thread.id,
+      type: "ONBOARDING_THREAD",
     });
 
     await user.save();
@@ -132,10 +128,10 @@ export default class OnboardController {
   }
 
   static async getOnboardingChannel(user: User, bot: DiscordBot) {
-    return Utils.Thread.getOrFail(
-      user.onboardingChannel.discordChannel.id,
-      bot.npc.id
-    );
+    if (!user.onboardingChannel) {
+      throw new Error("No onboarding channel");
+    }
+    return Utils.Thread.getOrFail(user.onboardingChannel.id, bot.npc.id);
   }
 
   static async sendInitialMessage(user: User) {
@@ -418,25 +414,31 @@ export default class OnboardController {
   }
 
   static async purge(thread: ThreadChannel) {
-    const c = await OnboardingChannel.findOne({
-      where: { discordChannel: { id: thread.id } },
-      relations: ["user", "user.achievements", "discordChannel"],
+    const user = await User.findOne({
+      where: {
+        onboardingChannel: { id: thread.id },
+      },
+      relations: ["onboardingChannel"],
     });
 
-    if (c) {
-      await c.remove();
-      await c.discordChannel.remove();
+    if (user) {
+      const oc = user.onboardingChannel;
+      if (oc) {
+        user.onboardingChannel = null;
+        await user.save();
+        await oc.remove();
+      }
     }
 
     try {
       await thread.delete();
     } catch (e) {}
 
-    if (c) {
-      await QuestLogController.refresh(c.user);
+    if (user) {
+      await QuestLogController.refresh(user);
       Events.emit("ONBOARDING_THREAD_PURGED", {
-        user: c.user,
-        redpilled: c.user.hasAchievement("JOIN_THE_DEGENZ_QUEST_COMPLETED")
+        user: user,
+        redpilled: user.hasAchievement("JOIN_THE_DEGENZ_QUEST_COMPLETED")
           ? "YES"
           : "NO",
       });

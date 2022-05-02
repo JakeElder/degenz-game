@@ -258,7 +258,6 @@ export default class UserController {
         "achievements",
         "martItemOwnerships",
         "onboardingChannel",
-        "onboardingChannel.discordChannel",
         "questLogChannel",
         "questLogChannel.discordChannel",
       ],
@@ -295,14 +294,16 @@ export default class UserController {
     // Remove onboarding channel
     if (user.onboardingChannel) {
       try {
-        const thread = await Utils.Thread.get(
-          user.onboardingChannel.discordChannel.id
-        );
+        const thread = await Utils.Thread.get(user.onboardingChannel.id);
         if (thread) {
           await OnboardController.purge(thread);
         } else {
-          await user.onboardingChannel.remove();
-          await user.onboardingChannel.discordChannel.remove();
+          const oc = user.onboardingChannel;
+          if (oc) {
+            user.onboardingChannel = null;
+            await user.save();
+            await oc.remove();
+          }
         }
       } catch (e) {
         console.error(e);

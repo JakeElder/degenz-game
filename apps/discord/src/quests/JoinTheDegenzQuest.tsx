@@ -19,7 +19,7 @@ export default class JoinTheDegenzQuest extends Quest {
         );
       } else {
         instructions.unshift(
-          `**Go to** ${channelMention(onboardingChannel.discordChannel.id)}`
+          `**Go to** ${channelMention(onboardingChannel.id)}`
         );
       }
 
@@ -55,7 +55,7 @@ export default class JoinTheDegenzQuest extends Quest {
           new MessageButton()
             .setLabel("Start Quest")
             .setStyle("PRIMARY")
-            .setCustomId(`START_JOIN_THE_DEGENZ_QUEST:${user.id}`)
+            .setCustomId(`START_QUEST:JOIN_THE_DEGENZ:${user.id}`)
         );
       }
     }
