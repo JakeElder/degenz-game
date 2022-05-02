@@ -2,6 +2,7 @@ import { camelCase, pascalCase } from "change-case";
 import { CommandInteraction, SelectMenuInteraction } from "discord.js";
 import DiscordBot from "./DiscordBot";
 import Events from "./Events";
+import Config from "config";
 
 export abstract class CommandController {
   constructor() {}
@@ -21,6 +22,14 @@ export abstract class CommandController {
     } catch (e) {}
 
     let handler: any;
+
+    if (i.commandName === "admin" && option !== "createInviteLink") {
+      const member = await bot.guild.members.fetch(i.user.id);
+      if (!member.roles.cache.has(Config.roleId("ADMIN"))) {
+        await this.error(i);
+        return;
+      }
+    }
 
     if (option && `${i.commandName}_${option}` in this) {
       handler = (this as any)[`${i.commandName}_${option}`];
