@@ -37,7 +37,7 @@ export default class BankerCommandController extends CommandController {
         content: Utils.r(
           <>
             <UserMention id={i.user.id} /> - The transfer system is currently
-            under review. Check back later.
+            undergoing routine maintenance. Check back later!
           </>
         ),
         ephemeral: true,
