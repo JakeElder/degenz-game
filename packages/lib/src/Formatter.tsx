@@ -19,7 +19,7 @@ export default class Formatter {
   static currency(
     amount: number | null,
     props: {
-      emoji?: boolean;
+      emoji?: boolean | string;
       symbol?: boolean;
       bold?: boolean;
       full?: boolean;
@@ -50,7 +50,8 @@ export default class Formatter {
 
     if (amount === null) {
       if (emoji) {
-        return `\`\u{1f4b0}${base}\``;
+        const e = typeof emoji === "boolean" ? "\u{1f4b0}" : emoji;
+        return `\`${e}${base}\``;
       }
       return base;
     }

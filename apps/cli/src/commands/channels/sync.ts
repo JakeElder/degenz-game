@@ -1,7 +1,7 @@
 import Manifest from "manifest";
 import { ManagedChannel } from "data/db";
-import Config from "config";
 import { Command } from "../../lib";
+import { resolveOverwrites } from "../../utils";
 
 export default class SyncChannels extends Command {
   static description = "Sync channels";
@@ -36,13 +36,13 @@ export default class SyncChannels extends Command {
           );
         }
 
-        let p = source.permissionOverwrites;
+        const permissionOverwrites = resolveOverwrites(
+          source.permissionOverwrites
+        );
 
         await dc.edit({
           name: source.name,
-          permissionOverwrites: p.map((po) => {
-            return { ...po, id: Config.roleId(po.id) };
-          }),
+          permissionOverwrites,
         });
 
         progress.complete(source.id);
@@ -59,6 +59,12 @@ export default class SyncChannels extends Command {
             throw new Error(`Channel ${c.id} not found`);
           }
 
+          const parent = channels.find((c) => c.id === source.parent.id);
+
+          if (!parent) {
+            throw new Error(`Channel ${source.parent.id} not found`);
+          }
+
           const dc = await bot.guild.channels.fetch(c.discordChannel.id);
 
           if (!dc) {
@@ -67,20 +73,16 @@ export default class SyncChannels extends Command {
             );
           }
 
-          await dc.edit({ name: source.name });
-
-          if (source.lockPermissions) {
-            await dc.lockPermissions();
-          }
-
-          await Promise.all(
-            source.permissionOverwrites.map((po) =>
-              dc.permissionOverwrites.create(Config.roleId(po.id), {
-                ...(po.allow || []).reduce((c, v) => ({ ...c, [v]: true }), {}),
-                ...(po.deny || []).reduce((c, v) => ({ ...c, [v]: false }), {}),
-              })
-            )
+          const permissionOverwrites = resolveOverwrites(
+            source.lockPermissions
+              ? [...parent.permissionOverwrites, ...source.permissionOverwrites]
+              : source.permissionOverwrites
           );
+
+          await dc.edit({
+            name: source.name,
+            permissionOverwrites,
+          });
 
           progress.complete(source.id);
         })

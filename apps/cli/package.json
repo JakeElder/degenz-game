@@ -32,6 +32,7 @@
     "cli-progress": "^3.10.0",
     "color": "^4.2.3",
     "data": "*",
+    "deepmerge": "^4.2.2",
     "manifest": "*",
     "prompts": "^2.4.2",
     "recursive-copy": "^2.0.14"
@@ -40,6 +41,7 @@
     "@oclif/test": "^2",
     "@types/chai": "^4",
     "@types/color": "^3.0.3",
+    "@types/deepmerge": "^2.2.0",
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.9.4",
     "chai": "^4",

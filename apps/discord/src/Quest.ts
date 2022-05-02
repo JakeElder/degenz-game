@@ -9,6 +9,7 @@ import {
 } from "discord.js";
 import { Achievement, User } from "data/db";
 import Config from "config";
+import { Format } from "lib";
 
 type FormatProps = {
   title: string;
@@ -43,7 +44,6 @@ export default abstract class Quest {
     const { title, thumbnail, progress, userId, expanded, buttons } = props;
 
     const complete = progress === 1;
-    const button = this.makeToggleButton({ userId, expanded });
     const color = complete
       ? Util.resolveColor("DARK_GREEN")
       : Util.resolveColor("NOT_QUITE_BLACK");
@@ -61,7 +61,7 @@ export default abstract class Quest {
           },
           {
             name: "Reward",
-            value: `${await this.reward()}`,
+            value: Format.currency(await this.reward()),
             inline: true,
           },
         ],
@@ -94,10 +94,24 @@ export default abstract class Quest {
       });
     }
 
-    const row = new MessageActionRow();
-    row.addComponents(button, ...(buttons || []));
+    let components: MessageActionRow[] = [];
 
-    return { embeds, components: [row] };
+    if (progress < 1) {
+      const button = this.makeToggleButton({ userId, expanded });
+      components.push(
+        new MessageActionRow().addComponents(button, ...(buttons || []))
+      );
+    } else {
+      const button = new MessageButton()
+        .setLabel("Quest Completed!")
+        .setStyle("SECONDARY")
+        .setDisabled(true)
+        .setCustomId(`QUEST_COMPLETED:${this.symbol}:${userId}`);
+
+      components.push(new MessageActionRow().addComponents(button));
+    }
+
+    return { embeds, components };
   }
 
   async reward() {

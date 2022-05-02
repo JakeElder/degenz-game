@@ -138,13 +138,17 @@ export const GBTReward = ({
 }: {
   initial: number;
   net: number;
-}) => <>For completing this quest, You earnt {Format.currency(net)}! </>;
+}) => (
+  <>
+    For completing this quest, You earnt {Format.currency(net)}, the **currency
+    of Beautopia**!
+  </>
+);
 
 export const GBTUsage = () => (
   <>
-    {Config.emojiCode("GBT_COIN")} is the **currency of Beautopia**. You can use
-    it to buy *real things* like NFT's in{" "}
-    <ChannelMention id={Config.channelId("MART")} />.
+    {Config.emojiCode("GBT_COIN")} is the . You can use it to buy *real things*
+    like NFT's in <ChannelMention id={Config.channelId("MART")} />.
   </>
 );
 

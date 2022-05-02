@@ -1,4 +1,4 @@
-import { PermissionString } from "discord.js";
+import { PermissionOverwriteOptions, PermissionString } from "discord.js";
 import {
   Entity,
   Column,
@@ -16,6 +16,16 @@ import { DistrictSymbol, RoleSymbol } from "../types";
 import { DormitorySymbol } from "./Dormitory";
 import { DiscordChannel } from "..";
 import { Type } from "class-transformer";
+
+export type ManagedCategorySymbol =
+  | "THE_GAME"
+  | "COMMAND_CENTER"
+  | "COMMUNITY"
+  | "BEAUTOPIA"
+  | `THE_PROJECTS_${DistrictSymbol}`
+  | "THE_SHELTERS"
+  | "TICKETS"
+  | "PRISON";
 
 export type NestedManagedChannelSymbol =
   | "ENTRANCE"
@@ -41,16 +51,8 @@ export type NestedManagedChannelSymbol =
   | "TRAINING_DOJO"
   | "GEN_POP"
   | "SOLITARY"
+  | "SUPPORT"
   | DormitorySymbol;
-
-export type ManagedCategorySymbol =
-  | "THE_GAME"
-  | "COMMAND_CENTER"
-  | "COMMUNITY"
-  | "BEAUTOPIA"
-  | `THE_PROJECTS_${DistrictSymbol}`
-  | "THE_SHELTERS"
-  | "PRISON";
 
 export type ManagedChannelSymbol =
   | NestedManagedChannelSymbol
@@ -70,10 +72,10 @@ export class ManagedChannel extends BaseEntity {
 
   name: string;
   lockPermissions: boolean;
+
   permissionOverwrites: {
-    id: RoleSymbol;
-    allow?: PermissionString[];
-    deny?: PermissionString[];
+    roles: RoleSymbol[];
+    options: PermissionOverwriteOptions;
   }[];
 
   @OneToMany(() => ManagedChannel, (channel) => channel.parent, {

@@ -4,55 +4,58 @@ import { plainToInstance } from "class-transformer";
 
 const READ_ONLY: ManagedChannel["permissionOverwrites"] = [
   {
-    id: "EVERYONE",
-    deny: [
-      "VIEW_CHANNEL",
-      "SEND_MESSAGES",
-      "CREATE_PUBLIC_THREADS",
-      "CREATE_PRIVATE_THREADS",
-    ],
+    roles: ["EVERYONE"],
+    options: {
+      SEND_MESSAGES: false,
+    },
   },
   {
-    id: "PREGEN",
-    allow: ["VIEW_CHANNEL"],
+    roles: ["PREGEN", "DEGEN", "BIG_BROTHER_BOT"],
+    options: {
+      VIEW_CHANNEL: true,
+    },
   },
   {
-    id: "DEGEN",
-    allow: ["VIEW_CHANNEL"],
+    roles: ["PRISONER"],
+    options: {
+      VIEW_CHANNEL: false,
+    },
   },
   {
-    id: "PRISONER",
-    deny: ["VIEW_CHANNEL"],
-  },
-  {
-    id: "BIG_BROTHER_BOT",
-    allow: ["VIEW_CHANNEL", "SEND_MESSAGES"],
+    roles: ["BIG_BROTHER_BOT"],
+    options: {
+      SEND_MESSAGES: true,
+    },
   },
 ];
 
 const DISCOVERABLE: ManagedChannel["permissionOverwrites"] = [
   {
-    id: "EVERYONE",
-    deny: ["VIEW_CHANNEL"],
+    roles: ["EVERYONE"],
+    options: {
+      VIEW_CHANNEL: false,
+    },
   },
   {
-    id: "PREGEN",
-    allow: ["VIEW_CHANNEL"],
+    roles: ["PREGEN", "DEGEN"],
+    options: {
+      VIEW_CHANNEL: true,
+    },
   },
   {
-    id: "DEGEN",
-    allow: ["VIEW_CHANNEL"],
-  },
-  {
-    id: "PRISONER",
-    deny: ["VIEW_CHANNEL"],
+    roles: ["PRISONER"],
+    options: {
+      VIEW_CHANNEL: false,
+    },
   },
 ];
 
 const ESTABLISHMENT: ManagedChannel["permissionOverwrites"] = [
   {
-    id: "ESTABLISHMENT",
-    allow: ["VIEW_CHANNEL"],
+    roles: ["ESTABLISHMENT"],
+    options: {
+      VIEW_CHANNEL: true,
+    },
   },
 ];
 
@@ -63,7 +66,13 @@ c.push(
   {
     id: "THE_GAME",
     name: "The Game",
-    permissionOverwrites: [...ESTABLISHMENT],
+    permissionOverwrites: [
+      ...READ_ONLY,
+      {
+        roles: ["EVERYONE"],
+        options: { VIEW_CHANNEL: true },
+      },
+    ],
   },
   // CHANNELS
   {
@@ -77,7 +86,7 @@ c.push(
     id: "QUESTS",
     name: "🕹️｜quests",
     lockPermissions: true,
-    permissionOverwrites: [...DISCOVERABLE, ...READ_ONLY],
+    permissionOverwrites: DISCOVERABLE,
     parent: { id: "THE_GAME" },
   }
 );
@@ -93,35 +102,35 @@ c.push(
   {
     id: "ANNOUNCEMENTS",
     name: "📣｜announcements",
-    lockPermissions: false,
+    lockPermissions: true,
     permissionOverwrites: READ_ONLY,
     parent: { id: "COMMAND_CENTER" },
   },
   {
     id: "LEADERBOARD",
     name: "🏆｜leaderboard",
-    lockPermissions: false,
+    lockPermissions: true,
     permissionOverwrites: READ_ONLY,
     parent: { id: "COMMAND_CENTER" },
   },
   {
     id: "COMMANDS",
     name: "📜｜commands",
-    lockPermissions: false,
+    lockPermissions: true,
     permissionOverwrites: READ_ONLY,
     parent: { id: "COMMAND_CENTER" },
   },
   {
     id: "FAQ",
     name: "❓｜faq",
-    lockPermissions: false,
+    lockPermissions: true,
     permissionOverwrites: READ_ONLY,
     parent: { id: "COMMAND_CENTER" },
   },
   {
     id: "WHITELIST",
     name: "🎟️｜whitelist",
-    lockPermissions: false,
+    lockPermissions: true,
     permissionOverwrites: READ_ONLY,
     parent: { id: "COMMAND_CENTER" },
   }
@@ -159,7 +168,7 @@ c.push(
   {
     id: "HALL_OF_PRIVACY",
     name: "👁️｜hall-of-privacy",
-    lockPermissions: false,
+    lockPermissions: true,
     permissionOverwrites: READ_ONLY,
     parent: { id: "COMMUNITY" },
   }
@@ -207,8 +216,10 @@ c.push(
     lockPermissions: true,
     permissionOverwrites: [
       {
-        id: "MART_CLERK_BOT",
-        allow: ["VIEW_CHANNEL"],
+        roles: ["MART_CLERK_BOT"],
+        options: {
+          VIEW_CHANNEL: true,
+        },
       },
     ],
     parent: { id: "BEAUTOPIA" },
@@ -219,8 +230,10 @@ c.push(
     lockPermissions: true,
     permissionOverwrites: [
       {
-        id: "ARMORY_CLERK_BOT",
-        allow: ["VIEW_CHANNEL"],
+        roles: ["ARMORY_CLERK_BOT"],
+        options: {
+          VIEW_CHANNEL: true,
+        },
       },
     ],
     parent: { id: "BEAUTOPIA" },
@@ -231,8 +244,10 @@ c.push(
     lockPermissions: true,
     permissionOverwrites: [
       {
-        id: "TOSSER_BOT",
-        allow: ["VIEW_CHANNEL"],
+        roles: ["TOSSER_BOT"],
+        options: {
+          VIEW_CHANNEL: true,
+        },
       },
     ],
     parent: { id: "BEAUTOPIA" },
@@ -243,8 +258,10 @@ c.push(
     lockPermissions: true,
     permissionOverwrites: [
       {
-        id: "BANKER_BOT",
-        allow: ["VIEW_CHANNEL"],
+        roles: ["BANKER_BOT"],
+        options: {
+          VIEW_CHANNEL: true,
+        },
       },
     ],
     parent: { id: "BEAUTOPIA" },
@@ -255,8 +272,10 @@ c.push(
     lockPermissions: true,
     permissionOverwrites: [
       {
-        id: "SENSEI_BOT",
-        allow: ["VIEW_CHANNEL"],
+        roles: ["SENSEI_BOT"],
+        options: {
+          VIEW_CHANNEL: true,
+        },
       },
     ],
     parent: { id: "BEAUTOPIA" },
@@ -267,8 +286,10 @@ c.push(
     lockPermissions: true,
     permissionOverwrites: [
       {
-        id: "SENSEI_BOT",
-        allow: ["VIEW_CHANNEL"],
+        roles: ["SENSEI_BOT"],
+        options: {
+          VIEW_CHANNEL: true,
+        },
       },
     ],
     parent: { id: "BEAUTOPIA" },
@@ -357,30 +378,39 @@ c.push(
 );
 
 c.push(
+  // TICKETS
+  {
+    id: "TICKETS",
+    name: "Tickets",
+    permissionOverwrites: DISCOVERABLE,
+  },
+  // CHANNELS
+  {
+    id: "SUPPORT",
+    name: "support",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "TICKETS" },
+  }
+);
+
+c.push(
   // PRISON
   {
     id: "PRISON",
     name: "Prison",
     permissionOverwrites: [
       {
-        id: "EVERYONE",
-        deny: ["VIEW_CHANNEL"],
+        roles: ["EVERYONE"],
+        options: {
+          VIEW_CHANNEL: false,
+        },
       },
       {
-        id: "WARDEN_BOT",
-        allow: ["VIEW_CHANNEL"],
-      },
-      {
-        id: "PRISONER",
-        allow: ["VIEW_CHANNEL"],
-      },
-      {
-        id: "PRISONER_BOT",
-        allow: ["VIEW_CHANNEL"],
-      },
-      {
-        id: "THOUGHT_POLICE",
-        allow: ["VIEW_CHANNEL"],
+        roles: ["WARDEN_BOT", "PRISONER", "PRISONER_BOT", "THOUGHT_POLICE"],
+        options: {
+          VIEW_CHANNEL: true,
+        },
       },
     ],
   },

@@ -329,9 +329,9 @@ export default class OnboardController {
     await Utils.delay(3000);
 
     await channel.send(r(<GBTReward initial={user.gbt - 100} net={100} />));
-    await Utils.delay(1000);
 
-    await channel.send(r(<GBTUsage />));
+    // await Utils.delay(1000);
+    // await channel.send(r(<GBTUsage />));
 
     const questThread = await QuestLogController.show(user.id);
 
@@ -339,12 +339,12 @@ export default class OnboardController {
       this.purge(channel);
     });
 
-    await channel.send("Ok, that's it for now.. get out of here!!");
     await channel.send(
       r(
         <>
-          **GO TO** <ChannelMention id={questThread.id} /> to see how you can
-          earn more {Config.emojiCode("GBT_COIN")}!
+          Ok, that's it for now.. **GO TO**{" "}
+          <ChannelMention id={questThread.id} /> to see how you can earn more{" "}
+          {Config.emojiCode("GBT_COIN")}!
         </>
       )
     );

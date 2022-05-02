@@ -4,6 +4,9 @@ import { promises as fs } from "fs";
 import Manifest from "manifest";
 import Config from "config";
 import { NPCSymbol } from "data/types";
+import { ManagedChannel } from "data/src";
+import { OverwriteData, PermissionOverwrites } from "discord.js";
+import merge from "deepmerge";
 
 export function json(data: any) {
   return inspect(data, {
@@ -50,6 +53,35 @@ export async function getBot(
   });
 
   return client;
+}
+
+export function resolveOverwrites(
+  pos: ManagedChannel["permissionOverwrites"]
+): OverwriteData[] {
+  const flat = pos.flatMap((po) => {
+    return po.roles.map((rpo) => {
+      return {
+        id: Config.roleId(rpo),
+        options: po.options,
+      };
+    });
+  });
+
+  const merged = flat.reduce<typeof flat>((p, c) => {
+    const i = p.findIndex(({ id }) => id === c.id);
+    return i === -1
+      ? [...p, c]
+      : [...p.slice(0, i), merge(p[i], c), ...p.slice(i + 1)];
+  }, []);
+
+  const resolved = merged.map((po) => {
+    return {
+      id: po.id,
+      ...PermissionOverwrites.resolveOverwriteOptions(po.options, {}),
+    };
+  });
+
+  return resolved;
 }
 
 /**
