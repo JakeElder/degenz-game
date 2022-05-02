@@ -224,7 +224,7 @@ export default class WorldNotifier {
     const message = r(
       <>
         **{e.data.user.displayName}** entered{" "}
-        {channelMention(e.data.dormitory.id)}.
+        {channelMention(e.data.dormitory.channel.discordChannel.id)}.
       </>
     );
     await this.logToHOP("BIG_BROTHER", e.type, message);
