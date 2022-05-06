@@ -1,7 +1,9 @@
 import {
   Entity,
+  PrimaryGeneratedColumn,
   Column,
   BaseEntity,
+  Index,
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
@@ -10,27 +12,24 @@ import {
   JoinTable,
   OneToOne,
   JoinColumn,
-  PrimaryColumn,
 } from "typeorm";
-import { Role } from "discord.js";
-import {
-  ApartmentTenancy,
-  MartItemOwnership,
-  Pledge,
-  QuestLogChannel,
-  DiscordChannel,
-} from "..";
-import { Achievement, AchievementSymbol } from "./Achievement";
+import { Role, TextChannel } from "discord.js";
+import { Achievement as AchievementEnum } from "../types";
+import { ApartmentTenancy, MartItemOwnership, Pledge } from "..";
+import { Achievement } from "./Achievement";
 import { Imprisonment } from "./Imprisonment";
 import { PlayerEvent } from "./PlayerEvent";
+import { Exclude } from "class-transformer";
 import { DormitoryTenancy } from "./DormitoryTenancy";
 
 @Entity()
 export class User extends BaseEntity {
-  @PrimaryColumn({ type: "varchar", unique: true })
-  id: string;
+  @Exclude()
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
+  @Index({ unique: true })
   discordId: string;
 
   @Column()
@@ -54,9 +53,6 @@ export class User extends BaseEntity {
   @Column({ type: "int4", default: 0 })
   luck: number;
 
-  @Column({ nullable: true })
-  originalId: number;
-
   @Column({ default: false })
   inGame: boolean;
 
@@ -73,15 +69,6 @@ export class User extends BaseEntity {
   })
   @JoinColumn()
   dormitoryTenancy: DormitoryTenancy;
-
-  @OneToOne(() => QuestLogChannel, (questLogChannel) => questLogChannel.user, {
-    cascade: true,
-  })
-  questLogChannel: QuestLogChannel;
-
-  @OneToOne(() => DiscordChannel, { eager: true, cascade: true })
-  @JoinColumn()
-  onboardingChannel: DiscordChannel | null;
 
   @OneToMany(() => PlayerEvent, (playerEvent) => playerEvent.user, {
     cascade: true,
@@ -105,9 +92,12 @@ export class User extends BaseEntity {
   })
   pledges: Pledge[];
 
-  @ManyToMany(() => Achievement, { eager: true })
+  @ManyToMany(() => Achievement)
   @JoinTable()
   achievements: Achievement[];
+
+  @Column({ type: "timestamp", nullable: true })
+  welcomeMentionMadeAt: Date;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -120,13 +110,13 @@ export class User extends BaseEntity {
 
   public async imprison({
     cellNumber,
-    discordChannel,
+    cellDiscordChannelId,
     entryRoleIds,
     releaseCode,
     reason,
   }: {
     cellNumber: Imprisonment["cellNumber"];
-    discordChannel: DiscordChannel;
+    cellDiscordChannelId: TextChannel["id"];
     entryRoleIds: Role["id"][];
     releaseCode: Imprisonment["releaseCode"];
     reason: Imprisonment["reason"];
@@ -136,11 +126,11 @@ export class User extends BaseEntity {
     }
     this.imprisonments.push(
       Imprisonment.create({
-        entryRoleIds,
-        reason,
         cellNumber,
-        discordChannel,
+        cellDiscordChannelId,
+        entryRoleIds,
         releaseCode,
+        reason,
       })
     );
     await this.save();
@@ -167,7 +157,7 @@ export class User extends BaseEntity {
     if (!this.imprisonments) {
       throw new Error("Imprisonments not loaded");
     }
-    return this.imprisonments[0].discordChannel.id;
+    return this.imprisonments[0].cellDiscordChannelId;
   }
 
   public get notificationChannelId() {
@@ -175,11 +165,11 @@ export class User extends BaseEntity {
       return this.apartmentTenancies[0].discordChannelId;
     }
 
-    if (this.onboardingChannel) {
-      return this.onboardingChannel.id;
+    if (this.dormitoryTenancy.onboardingThreadId) {
+      return this.dormitoryTenancy.onboardingThreadId;
     }
 
-    return this.dormitoryTenancy.discordChannelId;
+    return this.dormitoryTenancy.dormitory.discordChannelId;
   }
 
   public get primaryTenancy() {
@@ -190,14 +180,10 @@ export class User extends BaseEntity {
     return this.dormitoryTenancy;
   }
 
-  public hasAchievement(achievement: AchievementSymbol) {
+  public hasAchievement(achievement: AchievementEnum) {
     if (!this.achievements) {
       throw new Error("Achievements not loaded");
     }
-    return !!this.achievements.find((a) => a.id === achievement);
-  }
-
-  get mention() {
-    return `<@${this.id}>`;
+    return !!this.achievements.find((a) => a.symbol === achievement);
   }
 }

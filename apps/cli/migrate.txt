@@ -1,0 +1,13 @@
+- [x] User
+- [x] CampaignInvite
+- [x] Invite
+- [x] InvitedUser
+- [x] User:MartItemOwnership
+- [x] User:DormitoryTenancy
+- [x] User:ApartmentTenancy
+- [x] User:Pledge
+- [x] PlayerEvent 
+- [x] FINISHED_TRAINER
+
+- [x] Roles
+- [x] Verified State Migration

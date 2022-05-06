@@ -154,9 +154,9 @@ export default class AllyCommandController extends CommandController {
 
     await i.reply({ embeds: [e], ephemeral: true });
 
-    if (!checkeeUser.hasAchievement("STATS_CHECKED")) {
-      await OnboardController.sendStatsCheckedResponse(checkeeUser);
-    }
+    // if (!checkeeUser.hasAchievement("STATS_CHECKED")) {
+    //   await OnboardController.sendStatsCheckedResponse(checkeeUser);
+    // }
 
     Events.emit("STATS_CHECKED", {
       checkee: checkeeUser,

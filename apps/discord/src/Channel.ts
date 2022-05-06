@@ -90,7 +90,7 @@ export class Channel {
         isInPrison,
         isInGame,
         isTossHouse: channelId === Config.channelId("TOSS_HOUSE"),
-        isTownSquare: channelId === Config.channelId("TOWN_SQUARE"),
+        // isTownSquare: channelId === Config.channelId("TOWN_SQUARE"),
         isArena: channelId === Config.channelId("ARENA"),
         isMart: channelId === Config.channelId("MART"),
         isArmory: channelId === Config.channelId("ARMORY"),

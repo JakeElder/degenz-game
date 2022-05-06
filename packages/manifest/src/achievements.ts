@@ -9,4 +9,5 @@ export const achievements = Achievement.create([
   { id: "GET_WHITELIST_QUEST_COMPLETED" },
   { id: "HELP_REQUESTED" },
   { id: "STATS_CHECKED" },
+  { id: "FINISHED_TRAINER" },
 ]);

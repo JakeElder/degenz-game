@@ -182,20 +182,20 @@ c.push(
     permissionOverwrites: [...DISCOVERABLE, ...ESTABLISHMENT],
   },
   // CHANNELS
-  {
-    id: "TOWN_SQUARE",
-    name: "🕍｜town-square",
-    lockPermissions: true,
-    permissionOverwrites: [],
-    parent: { id: "BEAUTOPIA" },
-  },
-  {
-    id: "METRO",
-    name: "🚇｜metro",
-    lockPermissions: true,
-    permissionOverwrites: READ_ONLY,
-    parent: { id: "BEAUTOPIA" },
-  },
+  // {
+  //   id: "TOWN_SQUARE",
+  //   name: "🕍｜town-square",
+  //   lockPermissions: true,
+  //   permissionOverwrites: [],
+  //   parent: { id: "BEAUTOPIA" },
+  // },
+  // {
+  //   id: "METRO",
+  //   name: "🚇｜metro",
+  //   lockPermissions: true,
+  //   permissionOverwrites: READ_ONLY,
+  //   parent: { id: "BEAUTOPIA" },
+  // },
   {
     id: "TAVERN",
     name: "🍺｜tavern",

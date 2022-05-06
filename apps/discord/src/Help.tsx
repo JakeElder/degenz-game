@@ -48,9 +48,9 @@ export class Help {
       return this.makeTossHouseMessage(params);
     }
 
-    if (channel.isTownSquare) {
-      return this.makeTownSquareMessage(params);
-    }
+    // if (channel.isTownSquare) {
+    //   return this.makeTownSquareMessage(params);
+    // }
 
     if (channel.isMart) {
       return this.makeMartMessage(params);
