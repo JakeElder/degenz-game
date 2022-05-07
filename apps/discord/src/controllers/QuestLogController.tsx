@@ -262,6 +262,10 @@ export default class QuestLogController {
       ),
       Utils.Thread.getOrFail(qlc.discordChannel.id),
     ]);
+    if (thread.archived) {
+      this.purge(thread);
+      return;
+    }
     this.reconcile(thread, qlc.state, next);
   }
 

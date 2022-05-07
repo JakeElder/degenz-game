@@ -16,6 +16,7 @@ import {
 import * as Legacy from "legacy-data/db";
 import { Achievement as AchievementEnum } from "legacy-data/types";
 import Config from "config";
+import { json } from "../../utils";
 
 export default class MigrateQuests extends Command {
   static description = "Migrate to Quests system structure";
@@ -59,10 +60,59 @@ export default class MigrateQuests extends Command {
     // await this.missing();
     // console.log("✅ Missing");
 
-    await this.oos();
-    console.log("✅ OOS");
+    // await this.oos();
+    // console.log("✅ OOS");
+
+    // await this.oosVer();
+    // console.log("✅ OOS");
+
+    await this.wlAchievement();
+    console.log("✅ Whitelist Achievement");
 
     await Legacy.disconnect();
+  }
+
+  async wlAchievement() {
+    const [bot, users] = await Promise.all([this.bot("ADMIN"), User.find()]);
+    const members = await bot.guild.members.fetch();
+
+    const nowla = members.filter((member) => {
+      if (member.user.bot) {
+        return false;
+      }
+
+      if (member.roles.cache.has(Config.roleId("HACKER"))) {
+        const user = users.find((u) => u.id === member.id)!;
+        if (
+          user &&
+          !user.hasAchievement("FINISHED_TRAINER")
+        ) {
+          return true;
+        }
+      }
+
+      return false;
+    });
+
+    console.log(nowla.size);
+
+    const progress = this.getProgressBar(nowla.map((u) => u.displayName));
+    progress.start();
+
+    const wlAchievement = await Achievement.findOneByOrFail({
+      id: "FINISHED_TRAINER",
+    });
+
+    for (let i = 0; i < nowla.size; i++) {
+      const member = nowla.at(i)!;
+      let user = users.find((u) => u.id === member.id)!;
+      user.achievements ||= [];
+      user.achievements.push(wlAchievement);
+      await user.save();
+      progress.complete(member.displayName);
+    }
+
+    progress.stop();
   }
 
   async missing() {
@@ -70,6 +120,9 @@ export default class MigrateQuests extends Command {
     const members = await bot.guild.members.fetch();
 
     const missing = members.filter((m) => {
+      if (m.user.bot) {
+        return false;
+      }
       const user = users.find((u) => u.id === m.id);
       return user === undefined;
     });
@@ -80,36 +133,88 @@ export default class MigrateQuests extends Command {
       return;
     }
 
-    const progress = this.getProgressBar(missing.map((m) => m.displayName));
+    console.log(json(missing.map((m) => m.displayName)));
+
+    // const progress = this.getProgressBar(missing.map((m) => m.displayName));
+    // progress.start();
+
+    // await Promise.all(
+    //   missing.map(async (member) => {
+    //     const dormitory = await Dormitory.choose();
+
+    //     if (dormitory === null) {
+    //       throw new Error();
+    //     }
+
+    //     const user = User.create({
+    //       id: member.id,
+    //       discordId: member.id,
+    //       displayName: member.displayName,
+    //       strength: 100,
+    //       dormitoryTenancy: DormitoryTenancy.create({ dormitory }),
+    //       apartmentTenancies: [],
+    //       inGame: true,
+    //     });
+
+    //     await Promise.all([
+    //       member.roles.add(dormitory.citizenRole.discordId),
+    //       user.save(),
+    //     ]);
+
+    //     progress.complete(user.displayName);
+    //     return;
+    //   })
+    // );
+  }
+
+  async oosVer() {
+    const [bot, users] = await Promise.all([this.bot("ADMIN"), User.find()]);
+    const members = await bot.guild.members.fetch();
+
+    const oos = members.filter((member) => {
+      if (member.user.bot) {
+        return false;
+      }
+
+      return (
+        (member.roles.cache.has(Config.roleId("THE_LEFT_CITIZEN")) ||
+          member.roles.cache.has(Config.roleId("THE_RIGHT_CITIZEN")) ||
+          member.roles.cache.has(Config.roleId("THE_GRID_CITIZEN")) ||
+          member.roles.cache.has(Config.roleId("BULLSEYE_CITIZEN")) ||
+          member.roles.cache.has(Config.roleId("VULTURE_CITIZEN"))) &&
+        !member.roles.cache.has(Config.roleId("PREGEN")) &&
+        !member.roles.cache.has(Config.roleId("DEGEN"))
+      );
+    });
+
+    console.log(oos.size);
+
+    const progress = this.getProgressBar(oos.map((u) => u.displayName));
     progress.start();
 
-    await Promise.all(
-      missing.map(async (member) => {
-        const dormitory = await Dormitory.choose();
+    for (let i = 0; i < oos.size; i++) {
+      const member = oos.at(i)!;
+      let user = users.find((u) => u.id === member.id)!;
 
-        if (dormitory === null) {
-          throw new Error();
-        }
+      const dormitory = await Dormitory.choose();
 
-        const user = User.create({
-          id: member.id,
-          discordId: member.id,
-          displayName: member.displayName,
-          strength: 100,
-          dormitoryTenancy: DormitoryTenancy.create({ dormitory }),
-          apartmentTenancies: [],
-          inGame: true,
-        });
+      if (dormitory === null) {
+        throw new Error();
+      }
 
-        await Promise.all([
-          member.roles.add(dormitory.citizenRole.discordId),
-          user.save(),
-        ]);
+      const dm = user.dormitoryTenancy;
+      user.inGame = false;
 
-        progress.complete(user.displayName);
-        return;
-      })
-    );
+      await Promise.all([member.roles.remove(member.roles.cache), user.save()]);
+
+      if (dm) {
+        await dm.remove();
+      }
+
+      progress.complete(user.displayName);
+    }
+
+    progress.stop();
   }
 
   async oos() {

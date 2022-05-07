@@ -7,6 +7,7 @@ import truncate from "truncate";
 import Config from "config";
 import equal from "fast-deep-equal";
 import { Global } from "../Global";
+import { IsNull, Not } from "typeorm";
 
 type Leader = {
   id: User["id"];
@@ -85,7 +86,7 @@ export class LeaderboardController {
     };
   }
 
-  static makeTable(leaders: Leader[], offset: number) {
+  static makeTable(leaders: Leader[], offset: number = 0) {
     const s = [
       ...leaders.map((l, idx) => [
         `${(idx + offset + 1).toString().padStart(2, " ")}.${truncate(
@@ -108,7 +109,7 @@ export class LeaderboardController {
 
   static async setMessage() {
     const leaders = await User.find({
-      where: { inGame: true },
+      where: { inGame: true, gbt: Not(IsNull()) },
       order: { gbt: -1 },
       take: 30,
     });
