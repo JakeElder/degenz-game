@@ -127,10 +127,10 @@ export default class AppController {
       return { success: false, code: "BOT_NOT_FOUND" };
     }
 
-    const bot = Global.bot(Config.reverseClientId(botId));
+    const bot = Global.bot(botId);
 
     try {
-      const c = await Utils.Channel.getOrFail(channel.id);
+      const c = await Utils.Channel.getOrFail(channel.id, botId);
       await c.send(message);
       Events.emit("SEND_MESSAGE_AS_EXECUTED", {
         bot: bot.npc,
