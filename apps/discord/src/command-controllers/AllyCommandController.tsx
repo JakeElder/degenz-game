@@ -24,6 +24,7 @@ import { Help } from "../Help";
 import { channelMention, userMention } from "@discordjs/builders";
 import Utils from "../Utils";
 import Config from "config";
+import { IsNull, Not } from "typeorm";
 
 export default class AllyCommandController extends CommandController {
   async eat(i: CommandInteraction) {
@@ -168,7 +169,7 @@ export default class AllyCommandController extends CommandController {
   async leaderboard(i: CommandInteraction) {
     const num = i.options.getNumber("top") || 30;
     const leaders = await User.find({
-      where: { inGame: true },
+      where: { inGame: true, gbt: Not(IsNull()) },
       order: { gbt: -1 },
       take: num,
     });
