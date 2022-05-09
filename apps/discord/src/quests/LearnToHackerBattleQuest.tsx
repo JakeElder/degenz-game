@@ -17,7 +17,11 @@ export default class LearnToHackerBattleQuest extends Quest {
   }
 
   async getProgress(user: User) {
-    let progress: number = user.hasAchievement("FINISHED_TRAINER") ? 1 : 0;
+    let progress: number =
+      user.hasAchievement("FINISHED_TRAINER") ||
+      user.hasAchievement("LEARN_TO_HACKER_BATTLE_QUEST_COMPLETED")
+        ? 1
+        : 0;
     return progress;
   }
 
