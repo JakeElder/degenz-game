@@ -1,13 +1,13 @@
 import { User } from "data/db";
 import { PersistentMessageController } from "./PersistentMessageController";
-import { GuildMember, MessageEmbedOptions } from "discord.js";
+import { GuildMember, MessageEmbedOptions, Util } from "discord.js";
 import { Format } from "lib";
 import { table } from "table";
 import truncate from "truncate";
 import Config from "config";
-import equal from "fast-deep-equal";
 import { Global } from "../Global";
 import { IsNull, Not } from "typeorm";
+import equal from "fast-deep-equal";
 
 type Leader = {
   id: User["id"];
@@ -24,7 +24,7 @@ export class LeaderboardController {
 
   static async init() {
     await this.update();
-    this.cronInterval = setInterval(() => this.update(), 1000);
+    this.cronInterval = setInterval(() => this.update(), 5000);
   }
 
   static async update() {
@@ -68,7 +68,7 @@ export class LeaderboardController {
     })();
 
     return {
-      color: "GOLD",
+      color: Util.resolveColor("GOLD"),
       author: {
         name: l.member.displayName,
         icon_url: `${Config.env("WEB_URL")}/numbers/number-${position}.png?v1`,
@@ -108,35 +108,38 @@ export class LeaderboardController {
   }
 
   static async setMessage() {
-    const leaders = await User.find({
-      where: { inGame: true, gbt: Not(IsNull()) },
-      order: { gbt: -1 },
-      take: 30,
-    });
-
+    const leaders = await this.leaders(30);
     const tableData = [...leaders.map((l) => [l.displayName, l.gbt])];
 
     if (equal(this.tableData, tableData)) {
       return;
     }
 
-    const data = await this.computeData(leaders);
-    const top10 = data.slice(0, 10);
-
-    if (top10.length) {
-      await PersistentMessageController.set("GBT_LEADERBOARD_1", {
-        embeds: this.makeEmbeds(top10),
+    if (leaders.length) {
+      PersistentMessageController.set("GBT_LEADERBOARD_1", async () => {
+        const leaders = await this.leaders(10);
+        const data = await this.computeData(leaders);
+        return { embeds: this.makeEmbeds(data.slice(0, 10)) };
       });
     }
 
-    const rest = data.slice(10);
-
-    if (rest.length) {
-      await PersistentMessageController.set("GBT_LEADERBOARD_2", {
-        content: Format.codeBlock(this.makeTable(rest, 10)),
+    if (leaders.length > 10) {
+      await PersistentMessageController.set("GBT_LEADERBOARD_2", async () => {
+        const leaders = await this.leaders(20, { skip: 10 });
+        const data = await this.computeData(leaders);
+        return { content: Format.codeBlock(this.makeTable(data, 10)) };
       });
     }
 
     this.tableData = tableData;
+  }
+
+  static async leaders(take: number, { skip }: { skip: number } = { skip: 0 }) {
+    return User.find({
+      where: { inGame: true, gbt: Not(IsNull()) },
+      order: { gbt: -1 },
+      take,
+      skip,
+    });
   }
 }
