@@ -41,65 +41,64 @@ export class Channel {
     return channel;
   }
 
-  static getDescriptor = memoize(
-    async (channelId: TextBasedChannel["id"]): Promise<ChannelDescriptor> => {
-      const { channels } = await Manifest.load();
+  static async getDescriptor(
+    channelId: TextBasedChannel["id"]
+  ): Promise<ChannelDescriptor> {
+    const { channels } = await Manifest.load();
 
-      const communityCategoryIds: ManagedChannelSymbol[] = [
-        "THE_GAME",
-        "COMMAND_CENTER",
-        "COMMUNITY",
-      ];
+    const communityCategoryIds: ManagedChannelSymbol[] = [
+      "THE_GAME",
+      "COMMAND_CENTER",
+      "COMMUNITY",
+    ];
 
-      const communityChannels = channels.filter((c) =>
-        communityCategoryIds.includes(c.parent?.id)
-      );
+    const communityChannels = channels.filter((c) =>
+      communityCategoryIds.includes(c.parent?.id)
+    );
 
-      const gameChannels = channels.filter((c) => c.parent?.id === "BEAUTOPIA");
+    const gameChannels = channels.filter((c) => c.parent?.id === "BEAUTOPIA");
 
-      const c = await DiscordChannel.findOneOrFail({
-        where: { id: channelId },
-      });
+    const c = await DiscordChannel.findOneOrFail({
+      where: { id: channelId },
+    });
 
-      const channel = await this.get(channelId);
+    const channel = await this.get(channelId);
 
-      const isCommunity = !!communityChannels.find((c) => c.id === channelId);
-      const isApartment = c.type === "APARTMENT";
-      const isDormitory = c.type === "DORMITORY";
-      const isOnboardingThread = c.type === "ONBOARDING_THREAD";
-      const isQuestLogThread = c.type === "QUEST_LOG_THREAD";
-      const isCell = c.type === "CELL";
-      const isInPrison = isCell || channelId === Config.channelId("GEN_POP");
-      const isInGame =
-        isApartment ||
-        isDormitory ||
-        isOnboardingThread ||
-        isInPrison ||
-        !!gameChannels.find((c) => c.id === channelId);
+    const isCommunity = !!communityChannels.find((c) => c.id === channelId);
+    const isApartment = c.type === "APARTMENT";
+    const isDormitory = c.type === "DORMITORY";
+    const isOnboardingThread = c.type === "ONBOARDING_THREAD";
+    const isQuestLogThread = c.type === "QUEST_LOG_THREAD";
+    const isCell = c.type === "CELL";
+    const isInPrison = isCell || channelId === Config.channelId("GEN_POP");
+    const isInGame =
+      isApartment ||
+      isDormitory ||
+      isOnboardingThread ||
+      isInPrison ||
+      !!gameChannels.find((c) => c.id === channelId);
 
-      return {
-        id: channelId,
-        name: channel?.name,
-        channel,
-        isCommunity,
-        isApartment,
-        isDormitory,
-        isOnboardingThread,
-        isQuestLogThread,
-        isCell,
-        isInPrison,
-        isInGame,
-        isTossHouse: channelId === Config.channelId("TOSS_HOUSE"),
-        // isTownSquare: channelId === Config.channelId("TOWN_SQUARE"),
-        isArena: channelId === Config.channelId("ARENA"),
-        isMart: channelId === Config.channelId("MART"),
-        isArmory: channelId === Config.channelId("ARMORY"),
-        isTrainingDojo: channelId === Config.channelId("TRAINING_DOJO"),
-        isGenPop: channelId === Config.channelId("GEN_POP"),
-        isBank: channelId === Config.channelId("BANK"),
-        isTavern: channelId === Config.channelId("TAVERN"),
-      };
-    },
-    { promise: true, maxAge: 1000 * 60 * 10 }
-  );
+    return {
+      id: channelId,
+      name: channel?.name,
+      channel,
+      isCommunity,
+      isApartment,
+      isDormitory,
+      isOnboardingThread,
+      isQuestLogThread,
+      isCell,
+      isInPrison,
+      isInGame,
+      isTossHouse: channelId === Config.channelId("TOSS_HOUSE"),
+      // isTownSquare: channelId === Config.channelId("TOWN_SQUARE"),
+      isArena: channelId === Config.channelId("ARENA"),
+      isMart: channelId === Config.channelId("MART"),
+      isArmory: channelId === Config.channelId("ARMORY"),
+      isTrainingDojo: channelId === Config.channelId("TRAINING_DOJO"),
+      isGenPop: channelId === Config.channelId("GEN_POP"),
+      isBank: channelId === Config.channelId("BANK"),
+      isTavern: channelId === Config.channelId("TAVERN"),
+    };
+  }
 }

@@ -151,20 +151,35 @@ export default class EntranceController {
     const user = await User.findOne({ where: { id: i.user.id } });
 
     if (user && user.inGame) {
-      await i.editReply({
-        embeds: [
-          {
-            color: "RED",
-            description: Utils.r(
-              <>
-                <UserMention id={user.id} /> - What, **again**? You're already
-                *in* the server.
-              </>
-            ),
-          },
-        ],
-      });
-      return;
+      const admin = Global.bot("ADMIN");
+      const member = await admin.guild.members.fetch(user.id);
+
+      if (!member) {
+        throw new Error("Member not found");
+      }
+
+      if (
+        !member.roles.cache.has(Config.roleId("DEGEN")) &&
+        !member.roles.cache.has(Config.roleId("PREGEN"))
+      ) {
+        await UserController.eject(user.id);
+      } else {
+        await i.editReply({
+          embeds: [
+            {
+              color: "RED",
+              description: Utils.r(
+                <>
+                  <UserMention id={user.id} /> - What, **again**? You're already
+                  *in* the server.
+                </>
+              ),
+            },
+          ],
+        });
+
+        return;
+      }
     }
 
     const res = await UserController.initShelters(i.user.id, true);

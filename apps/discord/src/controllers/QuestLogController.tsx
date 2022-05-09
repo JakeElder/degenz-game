@@ -77,8 +77,12 @@ export default class QuestLogController {
   }
 
   static async isQuestLogThread(thread: ThreadChannel) {
-    const c = await Utils.Channel.getDescriptor(thread.id);
-    return c.isQuestLogThread;
+    try {
+      const c = await Utils.Channel.getDescriptor(thread.id);
+      return c.isQuestLogThread;
+    } catch (e) {
+      return false;
+    }
   }
 
   static async show(userId: User["id"]): Promise<TextBasedChannel> {

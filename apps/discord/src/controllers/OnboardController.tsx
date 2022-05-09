@@ -95,8 +95,12 @@ export default class OnboardController {
   }
 
   static async isOnboardingThread(thread: ThreadChannel) {
-    const c = await Channel.getDescriptor(thread.id);
-    return c.isOnboardingThread;
+    try {
+      const c = await Channel.getDescriptor(thread.id);
+      return c.isOnboardingThread;
+    } catch (e) {
+      return false;
+    }
   }
 
   static async start(user: User) {
@@ -116,6 +120,10 @@ export default class OnboardController {
           ? "GUILD_PRIVATE_THREAD"
           : "GUILD_PUBLIC_THREAD",
     });
+
+    const member = await admin.guild.members.fetch(user.id);
+    await thread.send(r(<WelcomeComrade member={member} />));
+    await Utils.delay(2500);
 
     user.onboardingChannel = DiscordChannel.create({
       id: thread.id,
@@ -138,9 +146,6 @@ export default class OnboardController {
     const bb = Global.bot("BIG_BROTHER");
     const channel = await this.getOnboardingChannel(user, bb);
     const member = await UserController.getMember(user.id);
-
-    await channel.send(r(<WelcomeComrade member={member} />));
-    await Utils.delay(2500);
 
     await channel.send(r(<BBIntro />));
     await Utils.delay(3000);
