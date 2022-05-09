@@ -104,12 +104,12 @@ export default class Runner {
       Analytics.itemEaten(e);
     });
 
-    Events.on("MEMBER_VERIFIED", async (e) => {
-      WorldNotifier.memberVerified(e);
-      await UserController.add(e.data.member);
-      WelcomeRoomController.welcome(e.data.member);
-      Analytics.verify(e);
-    });
+    // Events.on("MEMBER_VERIFIED", async (e) => {
+    //   WorldNotifier.memberVerified(e);
+    //   await UserController.add(e.data.member);
+    //   WelcomeRoomController.welcome(e.data.member);
+    //   Analytics.verify(e);
+    // });
 
     Events.on("MART_STOCK_CHECKED", (e) => {
       WorldNotifier.martStockChecked(e);
@@ -154,6 +154,7 @@ export default class Runner {
     Events.on("GAME_ENTERED_DORMITORY", (e) => {
       WorldNotifier.gameEnteredDormitory(e);
       Analytics.gameEnteredDormitory(e);
+      WelcomeRoomController.welcome(e.data.user);
     });
 
     Events.on("FIRST_WORLD_CHOICE", (e) => {

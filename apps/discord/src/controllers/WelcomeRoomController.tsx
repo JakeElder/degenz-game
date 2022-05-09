@@ -1,16 +1,22 @@
+import { User } from "data/db";
 import React from "react";
-import { userMention } from "@discordjs/builders";
-import { GuildMember } from "discord.js";
-import { Global } from "../Global";
 import Utils from "../Utils";
 
 const { r } = Utils;
 
 export default class WelcomeRoomController {
-  static async welcome(member: GuildMember) {
-    await Global.bot("BIG_BROTHER").ready;
-
-    const channel = await Utils.ManagedChannel.getOrFail("WELCOME_ROOM");
-    await channel.send(r(<>**WELCOME, COMRADE** {userMention(member.id)}. </>));
+  static async welcome(user: User) {
+    const channel = await Utils.ManagedChannel.getOrFail(
+      "WELCOME_ROOM",
+      "BIG_BROTHER"
+    );
+    await channel.send(
+      r(
+        <>
+          `SERVER_JOINED` **{user.displayName}** joined the server. **WELCOME,
+          COMRADE**.
+        </>
+      )
+    );
   }
 }
