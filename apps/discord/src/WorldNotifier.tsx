@@ -285,6 +285,33 @@ export default class WorldNotifier {
     }
   }
 
+  static async achievementAwarded(e: PickEvent<"ACHIEVEMENT_AWARDED">) {
+    if (!/LEVEL_\d+_REACHED/.test(e.data.achievement.id)) {
+      return;
+    }
+
+    const [_, level] = e.data.achievement.id.split("_");
+
+    const role = Config.roles.find((r) => r.id === `ENGAGEMENT_LEVEL_${level}`);
+
+    if (!role) {
+      throw new Error(`ENGAGEMENT_LEVEL_${level} role not found.`);
+    }
+
+    const message = r(
+      <>
+        {e.data.user.mention} got the {Config.emojiCode(role.emoji.id)} `
+        {e.data.achievement.id}` achievement.
+        {Format.transaction(
+          e.data.user.gbt - e.data.achievement.reward,
+          e.data.achievement.reward
+        )}
+      </>
+    );
+
+    await this.logToHOP("ALLY", e.type, message);
+  }
+
   static async questCompleted(e: PickEvent<"QUEST_COMPLETED">) {
     const message = r(
       <>

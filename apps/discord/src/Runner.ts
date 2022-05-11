@@ -162,6 +162,7 @@ export default class Runner {
     });
 
     Events.on("ACHIEVEMENT_AWARDED", (e) => {
+      WorldNotifier.achievementAwarded(e);
       Analytics.achievementAwarded(e);
     });
 

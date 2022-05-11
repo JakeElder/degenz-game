@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import { AchievementSymbol, QuestSymbol, TossGame } from "data/types";
+import { QuestSymbol, TossGame } from "data/types";
 import { User, MartItem, District, Dormitory, NPC, Achievement } from "data/db";
 
 type EnterEvent = {
@@ -187,7 +187,7 @@ type AchievementAwardedEvent = {
   type: "ACHIEVEMENT_AWARDED";
   data: {
     user: User;
-    achievement: AchievementSymbol;
+    achievement: Achievement;
     isQuest: boolean;
   };
 };

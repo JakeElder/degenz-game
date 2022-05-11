@@ -4,11 +4,17 @@ import { Role } from "data/db";
 import { RoleSymbol } from "data/types";
 import prompts from "prompts";
 import chalk from "chalk";
+import { Flags } from "@oclif/core";
 
 export default class InsertRoles extends Command {
   static description = "Insert roles";
 
+  static flags = {
+    select: Flags.boolean({ default: false }),
+  };
+
   async run(): Promise<void> {
+    const { flags } = await this.parse(InsertRoles);
     const { roles } = await Manifest.load();
 
     const rows = await Role.find();
@@ -24,6 +30,19 @@ export default class InsertRoles extends Command {
     if (inserts.length === 0) {
       console.log("No roles to insert.");
       return;
+    }
+
+    if (flags.select) {
+      const response = await prompts([
+        {
+          type: "multiselect",
+          name: "roles",
+          message: "Which roles should be inserted?",
+          choices: inserts.map((i) => ({ title: i.name, value: i.id })),
+        },
+      ]);
+
+      inserts = inserts.filter((d) => response.roles.includes(d.id));
     }
 
     const confirm = await this.confirm(

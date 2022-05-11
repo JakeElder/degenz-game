@@ -11,6 +11,7 @@ import {
 } from "typeorm";
 import { Permissions } from "discord.js";
 import { Emoji } from "..";
+import { EngagementLevel } from "../types";
 
 export type RoleTypeSymbol =
   | "EVERYONE"
@@ -49,7 +50,11 @@ export type SupplementaryRoleSymbol =
   | "TRAINEE"
   | "THOUGHT_POLICE"
   | "WHITELIST"
-  | "HACKER";
+  | "HACKER"
+  | "HIGH_COMMAND"
+  | "MODS"
+  | "VIP"
+  | `ENGAGEMENT_LEVEL_${EngagementLevel}`;
 
 export type CitizenRoleSymbol =
   | "D1_CITIZEN"

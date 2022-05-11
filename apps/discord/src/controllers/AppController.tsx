@@ -71,6 +71,13 @@ export default class AppController {
         return;
       }
 
+      ([2, 4, 6, 8, 10] as const).forEach((level) => {
+        const role = Config.roleId(`ENGAGEMENT_LEVEL_${level}`);
+        if (!prevMember.roles.cache.has(role) && member.roles.cache.has(role)) {
+          AchievementController.checkAndAward(user, `LEVEL_${level}_REACHED`);
+        }
+      });
+
       if (
         !prevMember.roles.cache.has(Config.roleId("WHITELIST")) &&
         member.roles.cache.has(Config.roleId("WHITELIST"))

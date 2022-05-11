@@ -22,7 +22,7 @@ export default class InsertEmojis extends Command {
     const rows = await Emoji.find();
 
     let inserts = emojis.filter(
-      (e) => typeof rows.find((r) => r.id === e.id) === "undefined"
+      (e) => rows.find((r) => r.id === e.id) === undefined
     );
 
     const files = await Promise.all(
@@ -77,7 +77,10 @@ export default class InsertEmojis extends Command {
     await Promise.all(
       inserts.map(async (e, idx) => {
         const file = await fs.readFile(files[idx] as string);
-        const emoji = await bot.guild.emojis.create(file, e.name);
+        let emoji = bot.guild.emojis.cache.find((ge) => ge.name === e.name);
+        if (!emoji) {
+          emoji = await bot.guild.emojis.create(file, e.name);
+        }
         e.identifier = emoji.identifier;
         await e.save();
         progress.complete(e.id);

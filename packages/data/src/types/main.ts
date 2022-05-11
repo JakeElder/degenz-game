@@ -197,3 +197,5 @@ export type QuestSymbol =
   | "TOSS_WITH_TED"
   | "SHOP_AT_MERRIS_MART"
   | "GET_WHITELIST";
+
+export type EngagementLevel = 2 | 4 | 6 | 8 | 10;

@@ -18,6 +18,11 @@ export default class AchievementController {
     FINISHED_TRAINER: "-",
     HELP_REQUESTED: "You used the `/help` command.",
     STATS_CHECKED: "You used the `/stats` command.",
+    LEVEL_10_REACHED: "You reached Level 10!",
+    LEVEL_8_REACHED: "You reached Level 8!",
+    LEVEL_6_REACHED: "You reached Level 6!",
+    LEVEL_4_REACHED: "You reached Level 4!",
+    LEVEL_2_REACHED: "You reached Level 2!",
   };
 
   static async checkAndAward(user: User, achievement: AchievementSymbol) {
@@ -83,6 +88,10 @@ export default class AchievementController {
       });
     }
 
-    Events.emit("ACHIEVEMENT_AWARDED", { user, achievement, isQuest });
+    Events.emit("ACHIEVEMENT_AWARDED", {
+      user,
+      achievement: achievementData,
+      isQuest,
+    });
   }
 }
