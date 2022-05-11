@@ -6,7 +6,7 @@ import {
   District,
   Dormitory,
   DormitoryTenancy,
-  Invite,
+  // Invite,
   MartItem,
   MartItemOwnership,
   PlayerEvent,
@@ -83,10 +83,7 @@ export default class MigrateQuests extends Command {
 
       if (member.roles.cache.has(Config.roleId("HACKER"))) {
         const user = users.find((u) => u.id === member.id)!;
-        if (
-          user &&
-          !user.hasAchievement("FINISHED_TRAINER")
-        ) {
+        if (user && !user.hasAchievement("FINISHED_TRAINER")) {
           return true;
         }
       }
@@ -589,9 +586,9 @@ export default class MigrateQuests extends Command {
   }
 
   async invites() {
-    const prev = await Legacy.Invite.find();
-    const next = prev.map((i) => Invite.create(i));
-    await Invite.save(next);
+    // const prev = await Legacy.Invite.find();
+    // const next = prev.map((i) => Invite.create(i));
+    // await Invite.save(next);
   }
 
   async campaignInvites() {
