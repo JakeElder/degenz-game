@@ -26,7 +26,7 @@ export class PlayerEvent extends BaseEntity {
   isInstigator: boolean;
 
   @Column({ nullable: true })
-  itemId: number;
+  itemId: string;
 
   @Column({ nullable: true })
   cooldown: number;
