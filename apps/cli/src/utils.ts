@@ -55,6 +55,9 @@ export async function getBot(
   return client;
 }
 
+/**
+ * @author Some asshole that didn't write comments
+ */
 export function resolveOverwrites(
   pos: ManagedChannel["permissionOverwrites"]
 ): OverwriteData[] {

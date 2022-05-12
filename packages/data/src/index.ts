@@ -21,6 +21,7 @@ export { PersistentMessage } from "./entity/PersistentMessage";
 export { PlayerEvent } from "./entity/PlayerEvent";
 export { Pledge } from "./entity/Pledge";
 export { QuestLogChannel } from "./entity/QuestLogChannel";
+export { Reaction } from "./entity/Reaction";
 export { Role } from "./entity/Role";
 export { User } from "./entity/User";
 

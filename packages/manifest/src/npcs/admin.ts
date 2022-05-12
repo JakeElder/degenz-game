@@ -23,7 +23,9 @@ const admin: RecursivePartial<NPC> = {
       "GUILD_MESSAGES",
       "GUILD_PRESENCES",
       "GUILD_INVITES",
+      "GUILD_MESSAGE_REACTIONS",
     ],
+    partials: ["MESSAGE", "CHANNEL", "REACTION"],
   },
 };
 

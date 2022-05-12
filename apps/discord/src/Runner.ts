@@ -34,7 +34,7 @@ export default class Runner {
       Logger.botReady(e);
 
       if (e.data.bot.id === "ADMIN") {
-        AppController.bindEnterListener();
+        AppController.init();
         OnboardController.bindEventListeners();
         QuestsController.init();
         QuestLogController.init();
@@ -200,6 +200,10 @@ export default class Runner {
     Events.on("CITIZEN_RELEASED", (e) => {
       Analytics.citizenReleased(e);
       WorldNotifier.citizenReleased(e);
+    });
+
+    Events.on("REACTIONS_REWARDED", (e) => {
+      WorldNotifier.reactionsRewarded(e);
     });
   }
 

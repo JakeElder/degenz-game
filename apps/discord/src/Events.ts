@@ -259,6 +259,14 @@ type QuestCompletedEvent = {
   };
 };
 
+type ReactionsRewarded = {
+  type: "REACTIONS_REWARDED";
+  data: {
+    user: User;
+    yield: number;
+  };
+};
+
 export type Event =
   | BotReadyEvent
   | CommandNotFoundEvent
@@ -292,7 +300,8 @@ export type Event =
   | CitizenImprisonedEvent
   | CitizenEscapedEvent
   | CitizenReleasedEvent
-  | QuestCompletedEvent;
+  | QuestCompletedEvent
+  | ReactionsRewarded;
 
 type EventHandler<E extends Event> = {
   [P in E["type"]]: (e: { type: E["type"]; data: E["data"] }) => void;
@@ -330,7 +339,8 @@ type DegenEmitterEvents = EventHandler<BotReadyEvent> &
   EventHandler<CitizenImprisonedEvent> &
   EventHandler<CitizenEscapedEvent> &
   EventHandler<CitizenReleasedEvent> &
-  EventHandler<QuestCompletedEvent>;
+  EventHandler<QuestCompletedEvent> &
+  EventHandler<ReactionsRewarded>;
 
 export type PickEvent<T extends keyof DegenEmitterEvents> = Parameters<
   DegenEmitterEvents[T]

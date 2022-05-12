@@ -88,6 +88,13 @@ c.push(
     lockPermissions: true,
     permissionOverwrites: DISCOVERABLE,
     parent: { id: "THE_GAME" },
+  },
+  {
+    id: "WHITELIST",
+    name: "🎟️｜whitelist",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "THE_GAME" },
   }
 );
 
@@ -107,8 +114,36 @@ c.push(
     parent: { id: "COMMAND_CENTER" },
   },
   {
-    id: "LEADERBOARD",
-    name: "🏆｜leaderboard",
+    id: "UPDATES",
+    name: "🚨｜updates",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "COMMAND_CENTER" },
+  },
+  {
+    id: "OFFICIAL_LINKS",
+    name: "🔗｜official-links",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "COMMAND_CENTER" },
+  },
+  {
+    id: "GIVEAWAYS",
+    name: "🎉｜giveaways",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "COMMAND_CENTER" },
+  },
+  {
+    id: "TWEETS",
+    name: "🐦｜tweets",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "COMMAND_CENTER" },
+  },
+  {
+    id: "RAIDS",
+    name: "💥｜raids",
     lockPermissions: true,
     permissionOverwrites: READ_ONLY,
     parent: { id: "COMMAND_CENTER" },
@@ -123,13 +158,6 @@ c.push(
   {
     id: "FAQ",
     name: "❓｜faq",
-    lockPermissions: true,
-    permissionOverwrites: READ_ONLY,
-    parent: { id: "COMMAND_CENTER" },
-  },
-  {
-    id: "WHITELIST",
-    name: "🎟️｜whitelist",
     lockPermissions: true,
     permissionOverwrites: READ_ONLY,
     parent: { id: "COMMAND_CENTER" },
@@ -163,6 +191,13 @@ c.push(
     name: "🤌｜feedback",
     lockPermissions: true,
     permissionOverwrites: [],
+    parent: { id: "COMMUNITY" },
+  },
+  {
+    id: "LEADERBOARD",
+    name: "🏆｜leaderboard",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
     parent: { id: "COMMUNITY" },
   },
   {

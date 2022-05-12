@@ -107,6 +107,17 @@ export default class ConfigManager {
     return row.discordChannel.id;
   }
 
+  static channel(id: string) {
+    const row = this.managedChannels.find((r) => r.discordChannel.id === id);
+
+    if (!row) {
+      this.notFound("channel", id);
+      throw new Error();
+    }
+
+    return row;
+  }
+
   static channelId(k: ManagedChannelSymbol) {
     const row = this.managedChannels.find((r) => r.id === k);
 

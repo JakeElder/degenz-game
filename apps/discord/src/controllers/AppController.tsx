@@ -1,16 +1,27 @@
 import Config from "config";
 import { Collection, GuildBasedChannel, GuildMember, Invite } from "discord.js";
-import { DistrictSymbol, OperationResult } from "data/types";
-import { CampaignInvite, District, User } from "data/db";
+import {
+  DistrictSymbol,
+  ManagedChannelSymbol,
+  OperationResult,
+} from "data/types";
+import { CampaignInvite, District, User, Reaction } from "data/db";
 import { Global } from "../Global";
 import Events from "../Events";
 import UserController from "./UserController";
 import EntranceController from "./EntranceController";
 import AchievementController from "./AchievementController";
 import Utils from "../Utils";
+import { In, QueryFailedError } from "typeorm";
 
 export default class AppController {
   static invites: Collection<string, Invite>;
+  static processingReactions = false;
+
+  static async init() {
+    this.bindEnterListener();
+    this.initReactionCron();
+  }
 
   static async bindEnterListener() {
     const admin = Global.bot("ADMIN");
@@ -61,6 +72,24 @@ export default class AppController {
       }
     });
 
+    admin.client.on("messageReactionAdd", async (reaction, user) => {
+      const channel = Config.channel(reaction.message.channel.id);
+      try {
+        await Reaction.insert({
+          messageId: reaction.message.id,
+          emojiId: (reaction.emoji.id || reaction.emoji.name)!,
+          channel,
+          user: { id: user.id },
+        });
+      } catch (e) {
+        // Don't do anything if duplicate reaction
+        if (e instanceof QueryFailedError && e.driverError.code === "23505") {
+          return;
+        }
+        console.error(e);
+      }
+    });
+
     admin.client.on("guildMemberUpdate", async (prevMember, member) => {
       const user = await User.findOne({
         where: { id: member.id },
@@ -103,6 +132,165 @@ export default class AppController {
         await user.save();
       }
     });
+  }
+
+  static async initReactionCron() {
+    setInterval(() => {
+      if (!this.processingReactions) {
+        this.processReactions();
+      }
+    }, 10_000);
+  }
+
+  static async processReactions() {
+    // Mark reactions as being processed
+    this.processingReactions = true;
+
+    // Set channels to reward reactions
+    const channels: ManagedChannelSymbol[] = [
+      "ANNOUNCEMENTS",
+      "UPDATES",
+      "SNEAK_PEEKS",
+      "GIVEAWAYS",
+      "TWEETS",
+      "RAIDS",
+    ];
+
+    // Get not processed reactions
+    const reactions = await Reaction.findBy({
+      processed: false,
+      channel: { id: In(channels) },
+    });
+
+    if (reactions.length === 0) {
+      this.processingReactions = false;
+      return;
+    }
+
+    // Get all processed entries that match any new reactions so we can
+    // limit max rewards to 10
+    type RawReaction = {
+      user_id: string;
+      channel_id: ManagedChannelSymbol;
+      message_id: string;
+      count: string;
+    };
+
+    const past = await Reaction.createQueryBuilder("reaction")
+      .select(["user_id", "channel_id", "message_id", "Count(*)"])
+      .andWhere(
+        `(user_id IN (:...user_ids) OR channel_id IN (:...channel_ids))`,
+        {
+          user_ids: reactions.map((r) => r.user.id),
+          channel_ids: reactions.map((r) => r.channel.id),
+        }
+      )
+      .andWhere({ processed: true })
+      .groupBy("user_id")
+      .addGroupBy("message_id")
+      .addGroupBy("channel_id")
+      .getRawMany<RawReaction>();
+
+    // Define types to make data easy to manage
+    type MessageManifest = {
+      id: string;
+      channelId: ManagedChannelSymbol;
+      newReactions: number;
+      processedReactions: number;
+    };
+
+    type ReactionManifest = {
+      userId: User["id"];
+      messages: MessageManifest[];
+    };
+
+    // Iterate through all new reactions
+    // Make the data look like ReactionManifest[] for sane processing
+    const users = reactions.reduce<ReactionManifest[]>((p, c) => {
+      const processed = past.find(
+        (r) => r.user_id === c.user.id && r.message_id === c.messageId
+      );
+
+      // See if we already have this user in the array
+      const userIndex = p.findIndex((m) => m.userId === c.user.id);
+      const user: ReactionManifest =
+        userIndex === -1
+          ? { userId: c.user.id, messages: [] }
+          : p.splice(userIndex, 1)[0];
+
+      // See if we already have this message in the array
+      const messageIndex = user.messages.findIndex((m) => m.id === c.messageId);
+      const message: MessageManifest =
+        messageIndex === -1
+          ? {
+              id: c.messageId,
+              channelId: c.channel.id,
+              newReactions: 0,
+              processedReactions: processed ? parseInt(processed.count, 10) : 0,
+            }
+          : user.messages.splice(messageIndex, 1)[0];
+
+      // Inc new reactions, add/update message in array
+      message.newReactions++;
+      user.messages = [...user.messages, message];
+
+      // Return with added/updated user
+      return [...p, user];
+    }, []);
+
+    // We're only interested when we haven't already issued 10 rewards
+    // per message
+    const actionable = users.filter((u) => {
+      return u.messages.some(
+        (c) => c.newReactions > 0 && c.processedReactions < 10
+      );
+    });
+
+    // Iterate users, calculate how many reactions should be rewarded
+    // Don't wait for messages to send to HOP, let discord.js queue handle
+    const rewards = actionable.map((u) => {
+      return u.messages.reduce((p, m) => {
+        return m.newReactions > 0
+          ? p + Math.min(m.newReactions, 10 - m.processedReactions)
+          : p;
+      }, 0);
+    });
+
+    // Get users to reward $GBT to
+    const userRows = await User.findBy({
+      id: In(actionable.map((u) => u.userId)),
+    });
+
+    // Update $GBT
+    actionable.forEach((u, idx) => {
+      const row = userRows.find((r) => r.id === u.userId);
+      if (row) {
+        row.gbt ??= 0;
+        row.gbt += rewards[idx] * 10;
+      }
+    });
+
+    // Set reactions to processed
+    reactions.forEach((r) => {
+      r.processed = true;
+    });
+
+    // Save reactions and users
+    await Promise.all([Reaction.save(reactions), User.save(userRows)]);
+
+    // Trigger events for HOP
+    actionable.forEach((u, idx) => {
+      const row = userRows.find((r) => r.id === u.userId);
+      if (row) {
+        Events.emit("REACTIONS_REWARDED", {
+          user: row,
+          yield: rewards[idx] * 10,
+        });
+      }
+    });
+
+    // Mark as finished processing
+    this.processingReactions = false;
   }
 
   static async openDistrict(districtSymbol: DistrictSymbol) {

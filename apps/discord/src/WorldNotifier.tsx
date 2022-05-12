@@ -324,4 +324,15 @@ export default class WorldNotifier {
     );
     await this.logToHOP("ALLY", e.type, message);
   }
+
+  static async reactionsRewarded(e: PickEvent<"REACTIONS_REWARDED">) {
+    const message = r(
+      <>
+        {userMention(e.data.user.id)} earnt {Config.emojiCode("GBT_COIN")} for
+        reacting.{" "}
+        {Format.transaction(e.data.user.gbt - e.data.yield, e.data.yield)}
+      </>
+    );
+    await this.logToHOP("BIG_BROTHER", e.type, message);
+  }
 }
