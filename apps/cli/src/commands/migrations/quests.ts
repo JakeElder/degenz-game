@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Command } from "../../lib";
 import {
   Achievement,

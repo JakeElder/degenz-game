@@ -90,6 +90,13 @@ c.push(
     parent: { id: "THE_GAME" },
   },
   {
+    id: "INVITE",
+    name: "🙋｜invite-to-win",
+    lockPermissions: true,
+    permissionOverwrites: DISCOVERABLE,
+    parent: { id: "THE_GAME" },
+  },
+  {
     id: "WHITELIST",
     name: "🎟️｜whitelist",
     lockPermissions: true,
@@ -123,6 +130,13 @@ c.push(
   {
     id: "OFFICIAL_LINKS",
     name: "🔗｜official-links",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "COMMAND_CENTER" },
+  },
+  {
+    id: "SNEAK_PEEKS",
+    name: "👀｜sneak-peaks",
     lockPermissions: true,
     permissionOverwrites: READ_ONLY,
     parent: { id: "COMMAND_CENTER" },
@@ -241,6 +255,13 @@ c.push(
   {
     id: "HALL_OF_ALLEIGANCE",
     name: "💰｜hall-of-allegiance",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "BEAUTOPIA" },
+  },
+  {
+    id: "JPEG_STORE",
+    name: "🖼｜jpeg-store",
     lockPermissions: true,
     permissionOverwrites: READ_ONLY,
     parent: { id: "BEAUTOPIA" },

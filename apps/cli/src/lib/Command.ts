@@ -1,6 +1,6 @@
 import { Command as OclifCommand } from "@oclif/core";
 import { connect, disconnect } from "data/db";
-import { NPCSymbol } from "data/types";
+import { ManagedChannelSymbol, NPCSymbol } from "data/types";
 import Manifest from "manifest";
 import prompts from "prompts";
 import { Client, Guild } from "discord.js";
@@ -19,6 +19,17 @@ export default abstract class Command extends OclifCommand {
   async init() {
     await connect();
     await Config.load();
+  }
+
+  async getChannel(channel: ManagedChannelSymbol, bot: NPCSymbol) {
+    const bb = await this.bot(bot);
+    const c = await bb.guild.channels.fetch(Config.channelId(channel));
+
+    if (!c || !c.isText()) {
+      throw new Error("Updates channel not found.");
+    }
+
+    return c;
   }
 
   async finally(err?: Error) {

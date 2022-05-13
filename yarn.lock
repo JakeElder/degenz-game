@@ -102,6 +102,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@discordjs/builders@npm:^0.13.0":
+  version: 0.13.0
+  resolution: "@discordjs/builders@npm:0.13.0"
+  dependencies:
+    "@sapphire/shapeshift": ^2.0.0
+    "@sindresorhus/is": ^4.6.0
+    discord-api-types: ^0.31.1
+    fast-deep-equal: ^3.1.3
+    ts-mixer: ^6.0.1
+    tslib: ^2.3.1
+  checksum: 1bce798b8f36b5abb09d8d42a660a5da6a9352ada03e0819d08ae6c98d4d8a556ed86485e252e53c448a40d17bf0d685e7f88f333db76f5b6b3bd562b9759d7c
+  languageName: node
+  linkType: hard
+
 "@discordjs/collection@npm:^0.4.0":
   version: 0.4.0
   resolution: "@discordjs/collection@npm:0.4.0"
@@ -870,6 +884,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sapphire/shapeshift@npm:^2.0.0":
+  version: 2.2.0
+  resolution: "@sapphire/shapeshift@npm:2.2.0"
+  checksum: f6cdc706548b3c5acbcb24878bacfd5cc28629d72900bb53cf54911da3a42199a479c6875486824b17106360b7dc3c156f509ef9b04190fefa42d241ddec2696
+  languageName: node
+  linkType: hard
+
 "@sapphire/snowflake@npm:^3.0.1":
   version: 3.2.2
   resolution: "@sapphire/snowflake@npm:3.2.2"
@@ -884,7 +905,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sindresorhus/is@npm:^4.2.0, @sindresorhus/is@npm:^4.3.0":
+"@sindresorhus/is@npm:^4.2.0, @sindresorhus/is@npm:^4.3.0, @sindresorhus/is@npm:^4.6.0":
   version: 4.6.0
   resolution: "@sindresorhus/is@npm:4.6.0"
   checksum: 83839f13da2c29d55c97abc3bc2c55b250d33a0447554997a85c539e058e57b8da092da396e252b11ec24a0279a0bed1f537fa26302209327060643e327f81d2
@@ -1841,6 +1862,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axios@npm:^0.27.2":
+  version: 0.27.2
+  resolution: "axios@npm:0.27.2"
+  dependencies:
+    follow-redirects: ^1.14.9
+    form-data: ^4.0.0
+  checksum: 38cb7540465fe8c4102850c4368053c21683af85c5fdf0ea619f9628abbcb59415d1e22ebc8a6390d2bbc9b58a9806c874f139767389c862ec9b772235f06854
+  languageName: node
+  linkType: hard
+
 "axobject-query@npm:^2.2.0":
   version: 2.2.0
   resolution: "axobject-query@npm:2.2.0"
@@ -2419,6 +2450,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "cli@workspace:apps/cli"
   dependencies:
+    "@discordjs/builders": ^0.13.0
     "@oclif/core": ^1
     "@oclif/plugin-help": ^5
     "@oclif/plugin-plugins": ^2.0.1
@@ -2430,11 +2462,13 @@ __metadata:
     "@types/mocha": ^9.0.0
     "@types/node": ^16.9.4
     "@types/prompts": ^2.0.14
+    axios: ^0.27.2
     chai: ^4
     cli-progress: ^3.10.0
     color: ^4.2.3
     data: "*"
     deepmerge: ^4.2.2
+    discord.js: ^13.6.0
     globby: ^11
     manifest: "*"
     mocha: ^9
@@ -2442,6 +2476,7 @@ __metadata:
     prompts: ^2.4.2
     recursive-copy: ^2.0.14
     shx: ^0.3.3
+    ts-dedent: ^2.2.0
     ts-node: ^10.2.1
     tslib: ^2.3.1
     typescript: ^4.6.3
@@ -4312,6 +4347,16 @@ __metadata:
     debug:
       optional: true
   checksum: f5982e0eb481818642492d3ca35a86989c98af1128b8e1a62911a3410621bc15d2b079e8170b35b19d3bdee770b73ed431a257ed86195af773771145baa57845
+  languageName: node
+  linkType: hard
+
+"follow-redirects@npm:^1.14.9":
+  version: 1.15.0
+  resolution: "follow-redirects@npm:1.15.0"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: eaec81c3e0ae57aae2422e38ad3539d0e7279b3a63f9681eeea319bb683dea67502c4e097136b8ce9721542b4e236e092b6b49e34e326cdd7733c274f0a3f378
   languageName: node
   linkType: hard
 
@@ -9572,7 +9617,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-mixer@npm:^6.0.0":
+"ts-dedent@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "ts-dedent@npm:2.2.0"
+  checksum: 93ed8f7878b6d5ed3c08d99b740010eede6bccfe64bce61c5a4da06a2c17d6ddbb80a8c49c2d15251de7594a4f93ffa21dd10e7be75ef66a4dc9951b4a94e2af
+  languageName: node
+  linkType: hard
+
+"ts-mixer@npm:^6.0.0, ts-mixer@npm:^6.0.1":
   version: 6.0.1
   resolution: "ts-mixer@npm:6.0.1"
   checksum: 7050f6e85a24155d18cecdcc0a098d1038991cc498317fcffa9d7a8654c776d417fb97e65de1ce8e7ed54ef4814abd8057d0efb9c3b24e9cc78ac3c0f48bbf53

@@ -73,8 +73,16 @@ export default class AppController {
     });
 
     admin.client.on("messageReactionAdd", async (reaction, user) => {
-      const channel = Config.channel(reaction.message.channel.id);
+      const managedIds = Config.managedChannels.map(
+        (mc) => mc.discordChannel.id
+      );
+
+      if (!managedIds.includes(reaction.message.channel.id)) {
+        return;
+      }
+
       try {
+        const channel = Config.channel(reaction.message.channel.id);
         await Reaction.insert({
           messageId: reaction.message.id,
           emojiId: (reaction.emoji.id || reaction.emoji.name)!,
@@ -154,6 +162,11 @@ export default class AppController {
       "GIVEAWAYS",
       "TWEETS",
       "RAIDS",
+      "ENTRANCE",
+      "QUESTS",
+      "INVITE",
+      "WHITELIST",
+      "OFFICIAL_LINKS",
     ];
 
     // Get not processed reactions
@@ -251,7 +264,7 @@ export default class AppController {
     const rewards = actionable.map((u) => {
       return u.messages.reduce((p, m) => {
         return m.newReactions > 0
-          ? p + Math.min(m.newReactions, 10 - m.processedReactions)
+          ? p + Math.max(Math.min(m.newReactions, 10 - m.processedReactions), 0)
           : p;
       }, 0);
     });
