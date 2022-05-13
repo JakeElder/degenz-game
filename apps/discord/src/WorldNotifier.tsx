@@ -332,7 +332,6 @@ export default class WorldNotifier {
     );
     const message = r(
       <>
-        {e.data.channelIds.join(",")}
         {userMention(e.data.user.id)} earnt {Config.emojiCode("GBT_COIN")} for
         reacting in {listify(channels)}.{" "}
         {Format.transaction(e.data.user.gbt - e.data.yield, e.data.yield)}
