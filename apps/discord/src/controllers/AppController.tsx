@@ -168,6 +168,7 @@ export default class AppController {
       "INVITE",
       "WHITELIST",
       "OFFICIAL_LINKS",
+      "FAQ",
     ];
 
     // Get not processed reactions
