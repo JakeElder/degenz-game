@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import { QuestSymbol, TossGame } from "data/types";
+import { ManagedChannelSymbol, QuestSymbol, TossGame } from "data/types";
 import { User, MartItem, District, Dormitory, NPC, Achievement } from "data/db";
 
 type EnterEvent = {
@@ -264,6 +264,7 @@ type ReactionsRewarded = {
   data: {
     user: User;
     yield: number;
+    channelIds: ManagedChannelSymbol[];
   };
 };
 

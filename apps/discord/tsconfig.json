@@ -1,4 +1,4 @@
 {
   "extends": "tsconfig/component.json",
-  "include": ["src/**/*.ts", "src/**/*.tsx"]
+  "include": ["index.d.ts", "src/**/*.ts", "src/**/*.tsx"]
 }

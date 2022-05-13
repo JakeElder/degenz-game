@@ -7,6 +7,7 @@ import Utils from "./Utils";
 import { Format } from "lib";
 import { channelMention, userMention } from "@discordjs/builders";
 import { NestedManagedChannelSymbol, NPCSymbol } from "data/types";
+import listify from "listify";
 
 const { r } = Utils;
 
@@ -326,10 +327,14 @@ export default class WorldNotifier {
   }
 
   static async reactionsRewarded(e: PickEvent<"REACTIONS_REWARDED">) {
+    const channels = e.data.channelIds.map((c) =>
+      channelMention(Config.channelId(c))
+    );
     const message = r(
       <>
+        {e.data.channelIds.join(",")}
         {userMention(e.data.user.id)} earnt {Config.emojiCode("GBT_COIN")} for
-        reacting.{" "}
+        reacting in {listify(channels)}.{" "}
         {Format.transaction(e.data.user.gbt - e.data.yield, e.data.yield)}
       </>
     );

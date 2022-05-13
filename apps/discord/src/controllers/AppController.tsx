@@ -13,6 +13,7 @@ import EntranceController from "./EntranceController";
 import AchievementController from "./AchievementController";
 import Utils from "../Utils";
 import { In, QueryFailedError } from "typeorm";
+import { uniq } from "lodash";
 
 export default class AppController {
   static invites: Collection<string, Invite>;
@@ -147,7 +148,7 @@ export default class AppController {
       if (!this.processingReactions) {
         this.processReactions();
       }
-    }, 10_000);
+    }, 15_000);
   }
 
   static async processReactions() {
@@ -298,6 +299,7 @@ export default class AppController {
         Events.emit("REACTIONS_REWARDED", {
           user: row,
           yield: rewards[idx] * 10,
+          channelIds: uniq(u.messages.map((m) => m.channelId)),
         });
       }
     });
