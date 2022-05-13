@@ -42,19 +42,12 @@ class Stats {
   }
 
   static makeEmbed(model: StatsViewModel): MessageEmbedOptions {
-    const color =
-      model.strength > 80 ? "GREEN" : model.strength > 30 ? "ORANGE" : "RED";
-
     return {
-      color,
-      thumbnail: {
-        url: model.imageURL,
-      },
+      thumbnail: { url: model.imageURL },
       author: {
         name: model.member.displayName,
         icon_url: model.member.displayAvatarURL(),
       },
-      description: `\`Level ${model.level} Degen\``,
       fields: [
         {
           name: Format.currency(null, { full: true, plural: true }),
@@ -63,10 +56,6 @@ class Stats {
         {
           name: "Strength",
           value: Format.codeBlock(Stats.makeStrengthBar(model.strength)),
-        },
-        {
-          name: "Attributes",
-          value: Format.codeBlock(this.makeAttributes(model)),
         },
       ],
     };

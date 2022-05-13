@@ -115,6 +115,7 @@ type ItemEatenEvent = {
   data: {
     user: User;
     item: MartItem;
+    strengthBefore: number;
   };
 };
 

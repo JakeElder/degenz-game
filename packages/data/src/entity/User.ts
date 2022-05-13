@@ -200,4 +200,11 @@ export class User extends BaseEntity {
   get mention() {
     return `<@${this.id}>`;
   }
+
+  static incStrength(amount: number) {
+    return this.createQueryBuilder()
+      .update(this)
+      .set({ strength: () => `GREATEST(strength + ${amount}, 0)` })
+      .execute();
+  }
 }

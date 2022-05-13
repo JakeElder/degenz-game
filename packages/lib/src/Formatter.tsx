@@ -81,12 +81,16 @@ export default class Formatter {
     return "Beautopia";
   }
 
+  static powerChange(initial: number, net: number) {
+    return `💪 ${initial} ⋙  ${initial + net} (${net >= 0 ? "+" : "-"}${net})`;
+  }
+
   static transaction(initial: number, net: number) {
     return this.r(
       <>
         {this.currency(initial, { symbol: false })} **{"\u22d9"}**{" "}
         {this.currency(initial + net, { symbol: false })} `(
-        {net > 0 ? "+" : ""}
+        {net >= 0 ? "+" : ""}
         {this.currency(net, {
           emoji: false,
           symbol: true,

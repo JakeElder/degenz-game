@@ -128,7 +128,13 @@ export default class WorldNotifier {
   static async itemEaten(e: PickEvent<"ITEM_EATEN">) {
     const message = r(
       <>
-        **{e.data.user.displayName}** ate **{e.data.item.name}**.
+        **{e.data.user.displayName}** ate {e.data.item.emoji.toString()}**
+        {e.data.item.name}** `
+        {Format.powerChange(
+          e.data.strengthBefore,
+          e.data.user.strength - e.data.strengthBefore
+        )}
+        `.
       </>
     );
     await this.logToHOP("ALLY", e.type, message);
@@ -155,7 +161,8 @@ export default class WorldNotifier {
   static async martItemBought(e: PickEvent<"MART_ITEM_BOUGHT">) {
     const message = r(
       <>
-        **{e.data.user.displayName}** bought **{e.data.item.name}**.
+        **{e.data.user.displayName}** bought {e.data.item.emoji.toString()} **
+        {e.data.item.name}**.
       </>
     );
     await Promise.all([

@@ -2,7 +2,7 @@ import { capitalCase } from "change-case";
 import { GuildMember, MessageButton, MessageEmbedOptions } from "discord.js";
 import emoji from "node-emoji";
 import { User, MartItem, MartItemOwnership } from "data/db";
-import { getBorderCharacters, table } from "table";
+import { getBorderCharacters, table, TableUserConfig } from "table";
 import truncate from "truncate";
 import { Format } from "lib";
 
@@ -60,22 +60,36 @@ export async function makeInventoryEmbed(
   user: User,
   member: GuildMember
 ): Promise<MessageEmbedOptions> {
-  const q = await MartItem.createQueryBuilder()
-    .select(["mi.name as name", "COUNT(mo.id)"])
-    .from(MartItemOwnership, "mo")
-    .leftJoin(MartItem, "mi", "mo.item_id = mi.id")
-    .where("mo.user_id = :uid", { uid: user.id })
-    .groupBy("mo.item_id, mi.name")
-    .execute();
+  const q = await MartItemOwnership.createQueryBuilder("mart_item_ownership")
+    .select(["Count(*)", "mart_item.name"])
+    .where({ user: { id: user.id } })
+    .leftJoin(
+      MartItem,
+      "mart_item",
+      "mart_item_ownership.item_id = mart_item.id"
+    )
+    .groupBy("item_id")
+    .addGroupBy("mart_item.name")
+    .getRawMany<{ mart_item_name: string; count: string }>();
 
-  const rows = q.map((q: any) => [truncate(q.name, 25), q.count]);
+  const rows = q.map((q) => [truncate(q.mart_item_name, 25), q.count]);
 
-  const t = table(rows, {
-    drawVerticalLine: (idx) => [1].includes(idx),
+  const tableOptions: TableUserConfig = {
     columnDefault: { paddingLeft: 0, paddingRight: 0 },
     drawHorizontalLine: () => false,
-    columns: [{ width: 27 }, { width: 5, alignment: "center" }],
-  });
+  };
+
+  const t = rows.length
+    ? table(rows, {
+        ...tableOptions,
+        drawVerticalLine: (idx) => [1].includes(idx),
+        columns: [{ width: 27 }, { width: 5, alignment: "center" }],
+      })
+    : table([["no food :("]], {
+        ...tableOptions,
+        drawVerticalLine: () => false,
+        columns: [{ width: 32, alignment: "center" }],
+      });
 
   return {
     author: {
@@ -83,18 +97,6 @@ export async function makeInventoryEmbed(
       iconURL: member.displayAvatarURL(),
     },
     title: "Inventory",
-    fields: [
-      { name: "Food", value: Format.codeBlock(t) },
-      {
-        name: "Items",
-        value: Format.codeBlock(
-          table([["-- Coming Soon --"]], {
-            border: getBorderCharacters("void"),
-            columnDefault: { paddingLeft: 0, paddingRight: 0 },
-            columns: [{ width: 32, alignment: "center" }],
-          })
-        ),
-      },
-    ],
+    fields: [{ name: "Food", value: Format.codeBlock(t) }],
   };
 }

@@ -8,10 +8,9 @@ import {
   TextChannel,
 } from "discord.js";
 import { CommandController } from "../CommandController";
-import { eatItem, getMartItems, getUser } from "../legacy/db";
+import { getUser } from "../legacy/db";
 import { MartItemSymbol } from "data/types";
-import { Dormitory, User } from "data/db";
-import { groupBy } from "lodash";
+import { Dormitory, MartItem, MartItemOwnership, User } from "data/db";
 import OnboardController from "../controllers/OnboardController";
 import { makeInventoryEmbed } from "../legacy/utils";
 import { Global } from "../Global";
@@ -28,32 +27,133 @@ import { IsNull, Not } from "typeorm";
 
 export default class AllyCommandController extends CommandController {
   async eat(i: CommandInteraction) {
-    const items = await getMartItems();
-    const user = (await getUser(i.user.id))!;
+    const [user, items, inventory] = await Promise.all([
+      User.findOneByOrFail({ id: i.user.id }),
+      MartItem.find({ order: { price: -1 } }),
+      MartItemOwnership.createQueryBuilder("mart_item_ownership")
+        .select(["item_id", "Count(*)"])
+        .where({ user: { id: i.user.id } })
+        .groupBy("item_id")
+        .getRawMany<{ item_id: MartItemSymbol; count: string }>(),
+    ]);
 
-    const groups = groupBy(user.martItemOwnerships, "item.symbol");
+    if (inventory.length === 0) {
+      await i.reply({
+        embeds: [
+          {
+            color: "RED",
+            description: Utils.r(
+              <>
+                **{user.displayName}** - You don't *have* any food..{" "}
+                {items.map((i) => `${i.emoji}`)}
+                <br />
+                You should go to {channelMention(Config.channelId("MART"))} and
+                buy some!
+              </>
+            ),
+          },
+        ],
+      });
+      return;
+    }
 
     const row = new MessageActionRow().addComponents(
       new MessageSelectMenu()
         .setCustomId("foodSelect")
         .setPlaceholder("Choose from your inventory")
         .addOptions(
-          Object.keys(groups).map((g) => {
-            const i = items.find((i) => i.id === g)!;
+          inventory.map((g) => {
+            const item = items.find((i) => i.id === g.item_id)!;
             return {
-              label: `${i.name}`,
-              description: `[${groups[g].length}] available [effect] +${i.strengthIncrease} stength`,
-              value: g,
+              label: item.name,
+              description: `[${
+                g.count
+              }] available [effect] +${item.strengthIncrease!} stength`,
+              value: `${i.user.id}:${item.id}`,
             };
           })
         )
     );
 
     await i.reply({
-      content: `What you eating fam?`,
+      embeds: [
+        {
+          description: Utils.r(
+            <>
+              **{user.displayName}** - What you eating fam?{" "}
+              {items.map((i) => `${i.emoji}`)}
+            </>
+          ),
+        },
+      ],
       components: [row],
-      ephemeral: true,
     });
+  }
+
+  async handleFoodSelect(i: SelectMenuInteraction) {
+    const [userId, itemId] = i.values[0].split(":") as [
+      User["id"],
+      MartItemSymbol
+    ];
+
+    if (i.user.id !== userId) {
+      i.reply({
+        content: Utils.r(
+          <>
+            {userMention(i.user.id)} - This is not for you! type the `/eat`
+            slash command if you want to eat something.
+          </>
+        ),
+        ephemeral: true,
+      });
+    }
+
+    const [item, user] = await Promise.all([
+      MartItem.findOneByOrFail({ id: itemId }),
+      User.findOneByOrFail({ id: i.user.id }),
+    ]);
+
+    const ownership = await MartItemOwnership.findOne({
+      where: {
+        item: { id: item.id },
+        user: { id: user.id },
+      },
+    });
+
+    if (!ownership) {
+      await i.update({ content: "Error", components: [], embeds: [] });
+      return;
+    }
+
+    const strengthBefore = user.strength;
+
+    user.strength = Math.max(
+      Math.min(100, user.strength + item.strengthIncrease),
+      0
+    );
+
+    await Promise.all([ownership.softRemove(), user.save()]);
+
+    await i.update({
+      embeds: [
+        {
+          description: Utils.r(
+            <>
+              **{user.displayName}** Ate {item.emoji.toString()} **{item.name}**
+              `
+              {Format.powerChange(
+                strengthBefore,
+                user.strength - strengthBefore
+              )}
+              `
+            </>
+          ),
+        },
+      ],
+      components: [],
+    });
+
+    Events.emit("ITEM_EATEN", { user, item, strengthBefore });
   }
 
   async redpill(i: CommandInteraction) {
@@ -209,26 +309,5 @@ export default class AllyCommandController extends CommandController {
       checker: users[0],
       checkee: users[1],
     });
-  }
-
-  async handleFoodSelect(i: SelectMenuInteraction) {
-    const items = await getMartItems();
-    const res = await eatItem(i.values[0] as MartItemSymbol, i.user.id);
-
-    const item = items.find((item) => item.id === i.values[0])!;
-
-    if (res.success) {
-      await i.update({
-        content: `You ate **${item.name}**. \`+${item.strengthIncrease} strength\``,
-        components: [],
-      });
-
-      const user = await getUser(i.user.id);
-      Events.emit("ITEM_EATEN", { user, item });
-
-      return;
-    }
-
-    await i.update({ content: "Error", components: [] });
   }
 }

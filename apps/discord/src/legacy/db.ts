@@ -8,10 +8,6 @@ import {
 import { DistrictSymbol } from "data/types";
 import { In } from "typeorm";
 
-export async function getMartItems() {
-  return MartItem.find({ order: { price: -1 } });
-}
-
 export async function getLeaders(take: number = 50) {
   return User.find({
     where: { inGame: true },
@@ -57,43 +53,6 @@ export async function getUserByApartment(id: string) {
     where: { discordChannelId: id, level: "AUTHORITY" },
   });
   return t?.user;
-}
-
-export async function eatItem(
-  itemSymbol: MartItem["id"],
-  memberId: User["id"]
-) {
-  const item = await MartItem.findOne({ where: { id: itemSymbol } });
-
-  if (!item) {
-    return { success: false, code: "ITEM_NOT_FOUND" };
-  }
-
-  const user = await User.findOne({ where: { id: memberId } });
-
-  if (!user) {
-    return { success: false, code: "USER_NOT_FOUND" };
-  }
-
-  const ownership = await MartItemOwnership.findOne({
-    where: {
-      item: { id: item.id },
-      user: { id: user.id },
-    },
-  });
-
-  if (!ownership) {
-    return { success: false, code: "NOT_IN_INVENTORY" };
-  }
-
-  user.strength = Math.max(
-    Math.min(100, user.strength + item.strengthIncrease),
-    0
-  );
-
-  await Promise.all([ownership.softRemove(), user.save()]);
-
-  return { success: true };
 }
 
 export async function sellItem(item: MartItem, memberId: User["id"]) {
@@ -146,13 +105,6 @@ export async function transactBalance(memberId: string, amount: number) {
   const user = await User.findOne({ where: { id: memberId } });
   user!.gbt += amount;
   await user!.save();
-}
-
-export async function incStrength(amount: number) {
-  await User.createQueryBuilder()
-    .update(User)
-    .set({ strength: () => `GREATEST(strength + ${amount}, 0)` })
-    .execute();
 }
 
 export async function issueTokens(amount: number) {

@@ -14,6 +14,7 @@ import AchievementController from "./AchievementController";
 import Utils from "../Utils";
 import { In, QueryFailedError } from "typeorm";
 import { uniq } from "lodash";
+import cron from "node-cron";
 
 export default class AppController {
   static invites: Collection<string, Invite>;
@@ -22,6 +23,13 @@ export default class AppController {
   static async init() {
     this.bindEnterListener();
     this.initReactionCron();
+    this.initStrengthDecayCron();
+  }
+
+  static initStrengthDecayCron() {
+    cron.schedule("*/30 * * * *", () => {
+      User.incStrength(-1);
+    });
   }
 
   static async bindEnterListener() {
