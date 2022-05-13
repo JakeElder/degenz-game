@@ -1,7 +1,11 @@
 import { paramCase } from "change-case";
 import Config from "config";
 import { QuestLogChannel, User, DiscordChannel } from "data/db";
-import { TextBasedChannel, ThreadChannel } from "discord.js";
+import {
+  MessageEditOptions,
+  TextBasedChannel,
+  ThreadChannel,
+} from "discord.js";
 import { QuestLogMessage, QuestLogState, QuestSymbol } from "data/types";
 import equal from "fast-deep-equal";
 import { cloneDeep } from "lodash";
@@ -216,7 +220,7 @@ export default class QuestLogController {
           updated.map(async (m) => {
             const idx = next.findIndex((p) => equal(p, m));
             const dm = await thread.messages.fetch(qlc.messages[idx]);
-            await dm.edit(m.data);
+            await dm.edit(m.data as MessageEditOptions);
           })
         );
       }

@@ -3,6 +3,7 @@ import { table } from "table";
 import {
   CommandInteraction,
   InteractionReplyOptions,
+  InteractionUpdateOptions,
   MessageActionRow,
   MessageButton,
   MessageEmbedOptions,
@@ -64,7 +65,7 @@ export default class MartClerkCommandController extends CommandController {
 
         if (res.success) {
           const update = await MartClerkCommandController.makeBuyResponse(id);
-          await i.update(update);
+          await i.update(update as InteractionUpdateOptions);
           Events.emit("MART_ITEM_BOUGHT", { user, item });
           AchievementController.checkAndAward(
             user,

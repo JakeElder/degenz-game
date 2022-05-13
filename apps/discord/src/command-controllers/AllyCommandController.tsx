@@ -2,6 +2,7 @@ import React from "react";
 import {
   CommandInteraction,
   GuildMember,
+  InteractionReplyOptions,
   MessageActionRow,
   MessageSelectMenu,
   SelectMenuInteraction,
@@ -217,7 +218,7 @@ export default class AllyCommandController extends CommandController {
         dormitories,
       }),
       ephemeral: true,
-    });
+    } as InteractionReplyOptions);
 
     const user = await getUser(member!.id);
     Events.emit("HELP_REQUESTED", { user, channel });
