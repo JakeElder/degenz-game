@@ -106,6 +106,37 @@ c.push(
 );
 
 c.push(
+  // ORIENTATION
+  {
+    id: "ORIENTATION",
+    name: "Orientation",
+    permissionOverwrites: [...DISCOVERABLE, ...ESTABLISHMENT],
+  },
+  // CHANNELS
+  {
+    id: "THE_LORE",
+    name: "🌃｜the-lore",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "ORIENTATION" },
+  },
+  {
+    id: "NFT_CHARACTERS",
+    name: "🧑｜nft-character",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "ORIENTATION" },
+  },
+  {
+    id: "COMMANDS",
+    name: "📜｜how-to-play",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "ORIENTATION" },
+  }
+);
+
+c.push(
   // COMMAND_CENTER
   {
     id: "COMMAND_CENTER",
@@ -158,13 +189,6 @@ c.push(
   {
     id: "RAIDS",
     name: "💥｜raids",
-    lockPermissions: true,
-    permissionOverwrites: READ_ONLY,
-    parent: { id: "COMMAND_CENTER" },
-  },
-  {
-    id: "COMMANDS",
-    name: "📜｜commands",
     lockPermissions: true,
     permissionOverwrites: READ_ONLY,
     parent: { id: "COMMAND_CENTER" },

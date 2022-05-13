@@ -177,6 +177,9 @@ export default class AppController {
       "WHITELIST",
       "OFFICIAL_LINKS",
       "FAQ",
+      "THE_LORE",
+      "NFT_CHARACTERS",
+      "COMMANDS",
     ];
 
     // Get not processed reactions

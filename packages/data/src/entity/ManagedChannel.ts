@@ -25,11 +25,14 @@ export type ManagedCategorySymbol =
   | `THE_PROJECTS_${DistrictSymbol}`
   | "THE_SHELTERS"
   | "TICKETS"
+  | "ORIENTATION"
   | "PRISON";
 
 export type NestedManagedChannelSymbol =
   | "ENTRANCE"
   | "QUESTS"
+  | "THE_LORE"
+  | "NFT_CHARACTERS"
   | "ANNOUNCEMENTS"
   | "UPDATES"
   | "OFFICIAL_LINKS"
