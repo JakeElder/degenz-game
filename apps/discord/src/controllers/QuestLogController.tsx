@@ -204,8 +204,16 @@ export default class QuestLogController {
         })
       );
 
-      const messages = await Promise.all(next.map((m) => thread.send(m.data)));
-      qlc.messages = messages.map((m) => m.id);
+      await Promise.all(
+        next.map(async (m, idx) => {
+          // Update state in database as messages get sent
+          // to prevent oos state when rate limited
+          const message = await thread.send(m.data);
+          qlc.state[idx] = m;
+          qlc.messages[idx] = message.id;
+          await qlc.save();
+        })
+      );
     } else {
       // We know that prev/next are same size and order
       // Diff
