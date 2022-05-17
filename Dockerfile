@@ -10,6 +10,5 @@ RUN cp -r ./patches ./out/patches \
 WORKDIR /app/out
 RUN yarn install
 RUN yarn turbo run build
-RUN sed -i 's/\*.ts/*.js/g' packages/data/src/data-source.js
 
 CMD ["pm2-docker", "node", "--", "-r", "source-map-support/register", "apps/discord/src/main.js"]
