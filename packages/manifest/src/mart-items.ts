@@ -1,6 +1,7 @@
 import { MartItem } from "data/db";
+import { RecursivePartial } from "data/types";
 
-export const martItems = MartItem.create([
+export const martItems: RecursivePartial<MartItem>[] = [
   {
     id: "PIZZA",
     name: "Fat Pizza ©",
@@ -26,4 +27,4 @@ export const martItems = MartItem.create([
     strengthIncrease: 1,
     emoji: { id: "NUU_PING" },
   },
-]);
+];

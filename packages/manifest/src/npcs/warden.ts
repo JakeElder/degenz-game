@@ -1,5 +1,4 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { plainToInstance } from "class-transformer";
 import { NPC } from "data/db";
 import { RecursivePartial } from "data/types";
 
@@ -68,4 +67,4 @@ warden.commands.push({
     .toJSON(),
 });
 
-export default plainToInstance(NPC, warden);
+export default warden;

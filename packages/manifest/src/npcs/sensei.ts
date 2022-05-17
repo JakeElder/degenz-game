@@ -1,4 +1,3 @@
-import { plainToInstance } from "class-transformer";
 import { NPC } from "data/db";
 import { RecursivePartial } from "data/types";
 
@@ -9,4 +8,4 @@ const sensei: RecursivePartial<NPC> = {
   clientOptions: { intents: ["GUILDS"] },
 };
 
-export default plainToInstance(NPC, sensei);
+export default sensei;

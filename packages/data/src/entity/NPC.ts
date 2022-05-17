@@ -51,4 +51,17 @@ export class NPC extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  toJSON() {
+    return {
+      id: this.id,
+      emoji: this.emoji ? this.emoji.toJSON() : null,
+      enabled: this.enabled,
+      clientId: this.clientId,
+      commands: this.commands || null,
+      clientOptions: this.clientOptions || null,
+      createdAt: this.createdAt.toString(),
+      updatedAt: this.updatedAt.toString(),
+    };
+  }
 }

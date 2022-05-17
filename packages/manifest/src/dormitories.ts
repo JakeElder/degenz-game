@@ -1,6 +1,7 @@
 import { Dormitory } from "data/db";
+import { RecursivePartial } from "data/types";
 
-export const dormitories = Dormitory.create([
+export const dormitories: RecursivePartial<Dormitory>[] = [
   {
     id: "BULLSEYE",
     emoji: { id: "BULLSEYE" },
@@ -36,4 +37,4 @@ export const dormitories = Dormitory.create([
     channel: { id: "VULTURE" },
     citizenRole: { id: "VULTURE_CITIZEN" },
   },
-]);
+];

@@ -1,6 +1,7 @@
 import { District } from "data/db";
+import { RecursivePartial } from "data/types";
 
-export const districts = District.create([
+export const districts: RecursivePartial<District>[] = [
   {
     id: "D1",
     allowance: 150,
@@ -37,4 +38,4 @@ export const districts = District.create([
     emoji: { id: "D6" },
     citizenRole: { id: "D6_CITIZEN" },
   },
-]);
+];

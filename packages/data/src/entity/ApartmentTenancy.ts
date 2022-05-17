@@ -28,7 +28,7 @@ export class ApartmentTenancy extends BaseEntity {
   @Column()
   discordChannelId: string;
 
-  @Column()
+  @Column({ type: "varchar" })
   level: ApartmentTenancyLevelSymbol;
 
   @ManyToOne(() => District, (district) => district.tenancies, { eager: true })

@@ -2,7 +2,6 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { Format } from "lib";
 import { NPC } from "data/db";
 import { RecursivePartial } from "data/types";
-import { plainToInstance } from "class-transformer";
 
 const banker: RecursivePartial<NPC> = {
   id: "BANKER",
@@ -115,4 +114,4 @@ banker.commands.push({
     .toJSON(),
 });
 
-export default plainToInstance(NPC, banker);
+export default banker;

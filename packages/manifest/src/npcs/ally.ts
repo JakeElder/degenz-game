@@ -1,5 +1,4 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { plainToInstance } from "class-transformer";
 import { NPC } from "data/db";
 import { RecursivePartial } from "data/types";
 import { Format } from "lib";
@@ -47,6 +46,11 @@ ally.commands.push({
     .addUserOption((option) =>
       option.setName("name").setDescription("The citizen to retrieve info for.")
     )
+    .addBooleanOption((option) =>
+      option
+        .setName("post")
+        .setDescription("Whether to show the stats in the current channel.")
+    )
     .toJSON(),
 });
 
@@ -57,6 +61,11 @@ ally.commands.push({
   data: new SlashCommandBuilder()
     .setName("help")
     .setDescription(`Get help on the current channel.`)
+    .addBooleanOption((option) =>
+      option
+        .setName("post")
+        .setDescription("Whether to show the help in the current channel.")
+    )
     .toJSON(),
 });
 
@@ -72,6 +81,11 @@ ally.commands.push({
     .setDescription(`See your own, or another citizens inventory.`)
     .addUserOption((option) =>
       option.setName("name").setDescription("The citizen to retrieve info for.")
+    )
+    .addBooleanOption((option) =>
+      option
+        .setName("post")
+        .setDescription("Whether to show the inventory in the current channel.")
     )
     .toJSON(),
 });
@@ -99,7 +113,9 @@ ally.commands.push({
     .addBooleanOption((option) =>
       option
         .setName("post")
-        .setDescription("Whether to publish in the current room.")
+        .setDescription(
+          "Whether to show the leaderboard in the current channel."
+        )
     )
     .setDescription(
       `See who has the most ${Format.currency(null, { bold: false })}.`
@@ -107,4 +123,4 @@ ally.commands.push({
     .toJSON(),
 });
 
-export default plainToInstance(NPC, ally);
+export default ally;

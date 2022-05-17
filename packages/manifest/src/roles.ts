@@ -1,4 +1,3 @@
-import { plainToInstance } from "class-transformer";
 import { Role } from "data/db";
 import { RecursivePartial } from "data/types";
 import { Permissions } from "discord.js";
@@ -27,7 +26,7 @@ const ESTABLISHMENT = new Permissions([
   "MENTION_EVERYONE",
 ]);
 
-const r: RecursivePartial<Role>[] = [
+export const roles: RecursivePartial<Role>[] = [
   {
     id: "EVERYONE",
     type: "EVERYONE",
@@ -264,5 +263,3 @@ const r: RecursivePartial<Role>[] = [
     name: "Whitelist",
   },
 ];
-
-export const roles = plainToInstance(Role, r);

@@ -1,6 +1,7 @@
 import { Achievement } from "data/db";
+import { RecursivePartial } from "data/types";
 
-export const achievements = Achievement.create([
+export const achievements: RecursivePartial<Achievement>[] = [
   { id: "JOIN_THE_DEGENZ_QUEST_COMPLETED" },
   { id: "PLEDGE_QUEST_COMPLETED" },
   { id: "LEARN_TO_HACKER_BATTLE_QUEST_COMPLETED" },
@@ -15,4 +16,4 @@ export const achievements = Achievement.create([
   { id: "LEVEL_6_REACHED", reward: 1000 },
   { id: "LEVEL_4_REACHED", reward: 500 },
   { id: "LEVEL_2_REACHED", reward: 250 },
-]);
+];

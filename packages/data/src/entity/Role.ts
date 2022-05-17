@@ -81,7 +81,7 @@ export class Role extends BaseEntity {
   @PrimaryColumn({ type: "varchar", unique: true })
   id: RoleSymbol;
 
-  @Column()
+  @Column({ type: 'varchar' })
   type: RoleTypeSymbol;
 
   @Column({ nullable: true })

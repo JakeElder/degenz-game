@@ -202,25 +202,30 @@ export default class AllyCommandController extends CommandController {
   async help(i: CommandInteraction) {
     const admin = Global.bot("ADMIN");
 
-    const [channelDescriptor, channel, member, dormitories] = await Promise.all(
-      [
+    const [user, channelDescriptor, channel, member, dormitories] =
+      await Promise.all([
+        User.findOneByOrFail({ id: i.user.id }),
         Channel.getDescriptor(i.channelId),
         Utils.Channel.getOrFail(i.channelId),
         admin.getMember(i.user.id),
         Dormitory.find({ relations: ["tenancies"] }),
-      ]
+      ]);
+
+    await i.reply(
+      CommandController.requireAchievementToPost(
+        !!i.options.getBoolean("post"),
+        "LEVEL_4_REACHED",
+        "ENGAGEMENT_LEVEL_4",
+        user,
+        "help",
+        Help.generate({
+          channel: channelDescriptor,
+          member: member!,
+          dormitories,
+        }) as InteractionReplyOptions
+      )
     );
 
-    await i.reply({
-      ...Help.generate({
-        channel: channelDescriptor,
-        member: member!,
-        dormitories,
-      }),
-      ephemeral: true,
-    } as InteractionReplyOptions);
-
-    const user = await getUser(member!.id);
     Events.emit("HELP_REQUESTED", { user, channel });
 
     if (!user.hasAchievement("HELP_REQUESTED")) {
@@ -247,18 +252,19 @@ export default class AllyCommandController extends CommandController {
       strength: checkeeUser.strength,
       gbt: checkeeUser.gbt,
       level: 1,
-      attributes: {
-        strength: "??",
-        charisma: "??",
-        luck: "??",
-      },
+      attributes: { strength: "??", charisma: "??", luck: "??" },
     });
 
-    await i.reply({ embeds: [e], ephemeral: true });
-
-    // if (!checkeeUser.hasAchievement("STATS_CHECKED")) {
-    //   await OnboardController.sendStatsCheckedResponse(checkeeUser);
-    // }
+    await i.reply(
+      CommandController.requireAchievementToPost(
+        !!i.options.getBoolean("post"),
+        "LEVEL_4_REACHED",
+        "ENGAGEMENT_LEVEL_4",
+        checkerUser,
+        "stats",
+        { embeds: [e] }
+      )
+    );
 
     Events.emit("STATS_CHECKED", {
       checkee: checkeeUser,
@@ -275,16 +281,32 @@ export default class AllyCommandController extends CommandController {
       take: num,
     });
 
-    const show = i.options.getBoolean("post");
-
+    const user = await User.findOneByOrFail({ id: i.user.id });
     const data = await LeaderboardController.computeData(leaders);
 
     if (num === 5) {
-      const embeds = LeaderboardController.makeEmbeds(data);
-      await i.reply({ embeds, ephemeral: !show });
+      await i.reply(
+        CommandController.requireAchievementToPost(
+          !!i.options.getBoolean("post"),
+          "LEVEL_4_REACHED",
+          "ENGAGEMENT_LEVEL_4",
+          user,
+          "the leaderboard",
+          { embeds: LeaderboardController.makeEmbeds(data) }
+        )
+      );
     } else {
       const table = LeaderboardController.makeTable(data, 0);
-      await i.reply({ content: Format.codeBlock(table), ephemeral: !show });
+      await i.reply(
+        CommandController.requireAchievementToPost(
+          !!i.options.getBoolean("post"),
+          "LEVEL_4_REACHED",
+          "ENGAGEMENT_LEVEL_4",
+          user,
+          "the leaderboard",
+          { content: Format.codeBlock(table) }
+        )
+      );
     }
   }
 
@@ -304,7 +326,16 @@ export default class AllyCommandController extends CommandController {
     }
 
     const e = await makeInventoryEmbed(users[1], checkee);
-    await i.reply({ embeds: [e], ephemeral: true });
+    await i.reply(
+      CommandController.requireAchievementToPost(
+        !!i.options.getBoolean("post"),
+        "LEVEL_4_REACHED",
+        "ENGAGEMENT_LEVEL_4",
+        users[0],
+        "inventories",
+        { embeds: [e] }
+      )
+    );
 
     Events.emit("INVENTORY_CHECKED", {
       checker: users[0],

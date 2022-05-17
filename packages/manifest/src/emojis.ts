@@ -1,6 +1,7 @@
 import { Emoji } from "data/db";
+import { RecursivePartial } from "data/types";
 
-export const emojis = Emoji.create([
+export const emojis: RecursivePartial<Emoji>[] = [
   { id: "ALLY_NPC", name: "ivan_6000" },
   { id: "ANON", name: "anon" },
   { id: "ARMORY_CLERK_NPC", name: "private_willy" },
@@ -66,4 +67,4 @@ export const emojis = Emoji.create([
   { id: "VULTURE_INACTIVE", name: "vulture_inactive" },
   { id: "WARDEN_NPC", name: "walden" },
   { id: "WORM_HACK", name: "worm_hack" },
-]);
+];

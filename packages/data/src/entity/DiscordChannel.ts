@@ -21,7 +21,7 @@ export class DiscordChannel extends BaseEntity {
   @PrimaryColumn({ type: "varchar", unique: true })
   id: string;
 
-  @Column()
+  @Column({ type: "varchar" })
   type: ChannelTypeSymbol;
 
   @CreateDateColumn()

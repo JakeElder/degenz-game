@@ -173,6 +173,10 @@ export default class ConfigManager {
     return row.clientId;
   }
 
+  static botClientSecret(k: NPCSymbol) {
+    return env[`${k}_BOT_CLIENT_SECRET`];
+  }
+
   static botToken(k: NPCSymbol) {
     return env[`${k}_BOT_TOKEN`];
   }

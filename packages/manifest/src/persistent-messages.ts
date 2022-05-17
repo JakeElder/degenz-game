@@ -1,6 +1,7 @@
 import { PersistentMessage } from "data/db";
+import { RecursivePartial } from "data/types";
 
-export const persistentMessages = PersistentMessage.create([
+export const persistentMessages: RecursivePartial<PersistentMessage>[] = [
   {
     id: "ENTRANCE",
     channel: { id: "ENTRANCE" },
@@ -26,4 +27,4 @@ export const persistentMessages = PersistentMessage.create([
     channel: { id: "QUESTS" },
     maintainer: { id: "ADMIN" },
   },
-]);
+];

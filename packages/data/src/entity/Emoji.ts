@@ -94,4 +94,14 @@ export class Emoji extends BaseEntity {
   toString() {
     return `<:${this.identifier}>`;
   }
+
+  toJSON() {
+    return {
+      id: this.id,
+      name: this.name,
+      identifier: this.identifier,
+      createdAt: this.createdAt.toString(),
+      updatedAt: this.updatedAt.toString(),
+    };
+  }
 }

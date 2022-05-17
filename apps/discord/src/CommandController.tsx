@@ -1,11 +1,64 @@
+import React from "react";
 import { camelCase, pascalCase } from "change-case";
-import { CommandInteraction, SelectMenuInteraction } from "discord.js";
+import {
+  CommandInteraction,
+  InteractionReplyOptions,
+  MessageEmbedOptions,
+  SelectMenuInteraction,
+} from "discord.js";
 import DiscordBot from "./DiscordBot";
 import Events from "./Events";
 import Config from "config";
+import { AchievementSymbol, RoleSymbol } from "data/types";
+import { User } from "data/db";
+import Utils from "./Utils";
+import { channelMention, roleMention, userMention } from "@discordjs/builders";
+
+const requireRoleEmbed: (
+  role: RoleSymbol,
+  user: User,
+  what: string
+) => MessageEmbedOptions = (role, user, what) => {
+  return {
+    color: "RED",
+    title: "Cannot Post to Channel",
+    description: Utils.r(
+      <>
+        {userMention(user.id)} - You need to be at least{" "}
+        {roleMention(Config.roleId(role))} to show {what}.
+        <br />
+        You can **level up** by being active in{" "}
+        {channelMention(Config.channelId("GENERAL"))}.
+      </>
+    ),
+  };
+};
 
 export abstract class CommandController {
-  constructor() {}
+  static requireAchievementToPost(
+    post: boolean,
+    achievement: AchievementSymbol,
+    role: RoleSymbol,
+    user: User,
+    what: string,
+    reply: InteractionReplyOptions
+  ): InteractionReplyOptions {
+    const [ephemeral, postDenied] = (() => {
+      if (post) {
+        return user.hasAchievement(achievement) ? [false, false] : [true, true];
+      }
+      return [true, false];
+    })();
+
+    return {
+      ...reply,
+      ephemeral,
+      embeds: [
+        ...(reply.embeds || []),
+        ...(postDenied ? [requireRoleEmbed(role, user, what)] : []),
+      ],
+    };
+  }
 
   async execute(i: CommandInteraction, bot: DiscordBot) {
     const command = bot.npc.commands.find((c) => c.data.name === i.commandName);

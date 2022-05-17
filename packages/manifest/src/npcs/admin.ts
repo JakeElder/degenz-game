@@ -1,5 +1,4 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { plainToInstance } from "class-transformer";
 import { NPC } from "data/db";
 import { DistrictSymbol, RecursivePartial } from "data/types";
 import { Format } from "lib";
@@ -250,4 +249,4 @@ admin.commands = [
   },
 ];
 
-export default plainToInstance(NPC, admin);
+export default admin;

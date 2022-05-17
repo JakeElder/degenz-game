@@ -1,5 +1,4 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { plainToInstance } from "class-transformer";
 import { NPC } from "data/db";
 import { RecursivePartial } from "data/types";
 import { Format } from "lib";
@@ -41,4 +40,4 @@ tosser.commands.push({
     .toJSON(),
 });
 
-export default plainToInstance(NPC, tosser);
+export default tosser;

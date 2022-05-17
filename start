@@ -6,10 +6,10 @@ packages=(
   packages/manifest
   packages/lib
   packages/data
-  packages/legacy-data
   apps/discord
   apps/web
   apps/cli
+  apps/auth
 )
 
 for i in "${packages[@]}"

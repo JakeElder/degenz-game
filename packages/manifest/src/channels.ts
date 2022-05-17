@@ -1,6 +1,5 @@
 import { ManagedChannel } from "data/db";
 import { RecursivePartial } from "data/types";
-import { plainToInstance } from "class-transformer";
 
 const READ_ONLY: ManagedChannel["permissionOverwrites"] = [
   {
@@ -59,9 +58,9 @@ const ESTABLISHMENT: ManagedChannel["permissionOverwrites"] = [
   },
 ];
 
-const c: RecursivePartial<ManagedChannel>[] = [];
+const channels: RecursivePartial<ManagedChannel>[] = [];
 
-c.push(
+channels.push(
   // THE_GAME
   {
     id: "THE_GAME",
@@ -105,7 +104,7 @@ c.push(
   }
 );
 
-c.push(
+channels.push(
   // ORIENTATION
   {
     id: "ORIENTATION",
@@ -136,7 +135,7 @@ c.push(
   }
 );
 
-c.push(
+channels.push(
   // COMMAND_CENTER
   {
     id: "COMMAND_CENTER",
@@ -202,7 +201,7 @@ c.push(
   }
 );
 
-c.push(
+channels.push(
   // COMMUNITY
   {
     id: "COMMUNITY",
@@ -247,7 +246,7 @@ c.push(
   }
 );
 
-c.push(
+channels.push(
   // BEAUTOPIA
   {
     id: "BEAUTOPIA",
@@ -376,43 +375,43 @@ c.push(
   }
 );
 
-c.push({
+channels.push({
   id: "THE_PROJECTS_D1",
   name: "The Projects D1",
   permissionOverwrites: [...ESTABLISHMENT],
 });
 
-c.push({
+channels.push({
   id: "THE_PROJECTS_D2",
   name: "The Projects D2",
   permissionOverwrites: [...ESTABLISHMENT],
 });
 
-c.push({
+channels.push({
   id: "THE_PROJECTS_D3",
   name: "The Projects D3",
   permissionOverwrites: [...ESTABLISHMENT],
 });
 
-c.push({
+channels.push({
   id: "THE_PROJECTS_D4",
   name: "The Projects D4",
   permissionOverwrites: [...ESTABLISHMENT],
 });
 
-c.push({
+channels.push({
   id: "THE_PROJECTS_D5",
   name: "The Projects D5",
   permissionOverwrites: [...ESTABLISHMENT],
 });
 
-c.push({
+channels.push({
   id: "THE_PROJECTS_D6",
   name: "The Projects D6",
   permissionOverwrites: [...ESTABLISHMENT],
 });
 
-c.push(
+channels.push(
   // THE_SHELTERS
   {
     id: "THE_SHELTERS",
@@ -457,7 +456,7 @@ c.push(
   }
 );
 
-c.push(
+channels.push(
   // TICKETS
   {
     id: "TICKETS",
@@ -474,7 +473,7 @@ c.push(
   }
 );
 
-c.push(
+channels.push(
   // PRISON
   {
     id: "PRISON",
@@ -511,4 +510,4 @@ c.push(
   }
 );
 
-export const channels = plainToInstance(ManagedChannel, c);
+export { channels };

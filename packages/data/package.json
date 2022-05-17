@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "typeorm": "typeorm-ts-node-commonjs -d src/data-source"
+    "typeorm": "typeorm-ts-node-commonjs -d src/index"
   },
   "devDependencies": {
     "@types/node": "^17.0.18",

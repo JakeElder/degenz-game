@@ -57,6 +57,7 @@ export type {
 export type EnvVars = SetOptional<
   Record<
     | `${NPCSymbol}_BOT_TOKEN`
+    | `${NPCSymbol}_BOT_CLIENT_SECRET`
     | "CA_CERT"
     | "DATABASE_URL"
     | "MONGO_URI"

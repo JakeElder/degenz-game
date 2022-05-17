@@ -60,6 +60,9 @@ export class User extends BaseEntity {
   @Column({ default: false })
   inGame: boolean;
 
+  @Column({ nullable: true })
+  walletAddress: string;
+
   @OneToMany(() => ApartmentTenancy, (tenancy) => tenancy.user, {
     eager: true,
     cascade: true,

@@ -1,4 +1,3 @@
-import { plainToInstance } from "class-transformer";
 import { NPC } from "data/db";
 import { RecursivePartial } from "data/types";
 
@@ -10,4 +9,4 @@ const devilsAdvocate: RecursivePartial<NPC> = {
   commands: [],
 };
 
-export default plainToInstance(NPC, devilsAdvocate);
+export default devilsAdvocate;

@@ -1,34 +1,51 @@
+import dotenv from "dotenv";
+import findConfig from "find-config";
 import "reflect-metadata";
-import dataSource from "./data-source";
+import { DataSource } from "typeorm";
+import { SnakeNamingStrategy } from "typeorm-naming-strategies";
+import pg from "pg-connection-string";
+import { PostgresConnectionCredentialsOptions } from "typeorm/driver/postgres/PostgresConnectionCredentialsOptions";
+import * as Entities from "./entity";
 
-export { Achievement } from "./entity/Achievement";
-export { ApartmentTenancy } from "./entity/ApartmentTenancy";
-export { AppState } from "./entity/AppState";
-export { CampaignInvite } from "./entity/CampaignInvite";
-export { DiscordChannel } from "./entity/DiscordChannel";
-export { District } from "./entity/District";
-export { Dormitory } from "./entity/Dormitory";
-export { DormitoryTenancy } from "./entity/DormitoryTenancy";
-export { Emoji } from "./entity/Emoji";
-export { Imprisonment } from "./entity/Imprisonment";
-// export { Invite } from "./entity/Invite";
-// export { InvitedUser } from "./entity/InvitedUser";
-export { ManagedChannel } from "./entity/ManagedChannel";
-export { MartItem } from "./entity/MartItem";
-export { MartItemOwnership } from "./entity/MartItemOwnership";
-export { NPC } from "./entity/NPC";
-export { PersistentMessage } from "./entity/PersistentMessage";
-export { PlayerEvent } from "./entity/PlayerEvent";
-export { Pledge } from "./entity/Pledge";
-export { QuestLogChannel } from "./entity/QuestLogChannel";
-export { Reaction } from "./entity/Reaction";
-export { Role } from "./entity/Role";
-export { User } from "./entity/User";
+const env = process.env.APP_ENV || process.env.NODE_ENV || "development";
 
-export async function connect() {
-  await dataSource.initialize();
+const envFile = {
+  development: ".env",
+  stage: ".env.stage",
+  production: ".env.prod",
+}[env];
+
+dotenv.config({ path: findConfig(envFile)! });
+const db = pg.parse(process.env.DATABASE_URL!);
+
+const ssl: PostgresConnectionCredentialsOptions["ssl"] =
+  env === "development" && !process.env.CA_CERT
+    ? undefined
+    : { ca: process.env.CA_CERT!.replace(/\\n/g, "\n") };
+
+const dataSource = new DataSource({
+  type: "postgres",
+  namingStrategy: new SnakeNamingStrategy(),
+  entities: Object.values(Entities),
+  username: db.user,
+  host: db.host!,
+  database: db.database!,
+  password: db.password,
+  port: db.port ? parseInt(db.port, 10) : undefined,
+  ssl,
+});
+
+async function connect() {
+  if (!dataSource.isInitialized) {
+    await dataSource.initialize();
+  }
 }
 
-export async function disconnect() {
+async function disconnect() {
   await dataSource.destroy();
 }
+
+export * from "./entity";
+export { connect, disconnect };
+
+export default dataSource;
