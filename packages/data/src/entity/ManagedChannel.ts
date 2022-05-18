@@ -36,6 +36,7 @@ export type NestedManagedChannelSymbol =
   | "ANNOUNCEMENTS"
   | "UPDATES"
   | "OFFICIAL_LINKS"
+  | "LEVEL_REWARDS"
   | "LEADERBOARD"
   | "SNEAK_PEEKS"
   | "INVITE"

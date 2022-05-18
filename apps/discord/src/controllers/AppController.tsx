@@ -182,6 +182,7 @@ export default class AppController {
       "INVITE",
       "WHITELIST",
       "OFFICIAL_LINKS",
+      "LEVEL_REWARDS",
       "FAQ",
       "THE_LORE",
       "NFT_CHARACTERS",

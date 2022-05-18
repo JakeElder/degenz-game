@@ -165,6 +165,13 @@ channels.push(
     parent: { id: "COMMAND_CENTER" },
   },
   {
+    id: "LEVEL_REWARDS",
+    name: "📈｜level-rewards",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "COMMAND_CENTER" },
+  },
+  {
     id: "SNEAK_PEEKS",
     name: "👀｜sneak-peaks",
     lockPermissions: true,
