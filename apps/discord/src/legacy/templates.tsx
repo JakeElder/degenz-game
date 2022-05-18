@@ -1,6 +1,6 @@
 import React from "react";
 import { Channel as DiscordChannel, GuildMember } from "discord.js";
-import { channelMention, userMention } from "@discordjs/builders";
+import { channelMention, roleMention, userMention } from "@discordjs/builders";
 import emoji from "node-emoji";
 import { Format } from "lib";
 
@@ -14,6 +14,10 @@ export const UserMention = ({ id }: { id: GuildMember["id"] }) => (
 
 export const ChannelMention = ({ id }: { id: DiscordChannel["id"] }) => (
   <>{channelMention(id)}</>
+);
+
+export const RoleMention = ({ id }: { id: GuildMember["id"] }) => (
+  <>{roleMention(id)}</>
 );
 
 //////////////////////////////////////////////////////////////////////////////////

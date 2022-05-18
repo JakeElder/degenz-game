@@ -72,7 +72,23 @@ export type EmojiSymbol =
   | "VULTURE"
   | "VULTURE_INACTIVE"
   | "WARDEN_NPC"
-  | "WORM_HACK";
+  | "WORM_HACK"
+  | "POTATO_SACK"
+  | "HOT_DOG"
+  | "NICK_CAGE"
+  | "T_REX"
+  | "COOKIE_MONSTER"
+  | "WEED_LEAF"
+  | "FAT_CAT"
+  | "BEARISH"
+  | "SNAKEY_SAN"
+  | "DRAGON"
+  | "DOGE"
+  | "APE"
+  | "BOB"
+  | "PIKA"
+  | "GOOCHY"
+  | "BIG_G";
 
 @Entity()
 export class Emoji extends BaseEntity {

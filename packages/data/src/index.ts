@@ -46,6 +46,7 @@ async function disconnect() {
 }
 
 export * from "./entity";
+export { LEVELS as ENGAGEMENT_LEVELS } from "./entity/EngagementLevel";
 export { connect, disconnect };
 
 export default dataSource;

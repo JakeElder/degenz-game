@@ -9,55 +9,67 @@ import {
 import DiscordBot from "./DiscordBot";
 import Events from "./Events";
 import Config from "config";
-import { AchievementSymbol, RoleSymbol } from "data/types";
+import { RoleSymbol } from "data/types";
 import { User } from "data/db";
-import Utils from "./Utils";
-import { channelMention, roleMention, userMention } from "@discordjs/builders";
+import { channelMention } from "@discordjs/builders";
+import { RoleMention, UserMention } from "./legacy/templates";
 
-const requireRoleEmbed: (
-  role: RoleSymbol,
-  user: User,
-  what: string
-) => MessageEmbedOptions = (role, user, what) => {
-  return {
-    color: "RED",
-    title: "Cannot Post to Channel",
-    description: Utils.r(
+export abstract class CommandController {
+  static EngagementLevelInsufficient({
+    user,
+    role,
+    what,
+  }: {
+    user: User;
+    role: RoleSymbol;
+    what: React.ReactNode;
+  }) {
+    const roleId = Config.roleId(role);
+    return (
       <>
-        {userMention(user.id)} - You need to be at least{" "}
-        {roleMention(Config.roleId(role))} to show {what}.
+        <UserMention id={user.id} /> - You need to be at least{" "}
+        <RoleMention id={roleId} /> to show {what}.
         <br />
         You can **level up** by being active in{" "}
         {channelMention(Config.channelId("GENERAL"))}.
       </>
-    ),
-  };
-};
+    );
+  }
 
-export abstract class CommandController {
-  static requireAchievementToPost(
-    post: boolean,
-    achievement: AchievementSymbol,
-    role: RoleSymbol,
-    user: User,
-    what: string,
-    reply: InteractionReplyOptions
-  ): InteractionReplyOptions {
+  static makeCannotPostEmbed(description: string): MessageEmbedOptions {
+    return {
+      color: "RED",
+      title: "Cannot Post to Channel",
+      description,
+    };
+  }
+
+  static async reply(
+    i: CommandInteraction,
+    reply: InteractionReplyOptions,
+    opts: {
+      permit: boolean;
+      message: string;
+    } = {
+      permit: false,
+      message: "",
+    }
+  ) {
     const [ephemeral, postDenied] = (() => {
-      if (post) {
-        return user.hasAchievement(achievement) ? [false, false] : [true, true];
+      if (i.options.getBoolean("post")) {
+        return opts.permit ? [false, false] : [true, true];
       }
       return [true, false];
     })();
 
-    return {
+    await i.reply({
       ...reply,
       ephemeral,
       embeds: [
         ...(reply.embeds || []),
-        ...(postDenied ? [requireRoleEmbed(role, user, what)] : []),
+        ...(postDenied ? [this.makeCannotPostEmbed(opts.message)] : []),
       ],
-    };
+    });
   }
 
   async execute(i: CommandInteraction, bot: DiscordBot) {

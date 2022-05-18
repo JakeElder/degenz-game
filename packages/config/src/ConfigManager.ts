@@ -11,8 +11,16 @@ import {
   ManagedChannelSymbol,
   EmojiSymbol,
 } from "data/types";
-import { AppState, Emoji, ManagedChannel, NPC, Role } from "data/db";
+import {
+  AppState,
+  Emoji,
+  ManagedChannel,
+  NPC,
+  Role,
+  EngagementLevel,
+} from "data/db";
 import chalk from "chalk";
+import { EngagementLevelNumber } from "data/src/entity/EngagementLevel";
 
 const NODE_ENV =
   (process.env.NODE_ENV as "development" | "stage" | "production") ||
@@ -52,16 +60,24 @@ export default class ConfigManager {
   static managedChannels: ManagedChannel[];
   static emojis: Emoji[];
   static appState: AppState | null;
+  static engagementLevels: EngagementLevel[];
 
   static async load() {
-    [this.roles, this.npcs, this.managedChannels, this.emojis, this.appState] =
-      await Promise.all([
-        Role.find(),
-        NPC.find(),
-        ManagedChannel.find(),
-        Emoji.find(),
-        AppState.findOne({ where: { id: "CURRENT" } }),
-      ]);
+    [
+      this.roles,
+      this.npcs,
+      this.managedChannels,
+      this.emojis,
+      this.appState,
+      this.engagementLevels,
+    ] = await Promise.all([
+      Role.find(),
+      NPC.find(),
+      ManagedChannel.find(),
+      Emoji.find(),
+      AppState.findOne({ where: { id: "CURRENT" } }),
+      EngagementLevel.find(),
+    ]);
   }
 
   static general<T extends keyof GeneralConfig>(k: T): GeneralConfig[T] {
@@ -74,6 +90,17 @@ export default class ConfigManager {
 
   static emojiCodes(...ids: EmojiSymbol[]) {
     return ids.map((id) => this.emojiCode(id));
+  }
+
+  static engagementLevel(id: EngagementLevelNumber) {
+    const row = this.engagementLevels.find((r) => r.id === id);
+
+    if (!row) {
+      this.notFound("engagementLevel", id.toString());
+      throw new Error();
+    }
+
+    return row;
   }
 
   static emojiCode(id: EmojiSymbol) {

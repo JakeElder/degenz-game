@@ -8,11 +8,13 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@types/chroma-js": "^2",
     "tsconfig": "*",
     "typescript": "^4.6.3"
   },
   "dependencies": {
     "@discordjs/builders": "^0.12.0",
+    "chroma-js": "^2.4.2",
     "class-transformer": "^0.5.1",
     "discord.js": "^13.6.0",
     "lib": "*"

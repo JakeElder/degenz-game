@@ -7,6 +7,7 @@ export { District } from "./District";
 export { Dormitory } from "./Dormitory";
 export { DormitoryTenancy } from "./DormitoryTenancy";
 export { Emoji } from "./Emoji";
+export { EngagementLevel } from "./EngagementLevel";
 export { Imprisonment } from "./Imprisonment";
 export { ManagedChannel } from "./ManagedChannel";
 export { MartItem } from "./MartItem";

@@ -4,7 +4,13 @@ import {
   GuildMember,
   TextBasedChannel,
 } from "discord.js";
-import { AppState, CampaignInvite, User } from "data/db";
+import {
+  AppState,
+  CampaignInvite,
+  EngagementLevel,
+  ENGAGEMENT_LEVELS,
+  User,
+} from "data/db";
 import { Format } from "lib";
 import pluralize from "pluralize";
 import { ILike } from "typeorm";
@@ -20,6 +26,8 @@ import Events from "../Events";
 import Config from "config";
 import EntranceController from "../controllers/EntranceController";
 import Utils from "../Utils";
+import { EngagementLevelNumber } from "data/src/entity/EngagementLevel";
+import AchievementController from "../controllers/AchievementController";
 
 export default class AllyCommandController extends CommandController {
   async respond(
@@ -263,6 +271,31 @@ export default class AllyCommandController extends CommandController {
       `SHELTERS_${areOpen ? "OPENED" : "CLOSED"}`,
       "SUCCESS"
     );
+  }
+
+  async admin_backfillEngagement(i: CommandInteraction) {
+    const users = await User.find();
+
+    await i.deferReply({ ephemeral: true });
+
+    for (let i = 0; i < users.length; i++) {
+      let level: EngagementLevelNumber | null = null;
+      for (let ii = ENGAGEMENT_LEVELS.length - 1; ii >= 0; ii--) {
+        if (users[i].hasAchievement(`LEVEL_${ENGAGEMENT_LEVELS[ii]}_REACHED`)) {
+          if (!level) {
+            level = ENGAGEMENT_LEVELS[ii];
+          }
+        }
+        if (level && ENGAGEMENT_LEVELS[ii] < level) {
+          await AchievementController.checkAndAward(
+            users[i],
+            `LEVEL_${ENGAGEMENT_LEVELS[ii]}_REACHED`
+          );
+        }
+      }
+    }
+
+    await this.respond(i, `ENGAGEMENT_BACKFILLED`, "SUCCESS");
   }
 
   async admin_createInviteLink(i: CommandInteraction) {

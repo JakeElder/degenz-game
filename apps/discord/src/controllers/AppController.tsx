@@ -5,7 +5,13 @@ import {
   ManagedChannelSymbol,
   OperationResult,
 } from "data/types";
-import { CampaignInvite, District, User, Reaction } from "data/db";
+import {
+  CampaignInvite,
+  District,
+  User,
+  Reaction,
+  ENGAGEMENT_LEVELS,
+} from "data/db";
 import { Global } from "../Global";
 import Events from "../Events";
 import UserController from "./UserController";
@@ -117,7 +123,7 @@ export default class AppController {
         return;
       }
 
-      ([2, 4, 6, 8, 10] as const).forEach((level) => {
+      ENGAGEMENT_LEVELS.forEach((level) => {
         const role = Config.roleId(`ENGAGEMENT_LEVEL_${level}`);
         if (!prevMember.roles.cache.has(role) && member.roles.cache.has(role)) {
           AchievementController.checkAndAward(user, `LEVEL_${level}_REACHED`);

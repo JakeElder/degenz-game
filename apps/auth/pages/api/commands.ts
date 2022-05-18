@@ -67,7 +67,7 @@ export default async function handler(
   );
 
   if (commandPutRequest.status < 200 || commandPutRequest.status >= 300) {
-    res.status(500).json(tokenRequest.data);
+    res.status(500).json(commandPutRequest.data);
     return;
   }
 

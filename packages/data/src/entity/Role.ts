@@ -11,7 +11,7 @@ import {
 } from "typeorm";
 import { Permissions } from "discord.js";
 import { Emoji } from "..";
-import { EngagementLevel } from "../types";
+import { EngagementLevelNumber } from "./EngagementLevel";
 
 export type RoleTypeSymbol =
   | "EVERYONE"
@@ -54,7 +54,7 @@ export type SupplementaryRoleSymbol =
   | "HIGH_COMMAND"
   | "MODS"
   | "VIP"
-  | `ENGAGEMENT_LEVEL_${EngagementLevel}`;
+  | `ENGAGEMENT_LEVEL_${EngagementLevelNumber}`;
 
 export type CitizenRoleSymbol =
   | "D1_CITIZEN"
@@ -81,7 +81,7 @@ export class Role extends BaseEntity {
   @PrimaryColumn({ type: "varchar", unique: true })
   id: RoleSymbol;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: "varchar" })
   type: RoleTypeSymbol;
 
   @Column({ nullable: true })

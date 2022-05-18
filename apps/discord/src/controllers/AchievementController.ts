@@ -1,13 +1,20 @@
 import { MessageEmbed } from "discord.js";
-import { User, Achievement } from "data/db";
+import { User, Achievement, ENGAGEMENT_LEVELS } from "data/db";
 import { Global } from "../Global";
 import Events from "../Events";
 import { Format } from "lib";
 import { AchievementSymbol, QuestSymbol } from "data/types";
 import Utils from "../Utils";
 
+type DescriptionMap = Partial<Record<AchievementSymbol, string>>;
+
+const LEVEL_ACHIEVEMENTS = ENGAGEMENT_LEVELS.reduce<DescriptionMap>(
+  (p, c) => ({ ...p, [`LEVEL_${c}_REACHED`]: `You reached level ${c}` }),
+  {}
+);
+
 export default class AchievementController {
-  static descriptions: Record<AchievementSymbol, string> = {
+  static descriptions: DescriptionMap = {
     JOIN_THE_DEGENZ_QUEST_COMPLETED:
       "You took the `/redpill` and joined the Degenz army.",
     PLEDGE_QUEST_COMPLETED: "You pledged your allegiance to Big Brother.",
@@ -18,11 +25,7 @@ export default class AchievementController {
     FINISHED_TRAINER: "-",
     HELP_REQUESTED: "You used the `/help` command.",
     STATS_CHECKED: "You used the `/stats` command.",
-    LEVEL_10_REACHED: "You reached Level 10!",
-    LEVEL_8_REACHED: "You reached Level 8!",
-    LEVEL_6_REACHED: "You reached Level 6!",
-    LEVEL_4_REACHED: "You reached Level 4!",
-    LEVEL_2_REACHED: "You reached Level 2!",
+    ...LEVEL_ACHIEVEMENTS,
   };
 
   static async checkAndAward(user: User, achievement: AchievementSymbol) {

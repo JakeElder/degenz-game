@@ -1,6 +1,14 @@
 import { Role } from "data/db";
+import { engagementLevels } from "./engagement-levels";
 import { RecursivePartial } from "data/types";
 import { Permissions } from "discord.js";
+import { scale } from "chroma-js";
+
+const colors = new Map(
+  scale(["#e905bd", "#2302d6"])
+    .colors(engagementLevels.length, "hex")
+    .map((c, idx) => [engagementLevels[idx].id, c])
+);
 
 const EVERYONE = new Permissions([
   "VIEW_CHANNEL",
@@ -136,39 +144,109 @@ export const roles: RecursivePartial<Role>[] = [
     emoji: { id: "CROWN" },
   },
   {
+    id: "ENGAGEMENT_LEVEL_50",
+    type: "SUPPLEMENTARY",
+    name: "Lvl 50 :: DRAGON",
+    color: colors.get(50),
+    emoji: { id: "DRAGON" },
+  },
+  {
+    id: "ENGAGEMENT_LEVEL_40",
+    type: "SUPPLEMENTARY",
+    name: "Lvl 40 :: Snakey San",
+    color: colors.get(40),
+    emoji: { id: "SNAKEY_SAN" },
+  },
+  {
+    id: "ENGAGEMENT_LEVEL_35",
+    type: "SUPPLEMENTARY",
+    name: "Lvl 35 :: Bearish Bear",
+    color: colors.get(35),
+    emoji: { id: "BEARISH" },
+  },
+  {
+    id: "ENGAGEMENT_LEVEL_30",
+    type: "SUPPLEMENTARY",
+    name: "Lvl 30 :: Fat Cat",
+    color: colors.get(30),
+    emoji: { id: "FAT_CAT" },
+  },
+  {
+    id: "ENGAGEMENT_LEVEL_25",
+    type: "SUPPLEMENTARY",
+    name: "Lvl 25 :: Erbalist",
+    color: colors.get(25),
+    emoji: { id: "WEED_LEAF" },
+  },
+  {
+    id: "ENGAGEMENT_LEVEL_20",
+    type: "SUPPLEMENTARY",
+    name: "Lvl 20 :: Cookie Monster",
+    color: colors.get(20),
+    emoji: { id: "COOKIE_MONSTER" },
+  },
+  {
+    id: "ENGAGEMENT_LEVEL_15",
+    type: "SUPPLEMENTARY",
+    name: "Lvl 15 :: T-Rex",
+    color: colors.get(15),
+    emoji: { id: "T_REX" },
+  },
+  {
     id: "ENGAGEMENT_LEVEL_10",
     type: "SUPPLEMENTARY",
     name: "Lvl 10 :: Tiger Blood",
-    color: "#ff6900",
+    color: colors.get(10),
     emoji: { id: "TIGER_BLOOD" },
   },
   {
     id: "ENGAGEMENT_LEVEL_8",
     type: "SUPPLEMENTARY",
     name: "Lvl 8 :: Bullish",
-    color: "#00e3ff",
+    color: colors.get(8),
     emoji: { id: "BULLISH" },
   },
   {
     id: "ENGAGEMENT_LEVEL_6",
     type: "SUPPLEMENTARY",
     name: "Lvl 6 :: Cock",
-    color: "#795752",
+    color: colors.get(6),
     emoji: { id: "CHICKEN" },
+  },
+  {
+    id: "ENGAGEMENT_LEVEL_5",
+    type: "SUPPLEMENTARY",
+    name: "Lvl 5 :: Nick Cage",
+    color: colors.get(5),
+    emoji: { id: "NICK_CAGE" },
   },
   {
     id: "ENGAGEMENT_LEVEL_4",
     type: "SUPPLEMENTARY",
     name: "Lvl 4 :: Sunshine",
-    color: "#ffd141",
+    color: colors.get(4),
     emoji: { id: "SUNSHINE" },
+  },
+  {
+    id: "ENGAGEMENT_LEVEL_3",
+    type: "SUPPLEMENTARY",
+    name: "Lvl 3 :: Hot Dog",
+    color: colors.get(3),
+    emoji: { id: "HOT_DOG" },
   },
   {
     id: "ENGAGEMENT_LEVEL_2",
     type: "SUPPLEMENTARY",
     name: "Lvl 2 :: Cupcake",
-    color: "#fcb0ff",
+    color: colors.get(2),
     emoji: { id: "CUPCAKE" },
+  },
+  {
+    id: "ENGAGEMENT_LEVEL_1",
+    type: "SUPPLEMENTARY",
+    name: "Lvl 1 :: Potato Sack",
+    color: colors.get(1),
+    emoji: { id: "POTATO_SACK" },
   },
   {
     type: "BASE",

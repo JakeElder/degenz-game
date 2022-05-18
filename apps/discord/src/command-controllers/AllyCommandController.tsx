@@ -211,19 +211,23 @@ export default class AllyCommandController extends CommandController {
         Dormitory.find({ relations: ["tenancies"] }),
       ]);
 
-    await i.reply(
-      CommandController.requireAchievementToPost(
-        !!i.options.getBoolean("post"),
-        "LEVEL_4_REACHED",
-        "ENGAGEMENT_LEVEL_4",
-        user,
-        "help",
-        Help.generate({
-          channel: channelDescriptor,
-          member: member!,
-          dormitories,
-        }) as InteractionReplyOptions
-      )
+    await CommandController.reply(
+      i,
+      Help.generate({
+        channel: channelDescriptor,
+        member: member!,
+        dormitories,
+      }) as InteractionReplyOptions,
+      {
+        permit: user.hasAchievement("LEVEL_4_REACHED"),
+        message: Utils.r(
+          <CommandController.EngagementLevelInsufficient
+            user={user}
+            role="ENGAGEMENT_LEVEL_8"
+            what="help"
+          />
+        ),
+      }
     );
 
     Events.emit("HELP_REQUESTED", { user, channel });
@@ -255,15 +259,19 @@ export default class AllyCommandController extends CommandController {
       attributes: { strength: "??", charisma: "??", luck: "??" },
     });
 
-    await i.reply(
-      CommandController.requireAchievementToPost(
-        !!i.options.getBoolean("post"),
-        "LEVEL_4_REACHED",
-        "ENGAGEMENT_LEVEL_4",
-        checkerUser,
-        "stats",
-        { embeds: [e] }
-      )
+    await CommandController.reply(
+      i,
+      { embeds: [e] },
+      {
+        permit: checkerUser.hasAchievement("LEVEL_8_REACHED"),
+        message: Utils.r(
+          <CommandController.EngagementLevelInsufficient
+            user={checkeeUser}
+            role="ENGAGEMENT_LEVEL_8"
+            what="stats"
+          />
+        ),
+      }
     );
 
     Events.emit("STATS_CHECKED", {
@@ -284,28 +292,32 @@ export default class AllyCommandController extends CommandController {
     const user = await User.findOneByOrFail({ id: i.user.id });
     const data = await LeaderboardController.computeData(leaders);
 
+    const message = Utils.r(
+      <CommandController.EngagementLevelInsufficient
+        user={user}
+        role="ENGAGEMENT_LEVEL_8"
+        what="the leaderboard"
+      />
+    );
+
     if (num === 5) {
-      await i.reply(
-        CommandController.requireAchievementToPost(
-          !!i.options.getBoolean("post"),
-          "LEVEL_4_REACHED",
-          "ENGAGEMENT_LEVEL_4",
-          user,
-          "the leaderboard",
-          { embeds: LeaderboardController.makeEmbeds(data) }
-        )
+      await CommandController.reply(
+        i,
+        { embeds: LeaderboardController.makeEmbeds(data) },
+        {
+          permit: user.hasAchievement("LEVEL_8_REACHED"),
+          message,
+        }
       );
     } else {
       const table = LeaderboardController.makeTable(data, 0);
-      await i.reply(
-        CommandController.requireAchievementToPost(
-          !!i.options.getBoolean("post"),
-          "LEVEL_4_REACHED",
-          "ENGAGEMENT_LEVEL_4",
-          user,
-          "the leaderboard",
-          { content: Format.codeBlock(table) }
-        )
+      await CommandController.reply(
+        i,
+        { content: Format.codeBlock(table) },
+        {
+          permit: user.hasAchievement("LEVEL_8_REACHED"),
+          message,
+        }
       );
     }
   }
@@ -325,16 +337,19 @@ export default class AllyCommandController extends CommandController {
       return;
     }
 
-    const e = await makeInventoryEmbed(users[1], checkee);
-    await i.reply(
-      CommandController.requireAchievementToPost(
-        !!i.options.getBoolean("post"),
-        "LEVEL_4_REACHED",
-        "ENGAGEMENT_LEVEL_4",
-        users[0],
-        "inventories",
-        { embeds: [e] }
-      )
+    await CommandController.reply(
+      i,
+      { embeds: [await makeInventoryEmbed(users[1], checkee)] },
+      {
+        permit: users[0].hasAchievement("LEVEL_8_REACHED"),
+        message: Utils.r(
+          <CommandController.EngagementLevelInsufficient
+            user={users[0]}
+            role="ENGAGEMENT_LEVEL_8"
+            what="the inventory"
+          />
+        ),
+      }
     );
 
     Events.emit("INVENTORY_CHECKED", {

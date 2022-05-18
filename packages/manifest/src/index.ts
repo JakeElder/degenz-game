@@ -5,6 +5,7 @@ import {
   District,
   Dormitory,
   Emoji,
+  EngagementLevel,
   ManagedChannel,
   MartItem,
   NPC,
@@ -19,6 +20,7 @@ export default class Manifest {
     const { districts } = await import("./districts");
     const { dormitories } = await import("./dormitories");
     const { emojis } = await import("./emojis");
+    const { engagementLevels } = await import("./engagement-levels");
     const { martItems } = await import("./mart-items");
     const { npcs } = await import("./npcs");
     const { persistentMessages } = await import("./persistent-messages");
@@ -32,6 +34,7 @@ export default class Manifest {
       districts,
       dormitories,
       emojis,
+      engagementLevels,
       martItems,
       npcs,
       persistentMessages,
@@ -51,6 +54,7 @@ export default class Manifest {
       districts,
       dormitories,
       emojis,
+      engagementLevels,
       martItems,
       npcs,
       persistentMessages,
@@ -64,6 +68,7 @@ export default class Manifest {
       districts: plainToInstance(District, districts),
       dormitories: plainToInstance(Dormitory, dormitories),
       emojis: plainToInstance(Emoji, emojis),
+      engagementLevels: plainToInstance(EngagementLevel, engagementLevels),
       martItems: plainToInstance(MartItem, martItems),
       npcs: plainToInstance(NPC, npcs),
       persistentMessages: plainToInstance(

@@ -204,6 +204,11 @@ admin.commands = [
       )
       .addSubcommand((subcommand) =>
         subcommand
+          .setName("backfill-engagement")
+          .setDescription(`Backfill engagement`)
+      )
+      .addSubcommand((subcommand) =>
+        subcommand
           .setName("purge")
           .setDescription(`Purge an onboarding thread.`)
       )
