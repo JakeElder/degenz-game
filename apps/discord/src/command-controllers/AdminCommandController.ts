@@ -274,9 +274,9 @@ export default class AllyCommandController extends CommandController {
   }
 
   async admin_backfillEngagement(i: CommandInteraction) {
-    const users = await User.find();
-
     await i.deferReply({ ephemeral: true });
+
+    const users = await User.find();
 
     for (let i = 0; i < users.length; i++) {
       let level: EngagementLevelNumber | null = null;
