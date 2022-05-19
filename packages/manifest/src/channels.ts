@@ -89,6 +89,13 @@ channels.push(
     parent: { id: "THE_GAME" },
   },
   {
+    id: "QUEST_COMPLETION_PROOF",
+    name: "✅｜quest-completion-proof",
+    lockPermissions: true,
+    permissionOverwrites: DISCOVERABLE,
+    parent: { id: "THE_GAME" },
+  },
+  {
     id: "INVITE",
     name: "🙋｜invite-to-win",
     lockPermissions: true,

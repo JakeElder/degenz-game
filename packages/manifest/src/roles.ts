@@ -90,6 +90,11 @@ export const roles: RecursivePartial<Role>[] = [
     name: "Mods",
   },
   {
+    id: "STAFF",
+    type: "SUPPLEMENTARY",
+    name: "Staff",
+  },
+  {
     id: "BIG_BROTHER_BOT",
     type: "MANAGED",
     emoji: { id: "BIG_BROTHER_NPC" },
@@ -142,6 +147,12 @@ export const roles: RecursivePartial<Role>[] = [
     name: "VIP",
     color: "#cf8d05",
     emoji: { id: "CROWN" },
+  },
+  {
+    id: "MAGIC_EDEN_UPVOTER",
+    type: "SUPPLEMENTARY",
+    name: "Magic Eden Upvoter",
+    emoji: { id: "DOGE" },
   },
   {
     id: "ENGAGEMENT_LEVEL_50",

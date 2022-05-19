@@ -105,7 +105,7 @@ export default class EntranceController {
       embeds: [
         {
           author: {
-            iconURL: "https://s10.gifyu.com/images/VPN-Degenz.gif",
+            icon_url: "https://s10.gifyu.com/images/VPN-Degenz.gif",
             name: "Enter Beautopia",
           },
           description: intro,
@@ -200,7 +200,7 @@ export default class EntranceController {
         embeds: [
           {
             author: {
-              iconURL: member.displayAvatarURL(),
+              icon_url: member.displayAvatarURL(),
               name: member.displayName,
             },
             title: "Welcome to BEAUTOPIA",

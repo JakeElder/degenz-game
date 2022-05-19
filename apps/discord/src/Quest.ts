@@ -1,5 +1,6 @@
-import { QuestSymbol } from "data/types";
+import { QuestSymbol, SingleDigitNumber } from "data/types";
 import {
+  EmbedFieldData,
   GuildMember,
   MessageActionRow,
   MessageButton,
@@ -10,6 +11,7 @@ import {
 import { Achievement, User } from "data/db";
 import Config from "config";
 import { Format } from "lib";
+import Utils from "./Utils";
 
 type FormatProps = {
   title: string;
@@ -18,6 +20,7 @@ type FormatProps = {
   userId: GuildMember["id"];
   expanded: boolean;
   buttons?: MessageButton[];
+  bonus?: EmbedFieldData;
 };
 
 export default abstract class Quest {
@@ -41,7 +44,8 @@ export default abstract class Quest {
   }
 
   async format(props: FormatProps): Promise<MessageOptions> {
-    const { title, thumbnail, progress, userId, expanded, buttons } = props;
+    const { title, thumbnail, progress, userId, expanded, buttons, bonus } =
+      props;
 
     const complete = progress === 1;
     const color = complete
@@ -64,24 +68,13 @@ export default abstract class Quest {
             value: Format.currency(await this.reward()),
             inline: true,
           },
+          ...(bonus ? [bonus] : []),
         ],
         image: { url: `${Config.env("WEB_URL")}/blank-row.png` },
       },
     ];
 
     if (progress < 1 && expanded) {
-      const emojis = [
-        "\u0031\ufe0f\u20e3",
-        "\u0032\ufe0f\u20e3",
-        "\u0033\ufe0f\u20e3",
-        "\u0034\ufe0f\u20e3",
-        "\u0035\ufe0f\u20e3",
-        "\u0036\ufe0f\u20e3",
-        "\u0037\ufe0f\u20e3",
-        "\u0038\ufe0f\u20e3",
-        "\u0039\ufe0f\u20e3",
-      ];
-
       const instructions =
         typeof this.instructions === "function"
           ? await this.instructions(userId)
@@ -89,7 +82,10 @@ export default abstract class Quest {
 
       embeds.push({
         description: instructions
-          .map((i, idx) => `${emojis[idx]}\u2007${i}`)
+          .map(
+            (i, idx) =>
+              `${Utils.numberEmoji(idx as SingleDigitNumber)}\u2007${i}`
+          )
           .join("\n"),
       });
     }

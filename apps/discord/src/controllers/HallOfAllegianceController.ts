@@ -1,4 +1,6 @@
-import { District, Pledge, User } from "data/db";
+import { channelMention, roleMention } from "@discordjs/builders";
+import Config from "config";
+import { District, Dormitory, Pledge, User } from "data/db";
 import {
   ButtonInteraction,
   InteractionCollector,
@@ -12,6 +14,7 @@ import pluralize from "pluralize";
 import Events from "../Events";
 import AchievementController from "./AchievementController";
 import { PersistentMessageController } from "./PersistentMessageController";
+import UserController from "./UserController";
 
 export default class HallOfAllegianceController {
   static buttonCollector: InteractionCollector<ButtonInteraction>;
@@ -44,18 +47,33 @@ export default class HallOfAllegianceController {
       })
       .join("\n");
 
+    const doge = Config.emojiCode("DOGE");
+    const role = roleMention(Config.roleId("MAGIC_EDEN_UPVOTER"));
+    const questsChannel = channelMention(Config.channelId("QUESTS"));
+    const dorms = await Dormitory.find();
+    const gbt = Config.emojiCode("GBT_COIN");
+
     return {
       content: `THE STATE OF BEAUTOPIA is kind enough to issue with up to ${upperAmount} a day, based on your value in society.\nDepending on the highest residence you have access to, you will receive the follow amounts in a 24 hour period.`,
       embeds: [
         {
           author: {
-            iconURL: "https://s10.gifyu.com/images/tails-coin-smaller.gif",
+            icon_url: "https://s10.gifyu.com/images/heads-coin-smaller.gif",
             name: "Residence Payouts",
           },
-          description: `Beautopia is divided into residences. Apartments in Districts 1 to 6, and bunk in dormitories. Every 24 hours you are eligible for a state allowance, awarded based on the highest residence you have access to and your behaviour in Beautopia.\n\n${districtTable}\n\nThose that only have access to a dormitory bunk will receive ${lowerAmount} per day.`,
-          footer: {
-            text: "Press the Pledge button to pledge your alleigance to the state.",
-          },
+          description: `You will receive a **DAILY ALLOWANCE**, based on your position in Beautopia.\n\nAdditionally, completing certain quests from the ${questsChannel} will entitle you to **EXTRA** ${gbt} **$GBT**`,
+          fields: [
+            {
+              name: "District Payouts",
+              value: `${districtTable}\n${dorms
+                .map((d) => d.emoji.toString())
+                .join("")}: ${lowerAmount}`,
+            },
+            {
+              name: "Role Payouts",
+              value: `${doge} ${role}: **+** ${Format.currency(50)} per day.`,
+            },
+          ],
         },
       ],
       components: [new MessageActionRow().addComponents(claim)],
@@ -97,8 +115,14 @@ export default class HallOfAllegianceController {
     const { dailyAllowance } = user.primaryTenancy;
 
     if (!pledge) {
-      const tx = Format.transaction(user.gbt, dailyAllowance);
-      await HallOfAllegianceController.award(user, dailyAllowance);
+      let yld = dailyAllowance;
+      if (user.hasAchievement("UPVOTE_MAGIC_EDEN_QUEST_COMPLETED")) {
+        yld += 50;
+      }
+
+      const tx = Format.transaction(user.gbt, yld);
+      await HallOfAllegianceController.award(user, yld);
+
       await i.reply({
         embeds: [
           {
@@ -146,8 +170,14 @@ export default class HallOfAllegianceController {
       return;
     }
 
-    const tx = Format.transaction(user.gbt, allowance);
-    await HallOfAllegianceController.award(user, allowance);
+    let yld = allowance;
+    if (user.hasAchievement("UPVOTE_MAGIC_EDEN_QUEST_COMPLETED")) {
+      yld += 50;
+    }
+
+    const tx = Format.transaction(user.gbt, yld);
+    await HallOfAllegianceController.award(user, yld);
+
     await i.reply({
       embeds: [
         {
@@ -162,6 +192,7 @@ export default class HallOfAllegianceController {
 
   static async award(user: User, yld: number) {
     user.gbt += yld;
+
     await Promise.all([
       user.save(),
       Pledge.insert({ user: { id: user.id }, yld }),

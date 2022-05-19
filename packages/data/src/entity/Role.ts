@@ -53,7 +53,9 @@ export type SupplementaryRoleSymbol =
   | "HACKER"
   | "HIGH_COMMAND"
   | "MODS"
+  | "STAFF"
   | "VIP"
+  | "MAGIC_EDEN_UPVOTER"
   | `ENGAGEMENT_LEVEL_${EngagementLevelNumber}`;
 
 export type CitizenRoleSymbol =

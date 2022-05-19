@@ -418,7 +418,7 @@ export default class TossController {
       {
         author: {
           name: g.challenger.member.displayName,
-          iconURL: g.challenger.member.displayAvatarURL(),
+          icon_url: g.challenger.member.displayAvatarURL(),
         },
         description: Format.transaction(challengerBefore, challengerNet),
         color: g.choice === g.result ? "DARK_GREEN" : "DARK_RED",
@@ -432,7 +432,7 @@ export default class TossController {
       embeds.push({
         author: {
           name: g.challengee.member.displayName,
-          iconURL: g.challengee.member.displayAvatarURL(),
+          icon_url: g.challengee.member.displayAvatarURL(),
         },
         description: Format.transaction(challengeeBefore, challengeeNet),
         color: g.choice !== g.result ? "DARK_GREEN" : "DARK_RED",

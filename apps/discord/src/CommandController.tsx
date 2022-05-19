@@ -81,6 +81,7 @@ export abstract class CommandController {
       return;
     }
 
+    const cmd = camelCase(i.commandName);
     let option: string | undefined;
     try {
       option = camelCase(i.options.getSubcommand());
@@ -96,10 +97,10 @@ export abstract class CommandController {
       }
     }
 
-    if (option && `${i.commandName}_${option}` in this) {
-      handler = (this as any)[`${i.commandName}_${option}`];
-    } else if (i.commandName in this) {
-      handler = (this as any)[i.commandName];
+    if (option && `${cmd}_${option}` in this) {
+      handler = (this as any)[`${cmd}_${option}`];
+    } else if (cmd in this) {
+      handler = (this as any)[cmd];
     }
 
     if (handler) {

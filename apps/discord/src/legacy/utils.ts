@@ -94,7 +94,7 @@ export async function makeInventoryEmbed(
   return {
     author: {
       name: member.displayName,
-      iconURL: member.displayAvatarURL(),
+      icon_url: member.displayAvatarURL(),
     },
     title: "Inventory",
     fields: [{ name: "Food", value: Format.codeBlock(t) }],

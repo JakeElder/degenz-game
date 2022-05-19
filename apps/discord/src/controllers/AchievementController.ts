@@ -1,10 +1,11 @@
 import { MessageEmbed } from "discord.js";
-import { User, Achievement, ENGAGEMENT_LEVELS } from "data/db";
+import { User, Achievement, ENGAGEMENT_LEVELS, EngagementLevel } from "data/db";
 import { Global } from "../Global";
 import Events from "../Events";
 import { Format } from "lib";
 import { AchievementSymbol, QuestSymbol } from "data/types";
 import Utils from "../Utils";
+import Config from "config";
 
 type DescriptionMap = Partial<Record<AchievementSymbol, string>>;
 
@@ -89,6 +90,18 @@ export default class AchievementController {
         quest: achievement.replace(/_QUEST_COMPLETED$/, "") as QuestSymbol,
         achievement: achievementData,
       });
+    }
+
+    const level = await EngagementLevel.findOne({
+      where: { achievement: { id: achievement } },
+    });
+
+    if (level) {
+      await member.roles.add(level.role.discordId);
+    }
+
+    if (achievement === "UPVOTE_MAGIC_EDEN_QUEST_COMPLETED") {
+      await member.roles.add(Config.roleId("MAGIC_EDEN_UPVOTER"));
     }
 
     Events.emit("ACHIEVEMENT_AWARDED", {

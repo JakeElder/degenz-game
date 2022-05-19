@@ -197,4 +197,7 @@ export type QuestSymbol =
   | "LEARN_TO_HACKER_BATTLE"
   | "TOSS_WITH_TED"
   | "SHOP_AT_MERRIS_MART"
-  | "GET_WHITELIST";
+  | "GET_WHITELIST"
+  | "UPVOTE_MAGIC_EDEN";
+
+export type SingleDigitNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;

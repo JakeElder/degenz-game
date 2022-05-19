@@ -1,7 +1,12 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { NPC } from "data/db";
-import { DistrictSymbol, RecursivePartial } from "data/types";
+import {
+  AchievementSymbol,
+  DistrictSymbol,
+  RecursivePartial,
+} from "data/types";
 import { Format } from "lib";
+import { achievements } from "../achievements";
 
 const districtChoices: [string, DistrictSymbol][] = [
   ["District 1", "D1"],
@@ -11,6 +16,10 @@ const districtChoices: [string, DistrictSymbol][] = [
   ["District 5", "D5"],
   ["District 6", "D6"],
 ];
+
+const achievementChoices: [string, AchievementSymbol][] = achievements.map(
+  (a) => [a.id!, a.id!]
+);
 
 const admin: RecursivePartial<NPC> = {
   id: "ADMIN",
@@ -31,7 +40,10 @@ const admin: RecursivePartial<NPC> = {
 admin.commands = [
   {
     id: "ADMIN",
-    permissions: [{ id: "ADMIN", type: 1, permission: true }],
+    permissions: [
+      { id: "ADMIN", type: 1, permission: true },
+      { id: "HIGH_COMMAND", type: 1, permission: true },
+    ],
     data: new SlashCommandBuilder()
       .setName("admin")
       .setDescription(`Find out about ${Format.worldName()} and it's citizens`)
@@ -249,6 +261,31 @@ admin.commands = [
               .setRequired(true)
               .setDescription(`The nickname to give`)
           )
+      )
+      .toJSON(),
+  },
+  {
+    id: "AWARD_ACHIEVEMENT",
+    permissions: [
+      { id: "ADMIN", type: 1, permission: true },
+      { id: "STAFF", type: 1, permission: true },
+      { id: "MODS", type: 1, permission: true },
+    ],
+    data: new SlashCommandBuilder()
+      .setName("award-achievement")
+      .setDescription(`Awards an achievement`)
+      .addUserOption((option) =>
+        option
+          .setName("member")
+          .setRequired(true)
+          .setDescription("The user to award")
+      )
+      .addStringOption((option) =>
+        option
+          .setRequired(true)
+          .setName("achievement")
+          .setDescription(`The acheivement to award`)
+          .setChoices(achievementChoices)
       )
       .toJSON(),
   },

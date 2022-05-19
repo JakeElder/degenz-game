@@ -7,7 +7,8 @@ import {
   OneToOne,
   JoinColumn,
 } from "typeorm";
-import { Emoji } from "..";
+import { Emoji, Role } from "..";
+import { Achievement } from "./Achievement";
 
 export const LEVELS = [
   1, 2, 3, 4, 5, 6, 8, 10, 15, 20, 25, 30, 35, 40, 50,
@@ -23,6 +24,14 @@ export class EngagementLevel extends BaseEntity {
   @OneToOne(() => Emoji, { eager: true })
   @JoinColumn()
   emoji: Emoji;
+
+  @OneToOne(() => Achievement)
+  @JoinColumn()
+  achievement: Achievement;
+
+  @OneToOne(() => Role, { eager: true })
+  @JoinColumn()
+  role: Role;
 
   @CreateDateColumn()
   createdAt: Date;

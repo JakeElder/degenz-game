@@ -18,7 +18,7 @@ import prettyjson from "prettyjson";
 import { issueTokens } from "../legacy/db";
 import UserController from "../controllers/UserController";
 import { CommandController } from "../CommandController";
-import { DistrictSymbol } from "data/types";
+import { AchievementSymbol, DistrictSymbol } from "data/types";
 import AppController from "../controllers/AppController";
 import { Global } from "../Global";
 import NextStepController from "../controllers/NextStepsController";
@@ -249,6 +249,23 @@ export default class AllyCommandController extends CommandController {
     const m = await admin.guild.members.fetch(member.id);
     await m.edit({ nick: name });
     this.respond(i, `NICK_SET`, "SUCCESS");
+  }
+
+  async awardAchievement(i: CommandInteraction) {
+    const member = i.options.getUser("member", true);
+    const achievement = i.options.getString(
+      "achievement",
+      true
+    ) as AchievementSymbol;
+    const user = await User.findOneOrFail({ where: { id: member.id } });
+
+    if (user.hasAchievement(achievement)) {
+      await this.respond(i, `ALREADY_AWARDED`, "FAIL");
+      return;
+    }
+
+    await AchievementController.checkAndAward(user, achievement);
+    this.respond(i, `${achievement} awarded to ${user.displayName}`, "SUCCESS");
   }
 
   async admin_sendNextSteps(i: CommandInteraction) {
