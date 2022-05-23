@@ -9,11 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@babel/core": "^7.17.10",
-    "@babel/plugin-proposal-class-properties": "^7.16.7",
-    "@babel/plugin-proposal-decorators": "^7.17.9",
-    "@babel/plugin-proposal-private-methods": "^7.16.11",
-    "@babel/plugin-proposal-private-property-in-object": "^7.16.7",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "@mui/material": "^5.7.0",
@@ -22,6 +17,7 @@
     "config": "*",
     "data": "*",
     "dotenv": "^16.0.1",
+    "find-config": "^1.0.0",
     "lib": "*",
     "manifest": "*",
     "next": "12.1.6",
@@ -32,8 +28,14 @@
     "typeorm": "^0.3.6"
   },
   "devDependencies": {
+    "@babel/core": "^7.17.10",
+    "@babel/plugin-proposal-class-properties": "^7.16.7",
+    "@babel/plugin-proposal-decorators": "^7.17.9",
+    "@babel/plugin-proposal-private-methods": "^7.16.11",
+    "@babel/plugin-proposal-private-property-in-object": "^7.16.7",
     "@types/babel__core": "^7",
     "@types/eslint": "^8",
+    "@types/find-config": "^1.0.1",
     "@types/node": "17.0.33",
     "@types/react": "18.0.9",
     "@types/react-dom": "18.0.4",

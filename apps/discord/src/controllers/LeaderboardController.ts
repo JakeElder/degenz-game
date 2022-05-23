@@ -6,7 +6,6 @@ import { table } from "table";
 import truncate from "truncate";
 import Config from "config";
 import { Global } from "../Global";
-import { IsNull, Not } from "typeorm";
 import equal from "fast-deep-equal";
 
 type Leader = {
@@ -108,7 +107,7 @@ export class LeaderboardController {
   }
 
   static async setMessage() {
-    const leaders = await this.leaders(30);
+    const leaders = await User.leaders(30);
     const tableData = [...leaders.map((l) => [l.displayName, l.gbt])];
 
     if (equal(this.tableData, tableData)) {
@@ -117,7 +116,7 @@ export class LeaderboardController {
 
     if (leaders.length) {
       PersistentMessageController.set("GBT_LEADERBOARD_1", async () => {
-        const leaders = await this.leaders(10);
+        const leaders = await User.leaders(10);
         const data = await this.computeData(leaders);
         return { embeds: this.makeEmbeds(data.slice(0, 10)) };
       });
@@ -125,21 +124,12 @@ export class LeaderboardController {
 
     if (leaders.length > 10) {
       await PersistentMessageController.set("GBT_LEADERBOARD_2", async () => {
-        const leaders = await this.leaders(20, { skip: 10 });
+        const leaders = await User.leaders(20, { skip: 10 });
         const data = await this.computeData(leaders);
         return { content: Format.codeBlock(this.makeTable(data, 10)) };
       });
     }
 
     this.tableData = tableData;
-  }
-
-  static async leaders(take: number, { skip }: { skip: number } = { skip: 0 }) {
-    return User.find({
-      where: { inGame: true, gbt: Not(IsNull()) },
-      order: { gbt: -1 },
-      take,
-      skip,
-    });
   }
 }

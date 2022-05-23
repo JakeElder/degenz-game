@@ -30,4 +30,11 @@ export class Achievement extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  toJSON() {
+    return {
+      id: this.id,
+      createdAt: this.createdAt.toString(),
+    };
+  }
 }

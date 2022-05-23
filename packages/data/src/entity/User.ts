@@ -11,6 +11,8 @@ import {
   OneToOne,
   JoinColumn,
   PrimaryColumn,
+  Not,
+  IsNull,
 } from "typeorm";
 import { Role } from "discord.js";
 import {
@@ -209,5 +211,24 @@ export class User extends BaseEntity {
       .update(this)
       .set({ strength: () => `GREATEST(strength + ${amount}, 0)` })
       .execute();
+  }
+
+  static async leaders(take: number, { skip }: { skip: number } = { skip: 0 }) {
+    return this.find({
+      where: { inGame: true, gbt: Not(IsNull()) },
+      order: { gbt: -1 },
+      take,
+      skip,
+    });
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      displayName: this.displayName,
+      gbt: this.gbt,
+      achievements: this.achievements.map((a) => a.toJSON()),
+      createdAt: this.createdAt.toString(),
+    };
   }
 }

@@ -1,12 +1,12 @@
 import type { GetServerSideProps, NextPage } from "next";
+import Head from "next/head";
 import Image from "next/image";
 import logo from "../public/logo.png";
-import { connect, NPC } from "data/db";
+import { connect, User } from "data/db";
 import Config from "config";
-import { Not, In } from "typeorm";
 import Container from "../components/Container";
 
-type Props = { npcs: ReturnType<NPC["toJSON"]>[] };
+type Props = { users: ReturnType<User["toJSON"]>[] };
 
 const Home: NextPage<Props> = (props) => {
   return (
@@ -23,16 +23,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
   await connect();
   await Config.load();
 
-  const npcs = await NPC.find({
-    where: {
-      id: Not(In(["SENSEI", "SCOUT", "DEVILS_ADVOCATE", "ARMORY_CLERK"])),
-    },
-    order: { id: 1 },
-  });
+  const users = await User.leaders(30);
 
   return {
     props: {
-      npcs: npcs.map((npc) => npc.toJSON()),
+      users: users.map((user) => user.toJSON()),
     },
   };
 };
