@@ -389,8 +389,11 @@ export default class UserController {
       return { success: false, code: "USER_NOT_FOUND" };
     }
 
-    if (!prisoner.hasAchievement("JOIN_THE_DEGENZ_QUEST_COMPLETED")) {
-      return { success: false, code: "USER_NOT_REDPILLED" };
+    if (
+      !member.roles.cache.has(Config.roleId("PREGEN")) &&
+      !member.roles.cache.has(Config.roleId("DEGEN"))
+    ) {
+      return { success: false, code: "USER_NOT_ENTERED" };
     }
 
     if (prisoner.imprisoned) {

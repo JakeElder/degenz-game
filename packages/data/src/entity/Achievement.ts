@@ -5,10 +5,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryColumn,
-  OneToOne,
 } from "typeorm";
 import { QuestSymbol } from "../types";
-import { EngagementLevel, EngagementLevelNumber } from "./EngagementLevel";
+import { EngagementLevelNumber } from "./EngagementLevel";
 
 export type AchievementSymbol =
   | `${QuestSymbol}_QUEST_COMPLETED`

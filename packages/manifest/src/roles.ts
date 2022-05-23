@@ -90,6 +90,11 @@ export const roles: RecursivePartial<Role>[] = [
     name: "Mods",
   },
   {
+    id: "SERVER_BOOSTER",
+    type: "SUPPLEMENTARY",
+    name: "Server Booster",
+  },
+  {
     id: "STAFF",
     type: "SUPPLEMENTARY",
     name: "Staff",
@@ -350,5 +355,20 @@ export const roles: RecursivePartial<Role>[] = [
     type: "SUPPLEMENTARY",
     id: "WHITELIST",
     name: "Whitelist",
+  },
+  {
+    type: "SUPPLEMENTARY",
+    id: "OG_WHITELIST",
+    name: "OG Whitelist",
+  },
+  {
+    type: "SUPPLEMENTARY",
+    id: "WHITELIST_CONFIRMED",
+    name: "Whitelist Confirmed",
+  },
+  {
+    type: "SUPPLEMENTARY",
+    id: "OG_WHITELIST_CONFIRMED",
+    name: "OG Whitelist Confirmed",
   },
 ];

@@ -88,6 +88,10 @@ export type EmojiSymbol =
   | "BOB"
   | "PIKA"
   | "GOOCHY"
+  | "WHITELIST_BW"
+  | "OG_WHITELIST_BW"
+  | "WHITELIST"
+  | "OG_WHITELIST"
   | "BIG_G";
 
 @Entity()
