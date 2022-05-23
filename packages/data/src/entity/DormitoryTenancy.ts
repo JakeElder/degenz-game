@@ -42,6 +42,6 @@ export class DormitoryTenancy extends BaseEntity {
   }
 
   get dailyAllowance() {
-    return 80;
+    return 180;
   }
 }

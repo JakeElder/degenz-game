@@ -14,7 +14,6 @@ import pluralize from "pluralize";
 import Events from "../Events";
 import AchievementController from "./AchievementController";
 import { PersistentMessageController } from "./PersistentMessageController";
-import UserController from "./UserController";
 
 export default class HallOfAllegianceController {
   static buttonCollector: InteractionCollector<ButtonInteraction>;
@@ -33,8 +32,8 @@ export default class HallOfAllegianceController {
       .setStyle("SUCCESS")
       .setCustomId("claim");
 
-    const upperAmount = Format.currency(150);
-    const lowerAmount = Format.currency(80);
+    const upperAmount = Format.currency(250);
+    const lowerAmount = Format.currency(180);
 
     const districts = await District.find({
       relations: ["tenancies"],
