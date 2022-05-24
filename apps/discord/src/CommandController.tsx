@@ -28,7 +28,7 @@ export abstract class CommandController {
     return (
       <>
         <UserMention id={user.id} /> - You need to be at least{" "}
-        <RoleMention id={roleId} /> to show {what}.
+        <RoleMention id={roleId} /> to {what}.
         <br />
         You can **level up** by being active in{" "}
         {channelMention(Config.channelId("GENERAL"))}.
@@ -55,12 +55,17 @@ export abstract class CommandController {
       message: "",
     }
   ) {
-    const [ephemeral, postDenied] = (() => {
-      if (i.options.getBoolean("post")) {
-        return opts.permit ? [false, false] : [true, true];
-      }
-      return [true, false];
-    })();
+    // const [ephemeral, postDenied] = (() => {
+    //   if (i.options.getBoolean("post")) {
+    //     return opts.permit ? [false, false] : [true, true];
+    //   }
+    //   return [true, false];
+    // })();
+
+    const [ephemeral, postDenied] = [
+      i.options.getBoolean("hide") ? true : false,
+      false,
+    ];
 
     await i.reply({
       ...reply,
@@ -136,10 +141,12 @@ export abstract class CommandController {
   }
 
   async handleSelect(i: SelectMenuInteraction) {
-    const handler = (this as any)[`handle${pascalCase(i.customId)}`];
+    const [fn, ...params] = i.customId.split(":");
+    const handler = (this as any)[`handle${pascalCase(fn)}`];
     await (handler as (i: SelectMenuInteraction) => Promise<void>).call(
       this,
-      i
+      i,
+      params
     );
   }
 }

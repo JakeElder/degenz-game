@@ -26,6 +26,7 @@ import { Achievement, AchievementSymbol } from "./Achievement";
 import { Imprisonment } from "./Imprisonment";
 import { PlayerEvent } from "./PlayerEvent";
 import { DormitoryTenancy } from "./DormitoryTenancy";
+import { MartItemSymbol } from "./MartItem";
 
 @Entity()
 export class User extends BaseEntity {
@@ -200,6 +201,14 @@ export class User extends BaseEntity {
       throw new Error("Achievements not loaded");
     }
     return !!this.achievements.find((a) => a.id === achievement);
+  }
+
+  async getInventory() {
+    return MartItemOwnership.createQueryBuilder("mart_item_ownership")
+      .select(["item_id", "Count(*)"])
+      .where({ user: this })
+      .groupBy("item_id")
+      .getRawMany<{ item_id: MartItemSymbol; count: string }>();
   }
 
   get mention() {

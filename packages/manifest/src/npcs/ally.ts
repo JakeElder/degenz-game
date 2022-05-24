@@ -25,6 +25,24 @@ ally.commands.push({
 });
 
 ally.commands.push({
+  id: "GIFT",
+  permissions: [
+    { id: "PREGEN", type: 1, permission: true },
+    { id: "DEGEN", type: 1, permission: true },
+  ],
+  data: new SlashCommandBuilder()
+    .setName("gift")
+    .setDescription(`Gief someone foods.`)
+    .addUserOption((option) =>
+      option
+        .setName("name")
+        .setDescription("The Degen to gief too.")
+        .setRequired(true)
+    )
+    .toJSON(),
+});
+
+ally.commands.push({
   id: "RED_PILL",
   permissions: [],
   data: new SlashCommandBuilder()
@@ -48,8 +66,8 @@ ally.commands.push({
     )
     .addBooleanOption((option) =>
       option
-        .setName("post")
-        .setDescription("Whether to show the stats in the current channel.")
+        .setName("hide")
+        .setDescription("Whether to hide the stats from the current channel.")
     )
     .toJSON(),
 });
@@ -63,8 +81,10 @@ ally.commands.push({
     .setDescription(`Get help on the current channel.`)
     .addBooleanOption((option) =>
       option
-        .setName("post")
-        .setDescription("Whether to show the help in the current channel.")
+        .setName("hide")
+        .setDescription(
+          "Whether to show the hide the help from the current channel."
+        )
     )
     .toJSON(),
 });
@@ -84,8 +104,10 @@ ally.commands.push({
     )
     .addBooleanOption((option) =>
       option
-        .setName("post")
-        .setDescription("Whether to show the inventory in the current channel.")
+        .setName("hide")
+        .setDescription(
+          "Whether to hide the inventory from the current channel."
+        )
     )
     .toJSON(),
 });

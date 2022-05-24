@@ -25,18 +25,16 @@ import { channelMention, userMention } from "@discordjs/builders";
 import Utils from "../Utils";
 import Config from "config";
 import { IsNull, Not } from "typeorm";
+import { RoleMention, UserMention } from "../legacy/templates";
 
 export default class AllyCommandController extends CommandController {
   async eat(i: CommandInteraction) {
-    const [user, items, inventory] = await Promise.all([
+    const [user, items] = await Promise.all([
       User.findOneByOrFail({ id: i.user.id }),
       MartItem.find({ order: { price: -1 } }),
-      MartItemOwnership.createQueryBuilder("mart_item_ownership")
-        .select(["item_id", "Count(*)"])
-        .where({ user: { id: i.user.id } })
-        .groupBy("item_id")
-        .getRawMany<{ item_id: MartItemSymbol; count: string }>(),
     ]);
+
+    const inventory = await user.getInventory();
 
     if (inventory.length === 0) {
       await i.reply({
@@ -60,7 +58,7 @@ export default class AllyCommandController extends CommandController {
 
     const row = new MessageActionRow().addComponents(
       new MessageSelectMenu()
-        .setCustomId("foodSelect")
+        .setCustomId("EAT_SELECT")
         .setPlaceholder("Choose from your inventory")
         .addOptions(
           inventory.map((g) => {
@@ -91,7 +89,106 @@ export default class AllyCommandController extends CommandController {
     });
   }
 
-  async handleFoodSelect(i: SelectMenuInteraction) {
+  async gift(i: CommandInteraction) {
+    const [user, items] = await Promise.all([
+      User.findOneByOrFail({ id: i.user.id }),
+      MartItem.find({ order: { price: -1 } }),
+    ]);
+
+    if (!user.hasAchievement("LEVEL_2_REACHED")) {
+      await i.reply({
+        embeds: [
+          {
+            color: "RED",
+            title: "Level up to unlock the `/gift` command!",
+            description: Utils.r(
+              <CommandController.EngagementLevelInsufficient
+                user={user}
+                role="ENGAGEMENT_LEVEL_2"
+                what="gift items"
+              />
+            ),
+          },
+        ],
+      });
+      return;
+    }
+
+    const recipientMember = i.options.getMember("name", true) as GuildMember;
+
+    if (recipientMember.user.bot) {
+      await i.reply({
+        embeds: [
+          {
+            color: "RED",
+            description: Utils.r(
+              <>
+                <UserMention id={user.id} /> - Don't gift the{" "}
+                {Config.emojiCode("RED_TICK")}{" "}
+                <RoleMention id={Config.roleId("ESTABLISHMENT")} />!
+              </>
+            ),
+          },
+        ],
+      });
+      return;
+    }
+
+    const inventory = await user.getInventory();
+
+    if (inventory.length === 0) {
+      await i.reply({
+        embeds: [
+          {
+            color: "RED",
+            description: Utils.r(
+              <>
+                **{user.displayName}** - You don't *have* anything to gift 😢..
+                <br />
+                You should go to {channelMention(Config.channelId("MART"))} and
+                buy some!
+              </>
+            ),
+          },
+        ],
+      });
+      return;
+    }
+
+    const row = new MessageActionRow().addComponents(
+      new MessageSelectMenu()
+        .setCustomId(`GIFT_SELECT:${recipientMember.id}`)
+        .setPlaceholder("Choose from your inventory")
+        .addOptions(
+          inventory.map((g) => {
+            const item = items.find((i) => i.id === g.item_id)!;
+            return {
+              label: item.name,
+              description: `[${
+                g.count
+              }] available [effect] +${item.strengthIncrease!} stength`,
+              value: `${i.user.id}:${item.id}`,
+            };
+          })
+        )
+    );
+
+    await i.reply({
+      embeds: [
+        {
+          description: Utils.r(
+            <>
+              **{user.displayName}** - What do you want to gift?!{" "}
+              {items.map((i) => `${i.emoji}`)}
+            </>
+          ),
+        },
+      ],
+      components: [row],
+    });
+  }
+
+  async handleEatSelect(i: SelectMenuInteraction) {
     const [userId, itemId] = i.values[0].split(":") as [
       User["id"],
       MartItemSymbol
@@ -155,6 +252,70 @@ export default class AllyCommandController extends CommandController {
     });
 
     Events.emit("ITEM_EATEN", { user, item, strengthBefore });
+  }
+
+  async handleGiftSelect(i: SelectMenuInteraction, params: [User["id"]]) {
+    const [userId, itemId] = i.values[0].split(":") as [
+      User["id"],
+      MartItemSymbol
+    ];
+
+    if (i.user.id !== userId) {
+      i.reply({
+        content: Utils.r(
+          <>
+            {userMention(i.user.id)} - This is not for you! type the `/gift`
+            slash command if you want to send someon a gift.
+          </>
+        ),
+        ephemeral: true,
+      });
+    }
+
+    const [item, user, recipient] = await Promise.all([
+      MartItem.findOneByOrFail({ id: itemId }),
+      User.findOneByOrFail({ id: i.user.id }),
+      User.findOneByOrFail({ id: params[0] }),
+    ]);
+
+    const ownership = await MartItemOwnership.findOne({
+      where: {
+        item: { id: item.id },
+        user: { id: user.id },
+      },
+    });
+
+    if (!ownership) {
+      await i.update({ content: "Error", components: [], embeds: [] });
+      return;
+    }
+
+    ownership.user = recipient;
+    await ownership.save();
+
+    await i.update({
+      embeds: [{ description: "✅ Gift sent!" }],
+      components: [],
+    });
+
+    const c = await Utils.Channel.getOrFail(i.channelId, "ALLY");
+
+    await c.send({
+      embeds: [
+        {
+          description: Utils.r(
+            <>
+              <UserMention id={user.id} /> sent {item.emoji.toString()} **
+              {item.name}
+              ** to <UserMention id={recipient.id} />! ❤️
+            </>
+          ),
+        },
+      ],
+      components: [],
+    });
+
+    // Events.emit("ITEM_EATEN", { user, item, strengthBefore });
   }
 
   async redpill(i: CommandInteraction) {
@@ -224,7 +385,7 @@ export default class AllyCommandController extends CommandController {
           <CommandController.EngagementLevelInsufficient
             user={user}
             role="ENGAGEMENT_LEVEL_8"
-            what="help"
+            what="show help"
           />
         ),
       }
@@ -268,7 +429,7 @@ export default class AllyCommandController extends CommandController {
           <CommandController.EngagementLevelInsufficient
             user={checkeeUser}
             role="ENGAGEMENT_LEVEL_8"
-            what="stats"
+            what="show stats"
           />
         ),
       }
@@ -296,7 +457,7 @@ export default class AllyCommandController extends CommandController {
       <CommandController.EngagementLevelInsufficient
         user={user}
         role="ENGAGEMENT_LEVEL_8"
-        what="the leaderboard"
+        what="show the leaderboard"
       />
     );
 
@@ -346,7 +507,7 @@ export default class AllyCommandController extends CommandController {
           <CommandController.EngagementLevelInsufficient
             user={users[0]}
             role="ENGAGEMENT_LEVEL_8"
-            what="the inventory"
+            what="show inventories"
           />
         ),
       }
