@@ -20,6 +20,9 @@ export default class CheckOOS extends Command {
         return false;
       }
       let user = users.find((u) => u.id === member.id)!;
+      if (!user) {
+        return false;
+      }
       return user.apartmentTenancies.length === 0 && !user.dormitoryTenancy;
     });
 

@@ -43,7 +43,7 @@ export default class CheckMissing extends Command {
 
     await Promise.all(
       missing.map(async (member) => {
-        // await member.roles.add("976674426047307916");
+        await member.roles.add("976674426047307916");
 
         const dormitory = await Dormitory.choose();
 

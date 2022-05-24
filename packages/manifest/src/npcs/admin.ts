@@ -295,6 +295,7 @@ admin.commands = [
       { id: "ADMIN", type: 1, permission: true },
       { id: "STAFF", type: 1, permission: true },
       { id: "MODS", type: 1, permission: true },
+      { id: "HIGH_COMMAND", type: 1, permission: true },
     ],
     data: new SlashCommandBuilder()
       .setName("reward")
