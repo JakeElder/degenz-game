@@ -1,16 +1,11 @@
+import React from "react";
 import {
   CommandInteraction,
   GuildBasedChannel,
   GuildMember,
   TextBasedChannel,
 } from "discord.js";
-import {
-  AppState,
-  CampaignInvite,
-  EngagementLevel,
-  ENGAGEMENT_LEVELS,
-  User,
-} from "data/db";
+import { AppState, CampaignInvite, ENGAGEMENT_LEVELS, User } from "data/db";
 import { Format } from "lib";
 import pluralize from "pluralize";
 import { ILike } from "typeorm";
@@ -28,6 +23,7 @@ import EntranceController from "../controllers/EntranceController";
 import Utils from "../Utils";
 import { EngagementLevelNumber } from "data/src/entity/EngagementLevel";
 import AchievementController from "../controllers/AchievementController";
+import { UserMention } from "../legacy/templates";
 
 export default class AllyCommandController extends CommandController {
   async respond(
@@ -148,6 +144,66 @@ export default class AllyCommandController extends CommandController {
     }
 
     await this.respond(i, "TOKENS_CONFISCATED", "SUCCESS");
+  }
+
+  async reward(i: CommandInteraction) {
+    const amount = i.options.getNumber("amount", true);
+    const member = i.options.getUser("member", true);
+
+    let user: User | null;
+
+    try {
+      user = await User.findOne({
+        where: { id: member.id },
+      });
+
+      if (!user || !user.inGame) {
+        await this.respond(i, "USER_NOT_FOUND", "FAIL");
+        return;
+      }
+
+      if (amount <= 0) {
+        await this.respond(i, "INVALID_AMOUNT", "FAIL");
+        return;
+      }
+
+      user.gbt += amount;
+      await user.save();
+    } catch (e) {
+      await this.respond(i, "COULDNT_ISSUE_REWARD", "FAIL");
+      return;
+    }
+
+    const c = await Utils.Channel.getOrFail(i.channelId, "ALLY");
+
+    const m = await UserController.getMember(user.id);
+
+    await c.send({
+      embeds: [
+        {
+          color: "GOLD",
+          description: Utils.r(
+            <>
+              <UserMention id={i.user.id} /> rewarded{" "}
+              <UserMention id={user.id} /> with {Config.emojiCode("GBT_COIN")}{" "}
+              **{amount}** 🎉
+            </>
+          ),
+        },
+        {
+          author: {
+            name: m.displayName,
+            icon_url: m.displayAvatarURL(),
+          },
+          color: "DARK_GREEN",
+          description: Utils.r(
+            <>{Format.transaction(user.gbt - amount, amount)}</>
+          ),
+        },
+      ],
+    });
+
+    await this.respond(i, "TOKENS_ISSUED", "SUCCESS");
   }
 
   async admin_issue(i: CommandInteraction) {

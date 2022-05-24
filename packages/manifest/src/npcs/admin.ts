@@ -289,6 +289,34 @@ admin.commands = [
       )
       .toJSON(),
   },
+  {
+    id: "REWARD",
+    permissions: [
+      { id: "ADMIN", type: 1, permission: true },
+      { id: "STAFF", type: 1, permission: true },
+      { id: "MODS", type: 1, permission: true },
+    ],
+    data: new SlashCommandBuilder()
+      .setName("reward")
+      .setDescription(
+        `Reward people with ${Format.currency(null, { bold: false })}`
+      )
+      .addUserOption((option) =>
+        option
+          .setName("member")
+          .setDescription("The member to reward with $GBT.")
+          .setRequired(true)
+      )
+      .addNumberOption((option) =>
+        option
+          .setName("amount")
+          .setDescription(
+            `The amount of ${Format.currency(null, { bold: false })} send`
+          )
+          .setRequired(true)
+      )
+      .toJSON(),
+  },
 ];
 
 export default admin;

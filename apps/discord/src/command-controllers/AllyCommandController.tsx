@@ -312,7 +312,6 @@ export default class AllyCommandController extends CommandController {
           ),
         },
       ],
-      components: [],
     });
 
     // Events.emit("ITEM_EATEN", { user, item, strengthBefore });
