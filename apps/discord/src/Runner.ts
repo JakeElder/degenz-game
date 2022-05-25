@@ -15,6 +15,7 @@ import NextStepController from "./controllers/NextStepsController";
 import EntranceController from "./controllers/EntranceController";
 import QuestLogController from "./controllers/QuestLogController";
 import { NPCSymbol } from "data/types";
+import AnnouncementController from "./controllers/AnnouncementController";
 
 export default class Runner {
   constructor(private bots: DiscordBot[]) {
@@ -39,6 +40,7 @@ export default class Runner {
         QuestsController.init();
         QuestLogController.init();
         UserController.init();
+        AnnouncementController.init();
       }
 
       if (e.data.bot.id === "BIG_BROTHER") {

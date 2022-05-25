@@ -65,6 +65,7 @@ export type NestedManagedChannelSymbol =
   | "GEN_POP"
   | "SOLITARY"
   | "SUPPORT"
+  | "SUBMIT_WALLET"
   | DormitorySymbol;
 
 export type ManagedChannelSymbol =

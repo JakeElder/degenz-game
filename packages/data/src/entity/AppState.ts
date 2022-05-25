@@ -23,6 +23,9 @@ export class AppState extends BaseEntity {
   @Column({ default: false })
   transferEnabled: boolean;
 
+  @Column({ default: 0 })
+  announcementCount: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

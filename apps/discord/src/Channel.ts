@@ -3,7 +3,6 @@ import { DiscordChannel } from "data/db";
 import { ChannelDescriptor, ManagedChannelSymbol, NPCSymbol } from "data/types";
 import { TextBasedChannel } from "discord.js";
 import Manifest from "manifest";
-import memoize from "memoizee";
 import { Global } from "./Global";
 
 export class Channel {
@@ -12,6 +11,7 @@ export class Channel {
     botSymbol: NPCSymbol = "ADMIN"
   ) {
     const bot = Global.bot(botSymbol);
+    await bot.ready;
     const channel = await bot.guild.channels.fetch(id);
 
     if (!channel || (channel.type !== "GUILD_TEXT" && !channel.isThread())) {

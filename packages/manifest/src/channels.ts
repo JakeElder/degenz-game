@@ -108,6 +108,13 @@ channels.push(
     lockPermissions: true,
     permissionOverwrites: READ_ONLY,
     parent: { id: "THE_GAME" },
+  },
+  {
+    id: "SUBMIT_WALLET",
+    name: "📥｜submit-wallet",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "THE_GAME" },
   }
 );
 
