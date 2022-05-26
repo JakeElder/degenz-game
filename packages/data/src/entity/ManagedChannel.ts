@@ -66,6 +66,7 @@ export type NestedManagedChannelSymbol =
   | "SOLITARY"
   | "SUPPORT"
   | "SUBMIT_WALLET"
+  | "ROADMAP"
   | DormitorySymbol;
 
 export type ManagedChannelSymbol =

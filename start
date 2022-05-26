@@ -10,7 +10,6 @@ packages=(
   apps/web
   apps/cli
   apps/auth
-  apps/minting-site
 )
 
 for i in "${packages[@]}"

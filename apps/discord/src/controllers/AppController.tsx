@@ -187,6 +187,7 @@ export default class AppController {
       "THE_LORE",
       "NFT_CHARACTERS",
       "COMMANDS",
+      "ROADMAP",
     ];
 
     // Get not processed reactions

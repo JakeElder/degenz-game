@@ -200,6 +200,13 @@ channels.push(
     parent: { id: "COMMAND_CENTER" },
   },
   {
+    id: "ROADMAP",
+    name: "📅｜roadmap",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "COMMAND_CENTER" },
+  },
+  {
     id: "TWEETS",
     name: "🐦｜tweets",
     lockPermissions: true,
