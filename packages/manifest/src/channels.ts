@@ -93,7 +93,20 @@ channels.push(
     id: "QUESTS",
     name: "🕹️｜quests",
     lockPermissions: true,
-    permissionOverwrites: [...DISCOVERABLE, ...READ_ONLY],
+    permissionOverwrites: [
+      ...DISCOVERABLE,
+      ...READ_ONLY,
+      {
+        roles: ["ADMIN_BOT"],
+        options: {
+          VIEW_CHANNEL: true,
+          SEND_MESSAGES_IN_THREADS: true,
+          CREATE_PUBLIC_THREADS: true,
+          CREATE_PRIVATE_THREADS: true,
+          MANAGE_THREADS: true,
+        },
+      },
+    ],
     parent: { id: "THE_GAME" },
   },
   {

@@ -109,6 +109,11 @@ export default class AppController {
         if (e instanceof QueryFailedError && e.driverError.code === "23505") {
           return;
         }
+
+        if (e instanceof QueryFailedError && e.driverError.code === "23503") {
+          console.log(`reaction user not in DB: ${user.id}`);
+          return;
+        }
         console.error(e);
       }
     });
