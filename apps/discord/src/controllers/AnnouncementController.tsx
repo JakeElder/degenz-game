@@ -5,6 +5,7 @@ import Config from "config";
 import { ChannelMention, RoleMention } from "../legacy/templates";
 import { Format } from "lib";
 import { AppState } from "data/db";
+import cron from "node-cron";
 
 export default class AnnouncementController {
   static channel: TextChannel;
@@ -14,16 +15,18 @@ export default class AnnouncementController {
   static promptCount = 0;
 
   static async init() {
-    // [this.channel, this.state] = await Promise.all([
-    //   Utils.ManagedChannel.getOrFail("GENERAL", "ALLY"),
-    //   AppState.findOneByOrFail({ id: "CURRENT" }),
-    // ]);
-    // this.initCron();
+    [this.channel, this.state] = await Promise.all([
+      Utils.ManagedChannel.getOrFail("GENERAL", "ALLY"),
+      AppState.findOneByOrFail({ id: "CURRENT" }),
+    ]);
+
+    this.initCron();
   }
 
   static initCron() {
-    this.tick();
-    setInterval(() => this.tick(), 1000 * 60 * 30);
+    cron.schedule("*/30 * * * *", () => {
+      this.tick();
+    });
   }
 
   static async tick() {
