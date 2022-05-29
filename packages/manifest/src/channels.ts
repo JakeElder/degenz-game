@@ -78,19 +78,27 @@ channels.push(
     id: "ENTRANCE",
     name: "🚪｜entrance",
     lockPermissions: true,
-    permissionOverwrites: [],
+    permissionOverwrites: [
+      {
+        roles: ["BIG_BROTHER_BOT"],
+        options: {
+          CREATE_PRIVATE_THREADS: true,
+          CREATE_PUBLIC_THREADS: true,
+        },
+      },
+    ],
     parent: { id: "THE_GAME" },
   },
   {
     id: "QUESTS",
     name: "🕹️｜quests",
     lockPermissions: true,
-    permissionOverwrites: DISCOVERABLE,
+    permissionOverwrites: [...DISCOVERABLE, ...READ_ONLY],
     parent: { id: "THE_GAME" },
   },
   {
     id: "QUEST_COMPLETION_PROOF",
-    name: "✅｜quest-completion-proof",
+    name: "✅｜quest-proof",
     lockPermissions: true,
     permissionOverwrites: DISCOVERABLE,
     parent: { id: "THE_GAME" },
@@ -99,21 +107,21 @@ channels.push(
     id: "INVITE",
     name: "🙋｜invite-to-win",
     lockPermissions: true,
-    permissionOverwrites: DISCOVERABLE,
+    permissionOverwrites: [...DISCOVERABLE, ...READ_ONLY],
     parent: { id: "THE_GAME" },
   },
   {
     id: "WHITELIST",
-    name: "🎟️｜whitelist",
+    name: "🎟️｜get-whitelist",
     lockPermissions: true,
-    permissionOverwrites: READ_ONLY,
+    permissionOverwrites: [...DISCOVERABLE, ...READ_ONLY],
     parent: { id: "THE_GAME" },
   },
   {
     id: "SUBMIT_WALLET",
     name: "📥｜submit-wallet",
     lockPermissions: true,
-    permissionOverwrites: READ_ONLY,
+    permissionOverwrites: [...DISCOVERABLE],
     parent: { id: "THE_GAME" },
   }
 );
@@ -172,6 +180,20 @@ channels.push(
     parent: { id: "COMMAND_CENTER" },
   },
   {
+    id: "GIVEAWAYS",
+    name: "🎉｜giveaways",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "COMMAND_CENTER" },
+  },
+  {
+    id: "ROADMAP",
+    name: "📅｜roadmap",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "COMMAND_CENTER" },
+  },
+  {
     id: "OFFICIAL_LINKS",
     name: "🔗｜official-links",
     lockPermissions: true,
@@ -195,13 +217,6 @@ channels.push(
   {
     id: "GIVEAWAYS",
     name: "🎉｜giveaways",
-    lockPermissions: true,
-    permissionOverwrites: READ_ONLY,
-    parent: { id: "COMMAND_CENTER" },
-  },
-  {
-    id: "ROADMAP",
-    name: "📅｜roadmap",
     lockPermissions: true,
     permissionOverwrites: READ_ONLY,
     parent: { id: "COMMAND_CENTER" },
@@ -238,6 +253,13 @@ channels.push(
   },
   // CHANNELS
   {
+    id: "GENERAL",
+    name: "💬｜general-chat",
+    lockPermissions: true,
+    permissionOverwrites: [],
+    parent: { id: "COMMUNITY" },
+  },
+  {
     id: "WELCOME_ROOM",
     name: "👋｜welcome-room",
     lockPermissions: true,
@@ -245,10 +267,14 @@ channels.push(
     parent: { id: "COMMUNITY" },
   },
   {
-    id: "GENERAL",
-    name: "💬｜general",
-    lockPermissions: true,
-    permissionOverwrites: [],
+    id: "VIP_LOUNGE",
+    name: "🛋｜vip-lounge",
+    permissionOverwrites: [
+      {
+        roles: ["EVERYONE"],
+        options: { VIEW_CHANNEL: false },
+      },
+    ],
     parent: { id: "COMMUNITY" },
   },
   {
@@ -263,6 +289,13 @@ channels.push(
     name: "🏆｜leaderboard",
     lockPermissions: true,
     permissionOverwrites: READ_ONLY,
+    parent: { id: "COMMUNITY" },
+  },
+  {
+    id: "CHECK_RANK",
+    name: "🎖｜check-rank",
+    lockPermissions: true,
+    permissionOverwrites: [],
     parent: { id: "COMMUNITY" },
   },
   {
@@ -296,16 +329,16 @@ channels.push(
   //   permissionOverwrites: READ_ONLY,
   //   parent: { id: "BEAUTOPIA" },
   // },
-  {
-    id: "TAVERN",
-    name: "🍺｜tavern",
-    lockPermissions: true,
-    permissionOverwrites: [],
-    parent: { id: "BEAUTOPIA" },
-  },
+  // {
+  //   id: "TAVERN",
+  //   name: "🍺｜tavern",
+  //   lockPermissions: true,
+  //   permissionOverwrites: [],
+  //   parent: { id: "BEAUTOPIA" },
+  // },
   {
     id: "HALL_OF_ALLEIGANCE",
-    name: "💰｜hall-of-allegiance",
+    name: "💰｜daily-claim",
     lockPermissions: true,
     permissionOverwrites: READ_ONLY,
     parent: { id: "BEAUTOPIA" },
@@ -333,72 +366,44 @@ channels.push(
   },
   {
     id: "ARMORY",
-    name: "🛡｜the-armory",
+    name: "🛡｜weapons-armory",
     lockPermissions: true,
-    permissionOverwrites: [
-      {
-        roles: ["ARMORY_CLERK_BOT"],
-        options: {
-          VIEW_CHANNEL: true,
-        },
-      },
-    ],
+    permissionOverwrites: READ_ONLY,
     parent: { id: "BEAUTOPIA" },
   },
   {
     id: "TOSS_HOUSE",
     name: "🎲｜teds-toss-house",
     lockPermissions: true,
-    permissionOverwrites: [
-      {
-        roles: ["TOSSER_BOT"],
-        options: {
-          VIEW_CHANNEL: true,
-        },
-      },
-    ],
+    permissionOverwrites: [],
     parent: { id: "BEAUTOPIA" },
   },
   {
     id: "BANK",
     name: "🏦｜bank-of-beautopia",
     lockPermissions: true,
-    permissionOverwrites: [
-      {
-        roles: ["BANKER_BOT"],
-        options: {
-          VIEW_CHANNEL: true,
-        },
-      },
-    ],
+    permissionOverwrites: [],
     parent: { id: "BEAUTOPIA" },
   },
   {
     id: "ARENA",
-    name: "🗡｜the-arena",
+    name: "🗡｜hacker-arena",
     lockPermissions: true,
-    permissionOverwrites: [
-      {
-        roles: ["SENSEI_BOT"],
-        options: {
-          VIEW_CHANNEL: true,
-        },
-      },
-    ],
+    permissionOverwrites: [],
     parent: { id: "BEAUTOPIA" },
   },
   {
     id: "TRAINING_DOJO",
     name: "⛩️｜training-dojo",
     lockPermissions: true,
-    permissionOverwrites: [
-      {
-        roles: ["SENSEI_BOT"],
-        options: {
-          VIEW_CHANNEL: true,
-        },
-      },
-    ],
+    permissionOverwrites: [],
+    parent: { id: "BEAUTOPIA" },
+  },
+  {
+    id: "SLOT_MACHINE",
+    name: "🎰｜slot-machine",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
     parent: { id: "BEAUTOPIA" },
   }
 );
@@ -489,14 +494,16 @@ channels.push(
   {
     id: "TICKETS",
     name: "Tickets",
-    permissionOverwrites: DISCOVERABLE,
+    permissionOverwrites: [],
+    // permissionOverwrites: DISCOVERABLE,
   },
   // CHANNELS
   {
     id: "SUPPORT",
     name: "support",
     lockPermissions: true,
-    permissionOverwrites: READ_ONLY,
+    permissionOverwrites: [],
+    // permissionOverwrites: READ_ONLY,
     parent: { id: "TICKETS" },
   }
 );

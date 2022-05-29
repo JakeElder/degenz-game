@@ -27,13 +27,6 @@ const BASE = new Permissions([
   "ATTACH_FILES",
 ]);
 
-const ESTABLISHMENT = new Permissions([
-  ...BASE.toArray(),
-  "CREATE_PUBLIC_THREADS",
-  "CREATE_PRIVATE_THREADS",
-  "MENTION_EVERYONE",
-]);
-
 export const roles: RecursivePartial<Role>[] = [
   {
     id: "EVERYONE",
@@ -41,26 +34,33 @@ export const roles: RecursivePartial<Role>[] = [
     permissions: EVERYONE,
   },
   {
-    type: "SUPPLEMENTARY",
     id: "ADMIN",
+    type: "SUPPLEMENTARY",
     name: "Admin",
-    permissions: new Permissions(["ADMINISTRATOR"]),
-    emoji: { id: "BLUE_TICK" },
+    color: "#ff4e00",
+    emoji: { id: "ORANGE_TICK" },
   },
   {
-    type: "MANAGED",
     id: "ADMIN_BOT",
-    permissions: new Permissions(["ADMINISTRATOR"]),
+    type: "MANAGED",
+    permissions: new Permissions([
+      "MANAGE_ROLES",
+      "SEND_MESSAGES_IN_THREADS",
+      "CREATE_PUBLIC_THREADS",
+      "CREATE_PRIVATE_THREADS",
+      "MANAGE_MESSAGES",
+      "MANAGE_THREADS",
+    ]),
   },
   {
-    type: "BASE",
     id: "PRISONER",
+    type: "BASE",
     name: "Prisoner",
     permissions: BASE,
   },
   {
-    type: "BASE",
     id: "DEGEN",
+    type: "BASE",
     name: "Degen",
     permissions: BASE,
   },
@@ -68,7 +68,6 @@ export const roles: RecursivePartial<Role>[] = [
     id: "VERIFIED",
     type: "BASE",
     name: "Verified",
-    permissions: BASE,
   },
   {
     id: "HIGH_COMMAND",
@@ -81,7 +80,6 @@ export const roles: RecursivePartial<Role>[] = [
     type: "BASE",
     id: "ESTABLISHMENT",
     name: "Establishment",
-    permissions: ESTABLISHMENT,
     emoji: { id: "RED_TICK" },
   },
   {
@@ -102,16 +100,14 @@ export const roles: RecursivePartial<Role>[] = [
   {
     id: "BIG_BROTHER_BOT",
     type: "MANAGED",
+    permissions: BASE,
     emoji: { id: "BIG_BROTHER_NPC" },
-    permissions: new Permissions([
-      "CREATE_PUBLIC_THREADS",
-      "CREATE_PRIVATE_THREADS",
-    ]),
   },
   { id: "SENSEI_BOT", type: "MANAGED", emoji: { id: "SENSEI_NPC" } },
   {
     id: "ALLY_BOT",
     type: "MANAGED",
+    permissions: BASE,
     emoji: { id: "ALLY_NPC" },
   },
   {
@@ -124,10 +120,25 @@ export const roles: RecursivePartial<Role>[] = [
     type: "MANAGED",
     emoji: { id: "WARDEN_NPC" },
   },
-  { id: "TOSSER_BOT", type: "MANAGED", emoji: { id: "TOSSER_NPC" } },
+  {
+    id: "TOSSER_BOT",
+    type: "MANAGED",
+    permissions: BASE,
+    emoji: { id: "TOSSER_NPC" },
+  },
   { id: "BANKER_BOT", type: "MANAGED", emoji: { id: "BANKER_NPC" } },
-  { id: "MART_CLERK_BOT", type: "MANAGED", emoji: { id: "MART_CLERK_NPC" } },
-  { id: "PRISONER_BOT", type: "MANAGED", emoji: { id: "PRISONER_NPC" } },
+  {
+    id: "MART_CLERK_BOT",
+    type: "MANAGED",
+    permissions: BASE,
+    emoji: { id: "MART_CLERK_NPC" },
+  },
+  {
+    id: "PRISONER_BOT",
+    type: "MANAGED",
+    permissions: BASE,
+    emoji: { id: "PRISONER_NPC" },
+  },
   {
     id: "ARMORY_CLERK_BOT",
     type: "MANAGED",
@@ -157,6 +168,7 @@ export const roles: RecursivePartial<Role>[] = [
     id: "MAGIC_EDEN_UPVOTER",
     type: "SUPPLEMENTARY",
     name: "Magic Eden Upvoter",
+    color: "#e9d87f",
     emoji: { id: "DOGE" },
   },
   {
@@ -355,20 +367,26 @@ export const roles: RecursivePartial<Role>[] = [
     type: "SUPPLEMENTARY",
     id: "WHITELIST",
     name: "Whitelist",
+    emoji: { id: "WHITELIST_BW" },
   },
   {
     type: "SUPPLEMENTARY",
     id: "OG_WHITELIST",
     name: "OG Whitelist",
+    emoji: { id: "OG_WHITELIST_BW" },
   },
   {
     type: "SUPPLEMENTARY",
     id: "WHITELIST_CONFIRMED",
     name: "Whitelist Confirmed",
+    color: "#fcadad",
+    emoji: { id: "WHITELIST" },
   },
   {
     type: "SUPPLEMENTARY",
     id: "OG_WHITELIST_CONFIRMED",
     name: "OG Whitelist Confirmed",
+    color: "#fcadad",
+    emoji: { id: "OG_WHITELIST" },
   },
 ];

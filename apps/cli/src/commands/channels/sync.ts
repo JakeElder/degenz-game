@@ -18,7 +18,7 @@ export default class SyncChannels extends Command {
     const progress = this.getProgressBar(
       [...syncCategories, ...syncChannels].map((c) => c.id)
     );
-    progress.start();
+    // progress.start();
 
     await Promise.all(
       syncCategories.map(async (c) => {
@@ -65,7 +65,12 @@ export default class SyncChannels extends Command {
             throw new Error(`Channel ${source.parent.id} not found`);
           }
 
-          const dc = await bot.guild.channels.fetch(c.discordChannel.id);
+          let dc;
+          try {
+            dc = await bot.guild.channels.fetch(c.discordChannel.id);
+          } catch (e) {
+            console.log(c);
+          }
 
           if (!dc) {
             throw new Error(
@@ -84,7 +89,7 @@ export default class SyncChannels extends Command {
             permissionOverwrites,
           });
 
-          progress.complete(source.id);
+          // progress.complete(source.id);
         })
     );
   }

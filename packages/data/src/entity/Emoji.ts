@@ -52,6 +52,7 @@ export type EmojiSymbol =
   | "RAT"
   | "RED_BLUE_PILLS"
   | "RED_DICE"
+  | "ORANGE_TICK"
   | "RED_TICK"
   | "REMOTE_ACCESS"
   | "RESISTANCE_LEADER_NPC"

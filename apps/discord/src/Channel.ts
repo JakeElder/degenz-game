@@ -98,7 +98,7 @@ export class Channel {
       isTrainingDojo: channelId === Config.channelId("TRAINING_DOJO"),
       isGenPop: channelId === Config.channelId("GEN_POP"),
       isBank: channelId === Config.channelId("BANK"),
-      isTavern: channelId === Config.channelId("TAVERN"),
+      // isTavern: channelId === Config.channelId("TAVERN"),
     };
   }
 }

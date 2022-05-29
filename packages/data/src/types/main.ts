@@ -170,7 +170,7 @@ export type ChannelDescriptor = {
   isTrainingDojo: boolean;
   isGenPop: boolean;
   isBank: boolean;
-  isTavern: boolean;
+  // isTavern: boolean;
 };
 
 export type QuestLogMessage = {

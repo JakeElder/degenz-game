@@ -80,9 +80,9 @@ export class Help {
       return this.makeCommunityMessage(params);
     }
 
-    if (channel.isTavern) {
-      return this.makeTavernMessage(params);
-    }
+    // if (channel.isTavern) {
+    //   return this.makeTavernMessage(params);
+    // }
 
     return this.makeWIPMessage();
   }

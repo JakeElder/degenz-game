@@ -14,12 +14,11 @@ export default class AnnouncementController {
   static promptCount = 0;
 
   static async init() {
-    [this.channel, this.state] = await Promise.all([
-      Utils.ManagedChannel.getOrFail("GENERAL", "ALLY"),
-      AppState.findOneByOrFail({ id: "CURRENT" }),
-    ]);
-
-    this.initCron();
+    // [this.channel, this.state] = await Promise.all([
+    //   Utils.ManagedChannel.getOrFail("GENERAL", "ALLY"),
+    //   AppState.findOneByOrFail({ id: "CURRENT" }),
+    // ]);
+    // this.initCron();
   }
 
   static initCron() {

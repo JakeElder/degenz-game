@@ -10,6 +10,7 @@ export const emojis: RecursivePartial<Emoji>[] = [
   { id: "BB", name: "bb" },
   { id: "BIG_BROTHER_NPC", name: "big_brother" },
   { id: "BLUE_TICK", name: "blue_tick" },
+  { id: "ORANGE_TICK", name: "orange_tick" },
   { id: "BULLISH", name: "bullish" },
   { id: "BULLSEYE", name: "bullseye" },
   { id: "BULLSEYE_INACTIVE", name: "bullseye_inactive" },
