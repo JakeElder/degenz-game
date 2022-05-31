@@ -385,7 +385,10 @@ export default class AllyCommandController extends CommandController {
     } catch (e) {
       await this.respond(i, "DISCORD_ERROR", "FAIL");
       console.error(e);
-      await i.followUp(Format.codeBlock(JSON.stringify(e, null, 2)));
+      await i.followUp({
+        content: Format.codeBlock(JSON.stringify(e, null, 2)),
+        ephemeral: true,
+      });
     }
   }
 
