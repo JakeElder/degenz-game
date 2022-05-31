@@ -1,4 +1,4 @@
-import { PermissionOverwriteOptions, PermissionString } from "discord.js";
+import { PermissionOverwriteOptions } from "discord.js";
 import {
   Entity,
   Column,

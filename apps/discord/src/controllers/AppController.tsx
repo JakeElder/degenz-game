@@ -28,8 +28,39 @@ export default class AppController {
 
   static async init() {
     this.bindEnterListener();
+    this.initCountUpdateCron();
     this.initReactionCron();
     this.initStrengthDecayCron();
+  }
+
+  static async initCountUpdateCron() {
+    const admin = Global.bot("ADMIN");
+    const channel = await admin.guild.channels.fetch(
+      Config.appState!.countChannelId
+    );
+
+    if (!channel) {
+      console.error(`COUNT CHANNEL NOT FOUND`);
+      return;
+    }
+
+    cron.schedule("*/5 * * * *", () => {
+      const count = admin.guild.memberCount;
+
+      if (isNaN(count)) {
+        throw new Error("Guild member count NaN");
+      }
+
+      const number = (admin.guild.memberCount / 1000)
+        .toFixed(2)
+        .replace(/0$/, "");
+
+      try {
+        channel.edit({ name: `Total Degenz: ${number}K` });
+      } catch (e) {
+        console.error(e);
+      }
+    });
   }
 
   static initStrengthDecayCron() {
