@@ -234,34 +234,26 @@ export default class AllyCommandController extends CommandController {
 
     await Promise.all([ownership.softRemove(), user.save()]);
 
-    const url = `${Config.env("WEB_URL")}/mart-items/buy`;
-
     await i.update({
       embeds: [
         {
-          color: "DARK_GREEN",
-          author: {
-            name: member.displayName,
-            icon_url: member.displayAvatarURL(),
-          },
-          thumbnail: {
-            height: 32,
-            width: 32,
-            url: `${url}/${item.id}.png`,
-          },
           description: Utils.r(
             <>
               <UserMention id={user.id} /> Ate {item.emoji.toString()} **
               {item.name}**
-              <br />
-              ```
-              {Format.powerChange(
-                strengthBefore,
-                user.strength - strengthBefore
-              )}
-              ```
             </>
           ),
+        },
+        {
+          author: {
+            name: member.displayName,
+            icon_url: member.displayAvatarURL(),
+          },
+          color: "DARK_GREEN",
+          description: `\`${Format.powerChange(
+            strengthBefore,
+            user.strength - strengthBefore
+          )}\``,
         },
       ],
       components: [],
