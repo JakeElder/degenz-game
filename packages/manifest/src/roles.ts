@@ -88,6 +88,11 @@ export const roles: RecursivePartial<Role>[] = [
     name: "Mods",
   },
   {
+    id: "JR_MOD",
+    type: "SUPPLEMENTARY",
+    name: "Jr Mod",
+  },
+  {
     id: "SERVER_BOOSTER",
     type: "SUPPLEMENTARY",
     name: "Server Booster",

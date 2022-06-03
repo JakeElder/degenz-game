@@ -56,6 +56,7 @@ export type SupplementaryRoleSymbol =
   | "HACKER"
   | "HIGH_COMMAND"
   | "MODS"
+  | "JR_MOD"
   | "STAFF"
   | "VIP"
   | "MAGIC_EDEN_UPVOTER"

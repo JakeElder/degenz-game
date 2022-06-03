@@ -13,7 +13,7 @@ import prettyjson from "prettyjson";
 import { issueTokens } from "../legacy/db";
 import UserController from "../controllers/UserController";
 import { CommandController } from "../CommandController";
-import { AchievementSymbol, DistrictSymbol } from "data/types";
+import { AchievementSymbol, DistrictSymbol, RoleSymbol } from "data/types";
 import AppController from "../controllers/AppController";
 import { Global } from "../Global";
 import NextStepController from "../controllers/NextStepsController";
@@ -369,6 +369,40 @@ export default class AllyCommandController extends CommandController {
     }
 
     await this.respond(i, `ENGAGEMENT_BACKFILLED`, "SUCCESS");
+  }
+
+  async whitelist(i: CommandInteraction) {
+    const member = i.options.getMember("member", true) as GuildMember;
+    const type = (i.options.getString("type") || "STANDARD") as
+      | "STANDARD"
+      | "OG";
+
+    const user = await User.findOneByOrFail({ id: member.id });
+    const walletSubmitted = !!user.walletAddress;
+
+    const roles: {
+      SUBMITTED: Record<typeof type, RoleSymbol>;
+      NOT_SUBMITTED: Record<typeof type, RoleSymbol>;
+    } = {
+      SUBMITTED: {
+        STANDARD: "WHITELIST_CONFIRMED",
+        OG: "OG_WHITELIST_CONFIRMED",
+      },
+      NOT_SUBMITTED: {
+        STANDARD: "WHITELIST",
+        OG: "OG_WHITELIST",
+      },
+    };
+
+    const roleId = roles[walletSubmitted ? "SUBMITTED" : "NOT_SUBMITTED"][type];
+
+    if (member.roles.cache.has(Config.roleId(roleId))) {
+      await this.respond(i, `ALREADY_WHITELISTED`, "FAIL");
+      return;
+    }
+
+    await member.roles.add(Config.roleId(roleId));
+    await this.respond(i, `WHITELIST_ASSIGNED`, "SUCCESS");
   }
 
   async admin_createInviteLink(i: CommandInteraction) {

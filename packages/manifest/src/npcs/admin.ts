@@ -318,6 +318,34 @@ admin.commands = [
       )
       .toJSON(),
   },
+  {
+    id: "WHITELIST",
+    permissions: [
+      { id: "ADMIN", type: 1, permission: true },
+      { id: "STAFF", type: 1, permission: true },
+      { id: "MODS", type: 1, permission: true },
+      { id: "JR_MOD", type: 1, permission: true },
+    ],
+    data: new SlashCommandBuilder()
+      .setName("whitelist")
+      .setDescription(`Issue Whitelist`)
+      .addUserOption((option) =>
+        option
+          .setName("member")
+          .setDescription("The member to Whitelist.")
+          .setRequired(true)
+      )
+      .addStringOption((option) =>
+        option
+          .setName("type")
+          .setDescription(`The type of Whitelist to award.`)
+          .setChoices([
+            ["Standard", "STANDARD"],
+            ["OG", "OG"],
+          ])
+      )
+      .toJSON(),
+  },
 ];
 
 export default admin;
