@@ -55,7 +55,6 @@ export default class AllyCommandController extends CommandController {
       });
       return;
     }
-
     const row = new MessageActionRow().addComponents(
       new MessageSelectMenu()
         .setCustomId("EAT_SELECT")
@@ -75,17 +74,17 @@ export default class AllyCommandController extends CommandController {
     );
 
     await i.reply({
+      components: [row],
       embeds: [
         {
           description: Utils.r(
             <>
-              **{user.displayName}** - What you eating fam?{" "}
+              <UserMention id={user.id} /> - What you eating fam?{" "}
               {items.map((i) => `${i.emoji}`)}
             </>
           ),
         },
       ],
-      components: [row],
     });
   }
 
@@ -206,9 +205,12 @@ export default class AllyCommandController extends CommandController {
       });
     }
 
-    const [item, user] = await Promise.all([
+    const admin = Global.bot("ADMIN");
+
+    const [item, user, member] = await Promise.all([
       MartItem.findOneByOrFail({ id: itemId }),
       User.findOneByOrFail({ id: i.user.id }),
+      admin.guild.members.fetch(i.user.id),
     ]);
 
     const ownership = await MartItemOwnership.findOne({
@@ -232,18 +234,32 @@ export default class AllyCommandController extends CommandController {
 
     await Promise.all([ownership.softRemove(), user.save()]);
 
+    const url = `${Config.env("WEB_URL")}/mart-items/buy`;
+
     await i.update({
       embeds: [
         {
+          color: "DARK_GREEN",
+          author: {
+            name: member.displayName,
+            icon_url: member.displayAvatarURL(),
+          },
+          thumbnail: {
+            height: 32,
+            width: 32,
+            url: `${url}/${item.id}.png`,
+          },
           description: Utils.r(
             <>
-              **{user.displayName}** Ate {item.emoji.toString()} **{item.name}**
-              `
+              <UserMention id={user.id} /> Ate {item.emoji.toString()} **
+              {item.name}**
+              <br />
+              ```
               {Format.powerChange(
                 strengthBefore,
                 user.strength - strengthBefore
               )}
-              `
+              ```
             </>
           ),
         },

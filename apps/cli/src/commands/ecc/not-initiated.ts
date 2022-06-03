@@ -1,19 +1,18 @@
 import { Flags } from "@oclif/core";
-import progress from "@oclif/core/lib/cli-ux/styled/progress";
 import Config from "config";
 import { Dormitory, DormitoryTenancy, User } from "data/db";
 import { Command } from "../../lib";
 import { json } from "../../utils";
 
-export default class CheckMissing extends Command {
-  static description = "Check In Game";
+export default class NotInitiated extends Command {
+  static description = "Check Not Initiated";
 
   static flags = {
     "dry-run": Flags.boolean({ default: false }),
   };
 
   async run(): Promise<void> {
-    const { flags } = await this.parse(CheckMissing);
+    const { flags } = await this.parse(NotInitiated);
 
     const [bot, users] = await Promise.all([this.bot("ADMIN"), User.find()]);
     const members = await bot.guild.members.fetch();

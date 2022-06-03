@@ -38,6 +38,7 @@
     "discord.js": "^13.6.0",
     "manifest": "*",
     "prompts": "^2.4.2",
+    "random-item": "^3.0.1",
     "recursive-copy": "^2.0.14",
     "ts-dedent": "^2.2.0"
   },

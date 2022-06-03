@@ -3535,6 +3535,7 @@ __metadata:
     mocha: ^9
     oclif: ^2
     prompts: ^2.4.2
+    random-item: ^3.0.1
     recursive-copy: ^2.0.14
     shx: ^0.3.3
     ts-dedent: ^2.2.0
@@ -9517,7 +9518,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"random-item@npm:^3.1.0":
+"random-item@npm:^3.0.1, random-item@npm:^3.1.0":
   version: 3.1.0
   resolution: "random-item@npm:3.1.0"
   checksum: 928552bbea61db7775c1b1b937a4711e3093d6eb35ba3f1b39b22d63a317c74be6589bb5e8616213996013d06996ffb42e87b3b8f5e131e9e03e9647073fd260
