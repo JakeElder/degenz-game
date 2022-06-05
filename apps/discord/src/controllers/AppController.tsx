@@ -28,7 +28,7 @@ export default class AppController {
 
   static async init() {
     this.bindEnterListener();
-    this.initReactionCron();
+    // this.initReactionCron();
     this.initStrengthDecayCron();
   }
 
