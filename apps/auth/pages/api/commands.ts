@@ -54,6 +54,7 @@ export default async function handler(
 
   if (tokenRequest.status < 200 || tokenRequest.status >= 300) {
     res.status(500).json(tokenRequest.data);
+    console.error("Token request failed");
     return;
   }
 
@@ -68,6 +69,7 @@ export default async function handler(
 
   if (commandPutRequest.status < 200 || commandPutRequest.status >= 300) {
     res.status(500).json(commandPutRequest.data);
+    console.error("Command put request failed");
     return;
   }
 
@@ -95,6 +97,7 @@ export default async function handler(
         );
 
         if (res.status < 200 || res.status >= 300) {
+          console.log(res);
           console.error(res.data);
         }
       })
