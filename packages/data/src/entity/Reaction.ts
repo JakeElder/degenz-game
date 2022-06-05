@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   Unique,
+  RelationId,
 } from "typeorm";
 import { ManagedChannel, User } from "..";
 
@@ -28,8 +29,14 @@ export class Reaction extends BaseEntity {
   @ManyToOne(() => ManagedChannel, { eager: true })
   channel: ManagedChannel;
 
-  @ManyToOne(() => User, { eager: true, onDelete: "CASCADE" })
+  @RelationId((reaction: Reaction) => reaction.channel)
+  channelId: ManagedChannel["id"];
+
+  @ManyToOne(() => User, { onDelete: "CASCADE" })
   user: User;
+
+  @RelationId((reaction: Reaction) => reaction.user)
+  userId: User["id"];
 
   @CreateDateColumn()
   createdAt: Date;

@@ -28,7 +28,7 @@ export default class AppController {
 
   static async init() {
     this.bindEnterListener();
-    // this.initReactionCron();
+    this.initReactionCron();
     this.initStrengthDecayCron();
   }
 
@@ -163,6 +163,7 @@ export default class AppController {
   }
 
   static async initReactionCron() {
+    this.processReactions();
     setInterval(() => {
       if (!this.processingReactions) {
         this.processReactions();
@@ -202,9 +203,12 @@ export default class AppController {
     ];
 
     // Get not processed reactions
-    const reactions = await Reaction.findBy({
-      processed: false,
-      channel: { id: In(channels) },
+    const reactions = await Reaction.find({
+      where: {
+        processed: false,
+        channel: { id: In(channels) },
+      },
+      take: 3000,
     });
 
     if (reactions.length === 0) {
@@ -226,8 +230,8 @@ export default class AppController {
       .andWhere(
         `(user_id IN (:...user_ids) OR channel_id IN (:...channel_ids))`,
         {
-          user_ids: reactions.map((r) => r.user.id),
-          channel_ids: reactions.map((r) => r.channel.id),
+          user_ids: uniq(reactions.map((r) => r.userId)),
+          channel_ids: uniq(reactions.map((r) => r.channelId)),
         }
       )
       .andWhere({ processed: true })
@@ -253,14 +257,14 @@ export default class AppController {
     // Make the data look like ReactionManifest[] for sane processing
     const users = reactions.reduce<ReactionManifest[]>((p, c) => {
       const processed = past.find(
-        (r) => r.user_id === c.user.id && r.message_id === c.messageId
+        (r) => r.user_id === c.userId && r.message_id === c.messageId
       );
 
       // See if we already have this user in the array
-      const userIndex = p.findIndex((m) => m.userId === c.user.id);
+      const userIndex = p.findIndex((m) => m.userId === c.userId);
       const user: ReactionManifest =
         userIndex === -1
-          ? { userId: c.user.id, messages: [] }
+          ? { userId: c.userId, messages: [] }
           : p.splice(userIndex, 1)[0];
 
       // See if we already have this message in the array
@@ -269,7 +273,7 @@ export default class AppController {
         messageIndex === -1
           ? {
               id: c.messageId,
-              channelId: c.channel.id,
+              channelId: c.channelId,
               newReactions: 0,
               processedReactions: processed ? parseInt(processed.count, 10) : 0,
             }
