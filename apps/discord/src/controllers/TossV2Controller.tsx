@@ -550,6 +550,7 @@ export default class TossV2Controller {
             ),
           },
         ],
+        ephemeral: true,
       });
 
       return;
