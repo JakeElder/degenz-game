@@ -92,7 +92,7 @@ export default class TossV2Controller {
 
       if (
         action === "DIRECT_CHALLENGE_RESPONSE_ACCEPT" ||
-        "DIRECT_CHALLENGE_RESPONSE_DECLINE"
+        action === "DIRECT_CHALLENGE_RESPONSE_DECLINE"
       ) {
         await this.handleDirectChallengeResponse({
           tossId,
@@ -250,16 +250,28 @@ export default class TossV2Controller {
       ),
     ]);
 
-    // Output discovery message
     const channel = await Utils.ManagedChannel.getOrFail(
       toss.channel.id,
       "TOSSER"
     );
 
+    if (toss.challengee && toss.challengee.id === Config.clientId("TOSSER")) {
+      // Perform coin toss
+      const commit = await this.commit(toss);
+      const options = this.makeDirectChallengeEmbed(toss);
+
+      await Promise.all([
+        props.i.update(options as InteractionUpdateOptions),
+        channel.send(await this.makeTossResultEmbed(toss, commit)),
+      ]);
+
+      return;
+    }
+
+    // Output challenge message
     const embed = toss.challengee
       ? this.makeDirectChallengeEmbed(toss)
       : this.makeOpenChallengeEmbed(toss);
-
     const challengeMessage = await channel.send(embed);
 
     // Save toss
@@ -308,6 +320,10 @@ export default class TossV2Controller {
 
       return;
     }
+    const channel = await Utils.ManagedChannel.getOrFail(
+      toss.channel.id,
+      "TOSSER"
+    );
 
     if (!props.accepted) {
       toss.outcome = "CHALLENGEE_DECLINED";
@@ -318,16 +334,25 @@ export default class TossV2Controller {
         props.i.update(
           this.makeDirectChallengeEmbed(toss) as InteractionUpdateOptions
         ),
+        channel.send({
+          embeds: [
+            {
+              description: Utils.r(
+                <>
+                  {Config.emojiCode("CHICKEN")}{" "}
+                  <UserMention id={challengee.id} /> **chickened out**!{" "}
+                  <UserMention id={toss.challenger.id} /> challenged{" "}
+                  <UserMention id={challengee.id} /> to a toss for{" "}
+                  {Format.currency(toss.amount)} but they didn't accept 😂.
+                </>
+              ),
+            },
+          ],
+        }),
       ]);
 
       return;
     }
-
-    // Update side select message
-    const channel = await Utils.ManagedChannel.getOrFail(
-      toss.channel.id,
-      "TOSSER"
-    );
 
     // Check challenger balance
     if (toss.challenger.gbt < toss.amount) {
@@ -566,7 +591,11 @@ export default class TossV2Controller {
             thumbnail: { url: gif },
             description: Utils.r(
               <>
-                It was **{toss.flippedSide}**! {toss.challenger.mention}
+                It was{" "}
+                {Config.emojiCode(
+                  toss.flippedSide === "HEADS" ? "COIN_HEADS" : "COIN_TAILS"
+                )}{" "}
+                **{toss.flippedSide.toLowerCase()}**! {toss.challenger.mention}
                 tossed.. themself.
               </>
             ),
@@ -608,8 +637,12 @@ export default class TossV2Controller {
           thumbnail: { url: gif },
           description: Utils.r(
             <>
-              It was **{toss.flippedSide}**! {toss.challenger.mention}{" "}
-              {commit.data.winner === "CHALLENGER" ? "won" : "lost"}
+              It was{" "}
+              {Config.emojiCode(
+                toss.flippedSide === "HEADS" ? "COIN_HEADS" : "COIN_TAILS"
+              )}{" "}
+              **{toss.flippedSide.toLowerCase()}**! {toss.challenger.mention} **
+              {commit.data.winner === "CHALLENGER" ? "WON" : "LOST"}**
             </>
           ),
           fields: [{ name: "Challengee", value: toss.challengee.mention }],
@@ -653,7 +686,7 @@ export default class TossV2Controller {
         {
           description: Utils.r(
             <>
-              <UserMention id={toss.challenger.id} /> - What ya thinking.{" "}
+              <UserMention id={toss.challenger.id} /> -{" "}
               {Config.emojiCode("COIN_HEADS")} `Heads` or{" "}
               {Config.emojiCode("COIN_TAILS")} `Tails`?
             </>
