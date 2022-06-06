@@ -8,7 +8,15 @@ import {
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
 import { ManagedChannelSymbol, QuestSymbol, TossGame } from "data/types";
-import { User, MartItem, District, Dormitory, NPC, Achievement } from "data/db";
+import {
+  User,
+  MartItem,
+  District,
+  Dormitory,
+  NPC,
+  Achievement,
+  Toss,
+} from "data/db";
 
 type EnterEvent = {
   type: "ENTER";
@@ -121,11 +129,7 @@ type ItemEatenEvent = {
 
 type TossCompletedEvent = {
   type: "TOSS_COMPLETED";
-  data: {
-    challenger: User;
-    challengee: User | "HOUSE";
-    game: TossGame;
-  };
+  data: { toss: Toss };
 };
 
 type RedpillTakenEvent = {

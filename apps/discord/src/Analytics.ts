@@ -137,20 +137,14 @@ export default class Analytics {
   }
 
   static tossCompleted(e: PickEvent<"TOSS_COMPLETED">) {
-    const [challengee_id, challengee_name] =
-      e.data.challengee === "HOUSE"
-        ? ["HOUSE", "HOUSE"]
-        : [e.data.challengee.id, e.data.challengee.displayName];
-
     this.mixpanel.track(capitalCase(e.type), {
       ...this.common,
-      distinct_id: e.data.challenger.id,
-      user_display_name: e.data.challenger.displayName,
-      challengee_id,
-      challengee_name,
-      amount: e.data.game.amount,
-      winner: e.data.game.winner,
-      result: e.data.game.result,
+      distinct_id: e.data.toss.challenger.id,
+      user_display_name: e.data.toss.challenger.displayName,
+      challengee_id: e.data.toss.challengee.id,
+      challengee_name: e.data.toss.challengee.displayName,
+      amount: e.data.toss.amount,
+      outcome: e.data.toss.outcome,
     });
   }
 

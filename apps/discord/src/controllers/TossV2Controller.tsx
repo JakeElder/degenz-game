@@ -8,6 +8,7 @@ import {
   MessageActionRow,
   MessageButton,
   MessageButtonStyleResolvable,
+  MessageEditOptions,
   MessageOptions,
 } from "discord.js";
 import { Global } from "../Global";
@@ -18,6 +19,9 @@ import { Format } from "lib";
 import { calculateTossRake } from "../legacy/utils";
 import { Routes } from "discord-api-types/v10";
 import { REST } from "@discordjs/rest";
+import { Not } from "typeorm";
+import AchievementController from "./AchievementController";
+import Events from "../Events";
 
 type Contender = {
   user: User;
@@ -117,6 +121,8 @@ export default class TossV2Controller {
   static async toss(i: CommandInteraction) {
     await i.deferReply({ ephemeral: true });
 
+    await this.cancelOpenTosses(i.user.id);
+
     const challenger = await this.contender(i.user.id);
     const amount = i.options.getInteger("amount", true);
 
@@ -197,6 +203,53 @@ export default class TossV2Controller {
     // Update toss state
     toss.state = "SIDE_SELECT";
     toss.sideSelectToken = i.token;
+    await toss.save();
+  }
+
+  static async cancelOpenTosses(userId: User["id"]) {
+    const tosses = await Toss.findBy({
+      challenger: { id: userId },
+      state: Not("COMPLETE") as any,
+    });
+    for (let i = 0; i < tosses.length; i++) {
+      await this.cancel(tosses[i]);
+    }
+  }
+
+  static async cancel(toss: Toss) {
+    toss.state = "COMPLETE";
+    toss.outcome = "CANCELLED";
+
+    if (toss.sideSelectToken) {
+      try {
+        await this.rest.patch(
+          Routes.webhookMessage(
+            Config.clientId("TOSSER"),
+            toss.sideSelectToken
+          ),
+          { body: this.makeSideSelectEmbed(toss) }
+        );
+      } catch (e) {
+        console.log(e);
+        console.log("Couldn't update side select message.");
+      }
+    }
+
+    if (toss.challengeMessageId) {
+      const embed = toss.challengee
+        ? this.makeDirectChallengeEmbed(toss)
+        : this.makeOpenChallengeEmbed(toss);
+
+      const channel = await Utils.ManagedChannel.getOrFail(
+        toss.channel.id,
+        "TOSSER"
+      );
+
+      const message = await channel.messages.fetch(toss.challengeMessageId);
+
+      await message.edit(embed as MessageEditOptions);
+    }
+
     await toss.save();
   }
 
@@ -528,6 +581,8 @@ export default class TossV2Controller {
 
       await toss.save();
 
+      this.finalise(toss);
+
       return {
         type: "SELF",
         data: { yld: -toss.rake },
@@ -556,6 +611,8 @@ export default class TossV2Controller {
 
     await toss.save();
 
+    this.finalise(toss);
+
     return {
       type: "OPPONENT",
       data: {
@@ -563,6 +620,14 @@ export default class TossV2Controller {
         yld,
       },
     };
+  }
+
+  static finalise(toss: Toss) {
+    AchievementController.checkAndAward(
+      toss.challenger,
+      "TOSS_WITH_TED_QUEST_COMPLETED"
+    );
+    Events.emit("TOSS_COMPLETED", { toss });
   }
 
   static async makeTossResultEmbed(
@@ -704,7 +769,7 @@ export default class TossV2Controller {
                 ? "DANGER"
                 : "SECONDARY"
             )
-            .setDisabled(toss.chosenSide !== null),
+            .setDisabled(toss.state === "COMPLETE" || toss.chosenSide !== null),
           new MessageButton()
             .setCustomId(`TOSS:SIDE_SELECT_TAILS:${toss.id}`)
             .setEmoji(tails.identifier)
@@ -714,7 +779,7 @@ export default class TossV2Controller {
                 ? "DANGER"
                 : "SECONDARY"
             )
-            .setDisabled(toss.chosenSide !== null)
+            .setDisabled(toss.state === "COMPLETE" || toss.chosenSide !== null)
         ),
       ],
     };
@@ -727,16 +792,26 @@ export default class TossV2Controller {
     ];
 
     function acceptStyle(toss: Toss): MessageButtonStyleResolvable {
+      if (toss.outcome === "CANCELLED") {
+        return "DANGER";
+      }
+
       if (toss.state === "COMPLETE") {
         return toss.outcome === "CHALLENGEE_DECLINED" ? "SECONDARY" : "DANGER";
       }
+
       return "DANGER";
     }
 
     function declineStyle(toss: Toss): MessageButtonStyleResolvable {
+      if (toss.outcome === "CANCELLED") {
+        return "DANGER";
+      }
+
       if (toss.state === "COMPLETE") {
         return toss.outcome === "CHALLENGEE_DECLINED" ? "DANGER" : "SECONDARY";
       }
+
       return "DANGER";
     }
 
@@ -803,12 +878,5 @@ export default class TossV2Controller {
         ),
       ],
     };
-  }
-
-  static async cancel(toss: Toss) {
-    await this.rest.patch(
-      Routes.webhookMessage(Config.clientId("TOSSER"), toss.sideSelectToken),
-      { body: this.makeSideSelectEmbed(toss) }
-    );
   }
 }

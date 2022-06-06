@@ -172,31 +172,17 @@ export default class WorldNotifier {
   }
 
   static async tossCompleted(e: PickEvent<"TOSS_COMPLETED">) {
-    let message: string;
-    if (e.data.challengee === "HOUSE") {
-      message = r(
-        <>
-          **{e.data.challenger.displayName}** challenged{" "}
-          {userMention(Config.clientId("TOSSER"))} and **
-          {e.data.game.winner === "CHALLENGER" ? "won" : "lost"}**{" "}
-          {Format.currency(e.data.game.amount)}.
-        </>
-      );
-    } else {
-      message = r(
-        <>
-          **{e.data.challenger.displayName}** challenged **
-          {e.data.challengee.displayName}** and **
-          {e.data.game.winner === "CHALLENGER" ? "won" : "lost"}**{" "}
-          {Format.currency(e.data.game.amount)}.
-        </>
-      );
-    }
+    const message = r(
+      <>
+        **{e.data.toss.challenger.displayName}** challenged **
+        {e.data.toss.challengee.displayName}** and **
+        {e.data.toss.chosenSide === e.data.toss.flippedSide
+          ? "won"
+          : "lost"}** {Format.currency(e.data.toss.amount)}.
+      </>
+    );
 
-    await Promise.all([
-      this.logToHOP("TOSSER", e.type, message),
-      this.logToChannel("TOSS_HOUSE", "TOSSER", e.type, message),
-    ]);
+    await this.logToHOP("TOSSER", e.type, message);
   }
 
   static async redpillTaken(e: PickEvent<"REDPILL_TAKEN">) {
