@@ -5,6 +5,7 @@ import {
   MessageOptions,
   TextChannel,
   ThreadChannel,
+  VoiceChannel,
 } from "discord.js";
 import { User } from "..";
 import { SlashCommandBuilder } from "@discordjs/builders";
@@ -153,7 +154,7 @@ export type TossResult = {
 export type ChannelDescriptor = {
   id: string;
   name: string | undefined;
-  channel: TextChannel | ThreadChannel | undefined;
+  channel: TextChannel | ThreadChannel | VoiceChannel | undefined;
   isCommunity: boolean;
   isApartment: boolean;
   isDormitory: boolean;
