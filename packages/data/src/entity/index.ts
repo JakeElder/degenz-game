@@ -19,6 +19,7 @@ export { Pledge } from "./Pledge";
 export { QuestLogChannel } from "./QuestLogChannel";
 export { Reaction } from "./Reaction";
 export { Role } from "./Role";
+export { Toss } from "./Toss";
 export { User } from "./User";
 
 // export { Invite } from "./Invite";

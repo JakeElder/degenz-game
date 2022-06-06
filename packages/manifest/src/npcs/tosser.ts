@@ -34,7 +34,7 @@ tosser.commands.push({
     .addUserOption((option) =>
       option
         .setName("opponent")
-        .setRequired(true)
+        .setRequired(false)
         .setDescription("Who are you tossing with?")
     )
     .toJSON(),

@@ -11,6 +11,7 @@ import {
 import { userMention } from "@discordjs/builders";
 import Events from "../Events";
 import Config from "config";
+import { Format } from "lib";
 
 const { r } = Utils;
 
@@ -20,12 +21,16 @@ export default class BankerCommandController extends CommandController {
     if (user === null) return;
 
     i.reply({
-      content: r(
-        <>
-          {"\u{1f4b0}"} `{user.gbt}`
-        </>
-      ),
-      ephemeral: true,
+      embeds: [
+        {
+          description: Utils.r(
+            <>
+              {user.mention}'s balance is {Format.currency(user.gbt)}{" "}
+              {Config.emojiCode("BANKER_NPC")}.
+            </>
+          ),
+        },
+      ],
     });
 
     Events.emit("BALANCE_CHECKED", { user });

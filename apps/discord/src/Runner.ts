@@ -16,6 +16,7 @@ import EntranceController from "./controllers/EntranceController";
 import QuestLogController from "./controllers/QuestLogController";
 import { NPCSymbol } from "data/types";
 import AnnouncementController from "./controllers/AnnouncementController";
+import TossV2Controller from "./controllers/TossV2Controller";
 
 export default class Runner {
   constructor(private bots: DiscordBot[]) {
@@ -51,6 +52,10 @@ export default class Runner {
 
       if (e.data.bot.id === "MART_CLERK") {
         MartClerkCommandController.init();
+      }
+
+      if (e.data.bot.id === "TOSSER") {
+        TossV2Controller.init();
       }
 
       if (e.data.bot.id === "ALLY") {

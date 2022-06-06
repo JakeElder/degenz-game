@@ -327,18 +327,16 @@ export default class AppController {
     await Promise.all([Reaction.save(reactions), User.save(userRows)]);
 
     // Trigger events for HOP
-    // actionable.forEach((u, idx) => {
-    //   const row = userRows.find((r) => r.id === u.userId);
-    //   if (row) {
-    //     Events.emit("REACTIONS_REWARDED", {
-    //       user: row,
-    //       yield: rewards[idx] * 10,
-    //       channelIds: uniq(u.messages.map((m) => m.channelId)),
-    //     });
-    //   }
-    // });
-
-    console.log("processed");
+    actionable.forEach((u, idx) => {
+      const row = userRows.find((r) => r.id === u.userId);
+      if (row) {
+        Events.emit("REACTIONS_REWARDED", {
+          user: row,
+          yield: rewards[idx] * 10,
+          channelIds: uniq(u.messages.map((m) => m.channelId)),
+        });
+      }
+    });
 
     // Mark as finished processing
     this.processingReactions = false;
