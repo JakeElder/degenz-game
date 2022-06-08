@@ -126,6 +126,26 @@ export default class TossV2Controller {
     const challenger = await this.contender(i.user.id);
     const amount = i.options.getInteger("amount", true);
 
+    // Handle negative amount
+    if (amount < 0) {
+      await i.reply({
+        content: `${Config.emojiCode("BIG_BROTHER_NPC")} **MINUS** ${Math.abs(
+          g.amount
+        )}? BIG BROTHER HAS BEEN NOTIFIED. CHEATERS WILL NOT BE TOLERATED.`,
+        ephemeral: true,
+      });
+      return;
+    }
+
+    // Handle 0
+    if (amount === 0) {
+      await i.reply({
+        content: `You want to toss *nothing*? **You can do that anywhere**. Don't come around here with your nothing tosses.`,
+        ephemeral: true,
+      });
+      return;
+    }
+
     // Check balance
     if (challenger.user.gbt < amount) {
       await i.editReply({
