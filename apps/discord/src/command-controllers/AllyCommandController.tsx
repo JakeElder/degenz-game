@@ -3,6 +3,7 @@ import {
   CommandInteraction,
   GuildMember,
   InteractionReplyOptions,
+  InteractionUpdateOptions,
   MessageActionRow,
   MessageSelectMenu,
   SelectMenuInteraction,
@@ -26,6 +27,7 @@ import Utils from "../Utils";
 import Config from "config";
 import { IsNull, Not } from "typeorm";
 import { RoleMention, UserMention } from "../legacy/templates";
+import delay from "delay";
 
 export default class AllyCommandController extends CommandController {
   async eat(i: CommandInteraction) {
@@ -34,10 +36,12 @@ export default class AllyCommandController extends CommandController {
       MartItem.find({ order: { price: -1 } }),
     ]);
 
+    await i.deferReply();
+
     const inventory = await user.getInventory();
 
     if (inventory.length === 0) {
-      await i.reply({
+      await i.editReply({
         embeds: [
           {
             color: "RED",
@@ -55,25 +59,49 @@ export default class AllyCommandController extends CommandController {
       });
       return;
     }
-    const row = new MessageActionRow().addComponents(
-      new MessageSelectMenu()
-        .setCustomId("EAT_SELECT")
-        .setPlaceholder("Choose from your inventory")
-        .addOptions(
-          inventory.map((g) => {
-            const item = items.find((i) => i.id === g.item_id)!;
-            return {
-              label: item.name,
-              description: `[${
-                g.count
-              }] available [effect] +${item.strengthIncrease!} stength`,
-              value: `${i.user.id}:${item.id}`,
-            };
-          })
-        )
-    );
 
-    await i.reply({
+    await i.editReply(await this.makeEatEmbed(user, items, inventory));
+  }
+
+  async makeEatEmbed(
+    user: User,
+    items: MartItem[],
+    inventory: Awaited<ReturnType<User["getInventory"]>>,
+    processing = false,
+    item?: MartItem
+  ): Promise<InteractionReplyOptions> {
+    const row = processing
+      ? new MessageActionRow().addComponents(
+          new MessageSelectMenu()
+            .setCustomId("PROCESSING_EAT_SELECT")
+            .setDisabled(true)
+            .addOptions([
+              {
+                label: `${item!.name} - Processing`,
+                value: "-",
+                default: true,
+              },
+            ])
+        )
+      : new MessageActionRow().addComponents(
+          new MessageSelectMenu()
+            .setCustomId("EAT_SELECT")
+            .setPlaceholder("Choose from your inventory")
+            .addOptions(
+              inventory.map((g) => {
+                const item = items.find((i) => i.id === g.item_id)!;
+                return {
+                  label: item.name,
+                  description: `[${
+                    g.count
+                  }] available [effect] +${item.strengthIncrease!} stength`,
+                  value: `${user.id}:${item.id}`,
+                };
+              })
+            )
+        );
+
+    return {
       components: [row],
       embeds: [
         {
@@ -85,7 +113,7 @@ export default class AllyCommandController extends CommandController {
           ),
         },
       ],
-    });
+    };
   }
 
   async gift(i: CommandInteraction) {
@@ -207,11 +235,23 @@ export default class AllyCommandController extends CommandController {
 
     const admin = Global.bot("ADMIN");
 
-    const [item, user, member] = await Promise.all([
-      MartItem.findOneByOrFail({ id: itemId }),
+    const [items, user, member] = await Promise.all([
+      MartItem.find({ order: { price: -1 } }),
       User.findOneByOrFail({ id: i.user.id }),
       admin.guild.members.fetch(i.user.id),
     ]);
+
+    const item = items.find((i) => i.id === itemId)!;
+
+    await i.update(
+      (await this.makeEatEmbed(
+        user,
+        items,
+        [],
+        true,
+        item
+      )) as InteractionUpdateOptions
+    );
 
     const ownership = await MartItemOwnership.findOne({
       where: {
@@ -221,7 +261,7 @@ export default class AllyCommandController extends CommandController {
     });
 
     if (!ownership) {
-      await i.update({ content: "Error", components: [], embeds: [] });
+      await i.editReply({ content: "Error", components: [], embeds: [] });
       return;
     }
 
@@ -234,7 +274,9 @@ export default class AllyCommandController extends CommandController {
 
     await Promise.all([ownership.softRemove(), user.save()]);
 
-    await i.update({
+    await delay(4000);
+
+    await i.editReply({
       embeds: [
         {
           description: Utils.r(
