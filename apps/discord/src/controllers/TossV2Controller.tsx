@@ -157,7 +157,11 @@ export default class TossV2Controller {
     const opponent = i.options.getMember("opponent") as null | GuildMember;
     const challengee = opponent ? await this.contender(opponent.id) : undefined;
 
-    if (challengee && challengee.user.gbt < amount) {
+    if (
+      challengee &&
+      challengee.user.id !== Config.clientId("TOSSER") &&
+      challengee.user.gbt < amount
+    ) {
       await i.editReply({
         embeds: [
           {
