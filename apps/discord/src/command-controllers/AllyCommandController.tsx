@@ -27,7 +27,6 @@ import Utils from "../Utils";
 import Config from "config";
 import { IsNull, Not } from "typeorm";
 import { RoleMention, UserMention } from "../legacy/templates";
-import delay from "delay";
 
 export default class AllyCommandController extends CommandController {
   async eat(i: CommandInteraction) {
@@ -77,7 +76,7 @@ export default class AllyCommandController extends CommandController {
             .setDisabled(true)
             .addOptions([
               {
-                label: `${item!.name} - Processing`,
+                label: `${item!.name} - Eating Food`,
                 value: "-",
                 default: true,
               },
@@ -273,8 +272,6 @@ export default class AllyCommandController extends CommandController {
     );
 
     await Promise.all([ownership.softRemove(), user.save()]);
-
-    await delay(4000);
 
     await i.editReply({
       embeds: [
