@@ -14,8 +14,16 @@ export default class IsBot extends Command {
     const admin = await this.bot("ADMIN");
     const members = await admin.guild.members.fetch();
 
+    const names = [
+      "𝘋𝘌𝘎𝘌𝘕𝘡 𝘎𝘈𝘔𝘌",
+      "𝗗𝗘𝗚𝗘𝗡𝗭 𝗚𝗔𝗠𝗘",
+      "𝙳𝙴𝙶𝙴𝙽𝚉 𝙶𝙰𝙼𝙴",
+      "DEGENZ GAME Bot",
+      "𝐃𝐄𝐆𝐄𝐍𝐙 𝐆𝐀𝐌𝐄",
+    ];
+
     const botmai = members.filter((m) => {
-      return /\d{7}/.test(m.displayName);
+      return names.includes(m.displayName);
     });
 
     console.log(botmai.size);
@@ -23,10 +31,10 @@ export default class IsBot extends Command {
     for (let i = 0; i < botmai.size; i++) {
       const bot = botmai.at(i)!;
       if (flags["dry-run"]) {
-        await bot.ban();
-        console.log(`banned ${bot.displayName}`);
-      } else {
         console.log(bot.displayName);
+      } else {
+        await bot.ban();
+        console.log(`banned ${bot.user.tag}`);
       }
     }
   }
