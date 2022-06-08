@@ -4,7 +4,6 @@ import { Global } from "../Global";
 import Events from "../Events";
 import { Format } from "lib";
 import { AchievementSymbol, QuestSymbol } from "data/types";
-import Utils from "../Utils";
 import Config from "config";
 
 type DescriptionMap = Partial<Record<AchievementSymbol, string>>;
@@ -42,8 +41,7 @@ export default class AchievementController {
       return;
     }
 
-    const [residence, member, achievementData] = await Promise.all([
-      Utils.Channel.getOrFail(user.notificationChannelId),
+    const [member, achievementData] = await Promise.all([
       admin.guild.members.fetch(user.id),
       Achievement.findOne({ where: { id: achievement } }),
     ]);
@@ -81,7 +79,6 @@ export default class AchievementController {
       );
     }
 
-    await residence.send({ embeds: [embed] });
     const isQuest = achievement.endsWith("QUEST_COMPLETED");
 
     if (isQuest) {
