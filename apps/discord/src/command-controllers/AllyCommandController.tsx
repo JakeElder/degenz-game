@@ -27,6 +27,7 @@ import Utils from "../Utils";
 import Config from "config";
 import { IsNull, Not } from "typeorm";
 import { RoleMention, UserMention } from "../legacy/templates";
+import listify from "listify";
 
 export default class AllyCommandController extends CommandController {
   async eat(i: CommandInteraction) {
@@ -86,11 +87,14 @@ export default class AllyCommandController extends CommandController {
           new MessageSelectMenu()
             .setCustomId("EAT_SELECT")
             .setPlaceholder("Choose from your inventory")
+            .setMinValues(1)
+            .setMaxValues(inventory.length)
             .addOptions(
               inventory.map((g) => {
                 const item = items.find((i) => i.id === g.item_id)!;
                 return {
-                  label: item.name,
+                  label: `${item.name}`,
+                  emoji: item.emoji.identifier,
                   description: `[${
                     g.count
                   }] available [effect] +${item.strengthIncrease!} stength`,
@@ -215,10 +219,7 @@ export default class AllyCommandController extends CommandController {
   }
 
   async handleEatSelect(i: SelectMenuInteraction) {
-    const [userId, itemId] = i.values[0].split(":") as [
-      User["id"],
-      MartItemSymbol
-    ];
+    const [userId] = i.values[0].split(":");
 
     if (i.user.id !== userId) {
       i.reply({
@@ -232,6 +233,8 @@ export default class AllyCommandController extends CommandController {
       });
     }
 
+    const eatenIds = i.values.map((i) => i.split(":")[1] as MartItemSymbol);
+
     const admin = Global.bot("ADMIN");
 
     const [items, user, member] = await Promise.all([
@@ -240,7 +243,7 @@ export default class AllyCommandController extends CommandController {
       admin.guild.members.fetch(i.user.id),
     ]);
 
-    const item = items.find((i) => i.id === itemId)!;
+    const eaten = eatenIds.map((id) => items.find((i) => i.id === id)!);
 
     await i.update(
       (await this.makeEatEmbed(
@@ -248,18 +251,24 @@ export default class AllyCommandController extends CommandController {
         items,
         [],
         true,
-        item
+        eaten[0]
       )) as InteractionUpdateOptions
     );
 
-    const ownership = await MartItemOwnership.findOne({
-      where: {
-        item: { id: item.id },
-        user: { id: user.id },
-      },
-    });
+    let ownerships: MartItemOwnership[];
 
-    if (!ownership) {
+    try {
+      ownerships = await Promise.all(
+        eaten.map((e) => {
+          return MartItemOwnership.findOneOrFail({
+            where: {
+              item: { id: e.id },
+              user: { id: user.id },
+            },
+          });
+        })
+      );
+    } catch (e) {
       await i.editReply({ content: "Error", components: [], embeds: [] });
       return;
     }
@@ -267,19 +276,22 @@ export default class AllyCommandController extends CommandController {
     const strengthBefore = user.strength;
 
     user.strength = Math.max(
-      Math.min(100, user.strength + item.strengthIncrease),
+      Math.min(
+        100,
+        user.strength + eaten.reduce((p, c) => p + c.strengthIncrease, 0)
+      ),
       0
     );
 
-    await Promise.all([ownership.softRemove(), user.save()]);
+    await Promise.all([...ownerships.map((o) => o), user.save()]);
 
     await i.editReply({
       embeds: [
         {
           description: Utils.r(
             <>
-              <UserMention id={user.id} /> Ate {item.emoji.toString()} **
-              {item.name}**
+              <UserMention id={user.id} /> Ate{" "}
+              {listify(eaten.map((e) => `${e.emoji.toString()} **${e.name}**`))}
             </>
           ),
         },
@@ -298,7 +310,11 @@ export default class AllyCommandController extends CommandController {
       components: [],
     });
 
-    Events.emit("ITEM_EATEN", { user, item, strengthBefore });
+    Events.emit("ITEM_EATEN", {
+      user,
+      items: eaten,
+      strengthBefore,
+    });
   }
 
   async handleGiftSelect(i: SelectMenuInteraction, params: [User["id"]]) {

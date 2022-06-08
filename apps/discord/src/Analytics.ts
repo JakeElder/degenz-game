@@ -117,11 +117,13 @@ export default class Analytics {
   }
 
   static itemEaten(e: PickEvent<"ITEM_EATEN">) {
-    this.mixpanel.track(capitalCase(e.type), {
-      ...this.common,
-      distinct_id: e.data.user.id,
-      user_display_name: e.data.user.displayName,
-      item: e.data.item.name,
+    e.data.items.forEach((item) => {
+      this.mixpanel.track(capitalCase(e.type), {
+        ...this.common,
+        distinct_id: e.data.user.id,
+        user_display_name: e.data.user.displayName,
+        item,
+      });
     });
   }
 

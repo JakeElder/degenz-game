@@ -128,8 +128,11 @@ export default class WorldNotifier {
   static async itemEaten(e: PickEvent<"ITEM_EATEN">) {
     const message = r(
       <>
-        **{e.data.user.displayName}** ate {e.data.item.emoji.toString()}**
-        {e.data.item.name}** `
+        **{e.data.user.displayName}** ate{" "}
+        {listify(
+          e.data.items.map((e) => `${e.emoji.toString()} **${e.name}**`)
+        )}
+        `
         {Format.powerChange(
           e.data.strengthBefore,
           e.data.user.strength - e.data.strengthBefore
