@@ -128,20 +128,18 @@ export default class TossV2Controller {
 
     // Handle negative amount
     if (amount < 0) {
-      await i.reply({
+      await i.editReply({
         content: `${Config.emojiCode("BIG_BROTHER_NPC")} **MINUS** ${Math.abs(
           amount
         )}? BIG BROTHER HAS BEEN NOTIFIED. CHEATERS WILL NOT BE TOLERATED.`,
-        ephemeral: true,
       });
       return;
     }
 
     // Handle 0
     if (amount === 0) {
-      await i.reply({
+      await i.editReply({
         content: `You want to toss *nothing*? **You can do that anywhere**. Don't come around here with your nothing tosses.`,
-        ephemeral: true,
       });
       return;
     }
