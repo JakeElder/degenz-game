@@ -283,7 +283,7 @@ export default class AllyCommandController extends CommandController {
       0
     );
 
-    await Promise.all([...ownerships.map((o) => o), user.save()]);
+    await Promise.all([...ownerships.map((o) => o.softRemove()), user.save()]);
 
     await i.editReply({
       embeds: [
