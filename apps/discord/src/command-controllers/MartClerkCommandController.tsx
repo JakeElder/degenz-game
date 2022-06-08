@@ -50,9 +50,17 @@ export default class MartClerkCommandController extends CommandController {
 
     merris.client.on("interactionCreate", async (i) => {
       if (!i.isButton()) return;
+
       if (i.customId.startsWith("buy:")) {
         const [_, id] = i.customId.split(":") as [any, MartItemSymbol];
         const item = await MartItem.findOne({ where: { id } });
+
+        await i.update(
+          (await MartClerkCommandController.makeBuyResponse(
+            id,
+            true
+          )) as InteractionUpdateOptions
+        );
 
         if (!item) {
           i.update({ content: "Error", components: [], embeds: [] });
@@ -65,7 +73,7 @@ export default class MartClerkCommandController extends CommandController {
 
         if (res.success) {
           const update = await MartClerkCommandController.makeBuyResponse(id);
-          await i.update(update as InteractionUpdateOptions);
+          await i.editReply(update);
           Events.emit("MART_ITEM_BOUGHT", { user, item });
           AchievementController.checkAndAward(
             user,
@@ -74,14 +82,14 @@ export default class MartClerkCommandController extends CommandController {
           return;
         } else {
           if (res.code === "INSUFFICIENT_BALANCE") {
-            i.update({
+            i.editReply({
               content: `You don't have enough ${Format.token()} to buy **${
                 item.name
               }**.`,
             });
             return;
           }
-          await i.update({
+          await i.editReply({
             content: "That's out of stock. Try again later.",
             embeds: [],
             components: [],
@@ -96,7 +104,8 @@ export default class MartClerkCommandController extends CommandController {
   });
 
   static async makeBuyResponse(
-    boughtItem?: MartItemSymbol
+    boughtItem?: MartItemSymbol,
+    processing = false
   ): Promise<InteractionReplyOptions> {
     const items = await MartItem.find({
       order: { price: -1 },
@@ -155,12 +164,18 @@ export default class MartClerkCommandController extends CommandController {
           items.map((item) =>
             new MessageButton()
               .setCustomId(`buy:${item.id}`)
-              .setEmoji(item.emoji.identifier)
+              .setEmoji(
+                boughtItem === item.id && processing
+                  ? Config.emojiCode("LOADING")
+                  : item.emoji.identifier
+              )
               .setStyle(
-                !!boughtItem || item.stock === 0 ? "SECONDARY" : "PRIMARY"
+                processing || !!boughtItem || item.stock === 0
+                  ? "SECONDARY"
+                  : "PRIMARY"
               )
               .setLabel(item.name)
-              .setDisabled(!!boughtItem || item.stock === 0)
+              .setDisabled(processing || !!boughtItem || item.stock === 0)
           )
         ),
       ],

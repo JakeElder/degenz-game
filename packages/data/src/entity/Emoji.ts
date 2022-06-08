@@ -93,6 +93,7 @@ export type EmojiSymbol =
   | "OG_WHITELIST_BW"
   | "WHITELIST"
   | "OG_WHITELIST"
+  | "LOADING"
   | "BIG_G";
 
 @Entity()
@@ -105,6 +106,8 @@ export class Emoji extends BaseEntity {
 
   @Column()
   identifier: string;
+
+  extension: "png" | "gif" = "png";
 
   @CreateDateColumn()
   createdAt: Date;

@@ -27,7 +27,10 @@ export default class InsertEmojis extends Command {
 
     const files = await Promise.all(
       inserts.map(async (s) => {
-        const file = path.join(__dirname, `../../images/emojis/${s.id}.png`);
+        const file = path.join(
+          __dirname,
+          `../../images/emojis/${s.id}.${s.extension}`
+        );
         const exists = await fileExists(file);
         return exists ? file : null;
       })

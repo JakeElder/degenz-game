@@ -88,4 +88,5 @@ export const emojis: RecursivePartial<Emoji>[] = [
   { id: "OG_WHITELIST", name: "og_whitelist" },
   { id: "WHITELIST_BW", name: "whitelist_bw" },
   { id: "OG_WHITELIST_BW", name: "og_whitelist_bw" },
+  { id: "LOADING", name: "loading", extension: "gif" },
 ];
