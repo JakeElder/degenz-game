@@ -130,7 +130,7 @@ export default class TossV2Controller {
     if (amount < 0) {
       await i.reply({
         content: `${Config.emojiCode("BIG_BROTHER_NPC")} **MINUS** ${Math.abs(
-          g.amount
+          amount
         )}? BIG BROTHER HAS BEEN NOTIFIED. CHEATERS WILL NOT BE TOLERATED.`,
         ephemeral: true,
       });
