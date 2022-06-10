@@ -6,6 +6,7 @@ import {
   InteractionCollector,
   MessageActionRow,
   MessageButton,
+  MessageEmbedOptions,
   MessageOptions,
 } from "discord.js";
 import { Format } from "lib";
@@ -171,22 +172,31 @@ export default class HallOfAllegianceController {
 
     let yld = allowance;
     if (user.hasAchievement("UPVOTE_MAGIC_EDEN_QUEST_COMPLETED")) {
-      yld += 50;
+      const additional = Math.min(Math.floor(50 * Math.min(daysPassed, 1)), 50);
+      yld += additional;
     }
 
     const tx = Format.transaction(user.gbt, yld);
     await HallOfAllegianceController.award(user, yld);
 
-    await i.reply({
-      embeds: [
-        {
-          title: "Pledge Accepted",
-          color: "GREEN",
-          description: `There's a good citizen. ${tx}`,
-        },
-      ],
-      ephemeral: true,
-    });
+    const embeds: MessageEmbedOptions[] = [
+      {
+        title: "Pledge Accepted",
+        color: "GREEN",
+        description: `There's a good citizen. ${tx}`,
+      },
+    ];
+
+    if (user.id === "720619989618393121") {
+      embeds.push({
+        color: "RED",
+        description: `${Config.emojiCode(
+          "BIG_BROTHER_NPC"
+        )} we're watching you bob.`,
+      });
+    }
+
+    await i.reply({ embeds, ephemeral: true });
   }
 
   static async award(user: User, yld: number) {
@@ -196,6 +206,7 @@ export default class HallOfAllegianceController {
       user.save(),
       Pledge.insert({ user: { id: user.id }, yld }),
     ]);
+
     Events.emit("ALLEGIANCE_PLEDGED", { user, yld });
   }
 }

@@ -20,6 +20,8 @@ export default class IsBot extends Command {
       "𝙳𝙴𝙶𝙴𝙽𝚉 𝙶𝙰𝙼𝙴",
       "DEGENZ GAME Bot",
       "𝐃𝐄𝐆𝐄𝐍𝐙 𝐆𝐀𝐌𝐄",
+      "𝘿𝙀𝙂𝙀𝙉𝙕 𝙂𝘼𝙈𝙀",
+      "DEGENZ GAME",
     ];
 
     const botmai = members.filter((m) => {
