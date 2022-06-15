@@ -92,8 +92,13 @@ export type EmojiSymbol =
   | "WHITELIST_BW"
   | "OG_WHITELIST_BW"
   | "WHITELIST"
+  | "GOLD_FIST"
+  | "PURPLE_FIST"
+  | "RED_FIST"
   | "OG_WHITELIST"
+  | "CARROT"
   | "LOADING"
+  | "SNEAKY_BICHON"
   | "BIG_G";
 
 @Entity()

@@ -26,10 +26,12 @@ export type ManagedCategorySymbol =
   | "THE_SHELTERS"
   | "TICKETS"
   | "ORIENTATION"
-  | "PRISON";
+  | "PRISON"
+  | "STAFF_ROOM";
 
 export type NestedManagedChannelSymbol =
   | "ENTRANCE"
+  | "STAFF_CHAT"
   | "QUESTS"
   | "THE_LORE"
   | "NFT_CHARACTERS"

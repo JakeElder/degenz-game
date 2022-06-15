@@ -1,6 +1,6 @@
 import { channelMention } from "@discordjs/builders";
 import Config from "config";
-import { MartItemOwnership, User } from "data/db";
+import { User } from "data/db";
 import Quest from "../Quest";
 
 export default class ShopAtMerrisMartQuest extends Quest {

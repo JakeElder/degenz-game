@@ -156,6 +156,12 @@ export const roles: RecursivePartial<Role>[] = [
     emoji: { id: "THOUGHT_POLICE" },
   },
   {
+    id: "SNEAKY_BICHON",
+    type: "SUPPLEMENTARY",
+    name: "Sneaky Bichon",
+    emoji: { id: "SNEAKY_BICHON" },
+  },
+  {
     id: "D1_CITIZEN",
     type: "CITIZEN",
     name: "D1 Citizen",
