@@ -1,4 +1,3 @@
-import React from "react";
 import Config from "config";
 import { PFP, User } from "data/db";
 import {
@@ -11,7 +10,6 @@ import {
 import { Global } from "../Global";
 import Utils from "../Utils";
 import { PersistentMessageController } from "./PersistentMessageController";
-import { ChannelMention, RoleMention } from "../legacy/templates";
 import { Format } from "lib";
 import { shuffle } from "lodash";
 import Events from "../Events";

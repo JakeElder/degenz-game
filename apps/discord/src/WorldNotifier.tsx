@@ -340,7 +340,7 @@ export default class WorldNotifier {
   static async getPFPButtonClicked(e: PickEvent<"GET_PFP_BUTTON_CLICKED">) {
     const message = r(
       <>
-        **{e.data.user.displayName}** clicked the PFP button in{" "}
+        {e.data.user.mention} clicked the PFP button in{" "}
         <ChannelMention id={Config.channelId("GET_PFP")} />.
       </>
     );
