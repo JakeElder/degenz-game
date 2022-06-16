@@ -41,7 +41,7 @@ export default class GetPFPController {
 
   static async setMessage() {
     const description = dedent`
-        __**Rep the Degenz and receive**__
+        __**Rep the Degenz and Receive**__
 
         ${Config.emojiCode("DEGEN")} ${roleMention(
       Config.roleId("DEGEN_SQUAD")
