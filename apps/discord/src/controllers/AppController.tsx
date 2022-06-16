@@ -297,9 +297,26 @@ export default class AppController {
     // Iterate users, calculate how many reactions should be rewarded
     const rewards = actionable.map((u) => {
       return u.messages.reduce((p, m) => {
-        return m.newReactions > 0
-          ? p + Math.max(Math.min(m.newReactions, 10 - m.processedReactions), 0)
-          : p;
+        if (m.newReactions <= 0) {
+          return p;
+        }
+
+        const reward = (() => {
+          if (m.channelId === "ANNOUNCEMENTS") {
+            return 30;
+          }
+          if (m.channelId === "UPDATES") {
+            return 20;
+          }
+          return 10;
+        })();
+
+        const rewardableReactionCount = Math.max(
+          Math.min(m.newReactions, 10 - m.processedReactions),
+          0
+        );
+
+        return p + rewardableReactionCount * reward;
       }, 0);
     });
 
@@ -313,7 +330,7 @@ export default class AppController {
       const row = userRows.find((r) => r.id === u.userId);
       if (row) {
         row.gbt ??= 0;
-        row.gbt += rewards[idx] * 10;
+        row.gbt += rewards[idx];
       }
     });
 
@@ -331,7 +348,7 @@ export default class AppController {
       if (row) {
         Events.emit("REACTIONS_REWARDED", {
           user: row,
-          yield: rewards[idx] * 10,
+          yield: rewards[idx],
           channelIds: uniq(u.messages.map((m) => m.channelId)),
         });
       }
