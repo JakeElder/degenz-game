@@ -38,7 +38,7 @@ export default class RepTheDegenzQuest extends Quest {
     const dailyChannel = channelMention(Config.channelId("HALL_OF_ALLEIGANCE"));
 
     return this.format({
-      title: "✊ Rep The Degenz",
+      title: "✊ Change Your PFP",
       thumbnail: `https://stage.degenz.game/degenz-game-character-preview.gif`,
       progress,
       expanded,

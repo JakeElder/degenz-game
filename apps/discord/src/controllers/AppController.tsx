@@ -194,6 +194,7 @@ export default class AppController {
       "NFT_CHARACTERS",
       "COMMANDS",
       "ROADMAP",
+      "GET_PFP",
       "SUBMIT_WALLET",
       "TRAINING_DOJO",
       "JPEG_STORE",

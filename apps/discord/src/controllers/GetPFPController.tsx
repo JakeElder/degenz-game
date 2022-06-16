@@ -15,6 +15,7 @@ import { ChannelMention, RoleMention } from "../legacy/templates";
 import { Format } from "lib";
 import { shuffle } from "lodash";
 import Events from "../Events";
+import { channelMention, roleMention } from "@discordjs/builders";
 
 export default class GetPFPController {
   static pfps: PFP[];
@@ -40,6 +41,33 @@ export default class GetPFPController {
   }
 
   static async setMessage() {
+    const description = `
+        __**Rep the Degenz and receive**__
+
+        ${Config.emojiCode("DEGEN")} ${roleMention(
+      Config.roleId("DEGEN_SQUAD")
+    )} role
+        ${Config.emojiCode("GBT_COIN")} ${Format.currency(1500)}
+        🌟 **Priority access** to special ${channelMention(
+          Config.channelId("JPEG_STORE")
+        )} raffles
+
+        __**How to REP the DEGENZ**__
+
+        ${Utils.numberEmoji(0)} Press the **Get Random PFP** button
+        ${Utils.numberEmoji(1)} Use as your *Discord* **and** *Twitter* PFP
+        ${Utils.numberEmoji(2)} Post proof in ${channelMention(
+      Config.channelId("QUEST_COMPLETION_PROOF")
+    )}
+
+        __**💎 BONUS**__
+
+        👯 Double $GBT for ${channelMention(Config.channelId("RAIDS"))}
+        ${Config.emojiCode("GBT_COIN")} Extra 100 $GBT in ${channelMention(
+      Config.channelId("HALL_OF_ALLEIGANCE")
+    )}
+`;
+
     const message: MessageOptions = {
       embeds: [
         {
@@ -48,41 +76,7 @@ export default class GetPFPController {
             name: "Get PFP",
           },
           color: Util.resolveColor("PURPLE"),
-          description: Utils.r(
-            <>
-              __**Rep the Degenz and receive**__
-              <br />
-              <br />
-              {Config.emojiCode("DEGEN")}
-              <RoleMention id={Config.roleId("DEGEN_SQUAD")} /> role
-              <br />
-              {Config.emojiCode("GBT_COIN")} {Format.currency(1500)}
-              <br />
-              🌟 **Priority access** to special{" "}
-              <ChannelMention id={Config.channelId("JPEG_STORE")} /> raffles.
-              <br />
-              <br />
-              __**How to REP the DEGENZ**__
-              <br />
-              <br />
-              {Utils.numberEmoji(0)} Press the **Get Random PFP** button
-              <br />
-              {Utils.numberEmoji(1)} Use as your *Discord* **and** *Twitter* PFP
-              <br />
-              {Utils.numberEmoji(2)} Post proof in{" "}
-              <ChannelMention id={Config.channelId("QUEST_COMPLETION_PROOF")} />
-              <br />
-              <br />
-              __**💎 BONUS**__
-              <br />
-              <br />
-              👯 Double $GBT for{" "}
-              <ChannelMention id={Config.channelId("RAIDS")} />
-              <br />
-              {Config.emojiCode("GBT_COIN")} Extra 100 $GBT in{" "}
-              <ChannelMention id={Config.channelId("HALL_OF_ALLEIGANCE")} />
-            </>
-          ),
+          description,
           image: {
             url: "https://stage.degenz.game/degenz-game-character-preview.gif",
           },
