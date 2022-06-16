@@ -400,4 +400,10 @@ export const roles: RecursivePartial<Role>[] = [
     color: "#fcadad",
     emoji: { id: "OG_WHITELIST" },
   },
+  {
+    type: "SUPPLEMENTARY",
+    id: "DEGEN_SQUAD",
+    name: "Degen Squad",
+    emoji: { id: "DEGEN" },
+  },
 ];

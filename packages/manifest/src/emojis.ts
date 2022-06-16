@@ -94,4 +94,6 @@ export const emojis: RecursivePartial<Emoji>[] = [
   { id: "GOLD_FIST", name: "gold_fist" },
   { id: "PURPLE_FIST", name: "purple_fist" },
   { id: "RED_FIST", name: "red_fist" },
+  { id: "DEGEN", name: "degen" },
+  { id: "DEGEN_W", name: "degen_w" },
 ];

@@ -27,4 +27,9 @@ export const persistentMessages: RecursivePartial<PersistentMessage>[] = [
     channel: { id: "QUESTS" },
     maintainer: { id: "ADMIN" },
   },
+  {
+    id: "GET_PFP",
+    channel: { id: "GET_PFP" },
+    maintainer: { id: "ALLY" },
+  },
 ];

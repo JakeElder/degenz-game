@@ -14,6 +14,7 @@ export { MartItem } from "./MartItem";
 export { MartItemOwnership } from "./MartItemOwnership";
 export { NPC } from "./NPC";
 export { PersistentMessage } from "./PersistentMessage";
+export { PFP } from "./PFP";
 export { PlayerEvent } from "./PlayerEvent";
 export { Pledge } from "./Pledge";
 export { QuestLogChannel } from "./QuestLogChannel";

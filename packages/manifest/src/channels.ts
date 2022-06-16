@@ -167,6 +167,20 @@ channels.push(
     lockPermissions: true,
     permissionOverwrites: READ_ONLY,
     parent: { id: "ORIENTATION" },
+  },
+  {
+    id: "NFT_UTILITY",
+    name: "🔥｜nft-utility",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "ORIENTATION" },
+  },
+  {
+    id: "GET_PFP",
+    name: "🫥 ｜get-pfp",
+    lockPermissions: true,
+    permissionOverwrites: READ_ONLY,
+    parent: { id: "ORIENTATION" },
   }
 );
 

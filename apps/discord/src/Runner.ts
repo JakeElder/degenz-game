@@ -17,6 +17,7 @@ import QuestLogController from "./controllers/QuestLogController";
 import { NPCSymbol } from "data/types";
 import AnnouncementController from "./controllers/AnnouncementController";
 import TossV2Controller from "./controllers/TossV2Controller";
+import GetPFPController from "./controllers/GetPFPController";
 
 export default class Runner {
   constructor(private bots: DiscordBot[]) {
@@ -60,6 +61,7 @@ export default class Runner {
 
       if (e.data.bot.id === "ALLY") {
         NextStepController.init();
+        GetPFPController.init();
       }
     });
 

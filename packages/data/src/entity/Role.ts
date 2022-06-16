@@ -60,6 +60,7 @@ export type SupplementaryRoleSymbol =
   | "STAFF"
   | "VIP"
   | "SNEAKY_BICHON"
+  | "DEGEN_SQUAD"
   | "MAGIC_EDEN_UPVOTER"
   | `ENGAGEMENT_LEVEL_${EngagementLevelNumber}`;
 

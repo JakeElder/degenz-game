@@ -14,6 +14,7 @@ export type PersistentMessageSymbol =
   | "GBT_LEADERBOARD_1"
   | "GBT_LEADERBOARD_2"
   | "PLEDGE"
+  | "GET_PFP"
   | "SHOW_QUESTS";
 
 @Entity()

@@ -295,7 +295,6 @@ export default class AppController {
     });
 
     // Iterate users, calculate how many reactions should be rewarded
-    // Don't wait for messages to send to HOP, let discord.js queue handle
     const rewards = actionable.map((u) => {
       return u.messages.reduce((p, m) => {
         return m.newReactions > 0

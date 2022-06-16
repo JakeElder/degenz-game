@@ -95,6 +95,8 @@ export type EmojiSymbol =
   | "GOLD_FIST"
   | "PURPLE_FIST"
   | "RED_FIST"
+  | "DEGEN"
+  | "DEGEN_W"
   | "OG_WHITELIST"
   | "CARROT"
   | "LOADING"
