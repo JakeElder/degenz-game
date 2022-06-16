@@ -14,6 +14,7 @@ import { Format } from "lib";
 import { shuffle } from "lodash";
 import Events from "../Events";
 import { channelMention, roleMention } from "@discordjs/builders";
+import dedent from "dedent";
 
 export default class GetPFPController {
   static pfps: PFP[];
@@ -39,7 +40,7 @@ export default class GetPFPController {
   }
 
   static async setMessage() {
-    const description = `
+    const description = dedent`
         __**Rep the Degenz and receive**__
 
         ${Config.emojiCode("DEGEN")} ${roleMention(
@@ -71,7 +72,7 @@ export default class GetPFPController {
         {
           author: {
             icon_url: `https://stage.degenz.game/degenz-game-character-preview.gif`,
-            name: "Get PFP",
+            name: "Change your PFP",
           },
           color: Util.resolveColor("PURPLE"),
           description,

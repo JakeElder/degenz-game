@@ -1925,6 +1925,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/dedent@npm:^0":
+  version: 0.7.0
+  resolution: "@types/dedent@npm:0.7.0"
+  checksum: b9b7f0c42d99da764be75dd00b2f2be162f5a0ca43aafe0c740efa76b5f37f8a4f4e2ccc84883054e06e05c1169733aa8ee7750da0334c9cba26d9e10ae844f1
+  languageName: node
+  linkType: hard
+
 "@types/deepmerge@npm:^2.2.0":
   version: 2.2.0
   resolution: "@types/deepmerge@npm:2.2.0"
@@ -4151,6 +4158,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dedent@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "dedent@npm:0.7.0"
+  checksum: 87de191050d9a40dd70cad01159a0bcf05ecb59750951242070b6abf9569088684880d00ba92a955b4058804f16eeaf91d604f283929b4f614d181cd7ae633d2
+  languageName: node
+  linkType: hard
+
 "deep-eql@npm:^3.0.1":
   version: 3.0.1
   resolution: "deep-eql@npm:3.0.1"
@@ -4370,6 +4384,7 @@ __metadata:
   dependencies:
     "@discordjs/builders": ^0.12.0
     "@discordjs/rest": ^0.3.0
+    "@types/dedent": ^0
     "@types/lodash": ^4.14.178
     "@types/luxon": ^2.0.9
     "@types/memoizee": ^0.4.7
@@ -4386,6 +4401,7 @@ __metadata:
     change-case: ^4.1.2
     config: "*"
     data: "*"
+    dedent: ^0.7.0
     delay: ^5.0.0
     discord-api-types: ^0.30.0
     discord.js: ^13.6.0
