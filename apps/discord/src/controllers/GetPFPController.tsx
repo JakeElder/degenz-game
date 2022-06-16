@@ -1,11 +1,12 @@
 import React from "react";
 import Config from "config";
-import { PFP } from "data/db";
+import { PFP, User } from "data/db";
 import {
   ButtonInteraction,
   MessageActionRow,
   MessageButton,
   MessageOptions,
+  Util,
 } from "discord.js";
 import { Global } from "../Global";
 import Utils from "../Utils";
@@ -13,6 +14,7 @@ import { PersistentMessageController } from "./PersistentMessageController";
 import { ChannelMention, RoleMention } from "../legacy/templates";
 import { Format } from "lib";
 import { shuffle } from "lodash";
+import Events from "../Events";
 
 export default class GetPFPController {
   static pfps: PFP[];
@@ -41,14 +43,20 @@ export default class GetPFPController {
     const message: MessageOptions = {
       embeds: [
         {
-          title: "Rep a Degenz PFP and receive",
-          color: "PURPLE",
+          author: {
+            icon_url: `https://stage.degenz.game/degenz-game-character-preview.gif`,
+            name: "Get PFP",
+          },
+          color: Util.resolveColor("PURPLE"),
           description: Utils.r(
             <>
-              {Config.emojiCode("DEGEN")}{" "}
+              __**Rep the Degenz and receive**__
+              <br />
+              <br />
+              {Config.emojiCode("DEGEN")}
               <RoleMention id={Config.roleId("DEGEN_SQUAD")} /> role
               <br />
-              {Config.emojiCode("GBT_COIN")} {Format.currency(2000)}
+              {Config.emojiCode("GBT_COIN")} {Format.currency(1500)}
               <br />
               🌟 **Priority access** to special{" "}
               <ChannelMention id={Config.channelId("JPEG_STORE")} /> raffles.
@@ -57,20 +65,26 @@ export default class GetPFPController {
               __**How to REP the DEGENZ**__
               <br />
               <br />
-              {Utils.numberEmoji(0)} Press the **GIVE PFP** button
+              {Utils.numberEmoji(0)} Press the **Get Random PFP** button
               <br />
-              {Utils.numberEmoji(1)} Update your Discord and Twitter PFP's
+              {Utils.numberEmoji(1)} Use as your *Discord* **and** *Twitter* PFP
               <br />
-              {Utils.numberEmoji(2)} Join our{" "}
-              <ChannelMention id={Config.channelId("RAIDS")} />
-              <br />
-              {Utils.numberEmoji(3)} Post a screenshot in{" "}
+              {Utils.numberEmoji(2)} Post proof in{" "}
               <ChannelMention id={Config.channelId("QUEST_COMPLETION_PROOF")} />
               <br />
+              <br />
+              __**💎 BONUS**__
+              <br />
+              <br />
+              👯 Double $GBT for{" "}
+              <ChannelMention id={Config.channelId("RAIDS")} />
+              <br />
+              {Config.emojiCode("GBT_COIN")} Extra 100 $GBT in{" "}
+              <ChannelMention id={Config.channelId("HALL_OF_ALLEIGANCE")} />
             </>
           ),
           image: {
-            url: "https://3958265705-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FMjoI9FGGukmdzdzLDLEw%2Fuploads%2FIHcLTRYM1VGPLy9v94Nj%2FScreenshot%202022-05-25%20at%2010.44.20%20PM.png?alt=media&token=5cd231e6-472b-4f20-80f6-f917968daae7",
+            url: "https://stage.degenz.game/degenz-game-character-preview.gif",
           },
         },
       ],
@@ -80,7 +94,7 @@ export default class GetPFPController {
             .setCustomId("GET_PFP")
             .setEmoji(Config.emojiCode("DEGEN_W"))
             .setStyle("DANGER")
-            .setLabel("GET RANDOM PFP")
+            .setLabel("Get Random PFP")
         ),
       ],
     };
@@ -92,9 +106,15 @@ export default class GetPFPController {
     const pfps = shuffle(this.pfps);
     const url = (id: string) => `${Config.env("WEB_URL")}/pfps/${id}.png`;
     const pfp = url(pfps[0].id);
-    await i.reply({
-      embeds: [{ color: "GOLD", image: { url: pfp } }],
-      ephemeral: true,
-    });
+
+    const [user] = await Promise.all([
+      await User.findOneByOrFail({ id: i.user.id }),
+      i.reply({
+        embeds: [{ color: "GOLD", image: { url: pfp } }],
+        ephemeral: true,
+      }),
+    ]);
+
+    Events.emit("GET_PFP_BUTTON_CLICKED", { user });
   }
 }

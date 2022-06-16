@@ -101,7 +101,8 @@ export type EmojiSymbol =
   | "CARROT"
   | "LOADING"
   | "SNEAKY_BICHON"
-  | "BIG_G";
+  | "BIG_G"
+  | "PEPE_TWERK";
 
 @Entity()
 export class Emoji extends BaseEntity {

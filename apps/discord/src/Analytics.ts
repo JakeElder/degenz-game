@@ -254,4 +254,11 @@ export default class Analytics {
       captor: e.data.captor.id,
     });
   }
+
+  static getPFPButtonClicked(e: PickEvent<"GET_PFP_BUTTON_CLICKED">) {
+    this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
+      distinct_id: e.data.user.id,
+    });
+  }
 }

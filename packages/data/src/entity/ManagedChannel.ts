@@ -35,7 +35,6 @@ export type NestedManagedChannelSymbol =
   | "QUESTS"
   | "THE_LORE"
   | "NFT_CHARACTERS"
-  | "NFT_UTILITY"
   | "GET_PFP"
   | "ANNOUNCEMENTS"
   | "GIVEAWAYS"

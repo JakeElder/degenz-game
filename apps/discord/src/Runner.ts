@@ -214,6 +214,11 @@ export default class Runner {
     Events.on("REACTIONS_REWARDED", (e) => {
       WorldNotifier.reactionsRewarded(e);
     });
+
+    Events.on("GET_PFP_BUTTON_CLICKED", (e) => {
+      Analytics.getPFPButtonClicked(e);
+      WorldNotifier.getPFPButtonClicked(e);
+    });
   }
 
   get(symbol: NPCSymbol) {

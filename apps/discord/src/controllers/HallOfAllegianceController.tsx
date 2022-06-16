@@ -1,3 +1,4 @@
+import React from "react";
 import { channelMention, roleMention } from "@discordjs/builders";
 import Config from "config";
 import { District, Dormitory, Pledge, User } from "data/db";
@@ -13,6 +14,7 @@ import { Format } from "lib";
 import { DateTime } from "luxon";
 import pluralize from "pluralize";
 import Events from "../Events";
+import Utils from "../Utils";
 import AchievementController from "./AchievementController";
 import { PersistentMessageController } from "./PersistentMessageController";
 
@@ -48,7 +50,9 @@ export default class HallOfAllegianceController {
       .join("\n");
 
     const doge = Config.emojiCode("DOGE");
-    const role = roleMention(Config.roleId("MAGIC_EDEN_UPVOTER"));
+    const degen = Config.emojiCode("DEGEN");
+    const meRole = roleMention(Config.roleId("MAGIC_EDEN_UPVOTER"));
+    const dsRole = roleMention(Config.roleId("DEGEN_SQUAD"));
     const questsChannel = channelMention(Config.channelId("QUESTS"));
     const dorms = await Dormitory.find();
     const gbt = Config.emojiCode("GBT_COIN");
@@ -71,7 +75,13 @@ export default class HallOfAllegianceController {
             },
             {
               name: "Role Payouts",
-              value: `${doge} ${role}: **+** ${Format.currency(50)} per day.`,
+              value: Utils.r(
+                <>
+                  {degen} {dsRole}: **+** {Format.currency(100)} per day
+                  <br />
+                  {doge} {meRole}: **+** {Format.currency(50)} per day
+                </>
+              ),
             },
           ],
         },
@@ -118,6 +128,10 @@ export default class HallOfAllegianceController {
       let yld = dailyAllowance;
       if (user.hasAchievement("UPVOTE_MAGIC_EDEN_QUEST_COMPLETED")) {
         yld += 50;
+      }
+
+      if (user.hasAchievement("REP_THE_DEGENZ_QUEST_COMPLETED")) {
+        yld += 100;
       }
 
       const tx = Format.transaction(user.gbt, yld);
@@ -171,8 +185,17 @@ export default class HallOfAllegianceController {
     }
 
     let yld = allowance;
+
     if (user.hasAchievement("UPVOTE_MAGIC_EDEN_QUEST_COMPLETED")) {
       const additional = Math.min(Math.floor(50 * Math.min(daysPassed, 1)), 50);
+      yld += additional;
+    }
+
+    if (user.hasAchievement("REP_THE_DEGENZ_QUEST_COMPLETED")) {
+      const additional = Math.min(
+        Math.floor(100 * Math.min(daysPassed, 1)),
+        100
+      );
       yld += additional;
     }
 

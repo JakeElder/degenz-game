@@ -169,7 +169,7 @@ channels.push(
     parent: { id: "ORIENTATION" },
   },
   {
-    id: "NFT_UTILITY",
+    id: "ROADMAP",
     name: "🔥｜nft-utility",
     lockPermissions: true,
     permissionOverwrites: READ_ONLY,
@@ -209,13 +209,6 @@ channels.push(
   {
     id: "GIVEAWAYS",
     name: "🎉｜giveaways",
-    lockPermissions: true,
-    permissionOverwrites: READ_ONLY,
-    parent: { id: "COMMAND_CENTER" },
-  },
-  {
-    id: "ROADMAP",
-    name: "📅｜roadmap",
     lockPermissions: true,
     permissionOverwrites: READ_ONLY,
     parent: { id: "COMMAND_CENTER" },

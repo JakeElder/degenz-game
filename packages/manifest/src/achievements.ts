@@ -9,6 +9,7 @@ export const achievements: RecursivePartial<Achievement>[] = [
   { id: "SHOP_AT_MERRIS_MART_QUEST_COMPLETED" },
   { id: "GET_WHITELIST_QUEST_COMPLETED" },
   { id: "UPVOTE_MAGIC_EDEN_QUEST_COMPLETED", reward: 500 },
+  { id: "REP_THE_DEGENZ_QUEST_COMPLETED", reward: 1500 },
   { id: "HELP_REQUESTED" },
   { id: "STATS_CHECKED" },
   { id: "FINISHED_TRAINER" },

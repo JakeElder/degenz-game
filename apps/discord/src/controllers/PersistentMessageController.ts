@@ -79,6 +79,10 @@ export class PersistentMessageController {
         );
         this.queueUpdate(id, e.timeToReset, value);
       }
+      console.log(e);
+      if (pm.id === "GET_PFP") {
+        console.log("error");
+      }
     }
 
     return message;

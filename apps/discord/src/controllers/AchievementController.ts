@@ -101,6 +101,10 @@ export default class AchievementController {
       await member.roles.add(Config.roleId("MAGIC_EDEN_UPVOTER"));
     }
 
+    if (achievement === "REP_THE_DEGENZ_QUEST_COMPLETED") {
+      await member.roles.add(Config.roleId("DEGEN_SQUAD"));
+    }
+
     Events.emit("ACHIEVEMENT_AWARDED", {
       user,
       achievement: achievementData,

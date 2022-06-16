@@ -199,6 +199,7 @@ export type QuestSymbol =
   | "TOSS_WITH_TED"
   | "SHOP_AT_MERRIS_MART"
   | "GET_WHITELIST"
-  | "UPVOTE_MAGIC_EDEN";
+  | "UPVOTE_MAGIC_EDEN"
+  | "REP_THE_DEGENZ";
 
 export type SingleDigitNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;

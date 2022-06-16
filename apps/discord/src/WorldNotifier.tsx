@@ -8,6 +8,7 @@ import { Format } from "lib";
 import { channelMention, userMention } from "@discordjs/builders";
 import { NestedManagedChannelSymbol, NPCSymbol } from "data/types";
 import listify from "listify";
+import { ChannelMention } from "./legacy/templates";
 
 const { r } = Utils;
 
@@ -334,5 +335,15 @@ export default class WorldNotifier {
       </>
     );
     await this.logToHOP("BIG_BROTHER", e.type, message);
+  }
+
+  static async getPFPButtonClicked(e: PickEvent<"GET_PFP_BUTTON_CLICKED">) {
+    const message = r(
+      <>
+        **{e.data.user.displayName}** clicked the PFP button in{" "}
+        <ChannelMention id={Config.channelId("GET_PFP")} />.
+      </>
+    );
+    await this.logToHOP("ALLY", e.type, message);
   }
 }

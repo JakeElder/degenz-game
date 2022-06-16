@@ -20,12 +20,14 @@ import JoinTheDegenzQuest from "../quests/JoinTheDegenzQuest";
 import Utils from "../Utils";
 import OnboardController from "./OnboardController";
 import UpvoteMEQuest from "../quests/UpvoteMEQuest";
+import RepTheDegenzQuest from "../quests/RepTheDegenzQuest";
 
 export default class QuestLogController {
   static quests: Quest[];
   static async init() {
     this.quests = [
       new UpvoteMEQuest(),
+      new RepTheDegenzQuest(),
       new JoinTheDegenzQuest(),
       new PledgeQuest(),
       new GetWhitelistQuest(),
