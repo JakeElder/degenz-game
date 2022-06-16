@@ -72,7 +72,7 @@ export default class GetPFPController {
         {
           author: {
             icon_url: `https://stage.degenz.game/degenz-game-character-preview.gif`,
-            name: "Change your PFP",
+            name: "Change Your PFP",
           },
           color: Util.resolveColor("PURPLE"),
           description,
