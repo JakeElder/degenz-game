@@ -9,6 +9,7 @@
     ]
   },
   "resolutions": {
+    "re2": "1.17.6",
     "@types/react": "17.0.44"
   },
   "scripts": {
