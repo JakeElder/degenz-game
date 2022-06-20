@@ -52,7 +52,7 @@ export default class WorldNotifier {
 
     await Promise.all([
       this.logToHOP("BANKER", e.type, message),
-      this.logToChannel("BANK", "BANKER", e.type, message),
+      // this.logToChannel("BANK", "BANKER", e.type, message),
     ]);
   }
 
