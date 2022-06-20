@@ -5,6 +5,7 @@ import { User } from "data/db";
 import { Not, IsNull } from "typeorm";
 import { inspect } from "util";
 import { json } from "../../utils";
+import wl from "../../wl.json";
 
 export default class IsBot extends Command {
   static description = "Check Is Bot";
@@ -54,8 +55,10 @@ export default class IsBot extends Command {
           Mints: mints,
         };
       })
-      .filter((u) => u);
+      .filter((u) => u)
+      .filter((u) => !wl.some((wlu) => wlu.Wallet === u!.Wallet));
 
     console.log(json(output));
+    // console.log(output.length);
   }
 }

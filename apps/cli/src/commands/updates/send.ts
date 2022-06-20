@@ -14,7 +14,15 @@ export default class SendUpdate extends Command {
     {
       name: "message",
       required: true,
-      options: ["reaction-rewards", "shelters-closed", "premint-mart"],
+      options: [
+        "reaction-rewards",
+        "shelters-closed",
+        "premint-mart",
+        "mart-closed",
+        "teds-closed",
+        "bank-closed",
+        "arena-closed",
+      ],
     },
   ];
 
@@ -33,9 +41,33 @@ export default class SendUpdate extends Command {
       await channel.send(message);
     }
 
+    if (args.message === "teds-closed") {
+      const channel = await this.getChannel("TOSS_HOUSE", "TOSSER");
+      const message = await this.tedsClosed();
+      await channel.send(message);
+    }
+
+    if (args.message === "mart-closed") {
+      const channel = await this.getChannel("MART", "MART_CLERK");
+      const message = await this.martClosed();
+      await channel.send(message);
+    }
+
+    if (args.message === "bank-closed") {
+      const channel = await this.getChannel("BANK", "BANKER");
+      const message = await this.bankClosed();
+      await channel.send(message);
+    }
+
     if (args.message === "premint-mart") {
       const channel = await this.getChannel("MART", "MART_CLERK");
       const message = await this.premintMart();
+      await channel.send(message);
+    }
+
+    if (args.message === "arena-closed") {
+      const channel = await this.getChannel("ARENA", "ALLY");
+      const message = await this.arenaClosed();
       await channel.send(message);
     }
   }
@@ -66,6 +98,105 @@ export default class SendUpdate extends Command {
           )} will be closed until after mint!
             
             Remember, we're minting with ${me} **Magic Eden** <t:1655749800:R>!
+
+            The **ONLY** minting link - https://magiceden.io/launchpad/degenz_game
+          `,
+        },
+      ],
+    };
+  }
+
+  async arenaClosed(): Promise<MessageOptions> {
+    const me = Config.emojiCode("MAGIC_EDEN");
+    return {
+      embeds: [
+        {
+          color: "BLUE",
+          author: {
+            icon_url: "https://s8.gifyu.com/images/MEGAPHONE.png",
+            name: "Arena CLOSED until AFTER MINT",
+          },
+          image: {
+            url: "https://s7.gifyu.com/images/ezgif.com-gif-maker-224193a66c6b4ae20d.gif",
+          },
+          description: dedent`
+            **JOIN US IN** ${channelMention(Config.channelId("GENERAL"))}!
+            
+            We're minting with ${me} **Magic Eden** <t:1655749800:R>!
+
+            The **ONLY** minting link - https://magiceden.io/launchpad/degenz_game
+          `,
+        },
+      ],
+    };
+  }
+  async bankClosed(): Promise<MessageOptions> {
+    const me = Config.emojiCode("MAGIC_EDEN");
+    return {
+      embeds: [
+        {
+          color: "BLUE",
+          author: {
+            icon_url: "https://s8.gifyu.com/images/MEGAPHONE.png",
+            name: "Bank CLOSED until AFTER MINT",
+          },
+          image: {
+            url: "https://s1.gifyu.com/images/bank-2.gif",
+          },
+          description: dedent`
+            **JOIN US IN** ${channelMention(Config.channelId("GENERAL"))}!
+            
+            We're minting with ${me} **Magic Eden** <t:1655749800:R>!
+
+            The **ONLY** minting link - https://magiceden.io/launchpad/degenz_game
+          `,
+        },
+      ],
+    };
+  }
+
+  async tedsClosed(): Promise<MessageOptions> {
+    const me = Config.emojiCode("MAGIC_EDEN");
+    return {
+      embeds: [
+        {
+          color: "BLUE",
+          author: {
+            icon_url: "https://s8.gifyu.com/images/MEGAPHONE.png",
+            name: "Toss House CLOSED until AFTER MINT",
+          },
+          image: {
+            url: "https://s10.gifyu.com/images/ezgif.com-gif-maker-18deab5ae2e9177377.gif",
+          },
+          description: dedent`
+            **JOIN US IN** ${channelMention(Config.channelId("GENERAL"))}!
+            
+            We're minting with ${me} **Magic Eden** <t:1655749800:R>!
+
+            The **ONLY** minting link - https://magiceden.io/launchpad/degenz_game
+          `,
+        },
+      ],
+    };
+  }
+
+  async martClosed(): Promise<MessageOptions> {
+    const me = Config.emojiCode("MAGIC_EDEN");
+    return {
+      embeds: [
+        {
+          color: "BLUE",
+          author: {
+            icon_url: "https://s8.gifyu.com/images/MEGAPHONE.png",
+            name: "Mart CLOSED until AFTER MINT",
+          },
+          image: {
+            url: "https://s10.gifyu.com/images/ezgif.com-gif-maker-173287457657b663d7.gif",
+          },
+          description: dedent`
+            **JOIN US IN** ${channelMention(Config.channelId("GENERAL"))}!
+            
+            We're minting with ${me} **Magic Eden** <t:1655749800:R>!
 
             The **ONLY** minting link - https://magiceden.io/launchpad/degenz_game
           `,
