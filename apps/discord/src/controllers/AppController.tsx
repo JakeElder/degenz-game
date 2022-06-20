@@ -1,5 +1,12 @@
 import Config from "config";
-import { Collection, GuildBasedChannel, GuildMember, Invite } from "discord.js";
+import {
+  Collection,
+  GuildBasedChannel,
+  GuildMember,
+  Invite,
+  Message,
+  PartialMessage,
+} from "discord.js";
 import {
   DistrictSymbol,
   ManagedChannelSymbol,
@@ -21,15 +28,53 @@ import Utils from "../Utils";
 import { In, QueryFailedError } from "typeorm";
 import { uniq } from "lodash";
 import cron from "node-cron";
+import getUrls from "get-urls";
 
 export default class AppController {
   static invites: Collection<string, Invite>;
   static processingReactions = false;
+  static linkHostWhitelist = ["magiceden.io", "tenor.com", "giphy.com"];
 
   static async init() {
     this.bindEnterListener();
     this.initReactionCron();
     this.initStrengthDecayCron();
+    this.initLinkDetection();
+  }
+
+  static initLinkDetection() {
+    const admin = Global.bot("ADMIN");
+    admin.client.on("messageCreate", async (message) => {
+      this.processMessage(message);
+    });
+    admin.client.on("messageUpdate", async (_, newMessage) => {
+      this.processMessage(newMessage);
+    });
+  }
+
+  static async processMessage(message: Message | PartialMessage) {
+    if (message.partial) {
+      message = await message.fetch();
+    }
+
+    const urls = getUrls(message.content);
+
+    if (!urls.size) {
+      return;
+    }
+
+    const arr = Array.from(urls.values());
+
+    const allowed = arr.filter((u) => {
+      const url = new URL(u);
+      return this.linkHostWhitelist.some((hostname) =>
+        url.hostname.endsWith(hostname)
+      );
+    });
+
+    if (arr.length !== allowed.length) {
+      await message.delete();
+    }
   }
 
   static initStrengthDecayCron() {
