@@ -14,19 +14,89 @@ export default class SendUpdate extends Command {
     {
       name: "message",
       required: true,
-      options: ["reaction-rewards"],
+      options: ["reaction-rewards", "shelters-closed", "premint-mart"],
     },
   ];
 
   async run(): Promise<void> {
     const { args } = await this.parse(SendUpdate);
 
-    const channel = await this.getChannel("UPDATES", "BIG_BROTHER");
-
     if (args.message === "reaction-rewards") {
+      const channel = await this.getChannel("UPDATES", "BIG_BROTHER");
       const message = await this.reactionRewards();
       await channel.send(message);
     }
+
+    if (args.message === "shelters-closed") {
+      const channel = await this.getChannel("VULTURE", "ALLY");
+      const message = await this.sheltersClosed();
+      await channel.send(message);
+    }
+
+    if (args.message === "premint-mart") {
+      const channel = await this.getChannel("MART", "MART_CLERK");
+      const message = await this.premintMart();
+      await channel.send(message);
+    }
+  }
+
+  async premintMart(): Promise<MessageOptions> {
+    const me = Config.emojiCode("MAGIC_EDEN");
+    return {
+      content: "@everyone",
+      embeds: [
+        {
+          color: "BLUE",
+          author: {
+            icon_url: "https://s8.gifyu.com/images/MEGAPHONE.png",
+            name: "LAST RESTOCK BEFORE MINT",
+          },
+          image: {
+            url: "https://s10.gifyu.com/images/ezgif.com-gif-maker-173287457657b663d7.gif",
+          },
+          description: dedent`
+            @everyone - **MERRIS MART RESTOCKED** ${Config.emojiCode(
+              "NUU_PING"
+            )}${Config.emojiCode("DEGENZ_RAMEN")}${Config.emojiCode(
+            "FAT_PIZZA"
+          )}
+
+          This will be the last restock, then ${channelMention(
+            Config.channelId("MART")
+          )} will be closed until after mint!
+            
+            Remember, we're minting with ${me} **Magic Eden** <t:1655749800:R>!
+
+            The **ONLY** minting link - https://magiceden.io/launchpad/degenz_game
+          `,
+        },
+      ],
+    };
+  }
+
+  async sheltersClosed(): Promise<MessageOptions> {
+    const me = Config.emojiCode("MAGIC_EDEN");
+    return {
+      embeds: [
+        {
+          color: "BLUE",
+          author: {
+            icon_url: "https://s8.gifyu.com/images/MEGAPHONE.png",
+            name: "Shelters CLOSED until further notice",
+          },
+          image: {
+            url: "https://s8.gifyu.com/images/Alleyway-progress-REVISION.png",
+          },
+          description: dedent`
+            **JOIN US IN** ${channelMention(Config.channelId("GENERAL"))}!
+            
+            We're minting with ${me} **Magic Eden** <t:1655749800:R>!
+
+            The **ONLY** minting link - https://magiceden.io/launchpad/degenz_game
+          `,
+        },
+      ],
+    };
   }
 
   async reactionRewards(): Promise<MessageOptions> {

@@ -97,4 +97,6 @@ export const emojis: RecursivePartial<Emoji>[] = [
   { id: "DEGEN", name: "degen" },
   { id: "DEGEN_W", name: "degen_w" },
   { id: "PEPE_TWERK", name: "pepe_twerk", extension: "gif" },
+  { id: "MAGIC_EDEN", name: "magic_eden" },
+  { id: "MEGAPHONE", name: "megaphone" },
 ];

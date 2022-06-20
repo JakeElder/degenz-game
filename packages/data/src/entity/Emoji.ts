@@ -98,10 +98,12 @@ export type EmojiSymbol =
   | "DEGEN"
   | "DEGEN_W"
   | "OG_WHITELIST"
+  | "MEGAPHONE"
   | "CARROT"
   | "LOADING"
   | "SNEAKY_BICHON"
   | "BIG_G"
+  | "MAGIC_EDEN"
   | "PEPE_TWERK";
 
 @Entity()

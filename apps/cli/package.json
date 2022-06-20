@@ -34,6 +34,7 @@
     "chalk": "^4.0.0",
     "cli-progress": "^3.10.0",
     "color": "^4.2.3",
+    "convert-array-to-csv": "^2.0.0",
     "data": "*",
     "deepmerge": "^4.2.2",
     "discord.js": "^13.6.0",
