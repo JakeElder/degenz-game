@@ -18,6 +18,7 @@ import {
   User,
   Reaction,
   ENGAGEMENT_LEVELS,
+  AppState,
 } from "data/db";
 import { Global } from "../Global";
 import Events from "../Events";
@@ -27,6 +28,7 @@ import AchievementController from "./AchievementController";
 import Utils from "../Utils";
 import { In, QueryFailedError } from "typeorm";
 import { uniq } from "lodash";
+import memoize from "memoizee";
 import cron from "node-cron";
 import urlRegex from "url-regex";
 import psl from "psl";
@@ -40,7 +42,7 @@ export default class AppController {
     this.bindEnterListener();
     this.initReactionCron();
     this.initStrengthDecayCron();
-    // this.initLinkDetection();
+    this.initLinkDetection();
   }
 
   static initLinkDetection() {
@@ -53,7 +55,23 @@ export default class AppController {
     });
   }
 
+  static areLinksDisabled = memoize(
+    async () => {
+      const { linksDisabled } = await AppState.findOneByOrFail({
+        id: "CURRENT",
+      });
+      return linksDisabled;
+    },
+    { promise: true, maxAge: 1000 * 4 }
+  );
+
   static async processMessage(message: Message | PartialMessage) {
+    const areDisabled = await this.areLinksDisabled();
+
+    if (!areDisabled) {
+      return;
+    }
+
     if (message.partial) {
       message = await message.fetch();
     }
@@ -72,13 +90,16 @@ export default class AppController {
           console.log("url parse error");
           return false;
         }
-        console.log(parsed.domain);
         return parsed.domain === hostname;
       });
     });
 
     if (urls.length !== allowed.length) {
       await message.delete();
+      Events.emit("MESSAGE_DELETED", {
+        message: message.content,
+        userId: message.member?.id,
+      });
     }
   }
 

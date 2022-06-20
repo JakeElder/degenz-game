@@ -280,6 +280,14 @@ type GetPFPButtonClicked = {
   };
 };
 
+type MessageDeleted = {
+  type: "MESSAGE_DELETED";
+  data: {
+    userId?: string;
+    message: string;
+  };
+};
+
 export type Event =
   | BotReadyEvent
   | CommandNotFoundEvent
@@ -315,7 +323,8 @@ export type Event =
   | CitizenReleasedEvent
   | QuestCompletedEvent
   | ReactionsRewarded
-  | GetPFPButtonClicked;
+  | GetPFPButtonClicked
+  | MessageDeleted;
 
 type EventHandler<E extends Event> = {
   [P in E["type"]]: (e: { type: E["type"]; data: E["data"] }) => void;
@@ -355,7 +364,8 @@ type DegenEmitterEvents = EventHandler<BotReadyEvent> &
   EventHandler<CitizenReleasedEvent> &
   EventHandler<QuestCompletedEvent> &
   EventHandler<ReactionsRewarded> &
-  EventHandler<GetPFPButtonClicked>;
+  EventHandler<GetPFPButtonClicked> &
+  EventHandler<MessageDeleted>;
 
 export type PickEvent<T extends keyof DegenEmitterEvents> = Parameters<
   DegenEmitterEvents[T]

@@ -26,6 +26,9 @@ export class AppState extends BaseEntity {
   @Column({ default: 0 })
   announcementCount: number;
 
+  @Column({ default: false })
+  linksDisabled: boolean;
+
   @Column({ default: "" })
   countChannelId: string;
 

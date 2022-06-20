@@ -261,4 +261,12 @@ export default class Analytics {
       distinct_id: e.data.user.id,
     });
   }
+
+  static messageDeleted(e: PickEvent<"MESSAGE_DELETED">) {
+    this.mixpanel.track(capitalCase(e.type), {
+      ...this.common,
+      distinct_id: e.data.userId,
+      message: e.data.message,
+    });
+  }
 }

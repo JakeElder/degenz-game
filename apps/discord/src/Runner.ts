@@ -219,6 +219,10 @@ export default class Runner {
       Analytics.getPFPButtonClicked(e);
       WorldNotifier.getPFPButtonClicked(e);
     });
+
+    Events.on("MESSAGE_DELETED", (e) => {
+      Analytics.messageDeleted(e);
+    });
   }
 
   get(symbol: NPCSymbol) {
