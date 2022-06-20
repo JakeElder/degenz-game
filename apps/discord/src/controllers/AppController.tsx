@@ -28,7 +28,8 @@ import Utils from "../Utils";
 import { In, QueryFailedError } from "typeorm";
 import { uniq } from "lodash";
 import cron from "node-cron";
-import getUrls from "get-urls";
+import urlRegex from "url-regex";
+import psl from "psl";
 
 export default class AppController {
   static invites: Collection<string, Invite>;
@@ -57,22 +58,26 @@ export default class AppController {
       message = await message.fetch();
     }
 
-    const urls = getUrls(message.content);
+    const urls = message.content.match(urlRegex());
 
-    if (!urls.size) {
+    if (!urls) {
       return;
     }
 
-    const arr = Array.from(urls.values());
-
-    const allowed = arr.filter((u) => {
+    const allowed = urls.filter((u) => {
       const url = new URL(u);
-      return this.linkHostWhitelist.some((hostname) =>
-        url.hostname.endsWith(hostname)
-      );
+      return this.linkHostWhitelist.some((hostname) => {
+        const parsed = psl.parse(url.hostname);
+        if (parsed.error) {
+          console.log("url parse error");
+          return false;
+        }
+        console.log(parsed.domain);
+        return parsed.domain === hostname;
+      });
     });
 
-    if (arr.length !== allowed.length) {
+    if (urls.length !== allowed.length) {
       await message.delete();
     }
   }
