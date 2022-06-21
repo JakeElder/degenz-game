@@ -184,7 +184,9 @@ export default class MartClerkCommandController extends CommandController {
   }
 
   buy = restrictToMart(async (i) => {
+    const deferPromise = i.deferReply({ ephemeral: true });
     const reply = await MartClerkCommandController.makeBuyResponse();
-    await i.reply(reply);
+    await deferPromise;
+    await i.editReply(reply);
   });
 }

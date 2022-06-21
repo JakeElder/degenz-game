@@ -42,7 +42,7 @@ export default class AppController {
     this.bindEnterListener();
     this.initReactionCron();
     this.initStrengthDecayCron();
-    this.initLinkDetection();
+    // this.initLinkDetection();
   }
 
   static initLinkDetection() {
