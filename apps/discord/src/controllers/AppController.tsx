@@ -280,6 +280,7 @@ export default class AppController {
         processed: false,
         channel: { id: In(channels) },
       },
+      take: 5000,
     });
 
     if (reactions.length === 0) {
