@@ -25,7 +25,7 @@ import { EngagementLevelNumber } from "data/src/entity/EngagementLevel";
 import AchievementController from "../controllers/AchievementController";
 import { UserMention } from "../legacy/templates";
 
-export default class AllyCommandController extends CommandController {
+export default class AdminCommandController extends CommandController {
   async respond(
     i: CommandInteraction,
     content: string,

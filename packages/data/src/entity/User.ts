@@ -27,6 +27,7 @@ import { Imprisonment } from "./Imprisonment";
 import { PlayerEvent } from "./PlayerEvent";
 import { DormitoryTenancy } from "./DormitoryTenancy";
 import { MartItemSymbol } from "./MartItem";
+import { MintPassAssignment } from "./MintPassAssignment";
 
 @Entity()
 export class User extends BaseEntity {
@@ -114,6 +115,12 @@ export class User extends BaseEntity {
   @ManyToMany(() => Achievement, { eager: true })
   @JoinTable()
   achievements: Achievement[];
+
+  @OneToMany(
+    () => MintPassAssignment,
+    (mintPassAssignment) => mintPassAssignment.recipient
+  )
+  mintPassAssignments: MintPassAssignment[];
 
   @CreateDateColumn()
   createdAt: Date;

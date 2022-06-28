@@ -145,4 +145,17 @@ ally.commands.push({
     .toJSON(),
 });
 
+// `wallet` command
+ally.commands.push({
+  id: "WALLET",
+  permissions: [
+    { id: "PREGEN", type: 1, permission: true },
+    { id: "DEGEN", type: 1, permission: true },
+  ],
+  data: new SlashCommandBuilder()
+    .setName("wallet")
+    .setDescription(`Show and update your Solana wallet.`)
+    .toJSON(),
+});
+
 export default ally;

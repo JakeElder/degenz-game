@@ -1,13 +1,18 @@
 import React from "react";
 import {
   CommandInteraction,
+  EmbedFieldData,
   GuildMember,
   InteractionReplyOptions,
   InteractionUpdateOptions,
   MessageActionRow,
   MessageSelectMenu,
+  Modal,
+  ModalActionRowComponent,
+  ModalSubmitInteraction,
   SelectMenuInteraction,
   TextChannel,
+  TextInputComponent,
 } from "discord.js";
 import { CommandController } from "../CommandController";
 import { getUser } from "../legacy/db";
@@ -28,8 +33,86 @@ import Config from "config";
 import { IsNull, Not } from "typeorm";
 import { RoleMention, UserMention } from "../legacy/templates";
 import listify from "listify";
+import { PublicKey } from "@solana/web3.js";
+
+function isValidSolAddress(address: string) {
+  try {
+    let pubkey = new PublicKey(address);
+    let isSolana = PublicKey.isOnCurve(pubkey.toBuffer());
+    return isSolana;
+  } catch (error) {
+    return false;
+  }
+}
 
 export default class AllyCommandController extends CommandController {
+  static async init() {
+    const ally = Global.bot("ALLY");
+    ally.client.on("interactionCreate", (i) => {
+      if (i.isModalSubmit() && i.customId.startsWith("WALLET_MODAL")) {
+        this.handleWalletSubmit(i);
+      }
+    });
+  }
+
+  static async handleWalletSubmit(i: ModalSubmitInteraction) {
+    const [, userId] = i.customId.split(":");
+    const user = await User.findOneByOrFail({ id: userId });
+
+    const prev = user.walletAddress;
+    const next = i.fields.getTextInputValue("wallet");
+
+    let changed = false;
+
+    if (user.walletAddress !== next) {
+      user.walletAddress = next;
+      changed = true;
+    }
+
+    if (!changed) {
+      await i.update({ fetchReply: false });
+      return;
+    }
+
+    if (!isValidSolAddress(next)) {
+      await i.reply({
+        embeds: [
+          {
+            color: "DARK_RED",
+            description: "❌ Invalid Address",
+          },
+          {
+            description:
+              "Check you are entering a valid **Solana** wallet and then try again.",
+          },
+        ],
+        ephemeral: true,
+      });
+      return;
+    }
+
+    const fields: EmbedFieldData[] = [
+      ...(prev ? [{ name: "Old Address", value: Format.codeBlock(prev) }] : []),
+      {
+        name: prev ? "New Address" : "Wallet Address",
+        value: Format.codeBlock(next),
+      },
+    ];
+
+    await user.save();
+
+    await i.reply({
+      embeds: [
+        {
+          color: "DARK_GREEN",
+          description: `✅ Wallet Updated`,
+        },
+        { fields },
+      ],
+      ephemeral: true,
+    });
+  }
+
   async eat(i: CommandInteraction) {
     const [user, items] = await Promise.all([
       User.findOneByOrFail({ id: i.user.id }),
@@ -579,5 +662,28 @@ export default class AllyCommandController extends CommandController {
       checker: users[0],
       checkee: users[1],
     });
+  }
+
+  async wallet(i: CommandInteraction) {
+    const user = await User.findOneByOrFail({ id: i.user.id });
+
+    const modal = new Modal()
+      .setCustomId(`WALLET_MODAL:${i.user.id}`)
+      .setTitle(`${user.displayName}'s Sol Wallet`);
+
+    const hobbiesInput = new TextInputComponent()
+      .setCustomId("wallet")
+      .setLabel("Enter your Solana wallet address")
+      .setValue(user.walletAddress || "")
+      .setStyle("SHORT");
+
+    const firstActionRow =
+      new MessageActionRow<ModalActionRowComponent>().addComponents(
+        hobbiesInput
+      );
+
+    modal.addComponents(firstActionRow);
+
+    await i.showModal(modal);
   }
 }

@@ -12,7 +12,7 @@ import {
   Column,
 } from "typeorm";
 import { DiscordChannel, User } from "..";
-import { QuestLogState } from "../types";
+import type { QuestLogState } from "../types";
 
 @Entity()
 export class QuestLogChannel extends BaseEntity {
