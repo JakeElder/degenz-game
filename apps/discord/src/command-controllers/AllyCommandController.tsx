@@ -33,6 +33,7 @@ import Config from "config";
 import { IsNull, Not } from "typeorm";
 import { RoleMention, UserMention } from "../legacy/templates";
 import listify from "listify";
+import delay from "delay";
 
 export default class AllyCommandController extends CommandController {
   static async init() {
@@ -534,11 +535,14 @@ export default class AllyCommandController extends CommandController {
   }
 
   async stats(i: CommandInteraction) {
+    await i.deferReply({ ephemeral: CommandController.isEphemeral(i) });
+
     const checkeeMember = i.options.getMember("name") as null | GuildMember;
 
     const [checkerUser, checkeeUser] = await Promise.all([
       getUser(i.user.id),
       getUser(checkeeMember ? checkeeMember.id : i.user.id),
+      delay(4000),
     ]);
 
     if (checkeeUser === null) {

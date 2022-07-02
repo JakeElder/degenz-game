@@ -44,6 +44,10 @@ export abstract class CommandController {
     };
   }
 
+  static isEphemeral(i: CommandInteraction) {
+    return i.options.getBoolean("hide") ? true : false;
+  }
+
   static async reply(
     i: CommandInteraction,
     reply: InteractionReplyOptions,
@@ -66,6 +70,17 @@ export abstract class CommandController {
       i.options.getBoolean("hide") ? true : false,
       false,
     ];
+
+    if (i.deferred) {
+      await i.editReply({
+        ...reply,
+        embeds: [
+          ...(reply.embeds || []),
+          ...(postDenied ? [this.makeCannotPostEmbed(opts.message)] : []),
+        ],
+      });
+      return;
+    }
 
     await i.reply({
       ...reply,
