@@ -346,4 +346,24 @@ export default class WorldNotifier {
     );
     await this.logToHOP("ALLY", e.type, message);
   }
+
+  static async mintPassRedeemed(e: PickEvent<"MINT_PASS_REDEEMED">) {
+    const message = r(
+      <>
+        {e.data.mpa.recipient.mention} redeemed a mint pass and got **
+        {e.data.mpa.token.name}** 🎉.
+      </>
+    );
+    await this.logToHOP("ALLY", e.type, message);
+  }
+
+  static async mintPassSent(e: PickEvent<"MINT_PASS_SENT">) {
+    const message = r(
+      <>
+        {Config.emojiCode("DEGEN")} **Degenz Team** sent a **mint pass NFT**.{" "}
+        {e.data.mpa.recipient.mention} received **{e.data.mpa.token.name}** 🚀.
+      </>
+    );
+    await this.logToHOP("ALLY", e.type, message);
+  }
 }

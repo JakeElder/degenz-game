@@ -6,6 +6,7 @@ import Rollbar from "rollbar";
 import { Channel } from "./Channel";
 import { Thread } from "./Thread";
 import { ManagedChannelSymbol, NPCSymbol, SingleDigitNumber } from "data/types";
+import { PublicKey } from "@solana/web3.js";
 
 TurndownService.prototype.escape = (s) => s;
 const td = new TurndownService();
@@ -23,6 +24,16 @@ export default class Utils {
   static Channel = Channel;
   static ManagedChannel = ManagedChannel;
   static Thread = Thread;
+
+  static isValidSolAddress(address: string) {
+    try {
+      let pubkey = new PublicKey(address);
+      let isSolana = PublicKey.isOnCurve(pubkey.toBuffer());
+      return isSolana;
+    } catch (error) {
+      return false;
+    }
+  }
 
   static numberEmoji(number: SingleDigitNumber) {
     const emojis = [

@@ -25,6 +25,7 @@ export default class IsBot extends Command {
       "Degenz Game",
       "Save America PAC",
       "Donald Trump Jr Founkdation",
+      "DЕGЕNZ GAMЕ",
     ];
 
     const botmai = members.filter((m) => {

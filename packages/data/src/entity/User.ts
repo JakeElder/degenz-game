@@ -67,6 +67,9 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   walletAddress: string;
 
+  @Column({ default: 0 })
+  mintPasses: number;
+
   @OneToMany(() => ApartmentTenancy, (tenancy) => tenancy.user, {
     eager: true,
     cascade: true,

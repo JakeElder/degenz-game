@@ -22,6 +22,7 @@ export type ManagedCategorySymbol =
   | "COMMAND_CENTER"
   | "COMMUNITY"
   | "BEAUTOPIA"
+  | "MINT_PASS_CLAIM"
   | `THE_PROJECTS_${DistrictSymbol}`
   | "THE_SHELTERS"
   | "TICKETS"
@@ -32,6 +33,8 @@ export type ManagedCategorySymbol =
 export type NestedManagedChannelSymbol =
   | "ENTRANCE"
   | "STAFF_CHAT"
+  | "CLAIM_NFT"
+  | "NFT_CLAIM_LOG"
   | "QUESTS"
   | "THE_LORE"
   | "NFT_CHARACTERS"

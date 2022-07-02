@@ -15,10 +15,10 @@ import NextStepController from "./controllers/NextStepsController";
 import EntranceController from "./controllers/EntranceController";
 import QuestLogController from "./controllers/QuestLogController";
 import { NPCSymbol } from "data/types";
-import AnnouncementController from "./controllers/AnnouncementController";
 import TossV2Controller from "./controllers/TossV2Controller";
 import GetPFPController from "./controllers/GetPFPController";
 import AllyCommandController from "./command-controllers/AllyCommandController";
+import MintPassClaimController from "./controllers/MintPassClaimController";
 
 export default class Runner {
   constructor(private bots: DiscordBot[]) {
@@ -43,7 +43,7 @@ export default class Runner {
         QuestsController.init();
         QuestLogController.init();
         UserController.init();
-        AnnouncementController.init();
+        // AnnouncementController.init();
       }
 
       if (e.data.bot.id === "BIG_BROTHER") {
@@ -64,6 +64,7 @@ export default class Runner {
         AllyCommandController.init();
         NextStepController.init();
         GetPFPController.init();
+        MintPassClaimController.init();
       }
     });
 
@@ -224,6 +225,14 @@ export default class Runner {
 
     Events.on("MESSAGE_DELETED", (e) => {
       Analytics.messageDeleted(e);
+    });
+
+    Events.on("MINT_PASS_REDEEMED", (e) => {
+      WorldNotifier.mintPassRedeemed(e);
+    });
+
+    Events.on("MINT_PASS_SENT", (e) => {
+      WorldNotifier.mintPassSent(e);
     });
   }
 

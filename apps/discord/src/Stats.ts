@@ -10,6 +10,7 @@ type StatsViewModel = {
   strength: number;
   level: number;
   gbt: number;
+  mintPasses: number;
   attributes: {
     strength: string | number;
     luck: string | number;
@@ -56,6 +57,10 @@ class Stats {
         {
           name: "Strength",
           value: Format.codeBlock(Stats.makeStrengthBar(model.strength)),
+        },
+        {
+          name: "Mint Passes",
+          value: Format.codeBlock(model.mintPasses),
         },
       ],
     };

@@ -33,17 +33,6 @@ import Config from "config";
 import { IsNull, Not } from "typeorm";
 import { RoleMention, UserMention } from "../legacy/templates";
 import listify from "listify";
-import { PublicKey } from "@solana/web3.js";
-
-function isValidSolAddress(address: string) {
-  try {
-    let pubkey = new PublicKey(address);
-    let isSolana = PublicKey.isOnCurve(pubkey.toBuffer());
-    return isSolana;
-  } catch (error) {
-    return false;
-  }
-}
 
 export default class AllyCommandController extends CommandController {
   static async init() {
@@ -74,7 +63,7 @@ export default class AllyCommandController extends CommandController {
       return;
     }
 
-    if (!isValidSolAddress(next)) {
+    if (!Utils.isValidSolAddress(next)) {
       await i.reply({
         embeds: [
           {
@@ -88,6 +77,7 @@ export default class AllyCommandController extends CommandController {
         ],
         ephemeral: true,
       });
+
       return;
     }
 
@@ -563,6 +553,7 @@ export default class AllyCommandController extends CommandController {
       gbt: checkeeUser.gbt,
       level: 1,
       attributes: { strength: "??", charisma: "??", luck: "??" },
+      mintPasses: checkeeUser.mintPasses,
     });
 
     await CommandController.reply(

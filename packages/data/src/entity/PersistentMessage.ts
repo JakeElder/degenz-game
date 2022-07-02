@@ -15,7 +15,8 @@ export type PersistentMessageSymbol =
   | "GBT_LEADERBOARD_2"
   | "PLEDGE"
   | "GET_PFP"
-  | "SHOW_QUESTS";
+  | "SHOW_QUESTS"
+  | "REDEEM_MINT_PASS";
 
 @Entity()
 export class PersistentMessage extends BaseEntity {

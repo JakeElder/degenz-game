@@ -61,6 +61,24 @@ const ESTABLISHMENT: ManagedChannel["permissionOverwrites"] = [
 const channels: RecursivePartial<ManagedChannel>[] = [];
 
 channels.push(
+  // STAFF_ROOM
+  {
+    id: "STAFF_ROOM",
+    name: "Staff Room",
+    permissionOverwrites: [
+      {
+        roles: ["EVERYONE"],
+        options: { VIEW_CHANNEL: false },
+      },
+      {
+        roles: ["ADMIN"],
+        options: { VIEW_CHANNEL: true },
+      },
+    ],
+  }
+);
+
+channels.push(
   // THE_GAME
   {
     id: "THE_GAME",
@@ -136,6 +154,38 @@ channels.push(
     lockPermissions: true,
     permissionOverwrites: [...DISCOVERABLE],
     parent: { id: "THE_GAME" },
+  }
+);
+
+channels.push(
+  // MINT_PASS_CLAIM
+  {
+    id: "MINT_PASS_CLAIM",
+    name: "Mint Pass Claim",
+    permissionOverwrites: [...DISCOVERABLE, ...READ_ONLY],
+  },
+  // CHANNELS
+  {
+    id: "CLAIM_NFT",
+    name: "⭐｜claim-nft",
+    parent: { id: "MINT_PASS_CLAIM" },
+    permissionOverwrites: [
+      {
+        roles: ["EVERYONE"],
+        options: { VIEW_CHANNEL: true },
+      },
+    ],
+  },
+  {
+    id: "NFT_CLAIM_LOG",
+    name: "🪵｜nft-claim-log",
+    parent: { id: "MINT_PASS_CLAIM" },
+    permissionOverwrites: [
+      {
+        roles: ["ADMIN", "MODS", "STAFF", "JR_MOD"],
+        options: { VIEW_CHANNEL: true },
+      },
+    ],
   }
 );
 

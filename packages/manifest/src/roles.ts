@@ -395,6 +395,16 @@ export const roles: RecursivePartial<Role>[] = [
   },
   {
     type: "SUPPLEMENTARY",
+    id: "MINT_PASS",
+    name: "Mint Pass",
+  },
+  {
+    type: "SUPPLEMENTARY",
+    id: "SECOND_MINT_PASS",
+    name: "Mint Pass",
+  },
+  {
+    type: "SUPPLEMENTARY",
     id: "OG_WHITELIST_CONFIRMED",
     name: "OG Whitelist Confirmed",
     color: "#fcadad",

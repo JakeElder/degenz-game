@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 import EventEmitter from "events";
 import TypedEmitter from "typed-emitter";
-import { ManagedChannelSymbol, QuestSymbol, TossGame } from "data/types";
+import { ManagedChannelSymbol, QuestSymbol } from "data/types";
 import {
   User,
   MartItem,
@@ -16,6 +16,7 @@ import {
   NPC,
   Achievement,
   Toss,
+  MintPassAssignment,
 } from "data/db";
 
 type EnterEvent = {
@@ -264,7 +265,7 @@ type QuestCompletedEvent = {
   };
 };
 
-type ReactionsRewarded = {
+type ReactionsRewardedEvent = {
   type: "REACTIONS_REWARDED";
   data: {
     user: User;
@@ -273,18 +274,32 @@ type ReactionsRewarded = {
   };
 };
 
-type GetPFPButtonClicked = {
+type GetPFPButtonClickedEvent = {
   type: "GET_PFP_BUTTON_CLICKED";
   data: {
     user: User;
   };
 };
 
-type MessageDeleted = {
+type MessageDeletedEvent = {
   type: "MESSAGE_DELETED";
   data: {
     userId?: string;
     message: string;
+  };
+};
+
+type MintPassRedeemedEvent = {
+  type: "MINT_PASS_REDEEMED";
+  data: {
+    mpa: MintPassAssignment;
+  };
+};
+
+type MintPassSentEvent = {
+  type: "MINT_PASS_SENT";
+  data: {
+    mpa: MintPassAssignment;
   };
 };
 
@@ -322,9 +337,11 @@ export type Event =
   | CitizenEscapedEvent
   | CitizenReleasedEvent
   | QuestCompletedEvent
-  | ReactionsRewarded
-  | GetPFPButtonClicked
-  | MessageDeleted;
+  | ReactionsRewardedEvent
+  | GetPFPButtonClickedEvent
+  | MessageDeletedEvent
+  | MintPassRedeemedEvent
+  | MintPassSentEvent;
 
 type EventHandler<E extends Event> = {
   [P in E["type"]]: (e: { type: E["type"]; data: E["data"] }) => void;
@@ -363,9 +380,11 @@ type DegenEmitterEvents = EventHandler<BotReadyEvent> &
   EventHandler<CitizenEscapedEvent> &
   EventHandler<CitizenReleasedEvent> &
   EventHandler<QuestCompletedEvent> &
-  EventHandler<ReactionsRewarded> &
-  EventHandler<GetPFPButtonClicked> &
-  EventHandler<MessageDeleted>;
+  EventHandler<ReactionsRewardedEvent> &
+  EventHandler<GetPFPButtonClickedEvent> &
+  EventHandler<MintPassRedeemedEvent> &
+  EventHandler<MintPassSentEvent> &
+  EventHandler<MessageDeletedEvent>;
 
 export type PickEvent<T extends keyof DegenEmitterEvents> = Parameters<
   DegenEmitterEvents[T]
