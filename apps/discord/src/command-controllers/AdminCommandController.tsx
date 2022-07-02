@@ -371,6 +371,17 @@ export default class AdminCommandController extends CommandController {
     await this.respond(i, `ENGAGEMENT_BACKFILLED`, "SUCCESS");
   }
 
+  async setMintPasses(i: CommandInteraction) {
+    const member = i.options.getMember("member", true) as GuildMember;
+    const amount = i.options.getNumber("amount", true);
+
+    const user = await User.findOneByOrFail({ id: member.id });
+    user.mintPasses = amount;
+
+    await user.save();
+    await this.respond(i, "MINT_PASSES_UPDATED", "SUCCESS");
+  }
+
   async whitelist(i: CommandInteraction) {
     const member = i.options.getMember("member", true) as GuildMember;
     const type = (i.options.getString("type") || "STANDARD") as

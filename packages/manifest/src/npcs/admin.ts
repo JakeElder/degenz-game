@@ -319,6 +319,26 @@ admin.commands = [
       .toJSON(),
   },
   {
+    id: "SET_MINT_PASSES",
+    permissions: [{ id: "ADMIN", type: 1, permission: true }],
+    data: new SlashCommandBuilder()
+      .setName("set-mint-passes")
+      .setDescription(`Set the amount of mint passes a user has.`)
+      .addUserOption((option) =>
+        option
+          .setName("member")
+          .setDescription("The member to update.")
+          .setRequired(true)
+      )
+      .addNumberOption((option) =>
+        option
+          .setName("amount")
+          .setDescription(`The amount of mint passes to set.`)
+          .setRequired(true)
+      )
+      .toJSON(),
+  },
+  {
     id: "WHITELIST",
     permissions: [
       { id: "ADMIN", type: 1, permission: true },
